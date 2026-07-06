@@ -2,6 +2,7 @@
   "id": "prehistoric-rush-kit-composition",
   "version": "0.1.0",
   "engineCdn": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@main/src/index.js",
+  "protoKitsCdn": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusRealtime-ProtoKits@main/protokits/",
   "coreKits": [
     "createCoreSkyboxKit",
     "createCoreSceneKit",
@@ -9,6 +10,22 @@
     "createCoreMotionKit",
     "createCoreCameraKit",
     "createCoreGraphicsKit",
-    "createCoreDiagnosticsKit"
-  ]
+    "createCoreAnimationKit",
+    "createCoreUIKit",
+    "createCoreDiagnosticsKit",
+    "createCoreCompositionKit"
+  ],
+  "firstMissingProtoKit": "run-movement-kit",
+  "existingProtoKitFamiliesToUseFirst": [
+    "course-direction / route-clearance family",
+    "race-pacing family",
+    "race-hazard family",
+    "racer-contact family",
+    "flock-agent family",
+    "vegetation-placement / scatter-placement / terrain-ground-contact family",
+    "vegetation-lod / instanced-batch family",
+    "configurable-render-layer family",
+    "material / lighting descriptor family"
+  ],
+  "cutoverInventory": "kit-cutover-inventory.json"
 }
