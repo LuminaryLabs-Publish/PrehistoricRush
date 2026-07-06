@@ -2,7 +2,20 @@
   "id": "prehistoric-rush-flock-generation",
   "version": "0.1.0",
   "model": "flock-lite",
+  "rules": ["separation", "alignment", "cohesion", "goalSeeking", "screenSpaceCulling"],
   "maxAgents": 36,
   "updateHz": 20,
-  "pooling": true
+  "pooling": true,
+  "spawnBands": ["far-sky", "mid-horizon"],
+  "visuals": {
+    "style": "prehistoric-anime-silhouette",
+    "wingbeatMethod": "procedural-sine-pose",
+    "frequencyRange": [2.2, 4.8],
+    "amplitudeRange": [0.18, 0.42],
+    "phaseRandomization": true
+  },
+  "depthLayers": [
+    { "id": "far", "scale": 0.35, "alpha": 0.32, "parallax": 0.08 },
+    { "id": "mid", "scale": 0.65, "alpha": 0.55, "parallax": 0.18 }
+  ]
 }
