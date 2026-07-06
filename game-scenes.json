@@ -1,0 +1,4 @@
+{
+  "id": "prehistoric-rush",
+  "scenes": ["menu", "game", "fail", "win"]
+}
