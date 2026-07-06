@@ -1,5 +1,19 @@
 {
   "id": "win",
   "type": "result-scene",
-  "next": "menu"
+  "title": "New Trail Reached",
+  "next": "menu",
+  "again": "game",
+  "backgroundPreset": "golden-horizon",
+  "ui": {
+    "primaryAction": "Run Again",
+    "secondaryAction": "Menu",
+    "summaryFields": ["distance", "bestDistance", "shards", "flocks"]
+  },
+  "kitRequests": [
+    "core-skybox",
+    "core-scene",
+    "core-ui",
+    "core-diagnostics"
+  ]
 }
