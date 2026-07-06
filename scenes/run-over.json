@@ -1,5 +1,19 @@
 {
   "id": "run-over",
   "type": "result-scene",
-  "next": "menu"
+  "title": "The Trail Caught You",
+  "next": "menu",
+  "retry": "game",
+  "backgroundPreset": "storm-front",
+  "ui": {
+    "primaryAction": "Retry",
+    "secondaryAction": "Menu",
+    "summaryFields": ["distance", "bestDistance", "shards", "nearMisses"]
+  },
+  "kitRequests": [
+    "core-skybox",
+    "core-scene",
+    "core-ui",
+    "core-diagnostics"
+  ]
 }
