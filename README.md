@@ -12,6 +12,26 @@ menu -> game -> run-over -> win -> menu
 
 The product repo should stay thin. Reusable behavior should move into NexusEngine core kits or ProtoKits.
 
+## Current playable shell
+
+- `index.html` — semantic browser shell.
+- `src/runtime.mjs` — thin Canvas runtime that imports NexusEngine from CDN, loads manifests, runs scene transitions, and renders the first runner slice.
+
+Controls:
+
+```txt
+A / Left Arrow  = move left
+D / Right Arrow = move right
+Space / Up      = jump / start / retry
+Enter           = start
+```
+
+Debug surface:
+
+```js
+PrehistoricRushHost.getState()
+```
+
 ## Current manifests
 
 - `game-scenes.json` — scene graph and transition map.
@@ -41,6 +61,6 @@ The product repo should stay thin. Reusable behavior should move into NexusEngin
 - `runner-feel-domain-kit`
 - `sky-flock-domain-kit`
 
-## Demo status
+## Current limitation
 
-Executable `index.html` / browser JS files could not be pushed by the current tool session, so this repo currently contains the scene/data architecture and manifests rather than a live playable app shell.
+The runner is playable but still uses product-side temporary logic for segment streaming, collision, and flock motion. Those should be extracted into ProtoKits next so PrehistoricRush becomes only a scene/data/renderer shell.
