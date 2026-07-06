@@ -1,0 +1,184 @@
+{
+  "id": "prehistoric-rush-kit-cutover-inventory",
+  "version": "0.1.0",
+  "rules": {
+    "productKeep": [
+      "index.html",
+      "src/runtime.mjs",
+      "scene manifests",
+      "theme manifests",
+      "asset URLs",
+      "Three.js renderer bootstrap",
+      "kit install list",
+      "keyboard/touch adapter binding",
+      "debug host exposure"
+    ],
+    "productCut": [
+      "manual runner movement rules",
+      "manual segment spawning rules",
+      "manual obstacle collision rules",
+      "manual score rules",
+      "manual flock movement rules",
+      "manual sky drawing rules",
+      "manual camera smoothing rules",
+      "manual scene transition rules"
+    ],
+    "firstMissingProtoKit": "run-movement-kit"
+  },
+  "capabilities": [
+    {
+      "capability": "scene shell and boot",
+      "currentProductOwner": "index.html and src/runtime.mjs",
+      "decision": "keep product-only",
+      "kit": null,
+      "reason": "The product repo keeps the host shell, renderer bootstrap, and debug host exposure."
+    },
+    {
+      "capability": "core scene graph and object identity",
+      "currentProductOwner": "scene manifests",
+      "decision": "use core",
+      "kit": "createCoreSceneKit",
+      "reason": "NexusEngine core owns reusable scene graph, object identity, and scene recipes."
+    },
+    {
+      "capability": "input intent",
+      "currentProductOwner": "keyboard handler in src/runtime.mjs",
+      "decision": "use core",
+      "kit": "createCoreInputKit",
+      "reason": "NexusEngine core owns input intent. Product code should only bind keyboard/touch into that intent."
+    },
+    {
+      "capability": "dino lane movement",
+      "currentProductOwner": "updateRun lane, speed, jump, coyote, buffer, lean state",
+      "decision": "create new ProtoKit",
+      "kit": "run-movement-kit",
+      "reason": "No existing kit owns lane jump controller state directly."
+    },
+    {
+      "capability": "generic motion descriptors",
+      "currentProductOwner": "src/runtime.mjs movement state",
+      "decision": "use core",
+      "kit": "createCoreMotionKit",
+      "reason": "Core motion should carry generic motion descriptors after run-movement-kit computes controller state."
+    },
+    {
+      "capability": "camera policy",
+      "currentProductOwner": "runtime camera feel values",
+      "decision": "use core",
+      "kit": "createCoreCameraKit",
+      "reason": "Core camera owns target, follow, FOV, and shake descriptors."
+    },
+    {
+      "capability": "sky state",
+      "currentProductOwner": "drawSky and backgroundPreset scene data",
+      "decision": "use core",
+      "kit": "createCoreSkyboxKit",
+      "reason": "Core skybox owns sky preset and sky render descriptors. Product rendering should consume descriptors only."
+    },
+    {
+      "capability": "render descriptors",
+      "currentProductOwner": "Canvas draw calls and local visual decisions",
+      "decision": "use core",
+      "kit": "createCoreGraphicsKit",
+      "reason": "Core graphics owns renderer-facing descriptors and material/lighting/VFX descriptors."
+    },
+    {
+      "capability": "animation pose descriptors",
+      "currentProductOwner": "manual bob/lean/wing phase values",
+      "decision": "use core",
+      "kit": "createCoreAnimationKit",
+      "reason": "Core animation should own animation pose descriptors once movement emits animation phase."
+    },
+    {
+      "capability": "menu/fail/win UI descriptors",
+      "currentProductOwner": "HUD DOM text and button state",
+      "decision": "use core",
+      "kit": "createCoreUIKit",
+      "reason": "Core UI should carry menu/result descriptors; product host may still render DOM."
+    },
+    {
+      "capability": "diagnostics",
+      "currentProductOwner": "console warnings and fallback messages",
+      "decision": "use core",
+      "kit": "createCoreDiagnosticsKit",
+      "reason": "Diagnostics should prove failed imports, missing manifests, and rejected kit state."
+    },
+    {
+      "capability": "installed kit graph",
+      "currentProductOwner": "kit-composition.json",
+      "decision": "use core",
+      "kit": "createCoreCompositionKit",
+      "reason": "Core composition owns installed kit graph and dependency/provides maps."
+    },
+    {
+      "capability": "track route shape and forward constraints",
+      "currentProductOwner": "spawnSegments segment positions",
+      "decision": "use existing ProtoKit",
+      "kit": "course-direction / route-clearance family",
+      "reason": "The track is a constrained forward route."
+    },
+    {
+      "capability": "speed and difficulty pacing",
+      "currentProductOwner": "updateRun speed ramp and spawn difficulty",
+      "decision": "use existing ProtoKit",
+      "kit": "race-pacing family",
+      "reason": "Speed ramp and pacing budget match race/arcade flow."
+    },
+    {
+      "capability": "hazard descriptors",
+      "currentProductOwner": "obstacles array in src/runtime.mjs",
+      "decision": "use existing ProtoKit",
+      "kit": "race-hazard family",
+      "reason": "Bone, fern, log, and rock obstacles are lane hazards, not a unique architecture."
+    },
+    {
+      "capability": "contact and impact",
+      "currentProductOwner": "manual obstacle collision checks",
+      "decision": "use existing ProtoKit",
+      "kit": "racer-contact family",
+      "reason": "Dino hitting obstacles is contact resolution."
+    },
+    {
+      "capability": "sky flock agents",
+      "currentProductOwner": "updateFlock and flock-generation.json",
+      "decision": "use existing ProtoKit",
+      "kit": "flock-agent family",
+      "reason": "ProtoKits already lists flock agents as a family."
+    },
+    {
+      "capability": "vegetation and props",
+      "currentProductOwner": "manual obstacle/prop drawings",
+      "decision": "use existing ProtoKit",
+      "kit": "vegetation-placement / scatter-placement / terrain-ground-contact family",
+      "reason": "Palms, ferns, rocks, fossils, and background props should be placed by environment kits."
+    },
+    {
+      "capability": "render readability layers",
+      "currentProductOwner": "manual near/mid/far visual choices",
+      "decision": "use existing ProtoKit",
+      "kit": "configurable-render-layer family",
+      "reason": "Near, mid, far, static, and interactive readability are render-layer concerns."
+    },
+    {
+      "capability": "score state",
+      "currentProductOwner": "distance, shards, near misses, best distance",
+      "decision": "keep product-only",
+      "kit": null,
+      "reason": "Keep tiny product score state until it proves reusable."
+    },
+    {
+      "capability": "scene transition rules",
+      "currentProductOwner": "transition() in src/runtime.mjs",
+      "decision": "use core",
+      "kit": "core scene / sequence flow",
+      "reason": "Use core scene or sequence flow first; only create run-scene-flow-kit if sequences are not enough."
+    },
+    {
+      "capability": "Three.js renderer adapter",
+      "currentProductOwner": "future Three.js host",
+      "decision": "keep product-only",
+      "kit": null,
+      "reason": "Keep the renderer host product-side until adapter code becomes large enough to justify three-runner-adapter-kit."
+    }
+  ]
+}
