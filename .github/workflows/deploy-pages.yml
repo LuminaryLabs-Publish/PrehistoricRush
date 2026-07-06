@@ -33,6 +33,7 @@ jobs:
           cp runner-tuning.json _site/runner-tuning.json
           cp flock-generation.json _site/flock-generation.json
           cp kit-composition.json _site/kit-composition.json
+          cp kit-cutover-inventory.json _site/kit-cutover-inventory.json
           cp src/runtime.mjs _site/src/runtime.mjs
           cp scenes/*.json _site/scenes/
           find _site -type f -maxdepth 3 -print
