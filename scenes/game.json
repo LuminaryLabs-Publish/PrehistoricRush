@@ -1,0 +1,7 @@
+{
+  "id": "game",
+  "type": "runner-scene",
+  "nextOnLoss": "fail",
+  "nextOnGoal": "win",
+  "backgroundPreset": "clear-day"
+}
