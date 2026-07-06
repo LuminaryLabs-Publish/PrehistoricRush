@@ -1,0 +1,8 @@
+{
+  "id": "prehistoric-rush-flock-generation",
+  "version": "0.1.0",
+  "model": "flock-lite",
+  "maxAgents": 36,
+  "updateHz": 20,
+  "pooling": true
+}
