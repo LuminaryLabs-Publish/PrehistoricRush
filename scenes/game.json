@@ -31,9 +31,10 @@
     "core-motion",
     "core-camera",
     "core-graphics",
+    "core-animation",
+    "core-ui",
     "core-diagnostics",
-    "runner-segment-domain-kit",
-    "runner-feel-domain-kit",
-    "bird-flock-domain-kit"
+    "core-composition",
+    "run-movement-kit"
   ]
 }
