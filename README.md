@@ -48,6 +48,7 @@ PrehistoricRushHost.getState()
 - `runner-tuning.json` — movement, camera, streaming, and feel tuning.
 - `flock-generation.json` — sky-agent/flock generation descriptor.
 - `kit-composition.json` — NexusEngine core-kit dependency sketch.
+- `kit-cutover-inventory.json` — cutover decisions for current product-side behavior.
 - `RUNNER_RESEARCH.md` — algorithm and animation notes.
 
 ## Core kits targeted
@@ -58,15 +59,15 @@ PrehistoricRushHost.getState()
 - `createCoreMotionKit`
 - `createCoreCameraKit`
 - `createCoreGraphicsKit`
+- `createCoreAnimationKit`
+- `createCoreUIKit`
 - `createCoreDiagnosticsKit`
+- `createCoreCompositionKit`
 
-## Planned ProtoKits
+## First missing ProtoKit
 
-- `runner-scenes-domain-kit`
-- `runner-segments-domain-kit`
-- `runner-feel-domain-kit`
-- `sky-flock-domain-kit`
+- `run-movement-kit`
 
 ## Current limitation
 
-The runner is playable but still uses product-side temporary logic for segment streaming, collision, and flock motion. Those should be extracted into ProtoKits next so PrehistoricRush becomes only a scene/data/renderer shell.
+The runner is playable but still uses product-side temporary logic for segment streaming, collision, and flock motion. Those should be cut over according to `kit-cutover-inventory.json` so PrehistoricRush becomes only a scene/data/renderer shell.
