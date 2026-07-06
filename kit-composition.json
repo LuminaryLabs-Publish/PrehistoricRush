@@ -1,0 +1,14 @@
+{
+  "id": "prehistoric-rush-kit-composition",
+  "version": "0.1.0",
+  "engineCdn": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@main/src/index.js",
+  "coreKits": [
+    "createCoreSkyboxKit",
+    "createCoreSceneKit",
+    "createCoreInputKit",
+    "createCoreMotionKit",
+    "createCoreCameraKit",
+    "createCoreGraphicsKit",
+    "createCoreDiagnosticsKit"
+  ]
+}
