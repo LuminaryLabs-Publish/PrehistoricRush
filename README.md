@@ -12,6 +12,12 @@ menu -> game -> run-over -> win -> menu
 
 The product repo should stay thin. Reusable behavior should move into NexusEngine core kits or ProtoKits.
 
+## Deployment
+
+GitHub Pages deploys from the `main` branch on every push using `.github/workflows/deploy-pages.yml`.
+
+The workflow uploads the static repository root, so `index.html`, `src/runtime.mjs`, scene manifests, and JSON tuning files are all deployed together.
+
 ## Current playable shell
 
 - `index.html` — semantic browser shell.
