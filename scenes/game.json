@@ -3,5 +3,37 @@
   "type": "runner-scene",
   "nextOnLoss": "fail",
   "nextOnGoal": "win",
-  "backgroundPreset": "clear-day"
+  "backgroundPreset": "clear-day",
+  "runner": {
+    "targetMode": "infinite",
+    "baseSpeed": 8.5,
+    "speedRampPerMinute": 1.15,
+    "maxSpeed": 18,
+    "lanes": [-2.4, 0, 2.4],
+    "jumpGravity": 34,
+    "jumpImpulse": 13.5,
+    "coyoteSeconds": 0.08,
+    "inputBufferSeconds": 0.12,
+    "laneEase": 16,
+    "bankDegrees": 11,
+    "cameraLag": 0.08
+  },
+  "generation": {
+    "segmentLength": 24,
+    "lookAheadSegments": 7,
+    "recycleBehindSegments": 3,
+    "seed": "prehistoric-rush-v0"
+  },
+  "kitRequests": [
+    "core-skybox",
+    "core-scene",
+    "core-input",
+    "core-motion",
+    "core-camera",
+    "core-graphics",
+    "core-diagnostics",
+    "runner-segment-domain-kit",
+    "runner-feel-domain-kit",
+    "bird-flock-domain-kit"
+  ]
 }
