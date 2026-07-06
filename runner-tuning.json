@@ -1,0 +1,37 @@
+{
+  "id": "prehistoric-rush-runner-tuning",
+  "version": "0.1.0",
+  "intent": "movement feel and procedural stream tuning for the first infinite runner slice",
+  "motion": {
+    "baseForwardSpeed": 8.5,
+    "maxForwardSpeed": 18,
+    "speedRampPerMinute": 1.15,
+    "lanePositions": [-2.4, 0, 2.4],
+    "laneChangeEase": 16,
+    "bankDegrees": 11,
+    "jumpGravity": 34,
+    "jumpImpulse": 13.5,
+    "coyoteSeconds": 0.08,
+    "inputBufferSeconds": 0.12
+  },
+  "camera": {
+    "followLagSeconds": 0.08,
+    "lookAheadMeters": 9,
+    "fovBase": 62,
+    "fovAtMaxSpeed": 68,
+    "shakeOnImpact": 0.12
+  },
+  "streaming": {
+    "segmentLength": 24,
+    "lookAheadSegments": 7,
+    "recycleBehindSegments": 3,
+    "objectPoolSize": 64,
+    "seed": "prehistoric-rush-v0"
+  },
+  "rules": {
+    "minimumReactionSeconds": 0.75,
+    "neverBlockAllLanes": true,
+    "validateJumpGapsAgainstCurrentSpeed": true,
+    "reliefAfterDenseSegment": true
+  }
+}
