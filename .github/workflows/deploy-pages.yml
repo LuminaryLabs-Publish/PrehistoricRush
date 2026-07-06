@@ -15,20 +15,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Stage static site
+        shell: bash
+        run: |
+          rm -rf _site
+          mkdir -p _site/src _site/scenes
+          cp index.html _site/index.html
+          cp .nojekyll _site/.nojekyll
+          cp game-scenes.json _site/game-scenes.json
+          cp runner-tuning.json _site/runner-tuning.json
+          cp flock-generation.json _site/flock-generation.json
+          cp kit-composition.json _site/kit-composition.json
+          cp src/runtime.mjs _site/src/runtime.mjs
+          cp scenes/*.json _site/scenes/
+          find _site -type f -maxdepth 3 -print
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _site
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
