@@ -1,0 +1,18 @@
+{
+  "id": "menu",
+  "type": "menu-scene",
+  "title": "Prehistoric Rush",
+  "next": "game",
+  "backgroundPreset": "golden-horizon",
+  "ui": {
+    "primaryAction": "Start Rush",
+    "secondaryText": "Run, dodge, glide, and survive the prehistoric sky trail."
+  },
+  "kitRequests": [
+    "core-skybox",
+    "core-scene",
+    "core-input",
+    "core-ui",
+    "core-diagnostics"
+  ]
+}
