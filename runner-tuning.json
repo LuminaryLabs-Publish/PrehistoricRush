@@ -3,12 +3,10 @@
   "version": "0.1.0",
   "intent": "movement feel and procedural stream tuning for the first infinite runner slice",
   "motion": {
-    "baseForwardSpeed": 8.5,
-    "maxForwardSpeed": 18,
-    "speedRampPerMinute": 1.15,
-    "lanePositions": [-2.4, 0, 2.4],
-    "laneChangeEase": 16,
-    "bankDegrees": 11,
+    "baseForwardSpeed": 13.5,
+    "maxForwardSpeed": 24,
+    "boostForwardSpeed": 29,
+    "turnRate": 2.45,
     "jumpGravity": 34,
     "jumpImpulse": 13.5,
     "coyoteSeconds": 0.08,
@@ -16,10 +14,16 @@
   },
   "camera": {
     "followLagSeconds": 0.08,
-    "lookAheadMeters": 9,
-    "fovBase": 62,
-    "fovAtMaxSpeed": 68,
+    "lookAheadMeters": 14,
+    "fovBase": 64,
+    "fovAtMaxSpeed": 74,
     "shakeOnImpact": 0.12
+  },
+  "terrain": {
+    "chunkSize": 44,
+    "chunkRadius": 3,
+    "chunkSegments": 20,
+    "seed": "prehistoric-rush-infinite-terrain-v1"
   },
   "streaming": {
     "segmentLength": 24,
