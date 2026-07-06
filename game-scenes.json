@@ -1,4 +1,33 @@
 {
   "id": "prehistoric-rush",
-  "scenes": ["menu", "game", "fail", "win"]
+  "version": "0.1.0",
+  "entryScene": "menu",
+  "sceneOrder": ["menu", "game", "run-over", "win"],
+  "transitions": {
+    "menu:start": "game",
+    "game:runOver": "run-over",
+    "game:win": "win",
+    "run-over:menu": "menu",
+    "run-over:retry": "game",
+    "win:menu": "menu",
+    "win:again": "game"
+  },
+  "sceneFiles": {
+    "menu": "scenes/menu.json",
+    "game": "scenes/game.json",
+    "run-over": "scenes/run-over.json",
+    "win": "scenes/win.json"
+  },
+  "nexusEngine": {
+    "cdn": "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@main/src/index.js",
+    "coreKits": [
+      "coreSkybox",
+      "coreScene",
+      "coreInput",
+      "coreMotion",
+      "coreCamera",
+      "coreGraphics",
+      "coreDiagnostics"
+    ]
+  }
 }
