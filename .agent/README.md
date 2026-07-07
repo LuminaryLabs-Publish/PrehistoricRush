@@ -6,17 +6,17 @@ This folder stores automation-authored repo analysis, tracker entries, kit regis
 
 `PrehistoricRush` is a standalone additive publish repo for a NexusEngine-powered prehistoric infinite runner.
 
-The product repo should stay thin. It should own the browser shell, scene manifests, theme/config data, renderer bootstrap, input adapter binding, debug host exposure, and repo-local smoke fixtures while reusable behavior moves into NexusEngine core kits or ProtoKits.
+The product repo should stay thin. It should own the browser shell, scene manifests, theme/config data, renderer bootstrap, adapter bindings, debug host exposure, and repo-local smoke fixtures while reusable behavior moves into NexusEngine core kits or ProtoKits.
 
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T14-11-48-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T15-29-27-04-00/project-breakdown.md
 ```
 
-This run keeps the scene-dispatch/contact-result direction, but narrows the next slice into **Manifest/Tuning Authority + Runner Event Replay Fixture**.
+This run keeps the manifest/tuning authority direction, but narrows the next implementation slice into **RunnerStep Authority + ContactEvent Replay Fixture**.
 
-The runner is playable, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, contact resolution, result transitions, terrain streaming, visual rigging, camera, HUD, physics bridge, and partial host snapshots inline. The manifests already describe the intended game shape: `game-scenes.json` owns canonical scene order, `runner-tuning.json` owns intended motion/camera/terrain/streaming/rule tuning, `kit-composition.json` owns kit dependency direction, and `kit-cutover-inventory.json` owns promotion decisions. The next source pass should make those manifests authoritative before extracting terrain, renderer, raptor, or Rapier services.
+The runner is playable, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, contact resolution, result transitions, terrain streaming, visual rigging, camera, HUD, physics bridge, and partial host snapshots inline. The next pass should make manifest loading, tuning adaptation, action intake, runner step results, contact events, scene dispatch, host diagnostics, and replay fixtures explicit before extracting terrain, render, raptor, or Rapier services.
 
 ## Kit registry
 
@@ -24,11 +24,12 @@ The runner is playable, but `src/runtime-terrain-v6.mjs` still owns live tuning,
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next manifest/tuning + runner-event replay cutover slice.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next RunnerStep/ContactEvent replay cutover slice.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T14-11-48-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T13-01-09-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T11-29-07-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T10-21-39-04-00/project-breakdown.md
@@ -49,43 +50,34 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Manifest/Tuning Authority + Runner Event Replay Fixture Cutover`:
+Run the `PrehistoricRush RunnerStep Authority + ContactEvent Replay Fixture Cutover`:
 
 ```txt
-keep index.html and src/runtime.mjs thin
--> keep current browser loop visually playable
+preserve index.html and src/runtime.mjs
+-> preserve current visual Three.js/Rapier playable loop
 -> add prehistoric-rush-manifest-loader-kit
--> load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup
+-> load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json before runtime setup
 -> add prehistoric-rush-runtime-tuning-adapter-kit
--> map runner-tuning.json motion, terrain, camera, streaming, and rule fields into runtime setup
--> make inline tuning fallback-only
--> add prehistoric-rush-manifest-drift-diagnostics-kit
--> publish config load success, fallback use, manifest drift, scene alias drift, and tuning drift through diagnostics
+-> map manifest tuning into live runtime values
+-> mark inline tuning fallback-only
+-> publish manifest/tuning drift diagnostics
 -> add prehistoric-rush-scene-id-catalog-kit
--> assert menu, game, run-over, and win are the only canonical scene ids
+-> keep menu, game, run-over, and win canonical
 -> add prehistoric-rush-scene-result-alias-kit
--> make run-over canonical and fail compatibility-only
--> add prehistoric-rush-scene-authority-reducer-kit
--> replace direct app.scene mutation paths with sceneAuthority.dispatch(event)
--> add prehistoric-rush-scene-dispatch-result-kit
--> return accepted=false for unknown scene, invalid transition, duplicate transition, stale fixture event, and compatibility-only canonical write attempts
+-> normalize fail to run-over as compatibility-only alias
 -> add prehistoric-rush-action-frame-contract-kit
--> define ActionFrame fields: id, frame, time, scene, action, value, source, accepted, rejected, reason
--> add prehistoric-rush-action-acceptance-matrix-kit
--> route button, Enter, Space, left/right, boost, retry, menu, and run-again through ActionFrame validation
+-> route button and keyboard inputs through ActionFrame acceptance
 -> add prehistoric-rush-runner-step-result-kit
--> return per-tick movement delta, consumed actions, rejected actions, speed/yaw/jump changes, and diagnostics
+-> isolate speed, yaw, boost, jump, gravity, terrain sample, and distance updates into one reducer result
 -> add prehistoric-rush-runner-event-contract-kit
--> emit runner events for start, jump, boost, steering, chunk rebuild, pickup contact, hazard contact, win threshold, and scene request
--> add prehistoric-rush-runner-event-journal-kit
+-> emit deterministic runner events from step results
 -> add prehistoric-rush-contact-event-contract-kit
 -> convert hazard hit, shard pickup, and distance goal into ContactEvent records
 -> add prehistoric-rush-contact-result-snapshot-kit
--> snapshot lastContactEvent, impactEvents, pickupEvents, goalEvents, and pendingSceneRequest
--> expand PrehistoricRushHost into prehistoric-rush-gamehost-kit
--> expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getRunnerSnapshot, getContactSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and runSmoke
--> add DOM-free fixture scripts for tuning parity, scene alias, start, space-start, jump, rejected-jump, hazard-run-over, pickup, win, retry, menu, runner-event replay, and replay parity
--> defer terrain/render/raptor extraction until manifest/tuning, scene dispatch, runner event, and contact result smoke pass
+-> request scene transitions from contacts instead of mutating app.scene directly
+-> expand PrehistoricRushHost with diagnostics, snapshots, dispatch, smoke, and replay journal helpers
+-> add DOM-free fixture smoke for tuning parity, scene aliasing, start, jump, rejected jump, hazard run-over, pickup, win, retry, menu, runner-event replay, contact replay, and replay parity
+-> defer terrain/render/raptor/Rapier extraction until these fixtures pass
 ```
 
-Do not add new visible content first. Make manifest authority, tuning parity, runtime drift diagnostics, scene dispatch, runner event records, rejected input diagnostics, replayable intent, and smoke coverage explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
+Do not add new visible content first. Make manifest authority, tuning parity, runtime drift diagnostics, ActionFrame intake, RunnerStep results, ContactEvent records, scene dispatch results, replayable intent, and smoke coverage explicit first. Then improve route readability and hazard/pickup clarity through config-driven services.
