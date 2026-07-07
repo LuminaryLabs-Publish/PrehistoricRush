@@ -1,1 +1,1 @@
-import "./runtime-terrain-v4.mjs";
+import "./runtime-terrain-v6.mjs";
