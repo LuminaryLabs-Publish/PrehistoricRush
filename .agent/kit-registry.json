@@ -1,15 +1,15 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "registryVersion": "0.3.0",
-  "updatedAt": "2026-07-07T06:50:26-04:00",
-  "latestTracker": ".agent/trackers/2026-07-07T06-50-26-04-00/project-breakdown.md",
-  "purpose": "Track kit ownership, service surfaces, promotion state, manifest authority, diagnostics, and next cutover targets for the PrehistoricRush runner repo.",
+  "registryVersion": "0.4.0",
+  "updatedAt": "2026-07-07T08:00:48-04:00",
+  "latestTracker": ".agent/trackers/2026-07-07T08-00-48-04-00/project-breakdown.md",
+  "purpose": "Track kit ownership, service surfaces, promotion state, manifest authority, input intent, scene-flow authority, diagnostics, and next cutover targets for the PrehistoricRush runner repo.",
   "selectionPolicy": {
     "onlyOneRepoPerRun": true,
     "excludedRepos": [
       "LuminaryLabs-Publish/TheCavalryOfRome"
     ],
-    "selectionReason": "The central ledger showed LuminaryLabs-Publish/PhantomCommand as the latest eligible Publish breakdown at 2026-07-07T06:41:55-04:00, making PrehistoricRush the next eligible tracked repo in the rotation.",
+    "selectionReason": "The central ledger showed LuminaryLabs-Publish/PhantomCommand as the latest eligible Publish breakdown at 2026-07-07T07:49:39-04:00, making PrehistoricRush the next eligible tracked repo in the rotation.",
     "currentRepoRole": "thin publish shell for a NexusEngine-powered prehistoric infinite runner"
   },
   "currentRuntimeSummary": {
@@ -28,7 +28,8 @@
       "three@0.179.1 via jsDelivr",
       "@dimforge/rapier3d-compat@0.15.0 via jsDelivr",
       "rapier-physics-domain-kit via LuminaryLabs-Agents/NexusRealtime-ProtoKits CDN"
-    ]
+    ],
+    "validationSurface": "No package.json was found; current validation is static/source-level unless a smoke harness is added."
   },
   "repoShouldOwn": [
     "index.html",
@@ -50,7 +51,8 @@
     "manual sky drawing rules",
     "manual camera smoothing rules",
     "manual scene transition rules",
-    "monolithic inline tuning constants"
+    "monolithic inline tuning constants",
+    "ambiguous raw input semantics"
   ],
   "sourceOfTruthCutover": {
     "problem": "runner-tuning.json, game-scenes.json, scenes/game.json, kit-composition.json, and kit-cutover-inventory.json already define product intent, but src/runtime-terrain-v6.mjs still duplicates tuning and scene transition constants inline.",
@@ -62,9 +64,13 @@
       "surface loaded config status in PrehistoricRushHost.getDiagnostics()",
       "add tuning parity smoke coverage"
     ],
-    "canonicalNextSlice": "PrehistoricRush Config Authority + Behavior Smoke Cutover"
+    "canonicalNextSlice": "PrehistoricRush Manifest Loader + Input Intent Scene Flow Cutover"
   },
   "currentSourceFiles": [
+    {
+      "path": "index.html",
+      "role": "static browser shell and module entry mount"
+    },
     {
       "path": "src/runtime.mjs",
       "role": "thin module entry that imports the active runtime"
@@ -176,9 +182,10 @@
         "snapshot"
       ],
       "promotionBlockers": [
-        "extract local runner-motion service first",
+        "extract local runner-state service first",
         "load runner-tuning.json as source of truth",
         "normalize scene result naming",
+        "define explicit input intent frames",
         "define stable GameHost state shape",
         "add behavior smoke fixtures"
       ]
@@ -241,14 +248,20 @@
     {
       "id": "prehistoric-rush-manifest-loader-kit",
       "source": ["game-scenes.json", "scenes/*.json", "runner-tuning.json", "kit-composition.json", "kit-cutover-inventory.json"],
-      "services": ["loadSceneGraph", "loadRunnerTuning", "loadKitComposition", "loadCutoverInventory", "validateManifestShape", "publishConfigDiagnostics"],
+      "services": ["loadSceneGraph", "loadSceneFiles", "loadRunnerTuning", "loadKitComposition", "loadCutoverInventory", "validateManifestShape", "publishConfigDiagnostics"],
       "promotionState": "build-next"
     },
     {
       "id": "prehistoric-rush-scene-flow-kit",
       "source": ["game-scenes.json", "scenes/game.json", "src/runtime-terrain-v6.mjs"],
-      "services": ["transition", "startGame", "failRun", "winRun", "retryRun", "normalizeResultName"],
+      "services": ["getCurrentScene", "transition", "startGame", "requestRunOver", "requestWin", "retryRun", "normalizeResultName", "emitTransitionEvent"],
       "promotionState": "build-after-manifest-loader"
+    },
+    {
+      "id": "prehistoric-rush-input-intent-kit",
+      "source": ["src/runtime-terrain-v6.mjs", "scenes/game.json"],
+      "services": ["mapKeyboardEvent", "mapButtonEvent", "emitActionFrame", "clearOneShotActions", "guardSpaceDuringActiveRun", "publishInputDiagnostics"],
+      "promotionState": "build-with-scene-flow"
     },
     {
       "id": "prehistoric-rush-three-render-host-kit",
@@ -295,8 +308,8 @@
     {
       "id": "prehistoric-rush-raptor-rig-kit",
       "source": ["src/runtime-terrain-v6.mjs"],
-      "services": ["createRig", "createBodyVolumes", "createHead", "createTail", "createLegs", "createArms"],
-      "promotionState": "candidate-object-kit"
+      "services": ["createRig", "createBodyVolumes", "createHead", "createTail", "createLimbs", "createClaws", "createPlates"],
+      "promotionState": "keep-product-local-until-reusable"
     },
     {
       "id": "prehistoric-rush-raptor-pose-kit",
@@ -325,7 +338,7 @@
     {
       "id": "prehistoric-rush-hud-diagnostics-kit",
       "source": ["src/runtime-terrain-v6.mjs"],
-      "services": ["renderStatus", "setButtonLabel", "renderImportFallback", "renderKitStatus"],
+      "services": ["renderStatus", "setButtonLabel", "renderImportFallback", "renderKitStatus", "renderConfigStatus"],
       "promotionState": "map-to-core-ui-and-diagnostics"
     },
     {
@@ -345,6 +358,12 @@
       "source": ["runner-tuning.json", "src/runtime-terrain-v6.mjs"],
       "services": ["assertRuntimeUsesTuning", "assertSceneManifestNames", "assertFallbackOnlyConstants"],
       "promotionState": "build-with-manifest-loader"
+    },
+    {
+      "id": "prehistoric-rush-scripted-input-smoke-kit",
+      "source": ["target-tests", "prehistoric-rush-input-intent-kit", "prehistoric-rush-scene-flow-kit"],
+      "services": ["scriptStart", "scriptJump", "scriptBoost", "scriptShardPickup", "scriptRunOver", "scriptWin", "assertSpaceOnlyJumpsInGame"],
+      "promotionState": "build-with-input-intent"
     }
   ],
   "knownBlockers": [
@@ -358,46 +377,52 @@
     },
     {
       "id": "space-key-semantic-overlap",
-      "details": "Space starts/retries outside the game and jumps inside the game. Keep for now, but route through explicit input intents during service extraction."
+      "details": "Space starts/retries outside the game and jumps inside the game. Keep the UX if desired, but route through explicit input intents and prove Space only jumps while game is active."
     },
     {
       "id": "monolithic-runtime-ownership",
-      "details": "src/runtime-terrain-v6.mjs owns multiple domains and should be split into service seams."
+      "details": "src/runtime-terrain-v6.mjs owns shell, renderer, terrain, scatter, runner, contact, raptor, camera, HUD, physics bridge, and host state."
     },
     {
       "id": "partial-gamehost-surface",
-      "details": "PrehistoricRushHost.getState() exists, but getDiagnostics, getSceneSnapshot, getKitStatus, dispatch, and smoke hooks are still missing."
+      "details": "PrehistoricRushHost.getState() exists, but getDiagnostics, getSceneSnapshot, getKitStatus, dispatch, subscribe, and smoke hooks are still missing."
+    },
+    {
+      "id": "no-package-script-surface",
+      "details": "No package.json was found, so validation should start with static smoke or add a tiny script harness before claiming build/test coverage."
     }
   ],
   "nextCutover": {
-    "id": "prehistoric-rush-config-authority-behavior-smoke-cutover",
-    "label": "PrehistoricRush Config Authority + Behavior Smoke Cutover",
+    "id": "prehistoric-rush-manifest-loader-input-intent-scene-flow-cutover",
+    "label": "PrehistoricRush Manifest Loader + Input Intent Scene Flow Cutover",
     "orderedSteps": [
       "keep index.html and src/runtime.mjs thin",
       "add prehistoric-rush-manifest-loader-kit",
       "load runner-tuning.json, game-scenes.json, scenes/game.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup",
+      "publish config diagnostics and fallback reasons",
       "make inline tuning constants fallback-only",
       "normalize loss naming so run-over is canonical and fail is only a compatibility alias",
-      "add prehistoric-rush-scene-flow-kit",
-      "add prehistoric-rush-runner-state-kit",
-      "add terrain sampler and terrain stream services",
-      "add prop, pickup, and hazard scatter services",
-      "add contact bridge service",
-      "add raptor rig and pose services",
+      "add prehistoric-rush-input-intent-kit",
+      "map button, Enter, Space, A/D, arrows, and W/ArrowUp into explicit action frames",
+      "guarantee Space only emits jump while scene is game",
+      "add prehistoric-rush-scene-flow-kit for start, run-over, win, retry, and menu transitions",
+      "add prehistoric-rush-runner-state-kit fed by action frames and runner-tuning.json",
+      "split contact bridge enough to emit run-over, win, and pickup events",
       "promote inline host into prehistoric-rush-gamehost-kit",
-      "add getDiagnostics, getSceneSnapshot, getKitStatus, and behavior-smoke commands",
-      "add smoke fixtures for menu -> game, game -> run-over, game -> win, shard pickup, and tuning parity"
+      "add getDiagnostics, getSceneSnapshot, getKitStatus, dispatch, subscribe, and behavior-smoke commands",
+      "add scripted input smoke for start, jump, boost, shard pickup, forced run-over, forced win, and tuning parity"
     ],
     "acceptanceTargets": [
-      "npm run check, if available",
-      "npm run build, if available",
+      "static source check passes if a script is added",
       "PrehistoricRushHost.getState().scene starts as menu",
-      "start command or button transitions to game",
-      "run-over transition uses run-over everywhere, not fail",
-      "runner-tuning.json controls runtime speed, gravity, jump, camera, terrain, and streaming values",
-      "scene snapshot reports current scene, runner position, distance, shards, terrain chunks, physics status, and kit status",
-      "behavior smoke can force run-over and win without manual input",
-      "tuning parity smoke proves config values are consumed by the runtime"
+      "PrehistoricRushHost.getDiagnostics() reports config load status",
+      "runner-tuning.json controls motion, camera, terrain, and streaming values",
+      "scene transitions use run-over consistently",
+      "Space emits jump only while scene is game",
+      "button, Enter, and Space outside game route through explicit start intent",
+      "scripted action frames can start, jump, boost, collect, force run-over, and force win",
+      "scene snapshot reports scene, runner, distance, shards, terrain chunks, physics status, loaded config status, and kit status",
+      "behavior smoke proves menu -> game, game -> run-over, game -> win, shard pickup, and tuning parity"
     ]
   }
 }
