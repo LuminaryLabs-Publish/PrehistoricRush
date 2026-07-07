@@ -11,12 +11,12 @@ The product repo should stay thin. It should own the browser shell, scene manife
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T18-00-19-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T19-18-58-04-00/project-breakdown.md
 ```
 
-This run keeps the manifest drift and RunnerStep direction, but tightens the next implementation slice into **Action Dispatch Smoke Gate + Contact Replay Fixture Lock**.
+This run keeps the Action Dispatch / Contact Replay direction, but tightens the next implementation slice into **Runner Source Snapshot + Contact Smoke Authority Lock**.
 
-The runner is playable, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, contact resolution, result transitions, terrain streaming, visual rigging, camera, HUD, physics bridge, and partial host snapshots inline. The next pass should make manifest load status, scene alias normalization, ActionFrame intake, ActionResult journals, RunnerStepResult records, ContactEvent records, SceneDispatchResult records, and DOM-free replay parity explicit before any renderer, terrain, raptor, or Rapier extraction.
+The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, terrain streaming, scatter/collider/pickup generation, contact checks, result transitions, camera, HUD, physics bridge calls, and partial host snapshots inline. The next pass should make manifest load status, manifest drift, scene alias normalization, ActionFrame intake, ActionResult journals, RunnerSourceState snapshots, RunnerStepResult records, ContactEvent records, ContactResult snapshots, SceneDispatchResult records, and DOM-free replay parity explicit before any renderer, terrain, raptor, camera, or Rapier extraction.
 
 ## Kit registry
 
@@ -24,11 +24,12 @@ The runner is playable, but `src/runtime-terrain-v6.mjs` still owns live tuning,
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next Action Dispatch / Contact Replay fixture gate.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next Runner Source Snapshot / Contact Smoke authority gate.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T18-00-19-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T16-40-29-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T15-29-27-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T14-11-48-04-00/project-breakdown.md
@@ -52,27 +53,30 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Action Dispatch Smoke Gate + Contact Replay Fixture Lock`:
+Run the `PrehistoricRush Runner Source Snapshot + Contact Smoke Authority Lock`:
 
 ```txt
 preserve index.html
 preserve src/runtime.mjs
-preserve current visual runtime behavior
+preserve current visual Three.js/Rapier behavior
 load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json before setup()
-emit ManifestLoadStatus and ManifestDriftReport
-keep inline tuning as fallback-only until drift is visible
+emit ManifestLoadStatus
+emit ManifestDriftReport with live-vs-manifest tuning deltas
 normalize fail -> run-over through an explicit compatibility alias
+adapt runner-tuning.json into runtime tuning and keep inline tuning fallback-only
 add ActionFrame records for start, retry, menu, again, left, right, boost, jump, and future touch intents
-add ActionResult records with stable accepted/rejected reasons by scene
-add RunnerSourceState snapshot helpers
-wrap the current movement tick in RunnerStepResult without visible math changes first
-record jump-consumed, boost-active, terrain-rebuild-requested, distance-delta, and heading-delta facts
+add scene-scoped ActionAcceptanceMatrix rules
+add ActionResult records with stable accepted/rejected reasons
+add RunnerSourceState snapshot and hydrate helpers
+wrap current movement tick in RunnerStepResult without visible math changes first
+record jump-consumed, boost-active, distance-delta, heading-delta, and terrain-rebuild-requested facts
 emit RunnerEvent journal entries for movement, jump, boost, rebuild, pickup, impact, goal, and scene request
 emit ContactEvent records for hazard-hit, shard-pickup, and distance-goal
+emit ContactResult snapshots from ContactEvent reduction
 emit SceneDispatchResult records for run-over and win
 expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), and runSmoke(name)
 add DOM-free smoke fixtures for manifest load, tuning drift report, fail alias, start, retry, jump acceptance/rejection, hazard run-over, shard pickup, distance win, and replay parity
-defer terrain/render/raptor/Rapier extraction until source-lock smokes pass
+defer terrain/render/raptor/camera/Rapier extraction until source-lock smokes pass
 ```
 
-Do not add new visible content first. Make manifest authority, scene alias authority, runtime drift diagnostics, ActionFrame intake, ActionResult/RunnerStepResult/ContactEvent/SceneDispatchResult records, replayable intent, and smoke coverage explicit first. Then improve route readability and hazard/pickup clarity through config-driven services.
+Do not add new visible content first. Make manifest authority, scene alias authority, runtime drift diagnostics, ActionFrame intake, ActionResult/RunnerStepResult/ContactEvent/SceneDispatchResult records, replayable intent, and smoke coverage explicit first. Then improve route readability, hazard clarity, pickup clarity, camera polish, terrain density, and raptor animation through config-driven services.
