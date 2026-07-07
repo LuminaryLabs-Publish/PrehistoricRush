@@ -11,12 +11,12 @@ The product repo should stay thin. It should own the browser shell, scene manife
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T09-11-33-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T10-21-39-04-00/project-breakdown.md
 ```
 
-This run keeps the previous `Manifest Loader + Input Intent Scene Flow` direction, but sharpens the next slice into **Action Frame Replay + Host Diagnostics Contract**.
+This run keeps the prior action-replay / diagnostics direction, but narrows the next slice into **Scene Result Alias + ActionFrame Smoke Fixture**.
 
-The runner is playable, but the runtime still duplicates values that already exist in `runner-tuning.json`, has `fail` / `run-over` naming drift across scene manifests, maps Space to different scene-scoped meanings, does not journal accepted action frames, and exposes only a partial host surface through `PrehistoricRushHost.getState()`.
+The runner is playable, but `src/runtime-terrain-v6.mjs` still duplicates tuning already described by `runner-tuning.json`, `game-scenes.json` uses `run-over` while `scenes/game.json` still uses `fail`, Space has scene-dependent meaning, accepted inputs are not journaled, and `PrehistoricRushHost` exposes only a partial state surface.
 
 ## Kit registry
 
@@ -24,11 +24,12 @@ The runner is playable, but the runtime still duplicates values that already exi
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next action-replay/diagnostics cutover slice.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next scene-result/action-frame smoke cutover slice.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T09-11-33-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T08-00-48-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T06-50-26-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T05-39-22-04-00/project-breakdown.md
@@ -46,25 +47,26 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Action Frame Replay + Host Diagnostics Contract`:
+Run the `PrehistoricRush Scene Result Alias + ActionFrame Smoke Fixture Cutover`:
 
 ```txt
 keep index.html and src/runtime.mjs thin
 -> add prehistoric-rush-manifest-loader-kit
 -> load runner-tuning.json, game-scenes.json, scenes/game.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup
--> make inline tuning fallback-only and report each fallback in diagnostics
--> normalize run-over as canonical loss result and keep fail only as a compatibility alias
--> add prehistoric-rush-input-intent-kit
--> emit ActionFrame records for button, Enter, Space, A/D, arrows, W/ArrowUp, and touch controls
--> guarantee Space emits jump only while scene is game
+-> add prehistoric-rush-scene-result-alias-kit
+-> make run-over the canonical loss result
+-> accept fail only as a compatibility alias and report the alias in diagnostics
+-> add prehistoric-rush-action-frame-contract-kit
+-> define ActionFrame fields: frame, time, scene, action, value, source, accepted, rejected, reason
+-> add scene validity matrix for start, retry, menu, steer-left, steer-right, boost, jump, force-run-over, force-win, and force-pickup
+-> guarantee Space emits start outside game and jump only while scene is game
 -> add prehistoric-rush-action-frame-replay-kit
--> journal accepted action frames with frame, time, scene, action, value, and source
--> add replay smoke that can drive start, steer, boost, jump, shard pickup, forced run-over, and forced win
--> add prehistoric-rush-scene-flow-kit for start, run-over, win, retry, menu, and result aliasing
--> add prehistoric-rush-runner-state-kit fed by action frames and runner-tuning.json
--> split contact bridge enough to emit pickup, impact, run-over, and win events
+-> journal accepted frames and rejected frame diagnostics separately
+-> add prehistoric-rush-scripted-action-fixture-kit
+-> fixture scripts: start-from-menu, space-starts-menu, space-jumps-game, fail-alias-run-over, forced-pickup, forced-run-over, forced-win, replay-parity
 -> promote PrehistoricRushHost into prehistoric-rush-gamehost-kit
--> expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and smoke commands
+-> expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and runSmoke
+-> defer terrain/render/raptor extraction until action/result smoke passes
 ```
 
-Do not add new visible content first. Make runtime authority, replayable input intent, scene flow, diagnostics, and smoke coverage explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
+Do not add new visible content first. Make runtime authority, result aliases, replayable input intent, scene flow, diagnostics, and smoke coverage explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
