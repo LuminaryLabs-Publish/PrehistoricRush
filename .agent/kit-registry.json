@@ -1,15 +1,15 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "registryVersion": "0.9.0",
-  "updatedAt": "2026-07-07T14:11:48-04:00",
-  "latestTracker": ".agent/trackers/2026-07-07T14-11-48-04-00/project-breakdown.md",
-  "purpose": "Track kit ownership, service surfaces, promotion state, manifest/tuning authority, scene dispatch, runner event replay, contact result snapshots, diagnostics, smoke fixtures, and next cutover targets for the PrehistoricRush runner repo.",
+  "registryVersion": "1.0.0",
+  "updatedAt": "2026-07-07T15:29:27-04:00",
+  "latestTracker": ".agent/trackers/2026-07-07T15-29-27-04-00/project-breakdown.md",
+  "purpose": "Track kit ownership, service surfaces, promotion state, manifest/tuning authority, ActionFrame intake, RunnerStep results, ContactEvent replay, scene dispatch, host diagnostics, smoke fixtures, and next cutover targets for the PrehistoricRush runner repo.",
   "selectionPolicy": {
     "onlyOneRepoPerRun": true,
     "excludedRepos": [
       "LuminaryLabs-Publish/TheCavalryOfRome"
     ],
-    "selectionReason": "The central ledger showed PrehistoricRush as the oldest eligible tracked non-Cavalry Publish repo by latest review timestamp among the reviewed accessible Publish repos.",
+    "selectionReason": "The central ledger showed PrehistoricRush as the oldest eligible tracked non-Cavalry Publish repo by latest review timestamp among the checked accessible Publish repos.",
     "currentRepoRole": "thin publish shell for a NexusEngine-powered prehistoric infinite runner"
   },
   "currentRuntimeSummary": {
@@ -56,13 +56,15 @@
     "implicit hazard/pickup/win contact results"
   ],
   "sourceOfTruthCutover": {
-    "problem": "game-scenes.json, scenes/game.json, runner-tuning.json, kit-composition.json, and kit-cutover-inventory.json define product intent, but src/runtime-terrain-v6.mjs still duplicates live tuning, scene transitions, input semantics, contact outcomes, spawn budgets, and snapshot authority inline.",
+    "problem": "game-scenes.json, scenes/game.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json define product intent, but src/runtime-terrain-v6.mjs still duplicates live tuning, scene transitions, input semantics, contact outcomes, spawn budgets, and snapshot authority inline.",
     "driftObserved": [
       "runtime motion speed/max/boost/turn differs from runner-tuning.json base/max/boost/turn values",
       "runtime terrain chunk size, segments, and seed differ from runner-tuning.json terrain values",
       "game-scenes.json uses run-over as canonical loss scene while scenes/game.json still declares nextOnLoss as fail",
       "runtime win threshold is inline distance > 3600 instead of manifest-owned",
-      "runtime spawn counts and clear radius are inline instead of manifest-owned"
+      "runtime spawn counts and clear radius are inline instead of manifest-owned",
+      "runtime jump consumption is a raw boolean reset instead of an ActionFrame/RunnerStepResult fact",
+      "runtime hazard, pickup, and win outcomes mutate app.scene or runner state without durable ContactEvent records"
     ],
     "requiredFixes": [
       "load manifests before runtime setup",
@@ -72,10 +74,10 @@
       "route button, keyboard, and future touch input through ActionFrame records",
       "separate accepted action journal from rejected input diagnostics",
       "route start, retry, menu, run-over, win, and run-again through SceneDispatchResult records",
-      "route movement tick, hazard hit, shard pickup, and distance goal through RunnerEvent and ContactEvent records",
+      "route movement tick, hazard hit, shard pickup, and distance goal through RunnerStepResult, RunnerEvent, and ContactEvent records",
       "add replayable scripted fixture coverage before terrain/render/raptor extraction"
     ],
-    "canonicalNextSlice": "PrehistoricRush Manifest/Tuning Authority + Runner Event Replay Fixture Cutover"
+    "canonicalNextSlice": "PrehistoricRush RunnerStep Authority + ContactEvent Replay Fixture Cutover"
   },
   "currentSourceFiles": [
     { "path": "index.html", "role": "static browser shell and module entry mount" },
@@ -102,6 +104,7 @@
     "manifest-authority",
     "manifest-drift-diagnostics",
     "runner-tuning-authority",
+    "runtime-tuning-adapter",
     "scene-graph-authority",
     "scene-file-authority",
     "scene-id-catalog",
@@ -109,7 +112,6 @@
     "scene-authority-reducer",
     "scene-transition-request",
     "scene-dispatch-result-contract",
-    "scene-dispatch-rejection-policy",
     "scene-scoped-input-policy",
     "raw-keyboard-input",
     "button-input",
@@ -119,7 +121,9 @@
     "action-frame-acceptance-policy",
     "action-frame-rejection-policy",
     "action-frame-journal",
+    "runner-source-state",
     "runner-step-contract",
+    "runner-step-result-contract",
     "runner-event-contract",
     "runner-state-reducer",
     "runner-motion-policy",
@@ -156,8 +160,10 @@
     "tuning-parity-smoke",
     "scene-result-smoke",
     "action-acceptance-smoke",
+    "runner-step-smoke",
     "runner-event-replay-smoke",
     "contact-result-smoke",
+    "contact-replay-smoke",
     "replay-parity-smoke"
   ],
   "coreKitsTargeted": [
@@ -176,15 +182,44 @@
     {
       "id": "rapier-physics-domain-kit",
       "state": "used-live-from-cdn",
-      "services": ["initWorld", "install", "configure", "registerKinematicActor", "setActorTransform", "setFixedColliders", "step", "getSnapshot"]
+      "services": [
+        "initWorld",
+        "install",
+        "configure",
+        "registerKinematicActor",
+        "setActorTransform",
+        "setFixedColliders",
+        "step",
+        "getSnapshot"
+      ]
     }
   ],
   "missingProtoKits": [
     {
       "id": "run-movement-kit",
       "reason": "No current shared kit owns runner movement, jump buffer/coyote timing, speed ramp, boost, accepted action consumption, step results, and motion/animation descriptors as one reusable contract.",
-      "candidateServices": ["createRunnerController", "applyActionFrame", "applyInputIntent", "bufferJump", "resolveCoyoteWindow", "tickFixedStep", "emitRunnerStepResult", "emitMotionDescriptor", "emitAnimationPhaseDescriptor", "snapshot"],
-      "promotionBlockers": ["manifest and tuning authority", "scene result alias normalization", "ActionFrame acceptance metadata", "RunnerStepResult metadata", "RunnerEvent journal", "ContactEvent journal", "stable GameHost shape", "DOM-free behavior fixtures"]
+      "candidateServices": [
+        "createRunnerController",
+        "applyActionFrame",
+        "applyInputIntent",
+        "bufferJump",
+        "resolveCoyoteWindow",
+        "tickFixedStep",
+        "emitRunnerStepResult",
+        "emitMotionDescriptor",
+        "emitAnimationPhaseDescriptor",
+        "snapshot"
+      ],
+      "promotionBlockers": [
+        "manifest and tuning authority",
+        "scene result alias normalization",
+        "ActionFrame acceptance metadata",
+        "RunnerStepResult metadata",
+        "RunnerEvent journal",
+        "ContactEvent journal",
+        "stable GameHost shape",
+        "DOM-free behavior fixtures"
+      ]
     }
   ],
   "existingProtoKitFamiliesToUseFirst": [
@@ -202,125 +237,57 @@
     { "id": "prehistoric-rush-static-shell-kit", "source": ["index.html", "src/runtime.mjs"], "services": ["createRoot", "createHudPanel", "bindStartButton", "loadRuntime"], "promotionState": "keep-product-local" },
     { "id": "prehistoric-rush-runtime-entry-kit", "source": ["src/runtime.mjs"], "services": ["importActiveRuntime", "publishBootStatus"], "promotionState": "keep-product-local" },
     { "id": "prehistoric-rush-cdn-loader-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["loadThree", "loadRapier", "loadPhysicsKit", "publishImportFallbacks"], "promotionState": "extract-local-after-host-contract" },
-    { "id": "prehistoric-rush-manifest-loader-kit", "source": ["game-scenes.json", "scenes/*.json", "runner-tuning.json", "kit-composition.json", "kit-cutover-inventory.json"], "services": ["loadSceneGraph", "loadSceneFiles", "loadRunnerTuning", "loadKitComposition", "loadCutoverInventory", "validateManifestShape", "publishConfigDiagnostics"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-manifest-loader-kit", "source": ["game-scenes.json", "scenes/*.json", "runner-tuning.json", "kit-composition.json", "kit-cutover-inventory.json", "flock-generation.json"], "services": ["loadSceneGraph", "loadSceneFiles", "loadRunnerTuning", "loadKitComposition", "loadCutoverInventory", "loadFlockGeneration", "validateManifestShape", "publishConfigDiagnostics"], "promotionState": "build-next" },
     { "id": "prehistoric-rush-runtime-tuning-adapter-kit", "source": ["runner-tuning.json", "src/runtime-terrain-v6.mjs"], "services": ["mapManifestTuningToRuntimeTuning", "supplyFallbackTuning", "publishDriftReport"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-manifest-drift-diagnostics-kit", "source": ["runner-tuning.json", "game-scenes.json", "scenes/*.json", "src/runtime-terrain-v6.mjs"], "services": ["compareMotionTuning", "compareTerrainTuning", "compareSceneIds", "compareResultAliases", "publishDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-id-catalog-kit", "source": ["game-scenes.json", "scenes/*.json"], "services": ["listSceneIds", "assertKnownScene", "getEntryScene", "getResultSceneIds"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-result-alias-kit", "source": ["game-scenes.json", "scenes/game.json"], "services": ["resolveAlias", "assertCanonicalRunOver", "explainCompatibilityAlias", "publishAliasDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-authority-reducer-kit", "source": ["game-scenes.json", "scenes/*.json", "src/runtime-terrain-v6.mjs"], "services": ["createInitialSceneState", "getCurrentScene", "dispatch", "startGame", "retryRun", "returnToMenu", "requestRunOver", "requestWin", "runAgain", "snapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-dispatch-result-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["accept", "reject", "serialize", "reasonCode", "publishDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-action-frame-contract-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["fromKeyboardEvent", "fromButtonEvent", "fromTouchEvent", "fromFixtureCommand", "serialize", "accept", "reject", "snapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-action-acceptance-matrix-kit", "source": ["scenes/*.json", "src/runtime-terrain-v6.mjs"], "services": ["getSceneValidityMatrix", "validateSceneAction", "explainRejectedAction", "acceptStart", "acceptJump", "acceptSteer", "acceptBoost", "acceptRetry", "acceptMenu", "acceptForcePickup", "acceptForceRunOver", "acceptForceWin"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-runner-step-result-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["tickRunner", "returnAcceptedActions", "returnRejectedActions", "returnMovementDelta", "returnDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-runner-event-contract-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["fromMovementStep", "fromJump", "fromBoost", "fromSceneRequest", "fromContact", "serialize", "snapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-runner-event-journal-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["appendRunnerEvent", "snapshotRunnerEvents", "clear", "replay"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-action-frame-replay-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["appendAcceptedFrame", "appendContactEvent", "snapshotAcceptedFrames", "snapshotContactEvents", "replayAcceptedFrames", "assertReplayParity", "publishReplayDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-input-diagnostics-journal-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["appendRejectedFrame", "snapshotRejectedFrames", "clear", "publishInputDiagnostics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scripted-action-fixture-kit", "source": [".agent/trackers/*", "future smoke fixture"], "services": ["startFromMenu", "spaceStartsMenu", "spaceJumpsGame", "rejectedJumpOutsideGame", "hazardRunOver", "pickupShard", "distanceWin", "retryFromRunOver", "menuFromRunOver", "replayParity"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-contact-event-contract-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["fromHazardContact", "fromShardPickup", "fromDistanceGoal", "serialize", "accept", "reject", "snapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-contact-result-snapshot-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["serializeContacts", "serializeLastContactEvent", "serializePickupEvents", "serializeImpactEvents", "serializeGoalEvents", "serializePendingSceneRequest"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-three-render-host-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["createScene", "createRenderer", "createCamera", "createLights", "renderFrame", "resize"], "promotionState": "extract-local-after-manifest-runner-event-smoke" },
-    { "id": "prehistoric-rush-terrain-stream-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["createChunkGrid", "rebuildChunk", "updateAroundPlayer", "emitRenderDescriptors"], "promotionState": "extract-local-after-manifest-runner-event-smoke" },
-    { "id": "prehistoric-rush-terrain-sampler-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["hash", "heightAt", "colorForHeight", "sampleHeight"], "promotionState": "extract-local-after-manifest-runner-event-smoke" },
-    { "id": "prehistoric-rush-ground-collider-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["emitGroundColliderDescriptors", "setFixedColliders", "publishContactBudget"], "promotionState": "map-to-rapier-physics-domain-kit" },
-    { "id": "prehistoric-rush-prop-scatter-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["populateAroundPlayer", "scatterTrees", "scatterRocks", "scatterFossils", "clearNearPlayer", "recycleBehindRunner"], "promotionState": "map-to-existing-scatter-protokits" },
-    { "id": "prehistoric-rush-pickup-scatter-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["scatterShards", "resolveCollection", "emitPickupEvents", "publishPickupSnapshot"], "promotionState": "extract-local-after-manifest-runner-event-smoke" },
-    { "id": "prehistoric-rush-hazard-descriptor-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["emitHazardDescriptors", "assignHazardKinds", "publishHazardReadability"], "promotionState": "map-to-race-hazard-family" },
-    { "id": "prehistoric-rush-raptor-rig-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["createRig", "createBodyVolumes", "createTail", "createLimbs", "createHead"], "promotionState": "repo-local-visual-kit" },
-    { "id": "prehistoric-rush-raptor-pose-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["applyRunPose", "applyJumpPose", "applyTurnPose", "applySecondaryMotion"], "promotionState": "repo-local-visual-kit" },
-    { "id": "prehistoric-rush-runner-state-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["createState", "applyActionFrame", "tick", "snapshot", "persistBestDistance"], "promotionState": "extract-before-run-movement-protokit" },
-    { "id": "prehistoric-rush-contact-bridge-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["checkHazardCollision", "resolveShardPickup", "requestRunOver", "requestWin", "emitContactEvents"], "promotionState": "map-to-racer-contact-family" },
-    { "id": "prehistoric-rush-camera-follow-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["followRunner", "lookAhead", "applySpeedFov", "emitCameraSnapshot"], "promotionState": "map-to-core-camera-kit" },
-    { "id": "prehistoric-rush-hud-diagnostics-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["renderStatus", "setButtonLabel", "renderKitStatus", "renderReplayStatus", "renderContactStatus"], "promotionState": "keep-product-local" },
-    { "id": "prehistoric-rush-gamehost-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["getState", "getDiagnostics", "getSceneSnapshot", "getInputSnapshot", "getRunnerSnapshot", "getContactSnapshot", "getReplayJournal", "getKitStatus", "dispatch", "subscribe", "runSmoke"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-host-diagnostics-contract-kit", "source": ["src/runtime-terrain-v6.mjs", ".agent/trackers/*"], "services": ["publishConfigStatus", "publishSceneStatus", "publishInputStatus", "publishRunnerStatus", "publishContactStatus", "publishReplayStatus", "publishKitStatus"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-snapshot-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["serializeScene", "serializeRunner", "serializeTerrain", "serializePhysics", "serializeConfig", "serializeKitStatus"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-input-snapshot-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["serializeCurrentInput", "serializeAcceptedJournal", "serializeRejectedJournal"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-runner-snapshot-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["serializeRunnerState", "serializeRunnerStep", "serializeRunnerEvents", "serializeTuningSource", "serializeDriftStatus"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-replay-snapshot-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["serializeReplayState", "serializeReplayFixture", "serializeReplayResult"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-result-smoke-kit", "source": ["game-scenes.json", "scenes/game.json", "future smoke fixture"], "services": ["assertRunOverCanonical", "assertFailCompatibilityAlias", "assertResultTransitions"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-tuning-parity-smoke-kit", "source": ["runner-tuning.json", "future smoke fixture"], "services": ["assertRuntimeUsesManifestTuning", "assertFallbackOnlyInlineTuning", "assertDriftReport"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-scene-dispatch-smoke-kit", "source": ["future smoke fixture"], "services": ["assertAcceptedDispatch", "assertRejectedDispatch", "assertSceneSnapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-action-acceptance-smoke-kit", "source": ["future smoke fixture"], "services": ["assertAcceptedActions", "assertRejectedActions", "assertSpaceSceneSemantics"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-runner-event-replay-smoke-kit", "source": ["future smoke fixture"], "services": ["assertRunnerStepResults", "assertRunnerEventJournal", "replayRunnerEvents", "assertReplayParity"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-contact-result-smoke-kit", "source": ["future smoke fixture"], "services": ["assertHazardRunOver", "assertPickupNoSceneChange", "assertDistanceWin", "assertContactSnapshot"], "promotionState": "build-next" },
-    { "id": "prehistoric-rush-replay-parity-smoke-kit", "source": ["future smoke fixture"], "services": ["recordFixture", "replayFixture", "assertFinalScene", "assertFinalRunnerState", "assertFinalContactState"], "promotionState": "build-next" }
+    { "id": "prehistoric-rush-manifest-drift-diagnostics-kit", "source": ["runner-tuning.json", "game-scenes.json", "scenes/game.json", "src/runtime-terrain-v6.mjs"], "services": ["compareSceneAliases", "compareTuningValues", "publishFallbackStatus", "publishDriftDiagnostics"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-scene-id-catalog-kit", "source": ["game-scenes.json"], "services": ["listCanonicalSceneIds", "assertKnownScene", "reportUnknownScene"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-scene-result-alias-kit", "source": ["game-scenes.json", "scenes/game.json"], "services": ["normalizeLossAlias", "rejectCompatibilityAliasAsCanonicalWrite", "reportSceneAliasDrift"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-scene-authority-reducer-kit", "source": ["game-scenes.json", "src/runtime-terrain-v6.mjs"], "services": ["dispatchSceneEvent", "validateTransition", "returnSceneDispatchResult", "snapshotSceneState"], "promotionState": "build-after-manifest-loader" },
+    { "id": "prehistoric-rush-scene-dispatch-result-kit", "source": ["game-scenes.json", "src/runtime-terrain-v6.mjs"], "services": ["acceptedResult", "rejectedResult", "duplicateResult", "invalidTransitionResult", "aliasResult"], "promotionState": "build-after-scene-authority" },
+    { "id": "prehistoric-rush-action-frame-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["normalizeButtonInput", "normalizeKeyboardInput", "normalizeFixtureInput", "emitAcceptedActionFrame", "emitRejectedActionFrame"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-action-acceptance-matrix-kit", "source": ["src/runtime-terrain-v6.mjs", "game-scenes.json"], "services": ["validateSceneScopedAction", "rejectInvalidAction", "consumeJumpAction", "publishActionReason"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-runner-source-state-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["createInitialRunnerState", "snapshotRunnerState", "cloneRunnerStateForFixture"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-runner-step-result-kit", "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"], "services": ["applyAcceptedActions", "integrateSpeedYawJump", "sampleTerrain", "advanceDistance", "returnRunnerStepResult"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-runner-event-contract-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["emitStartEvent", "emitJumpEvent", "emitBoostEvent", "emitSteerEvent", "emitChunkRebuildEvent", "emitPickupEvent", "emitHazardEvent", "emitGoalEvent", "emitSceneRequestEvent"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-runner-event-journal-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["appendRunnerEvent", "queryRunnerEvents", "snapshotRunnerEventJournal", "replayRunnerEvents"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-contact-event-contract-kit", "source": ["src/runtime-terrain-v6.mjs", "rapier-physics-domain-kit"], "services": ["normalizeRapierContacts", "normalizeFallbackContacts", "emitHazardContact", "emitPickupContact", "emitGoalContact"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-contact-result-snapshot-kit", "source": ["src/runtime-terrain-v6.mjs"], "services": ["snapshotLastContactEvent", "snapshotImpactEvents", "snapshotPickupEvents", "snapshotGoalEvents", "snapshotPendingSceneRequest"], "promotionState": "build-next" },
+    { "id": "prehistoric-rush-gamehost-kit", "source": ["globalThis.PrehistoricRushHost"], "services": ["getState", "getDiagnostics", "getSceneSnapshot", "getInputSnapshot", "getRunnerSnapshot", "getContactSnapshot", "getReplayJournal", "getKitStatus", "dispatch", "runSmoke"], "promotionState": "build-after-result-contracts" },
+    { "id": "prehistoric-rush-dom-free-smoke-kit", "source": [".agent", "future test scripts"], "services": ["tuningParitySmoke", "sceneAliasSmoke", "actionAcceptanceSmoke", "runnerStepSmoke", "contactEventSmoke", "replayParitySmoke"], "promotionState": "build-after-host-contract" }
   ],
-  "knownBlockers": [
-    { "id": "runtime-tuning-duplication", "detail": "runner-tuning.json defines product tuning, but runtime-terrain-v6.mjs still owns inline speed, terrain, spawn, and win constants." },
-    { "id": "runtime-manifest-drift", "detail": "runtime values currently differ from runner-tuning.json for motion speed, max speed, boost speed, turn rate, terrain chunk size, terrain segments, and seed shape." },
-    { "id": "scene-result-name-mismatch", "detail": "game-scenes.json routes game:runOver to run-over, while scenes/game.json still says nextOnLoss: fail." },
-    { "id": "scene-dispatch-gap", "detail": "Runtime mutates app.scene directly instead of returning explicit accepted/rejected SceneDispatchResult records." },
-    { "id": "runner-step-result-gap", "detail": "Runner movement mutates x, y, z, jumpY, speed, yaw, distance, grounded, and best without a RunnerStepResult." },
-    { "id": "contact-result-gap", "detail": "Hazard, pickup, and win checks mutate state directly without ContactEvent or ContactResult records." },
-    { "id": "space-key-semantic-overlap", "detail": "Space starts outside active gameplay and jumps inside gameplay; this must be routed through scene-scoped ActionFrame records." },
-    { "id": "action-frame-validity-gap", "detail": "Input is live boolean state with no accepted/rejected action-frame contract." },
-    { "id": "action-replay-gap", "detail": "Accepted input, runner steps, and contact events are not journaled, blocking deterministic behavior smoke and future run-movement-kit promotion." },
-    { "id": "monolithic-runtime-ownership", "detail": "runtime-terrain-v6.mjs owns shell, renderer, terrain, scatter, runner, contact, raptor, camera, HUD, physics bridge, and host state." },
-    { "id": "partial-gamehost-surface", "detail": "PrehistoricRushHost.getState() exists, but stable diagnostics, snapshots, replay, kit status, dispatch, subscribe, and smoke commands are missing." }
-  ],
-  "nextRecommendedSlice": {
-    "title": "PrehistoricRush Manifest/Tuning Authority + Runner Event Replay Fixture Cutover",
-    "steps": [
-      "keep index.html and src/runtime.mjs thin",
-      "keep current browser loop visually playable",
-      "add prehistoric-rush-manifest-loader-kit",
-      "load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup",
-      "add prehistoric-rush-runtime-tuning-adapter-kit",
-      "map runner-tuning.json motion, terrain, camera, streaming, and rule fields into runtime setup",
-      "make inline tuning fallback-only",
-      "add prehistoric-rush-manifest-drift-diagnostics-kit",
-      "publish config load success, fallback use, manifest drift, scene alias drift, and tuning drift through diagnostics",
-      "add prehistoric-rush-scene-id-catalog-kit",
-      "assert menu, game, run-over, and win are the only canonical scene ids",
-      "add prehistoric-rush-scene-result-alias-kit",
-      "make run-over canonical and fail compatibility-only",
-      "add prehistoric-rush-scene-authority-reducer-kit",
-      "replace direct app.scene mutation paths with sceneAuthority.dispatch(event)",
-      "add prehistoric-rush-scene-dispatch-result-kit",
-      "return accepted=false for unknown scene, invalid transition, duplicate transition, stale fixture event, and compatibility-only canonical write attempts",
-      "add prehistoric-rush-action-frame-contract-kit",
-      "define ActionFrame fields: id, frame, time, scene, action, value, source, accepted, rejected, reason",
-      "add prehistoric-rush-action-acceptance-matrix-kit",
-      "route button, Enter, Space, left/right, boost, retry, menu, and run-again through ActionFrame validation",
-      "add prehistoric-rush-runner-step-result-kit",
-      "return per-tick movement delta, consumed actions, rejected actions, speed/yaw/jump changes, and diagnostics",
-      "add prehistoric-rush-runner-event-contract-kit",
-      "emit runner events for start, jump, boost, steering, chunk rebuild, pickup contact, hazard contact, win threshold, and scene request",
-      "add prehistoric-rush-runner-event-journal-kit",
-      "add prehistoric-rush-contact-event-contract-kit",
+  "nextVerticalSlice": {
+    "id": "PrehistoricRush RunnerStep Authority + ContactEvent Replay Fixture Cutover",
+    "buildOrder": [
+      "preserve index.html and src/runtime.mjs",
+      "preserve current visual Three.js/Rapier playable loop",
+      "load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json before runtime setup",
+      "map manifest tuning into live runtime values",
+      "mark inline tuning fallback-only",
+      "publish manifest/tuning drift diagnostics",
+      "keep menu, game, run-over, and win canonical",
+      "normalize fail to run-over as compatibility-only alias",
+      "route button and keyboard inputs through ActionFrame acceptance",
+      "isolate speed, yaw, boost, jump, gravity, terrain sample, and distance updates into RunnerStepResult",
+      "emit deterministic RunnerEvent records from step results",
       "convert hazard hit, shard pickup, and distance goal into ContactEvent records",
-      "add prehistoric-rush-contact-result-snapshot-kit",
-      "snapshot lastContactEvent, impactEvents, pickupEvents, goalEvents, and pendingSceneRequest",
-      "expand PrehistoricRushHost into prehistoric-rush-gamehost-kit",
-      "expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getRunnerSnapshot, getContactSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and runSmoke",
-      "add DOM-free fixture scripts for tuning parity, scene alias, start, space-start, jump, rejected-jump, hazard-run-over, pickup, win, retry, menu, runner-event replay, and replay parity",
-      "defer terrain/render/raptor extraction until manifest/tuning, scene dispatch, runner event, and contact result smoke pass"
+      "request scene transitions from contacts instead of mutating app.scene directly",
+      "expand PrehistoricRushHost with diagnostics, snapshots, dispatch, smoke, and replay journal helpers",
+      "add DOM-free fixture smoke for tuning parity, scene aliasing, start, jump, rejected jump, hazard run-over, pickup, win, retry, menu, runner-event replay, contact replay, and replay parity",
+      "defer terrain/render/raptor/Rapier extraction until fixtures pass"
+    ],
+    "defer": [
+      "terrain streaming extraction",
+      "render adapter extraction",
+      "raptor rig extraction",
+      "Rapier bridge extraction",
+      "new visible content",
+      "mobile controls",
+      "save/load"
     ]
   },
-  "acceptanceTargets": [
-    "Existing browser loop remains visually playable",
-    "PrehistoricRushHost.getState().scene starts as menu",
-    "Scene ids are normalized to menu, game, run-over, and win",
-    "fail is accepted only as compatibility alias and never becomes the canonical scene id",
-    "runner-tuning.json is the source of truth for motion, camera, terrain, streaming, and rule fields",
-    "inline tuning is fallback-only and any fallback use appears in diagnostics",
-    "button, Enter, and Space outside game route through explicit accepted start ActionFrame records",
-    "Space emits jump only while scene is game",
-    "left/right/boost emit accepted gameplay ActionFrames only while scene is game",
-    "invalid scene/action pairs emit stable rejected ActionFrame diagnostics",
-    "start, retry, menu, run-over, win, and run-again route through SceneDispatchResult records",
-    "hazard hit, shard pickup, and distance goal create ContactEvent records before scene changes",
-    "RunnerStepResult exposes movement delta, consumed action count, rejected action count, and diagnostics",
-    "RunnerEvent journal can be replayed in a DOM-free fixture",
-    "PrehistoricRushHost exposes stable diagnostics, scene, input, runner, contact, replay, and kit-status snapshots",
-    "DOM-free fixture proves tuning parity, scene aliasing, accepted/rejected actions, hazard run-over, pickup, win, retry, and replay parity",
-    "terrain, renderer, raptor rig, and Rapier extraction remain deferred until fixture parity passes"
-  ],
-  "lastDocumentationRun": {
-    "timestamp": "2026-07-07T14:11:48-04:00",
-    "tracker": ".agent/trackers/2026-07-07T14-11-48-04-00/project-breakdown.md",
+  "validationNotes": {
     "runtimeSourceChanged": false,
-    "localTestsRun": false
+    "localBuildOrSmokeRun": false,
+    "recommendedFirstValidation": "DOM-free manifest/tuning and ActionFrame fixture scripts before browser regression work"
   }
 }
