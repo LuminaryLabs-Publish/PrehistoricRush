@@ -11,12 +11,12 @@ The product repo should stay thin. It should own the browser shell, scene manife
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T11-29-07-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T13-01-09-04-00/project-breakdown.md
 ```
 
-This run keeps the action-frame / diagnostics direction, but narrows the next slice into **Manifest Authority + Action Acceptance Fixture**.
+This run keeps the manifest/action authority direction, but narrows the next slice into **Scene Authority Dispatch + Contact Result Snapshot Fixture**.
 
-The runner is playable, but `src/runtime-terrain-v6.mjs` still owns manifest loading assumptions, inline tuning, raw input booleans, scene transition requests, contact result transitions, accepted input behavior, rejected input behavior, and the partial `PrehistoricRushHost` snapshot. The next work should create manifest authority and explicit action acceptance before extracting terrain, render, or raptor systems.
+The runner is playable, but `src/runtime-terrain-v6.mjs` still mutates `app.scene` directly for start, run-over, and win; collision and pickup checks mutate state directly; accepted input is not replay-journaled; contact outcomes have no explicit event/result record; and `PrehistoricRushHost` exposes only a partial state snapshot. The next work should make scene dispatch and contact results explicit before terrain, render, raptor, or Rapier extraction.
 
 ## Kit registry
 
@@ -24,11 +24,12 @@ The runner is playable, but `src/runtime-terrain-v6.mjs` still owns manifest loa
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next manifest/action-acceptance fixture cutover slice.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next scene-dispatch/contact-result fixture cutover slice.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T11-29-07-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T10-21-39-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T09-11-33-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T08-00-48-04-00/project-breakdown.md
@@ -47,27 +48,36 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Manifest Authority + Action Acceptance Fixture Cutover`:
+Run the `PrehistoricRush Scene Authority Dispatch + Contact Result Snapshot Fixture Cutover`:
 
 ```txt
 keep index.html and src/runtime.mjs thin
+-> keep current browser loop visually playable
 -> add prehistoric-rush-manifest-loader-kit
 -> load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup
--> report config load success, fallback use, and manifest drift through diagnostics
+-> report config load success, fallback use, manifest drift, and tuning drift through diagnostics
+-> add prehistoric-rush-scene-id-catalog-kit
+-> assert menu, game, run-over, and win are the only canonical scene ids
 -> add prehistoric-rush-scene-result-alias-kit
--> make run-over the canonical loss result
--> accept fail only as a compatibility alias and report the alias in diagnostics
+-> make run-over canonical and fail compatibility-only
+-> add prehistoric-rush-scene-authority-reducer-kit
+-> replace direct app.scene mutation paths with sceneAuthority.dispatch(event)
+-> add prehistoric-rush-scene-dispatch-result-kit
+-> return accepted=false for unknown scene, invalid transition, duplicate transition, and stale fixture event
 -> add prehistoric-rush-action-frame-contract-kit
--> define ActionFrame fields: frame, time, scene, action, value, source, accepted, rejected, reason
+-> define ActionFrame fields: id, frame, time, scene, action, value, source, accepted, rejected, reason
 -> add prehistoric-rush-action-acceptance-matrix-kit
--> explicitly accept/reject actions by scene
--> guarantee Space emits start only outside game and jump only in game
--> journal accepted frames separately from rejected diagnostics
--> add prehistoric-rush-scripted-action-fixture-kit
--> fixture scripts: start-from-menu, space-starts-menu, space-jumps-game, rejected-jump-outside-game, retry-from-run-over, menu-from-run-over, forced-pickup, forced-run-over, forced-win, replay-parity
--> promote PrehistoricRushHost into prehistoric-rush-gamehost-kit
--> expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and runSmoke
--> defer terrain/render/raptor extraction until action acceptance and replay smoke pass
+-> route button, Enter, Space, left/right, boost, retry, menu, and run-again through ActionFrame validation
+-> add prehistoric-rush-contact-event-contract-kit
+-> convert hazard hit, shard pickup, and distance goal into ContactEvent records
+-> add prehistoric-rush-contact-result-snapshot-kit
+-> snapshot lastContactEvent, impactEvents, pickupEvents, goalEvents, and pendingSceneRequest
+-> add accepted ActionFrame and ContactEvent journals
+-> add rejected action and rejected dispatch diagnostics
+-> expand PrehistoricRushHost into prehistoric-rush-gamehost-kit
+-> expose getDiagnostics, getSceneSnapshot, getInputSnapshot, getContactSnapshot, getReplayJournal, getKitStatus, dispatch, subscribe, and runSmoke
+-> add DOM-free fixture scripts for start, space-start, jump, rejected-jump, hazard-run-over, pickup, win, retry, menu, and replay parity
+-> defer terrain/render/raptor extraction until scene dispatch and contact result smoke pass
 ```
 
-Do not add new visible content first. Make runtime authority, action acceptance, rejected input diagnostics, replayable intent, scene flow, and smoke coverage explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
+Do not add new visible content first. Make runtime authority, scene dispatch, contact result records, rejected input diagnostics, replayable intent, and smoke coverage explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
