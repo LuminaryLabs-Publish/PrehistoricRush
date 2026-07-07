@@ -11,10 +11,12 @@ The product repo should stay thin. It should own the browser shell, scene manife
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T05-39-22-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T06-50-26-04-00/project-breakdown.md
 ```
 
-This run re-confirms that `src/runtime-terrain-v6.mjs` is the main extraction target. The runner is playable, but runtime tuning, scene transition names, terrain streaming, scatter, runner motion, raptor pose, contact, camera, HUD, and GameHost diagnostics still need service seams.
+This run re-confirms that `src/runtime-terrain-v6.mjs` is the main extraction target, but sharpens the next slice from general service extraction to **Config Authority + Behavior Smoke**.
+
+The runner is playable, but the runtime still duplicates values that already exist in `runner-tuning.json`, still has `fail` / `run-over` naming drift across scene manifests, and still exposes only a partial host surface through `PrehistoricRushHost.getState()`.
 
 ## Kit registry
 
@@ -22,11 +24,12 @@ This run re-confirms that `src/runtime-terrain-v6.mjs` is the main extraction ta
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, existing ProtoKit families to consume first, the missing `run-movement-kit`, repo-local extraction candidates, service ownership, known blockers, and the next cutover slice.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next config-authority cutover slice.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T05-39-22-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T04-30-19-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T03-20-27-04-00/project-breakdown.md
 ```
@@ -42,4 +45,17 @@ The registry tracks current core-kit targets, existing ProtoKit families to cons
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Tuning Source of Truth + Service Extraction Cutover`: keep the current playable runner behavior stable, add a manifest/tuning loader, make `runner-tuning.json` the runtime source of truth, normalize `fail`/`run-over` scene naming, split `src/runtime-terrain-v6.mjs` into terrain, scatter, runner-motion, contact, raptor, camera, UI, and GameHost services, then add behavior smoke fixtures for start, run-over, win, shard pickup, and config parity.
+Run the `PrehistoricRush Config Authority + Behavior Smoke Cutover`:
+
+```txt
+keep index.html and src/runtime.mjs thin
+-> add prehistoric-rush-manifest-loader-kit
+-> load runner-tuning.json, game-scenes.json, scenes/game.json, kit-composition.json, and kit-cutover-inventory.json before runtime setup
+-> make inline tuning constants fallback-only
+-> normalize loss naming so run-over is canonical and fail is only a compatibility alias
+-> add scene-flow, runner-state, terrain, scatter, contact, raptor, camera, HUD, and GameHost service seams
+-> add getDiagnostics, getSceneSnapshot, getKitStatus, and behavior-smoke commands
+-> add smoke fixtures for start, run-over, win, shard pickup, and tuning parity
+```
+
+Do not add new visible content first. Make runtime authority explicit first, then improve route readability and hazard/pickup clarity through config-driven services.
