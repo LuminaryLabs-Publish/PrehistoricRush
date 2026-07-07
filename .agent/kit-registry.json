@@ -1,7 +1,8 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "registryVersion": "0.1.0",
-  "updatedAt": "2026-07-07T04:30:19-04:00",
+  "registryVersion": "0.2.0",
+  "updatedAt": "2026-07-07T05:39:22-04:00",
+  "latestTracker": ".agent/trackers/2026-07-07T05-39-22-04-00/project-breakdown.md",
   "purpose": "Track kit ownership, service surfaces, promotion state, and next cutover targets for the PrehistoricRush runner repo.",
   "selectionPolicy": {
     "onlyOneRepoPerRun": true,
@@ -9,6 +10,18 @@
       "LuminaryLabs-Publish/TheCavalryOfRome"
     ],
     "currentRepoRole": "thin publish shell for a NexusEngine-powered prehistoric infinite runner"
+  },
+  "currentRuntimeSummary": {
+    "entry": "index.html -> src/runtime.mjs -> src/runtime-terrain-v6.mjs",
+    "debugHost": "globalThis.PrehistoricRushHost",
+    "currentRenderer": "three-terrain-v6-raptor",
+    "currentLoop": [
+      "menu",
+      "game",
+      "run-over",
+      "win"
+    ],
+    "mainExtractionTarget": "src/runtime-terrain-v6.mjs"
   },
   "repoShouldOwn": [
     "index.html",
@@ -30,6 +43,16 @@
     "manual camera smoothing rules",
     "manual scene transition rules"
   ],
+  "sourceOfTruthCutover": {
+    "problem": "runner-tuning.json and scene manifests already define product intent, but src/runtime-terrain-v6.mjs still duplicates tuning and scene transition constants inline.",
+    "requiredFixes": [
+      "load runner-tuning.json before runtime setup",
+      "load game-scenes.json and scenes/game.json before scene transitions",
+      "normalize nextOnLoss from fail to run-over or add a compatibility alias",
+      "make inline tuning constants fallback-only",
+      "surface loaded config status in PrehistoricRushHost.getDiagnostics()"
+    ]
+  },
   "currentSourceFiles": [
     {
       "path": "src/runtime.mjs",
@@ -49,7 +72,7 @@
     },
     {
       "path": "runner-tuning.json",
-      "role": "movement, camera, terrain, streaming, and generation safety tuning"
+      "role": "movement, camera, terrain, streaming, and generation safety tuning source of truth"
     },
     {
       "path": "kit-composition.json",
@@ -133,10 +156,17 @@
       "state": "targeted-by-manifest"
     }
   ],
+  "existingProtoKits": [
+    {
+      "id": "rapier-physics-domain-kit",
+      "state": "used-live-from-cdn",
+      "services": ["initWorld", "install", "configure", "registerKinematicActor", "setActorTransform", "setFixedColliders", "step", "getSnapshot"]
+    }
+  ],
   "missingProtoKits": [
     {
       "id": "run-movement-kit",
-      "reason": "No current shared kit owns lane runner movement, jump buffer, coyote timing, speed ramp, boost, and motion/animation descriptors as one reusable contract.",
+      "reason": "No current shared kit owns lane/free-runner movement, jump buffer, coyote timing, speed ramp, boost, and motion/animation descriptors as one reusable contract.",
       "candidateServices": [
         "createRunnerController",
         "applyInputIntent",
@@ -149,6 +179,7 @@
       ],
       "promotionBlockers": [
         "extract local runner-motion service first",
+        "load runner-tuning.json as source of truth",
         "normalize scene result naming",
         "define stable GameHost state shape",
         "add behavior smoke fixtures"
@@ -211,19 +242,25 @@
     },
     {
       "id": "prehistoric-rush-manifest-loader-kit",
-      "source": ["game-scenes.json", "scenes/*.json", "runner-tuning.json"],
-      "services": ["loadSceneGraph", "loadRunnerTuning", "loadKitComposition", "validateManifestShape"],
-      "promotionState": "candidate-local-service"
+      "source": ["game-scenes.json", "scenes/*.json", "runner-tuning.json", "kit-composition.json", "kit-cutover-inventory.json"],
+      "services": ["loadSceneGraph", "loadRunnerTuning", "loadKitComposition", "loadCutoverInventory", "validateManifestShape", "publishConfigDiagnostics"],
+      "promotionState": "build-next"
     },
     {
       "id": "prehistoric-rush-scene-flow-kit",
-      "source": ["game-scenes.json", "scenes/game.json"],
-      "services": ["transition", "startGame", "failRun", "winRun", "retryRun"],
-      "promotionState": "defer-until-scene-name-mismatch-fixed"
+      "source": ["game-scenes.json", "scenes/game.json", "src/runtime-terrain-v6.mjs"],
+      "services": ["transition", "startGame", "failRun", "winRun", "retryRun", "normalizeResultName"],
+      "promotionState": "build-after-manifest-loader"
+    },
+    {
+      "id": "prehistoric-rush-three-render-host-kit",
+      "source": ["src/runtime-terrain-v6.mjs"],
+      "services": ["createScene", "createRenderer", "createCamera", "createLights", "renderFrame", "resize"],
+      "promotionState": "extract-local-first"
     },
     {
       "id": "prehistoric-rush-terrain-stream-kit",
-      "source": ["src/runtime-terrain-v6.mjs"],
+      "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"],
       "services": ["createChunkGrid", "rebuildChunk", "updateAroundPlayer", "emitRenderDescriptors"],
       "promotionState": "extract-local-first"
     },
@@ -232,6 +269,12 @@
       "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"],
       "services": ["hash", "heightAt", "colorForHeight", "sampleHeight"],
       "promotionState": "extract-local-first"
+    },
+    {
+      "id": "prehistoric-rush-ground-collider-kit",
+      "source": ["src/runtime-terrain-v6.mjs"],
+      "services": ["emitGroundColliderDescriptors", "setFixedColliders", "publishContactBudget"],
+      "promotionState": "map-to-rapier-physics-domain-kit"
     },
     {
       "id": "prehistoric-rush-prop-scatter-kit",
@@ -244,6 +287,12 @@
       "source": ["src/runtime-terrain-v6.mjs"],
       "services": ["scatterShards", "emitPickupDescriptors", "resolveShardCollection"],
       "promotionState": "extract-local-first"
+    },
+    {
+      "id": "prehistoric-rush-hazard-descriptor-kit",
+      "source": ["src/runtime-terrain-v6.mjs"],
+      "services": ["emitHazardDescriptors", "tagHazardKinds", "publishHazardReadability"],
+      "promotionState": "map-to-race-hazard-family"
     },
     {
       "id": "prehistoric-rush-raptor-rig-kit",
@@ -260,7 +309,7 @@
     {
       "id": "prehistoric-rush-runner-state-kit",
       "source": ["src/runtime-terrain-v6.mjs", "runner-tuning.json"],
-      "services": ["createRunnerState", "updateForwardSpeed", "updateJump", "advancePosition", "snapshot"],
+      "services": ["createRunnerState", "applyInputIntent", "updateForwardSpeed", "updateJump", "advancePosition", "snapshot"],
       "promotionState": "feed-run-movement-kit"
     },
     {
@@ -286,19 +335,25 @@
       "source": ["src/runtime-terrain-v6.mjs"],
       "services": ["getState", "getDiagnostics", "getSceneSnapshot", "getKitStatus"],
       "promotionState": "required-before-behavior-smoke-tests"
+    },
+    {
+      "id": "prehistoric-rush-behavior-smoke-kit",
+      "source": ["future tests"],
+      "services": ["forceStart", "forceRunOver", "forceWin", "collectShardFixture", "assertTuningLoaded"],
+      "promotionState": "build-after-gamehost"
     }
   ],
   "knownIssues": [
     {
       "id": "scene-result-name-mismatch",
       "detail": "game-scenes.json maps game:runOver to run-over, while scenes/game.json uses nextOnLoss: fail.",
-      "priority": "high",
-      "recommendedFix": "Normalize result names before extracting scene-flow services."
+      "priority": "critical",
+      "recommendedFix": "Normalize result names before extracting scene-flow services. Prefer run-over as canonical."
     },
     {
       "id": "runtime-tuning-duplication",
-      "detail": "src/runtime-terrain-v6.mjs has inline tuning while runner-tuning.json also defines movement, camera, terrain, and streaming values.",
-      "priority": "high",
+      "detail": "src/runtime-terrain-v6.mjs has inline tuning while runner-tuning.json also defines movement, camera, terrain, streaming, and rules values.",
+      "priority": "critical",
       "recommendedFix": "Load runner-tuning.json into runtime services and keep inline constants only as fallback defaults."
     },
     {
@@ -306,18 +361,28 @@
       "detail": "src/runtime-terrain-v6.mjs owns too many reusable domains.",
       "priority": "critical",
       "recommendedFix": "Extract services without changing behavior, then promote stable contracts into core kits or ProtoKits."
+    },
+    {
+      "id": "partial-gamehost-surface",
+      "detail": "PrehistoricRushHost.getState() exists, but diagnostics, scene snapshots, and kit status are not yet stable enough for behavior smoke gates.",
+      "priority": "high",
+      "recommendedFix": "Promote the inline host into prehistoric-rush-gamehost-kit before adding smoke fixtures."
     }
   ],
   "nextRecommendedSlice": {
-    "id": "prehistoric-rush-kit-registry-cutover-slice",
+    "id": "prehistoric-rush-tuning-source-of-truth-service-extraction-cutover",
     "steps": [
       "Keep index.html and src/runtime.mjs thin.",
-      "Keep current runtime behavior stable during extraction.",
-      "Add local services for terrain stream, terrain sampling, runner motion, scatter stream, raptor pose, contact bridge, and GameHost snapshots.",
-      "Load runner-tuning.json instead of duplicating tuning constants.",
-      "Normalize scene result names between game-scenes.json and scenes/game.json.",
-      "Add behavior smoke fixtures for start -> run-over and start -> win.",
-      "Only create run-movement-kit after the local runner-motion service contract is stable."
+      "Add a manifest/tuning loader service that loads runner-tuning.json, game-scenes.json, scenes/game.json, kit-composition.json, and kit-cutover-inventory.json.",
+      "Replace inline tuning constants with loaded runner-tuning values, with defaults only as fallback.",
+      "Normalize scene result naming so loss is consistently run-over.",
+      "Extract terrain sampling and terrain streaming into local source services.",
+      "Extract scatter population into prop, pickup, and hazard services.",
+      "Extract runner motion into a local runner-state service that can feed future run-movement-kit promotion.",
+      "Extract contact/pickup/result logic into a contact bridge service.",
+      "Extract raptor rig creation and pose animation into object/animation services.",
+      "Promote inline GameHost into prehistoric-rush-gamehost-kit with getState, getDiagnostics, getSceneSnapshot, and getKitStatus.",
+      "Add smoke fixtures for menu -> game, game -> run-over, game -> win, shard collection, and tuning-load parity."
     ]
   }
 }
