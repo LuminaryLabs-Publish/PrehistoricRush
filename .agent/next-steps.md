@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T14:51:11-04:00`
+**Updated:** `2026-07-08T16-40-56-04-00`
 
 ## Next safe ledge
 
-Build the presentation event host wire map and DOM-free fixture gate without changing the visible route.
+Build the source-file manifest and host presentation projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Event Host Wire Map + Fixture Gate
+PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate
 ```
 
 Preserve the current game first:
@@ -18,7 +18,7 @@ preserve src/runtime.mjs
 preserve src/game.js route composition
 preserve current Three.js/Rapier look and feel
 preserve current PrehistoricRushComposition.snapshot()
-preserve current PrehistoricRushHost.getState()
+preserve current PrehistoricRushHost.getState() existing fields
 preserve current camera distance/HUD readability pass visually
 preserve menu -> game -> run-over -> win -> menu scene flow
 ```
@@ -35,9 +35,10 @@ create CameraFrameRequest from camera-domain-kit descriptor + RunnerSourceState
 create HudFrameRequest from hud-domain-kit descriptor + RunnerSourceState
 create ContactResultSnapshot from hazard and pickup decisions
 create SceneDispatchResult from menu/game/run-over/win transitions
+create RenderReadback from renderer/camera/HUD/dino consumption state
 append PresentationFrameRecord
 surface presentation records through host diagnostics
-add DOM-free smoke fixtures for the event, contact, scene, and presentation chain
+add DOM-free smoke fixtures for the event, contact, scene, render, and presentation chain
 ```
 
 ## Implementation checklist
@@ -50,10 +51,10 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 - [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
 - [ ] Add `src/presentation/contact-result-snapshot.js` with pure hazard and pickup result projectors.
 - [ ] Add `src/presentation/scene-dispatch-result.js` with pure menu/game/run-over/win transition records.
+- [ ] Add `src/presentation/render-readback.js` with a minimal render-readback projector for renderer/camera/HUD/dino consumption state.
 - [ ] Add `src/presentation/presentation-frame-record.js` with a pure record combiner.
 - [ ] Add `src/presentation/presentation-journal.js` with a bounded recent-frame journal.
 - [ ] Add `src/presentation/host-presentation-snapshot.js` with a host projection helper.
-- [ ] Add `src/presentation/render-readback.js` with a minimal render-readback projector for renderer/camera/HUD/dino consumption state.
 - [ ] Keep `applyCloseCamera()` visually unchanged while recording camera requests beside it.
 - [ ] Keep `renderHud()` visually unchanged while recording HUD requests beside it.
 - [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
@@ -61,7 +62,7 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 - [ ] Keep scene changes unchanged while recording scene dispatch results beside them.
 - [ ] Expose latest/recent presentation records through `PrehistoricRushHost.getState().presentation`.
 - [ ] Add `scripts/prehistoric-rush-presentation-frame-fixture.mjs`.
-- [ ] Add fixture rows for source state, menu no-move, game move, dino pose event bridge, camera request, HUD request, contact snapshot, scene dispatch, presentation record, host snapshot, and DOM-free replay.
+- [ ] Add fixture rows for source state, menu no-move, game move, dino pose event bridge, camera request, HUD request, contact snapshot, scene dispatch, render readback, presentation record, host snapshot, and DOM-free replay.
 - [ ] Only after presentation fixture proof, continue action/result, runner movement extraction, manifest authority, and shared-kit promotion.
 
 ## DSK extraction order
@@ -75,10 +76,10 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 6. prehistoric-rush-hud-frame-request-kit
 7. prehistoric-rush-contact-result-snapshot-kit
 8. prehistoric-rush-scene-dispatch-result-kit
-9. prehistoric-rush-presentation-frame-record-kit
-10. prehistoric-rush-presentation-journal-kit
-11. prehistoric-rush-host-presentation-snapshot-kit
-12. prehistoric-rush-render-readback-kit
+9. prehistoric-rush-render-readback-kit
+10. prehistoric-rush-presentation-frame-record-kit
+11. prehistoric-rush-presentation-journal-kit
+12. prehistoric-rush-host-presentation-snapshot-kit
 13. prehistoric-rush-dom-free-presentation-fixture-kit
 14. prehistoric-rush-action-frame-contract-kit
 15. prehistoric-rush-action-acceptance-matrix-kit
@@ -104,9 +105,9 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 08_hazard_contact_result_records_run_over_reason
 09_pickup_contact_result_records_shard_reason
 10_scene_dispatch_result_records_menu_game_run_over_win
-11_presentation_frame_record_journals_all_subrecords
-12_host_get_state_exposes_presentation_snapshot
-13_render_readback_reports_current_renderer_camera_hud_dino_paths
+11_render_readback_reports_current_renderer_camera_hud_dino_paths
+12_presentation_frame_record_journals_all_subrecords
+13_host_get_state_exposes_presentation_snapshot
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
@@ -118,57 +119,5 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 - Do not redesign the visible scene before authority extraction.
 - Do not replace the whole runtime in one pass.
 - Do not move everything into ProtoKits before local proof exists.
-- Do not create a generic kit if the behavior is still PrehistoricRush-specific.
-- Do not let renderer, DOM, keyboard handlers, camera lerp code, HUD strings, collision checks, scene mutation, or Rapier frame stepping own reusable logic.
-- Do not require DOM, WebGL, Rapier, or requestAnimationFrame for the fixture rows.
+- Do not remove existing host snapshot fields.
 ```
-
-## Validation target after implementation
-
-```txt
-python static route smoke if available
-browser route smoke
-host snapshot check
-runner-source-state smoke
-runner.moved bridge fixture
-dino.pose.changed fixture
-DinoPoseFrame fixture
-camera.frame.requested fixture
-hud.frame.requested fixture
-contact-result-snapshot fixture
-scene-dispatch-result fixture
-PresentationFrameRecord fixture
-render-readback fixture
-host-presentation-snapshot smoke
-action-frame smoke
-action-acceptance smoke
-action-result-journal smoke
-runner-step smoke
-hazard contact fixture
-pickup contact fixture
-run-over scene dispatch fixture
-win scene dispatch fixture
-manifest drift report fixture
-replay parity smoke
-```
-
-## Stop condition
-
-Stop the implementation ledge when the same runner source state can produce:
-
-```txt
-RunnerSourceState
-  -> RunnerMovedEvent
-  -> runner.moved event
-  -> dino.pose.changed event
-  -> DinoPoseFrame
-  -> CameraFrameRequest
-  -> HudFrameRequest
-  -> ContactResultSnapshot
-  -> SceneDispatchResult
-  -> PresentationFrameRecord
-  -> RenderReadback
-  -> PrehistoricRushHost.getState().presentation
-```
-
-The fixture must not depend on DOM, WebGL, renderer frame timing, Rapier execution, or `requestAnimationFrame`.
