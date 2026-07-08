@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T03:01:20-04:00`
+**Last aligned:** `2026-07-08T05:10:47-04:00`
 
 ## Purpose
 
@@ -10,17 +10,19 @@ This `.agent/` folder is the repo-local operating memory for scheduled and manua
 
 Read this folder before changing implementation code.
 
-## Selection reason
+## Selection result
 
-`PrehistoricRush` was selected from the full `LuminaryLabs-Publish` repo list because the central `LuminaryLabs-Dev/LuminaryLabs` ledger already referenced `.agent` tracker paths for this repo, but the actual publish repo was missing a root `.agent/START_HERE.md` and root audit docs when checked in this run.
+The full accessible `LuminaryLabs-Publish` repo list was checked against central tracking in `LuminaryLabs-Dev/LuminaryLabs`.
 
-The current selection rule prefers Publish repos that are new, absent from the ledger, missing root `.agent` state, or recently added but undocumented before falling back to oldest eligible repo selection.
+No checked non-excluded Publish repo was fully new, central-ledger absent, or missing root `.agent/START_HERE.md` state.
+
+`PrehistoricRush` was selected as a follow-up target because it has a valid root `.agent` state and repo-local dino domain scaffold, but its live runner authority still sits mostly inside `src/runtime-terrain-v6.mjs`.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
 ## Current product read
 
-`PrehistoricRush` is a standalone static browser publish repo for a NexusEngine-powered prehistoric infinite runner.
+`PrehistoricRush` is a standalone static browser repo for a NexusEngine-powered prehistoric infinite runner.
 
 The current route is:
 
@@ -28,11 +30,12 @@ The current route is:
 index.html
   -> src/runtime.mjs
   -> src/game.js
-  -> local domain runtime + dino domain scaffold
+  -> repo-local event bus / domain host / tick scheduler
+  -> dino form, pose, and material domains
   -> await import("./runtime-terrain-v6.mjs")
 ```
 
-The repo is in a mixed state: it has a repo-local dino DSK scaffold, but the visible runner still lives mostly in the legacy `runtime-terrain-v6.mjs` visual/runtime file.
+The repo is in a mixed state: `src/game.js` is a thin composition scaffold, while `src/runtime-terrain-v6.mjs` still owns most live runner, renderer, input, contact, scene result, camera, and raptor visual behavior.
 
 ## First files to read
 
@@ -45,9 +48,17 @@ The repo is in a mixed state: it has a repo-local dino DSK scaffold, but the vis
 .agent/render-audit/runner-render-audit.md
 .agent/gameplay-audit/runner-loop-audit.md
 .agent/dino-domain-audit/dino-scaffold-bridge.md
+.agent/runner-authority-audit/action-result-fixture-gate.md
+.agent/trackers/2026-07-08T05-10-47-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T05-10-47-04-00.md
+.agent/kit-registry.json
+```
+
+Prior breakdowns:
+
+```txt
 .agent/trackers/2026-07-08T03-01-20-04-00/project-breakdown.md
 .agent/turn-ledger/2026-07-08T03-01-20-04-00.md
-.agent/kit-registry.json
 ```
 
 ## Source files to inspect next
@@ -76,12 +87,14 @@ RUNNER_RESEARCH.md
 
 ## Main rule
 
-Do not let `runtime-terrain-v6.mjs` remain the permanent source of truth for movement, scene transition, contact, camera, and runner result state.
+Do not let `runtime-terrain-v6.mjs`, DOM handlers, renderer state, or Rapier frame timing become permanent source-of-truth seams for reusable runner behavior.
 
-Extract pure command/result and runner-step authority first, then let the renderer and DOM consume those outputs.
+Extract pure action/result, runner-step, contact-result, scene-dispatch, and dino-bridge facts first.
 
 ## Current next safe ledge
 
-Materialize the `runner.moved` bridge and action/result fixture gate without changing the public route or visible Three.js/Rapier runner.
+```txt
+PrehistoricRush Runner Action/Result Authority + Dino Pose Bridge Fixture Gate
+```
 
-Keep `index.html -> src/runtime.mjs -> src/game.js -> runtime-terrain-v6.mjs` working while extracting authority behind the scenes.
+Keep the public route working while wrapping current behavior in fixture-readable records.
