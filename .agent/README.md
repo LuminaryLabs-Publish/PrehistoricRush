@@ -6,17 +6,27 @@ This folder stores automation-authored repo analysis, tracker entries, kit regis
 
 `PrehistoricRush` is a standalone additive publish repo for a NexusEngine-powered prehistoric infinite runner.
 
-The product repo should stay thin. It should own the browser shell, scene manifests, theme/config data, renderer bootstrap, adapter bindings, debug host exposure, and repo-local smoke fixtures while reusable behavior moves into NexusEngine core kits or ProtoKits.
+The product repo should stay thin. It should own the browser shell, scene manifests, theme/config data, renderer bootstrap, adapter bindings, debug host exposure, repo-local composition bridges, and repo-local smoke fixtures while reusable behavior moves into NexusEngine core kits or ProtoKits.
 
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T23-21-18-04-00/project-breakdown.md
+.agent/trackers/2026-07-08T00-49-44-04-00/project-breakdown.md
 ```
 
-This run keeps the manifest/source-authority direction and tightens the next implementation slice into **PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate**.
+This run corrects the active route and tightens the next implementation slice into **PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate**.
 
-The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, terrain streaming, scatter/collider/pickup generation, contact checks, result transitions, camera, HUD, physics bridge calls, and partial host snapshots inline. The next pass should make manifest load status, manifest drift, explicit scene aliasing, RuntimeSourceSnapshot, ActionFrame intake, ActionResult journals, RunnerSourceState snapshots, RunnerStepResult records, RunnerEvent facts, ContactEvent records, ContactResult snapshots, SceneDispatchResult records, host diagnostics, and DOM-free replay parity explicit before renderer, terrain, raptor, camera, flock, or Rapier extraction.
+The active route is now:
+
+```txt
+index.html
+  -> src/runtime.mjs
+  -> src/game.js
+  -> dino/domain-runtime scaffold
+  -> src/runtime-terrain-v6.mjs
+```
+
+The important change is that `src/game.js` now installs a repo-local domain runtime and dino domain scaffold before importing the legacy visual runtime. The dino form, pose, and material domain kits exist, but the live runner still manually creates and animates the raptor inside `src/runtime-terrain-v6.mjs`. The next pass should bridge live runner movement into `runner.moved`, let `dino-pose-domain-kit` emit real pose snapshots, and add manifest/action/contact/scene-dispatch fixtures without changing visible gameplay first.
 
 ## Kit registry
 
@@ -24,11 +34,12 @@ The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs`
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next manifest/action/contact fixture matrix plus run-movement promotion gate.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the repo-local domain runtime kits, the dino domain kits, the missing `run-movement-kit`, existing ProtoKit families to consume first, service ownership, blockers, and the next dino-domain bridge plus runtime-authority fixture gate.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T23-21-18-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T21-59-06-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T20-38-27-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T19-18-58-04-00/project-breakdown.md
@@ -56,32 +67,31 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate`:
+Run the `PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate`:
 
 ```txt
 preserve index.html
 preserve src/runtime.mjs
-preserve current visual Three.js/Rapier behavior
+preserve current visible Three.js/Rapier behavior
 preserve current PrehistoricRushHost.getState()
-load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json before setup()
-emit ManifestLoadStatus with loaded, failed, fallback, and source path details
-emit ManifestDriftReport with live-vs-manifest tuning deltas
-normalize fail -> run-over through an explicit compatibility alias
-adapt runner-tuning.json into RuntimeRunnerTuning and keep inline tuning fallback-only
-add RuntimeSourceSnapshot, SpawnBudgetSource, and WinThresholdSource descriptors
-add ActionFrame records for start, retry, run-again, menu, left, right, boost, jump, and future touch intents
-add scene-scoped ActionAcceptanceMatrix rules
-add ActionResult records with stable accepted/rejected reasons
-add RunnerSourceState snapshot, diff, and hydrate helpers
-wrap current movement tick in RunnerStepResult without visible math changes first
-record jump-consumed, boost-active, speed-delta, distance-delta, heading-delta, grounded-change, terrain-rebuild-requested, pickup, impact, goal, and scene-request facts
-emit RunnerEvent journal entries for movement, jump, boost, rebuild, pickup, impact, goal, and scene request
-emit ContactEvent records for hazard-hit, shard-pickup, and distance-goal
-emit ContactResult snapshots from ContactEvent reduction
-emit SceneDispatchResult records for run-over and win
+make active route documentation canonical: runtime.mjs -> game.js -> dino scaffold -> runtime-terrain-v6
+load manifests before runtime setup
+emit ManifestLoadStatus and ManifestDriftReport
+normalize fail -> run-over through explicit SceneAliasCatalog
+adapt runner-tuning.json into RuntimeRunnerTuning with inline values as fallback only
+add RuntimeSourceSnapshot, SpawnBudgetSource, and WinThresholdSource
+add ActionFrame records for start, retry, run-again, menu, left, right, boost, jump, and future touch
+add ActionAcceptanceMatrix with stable accepted/rejected reasons
+add RunnerSourceState snapshots and RunnerStepResult records
+emit runner.moved from the live movement step
+connect runner.moved to dino-pose-domain-kit as the first real domain bridge
+surface dino form, pose, and material snapshots in PrehistoricRushComposition and PrehistoricRushHost diagnostics
+add RunnerEvent journal entries for movement, jump, boost, terrain rebuild, pickup, impact, goal, and scene requests
+add ContactEvent records for hazard-hit, shard-pickup, and distance-goal
+add SceneDispatchResult records for run-over and win
 expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), runSmoke(name), and runReplayParitySmoke()
-add DOM-free smoke fixtures for manifest load, missing manifest fallback, tuning drift report, fail alias, start, retry, run-again, jump acceptance/rejection, hazard run-over, shard pickup, distance win, and replay parity
-add RunMovementPromotionReport to define the eventual shared run-movement-kit surface
+add DOM-free smoke fixtures for manifest load, tuning drift, fail alias, start, retry, jump accepted/rejected, hazard run-over, shard pickup, distance win, dino pose bridge, and replay parity
+emit RunMovementPromotionReport after fixture parity defines the shared run-movement-kit surface
 ```
 
-Do not add new visible content first. Make manifest authority, scene alias authority, runtime drift diagnostics, ActionFrame intake, ActionResult/RunnerStepResult/ContactEvent/SceneDispatchResult records, replayable intent, host diagnostics, fixture coverage, and the run-movement promotion boundary explicit first. Then improve route readability, hazard clarity, pickup clarity, camera polish, terrain density, raptor animation, and flock visuals through config-driven services.
+Do not add new visible content first. Make route authority, manifest authority, scene alias authority, dino domain bridge events, ActionFrame intake, ActionResult/RunnerStepResult/ContactEvent/SceneDispatchResult records, replayable intent, host diagnostics, fixture coverage, and the run-movement promotion boundary explicit first. Then improve route readability, hazard clarity, pickup clarity, camera polish, terrain density, raptor animation, and flock visuals through config-driven services.
