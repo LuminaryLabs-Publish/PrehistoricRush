@@ -2,57 +2,34 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T14:51:11-04:00`
+**Last aligned:** `2026-07-08T16-40-56-04-00`
 
 ## Purpose
 
-This `.agent/` folder is the repo-local operating memory for scheduled and manual breakdown work on `PrehistoricRush`.
-
-Read this folder before changing implementation code.
+This `.agent/` folder is the repo-local operating memory for breakdown work on `PrehistoricRush`. Read this folder before changing implementation code.
 
 ## Current selection result
 
-The full accessible `LuminaryLabs-Publish` repository list was compared against tracked repo-ledger state in `LuminaryLabs-Dev/LuminaryLabs`.
-
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
+The accessible `LuminaryLabs-Publish` repo list was compared against the central `LuminaryLabs-Dev/LuminaryLabs` ledger. No checked non-excluded repo was fully new, absent from central tracking, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the oldest eligible fallback after current central/root-agent readback. The current high-value seam is the presentation/event host wire map: runtime movement, contacts, scene dispatch, camera, HUD, and dino pose are visible, but they are not yet projected into fixture-readable host records.
+`PrehistoricRush` was selected as the oldest eligible fallback. The current high-value seam is the source-file manifest plus host presentation projection gate: movement, contacts, scene dispatch, camera, HUD, and dino pose are visible, but not yet projected into fixture-readable host records.
 
-## Publish repos checked
-
-```txt
-LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent present / latest central review 2026-07-08T13:59:50-04:00
-LuminaryLabs-Publish/AetherVale          tracked / root .agent present / latest central update 2026-07-08T13:39:15-04:00
-LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent present / latest central update 2026-07-08T13:31:29-04:00
-LuminaryLabs-Publish/TheCavalryOfRome    excluded by rule
-LuminaryLabs-Publish/PhantomCommand      tracked / root .agent present / latest central update 2026-07-08T14:08:24-04:00
-LuminaryLabs-Publish/PrehistoricRush     selected fallback / previous central update 2026-07-08T13:18:13-04:00
-LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent present / latest central update 2026-07-08T14:18:45-04:00
-LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent present / latest central update 2026-07-08T13:50:37-04:00
-LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent present / repo-local alignment observed 2026-07-08T14:39:38-04:00
-LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent present / latest central review 2026-07-08T14:31:06-04:00
-```
-
-## Current product read
-
-`PrehistoricRush` is a standalone static browser repo for a NexusEngine-powered prehistoric infinite runner.
-
-The current route is:
+## Current route
 
 ```txt
 index.html
   -> src/runtime.mjs
   -> src/game.js
-  -> repo-local event bus / domain host / tick scheduler
-  -> dino form, pose, and material domains
+  -> event bus / domain host / tick scheduler
+  -> dino form, pose, material domains
   -> camera-domain-kit
   -> hud-domain-kit
   -> PrehistoricRushComposition.snapshot()
   -> runtime-terrain-v6.mjs
   -> Three.js + Rapier terrain runner
-  -> src/game.js presentation pass
+  -> presentation pass
   -> PrehistoricRushHost.getState()
 ```
 
@@ -74,9 +51,8 @@ page load
 ```txt
 RunnerSourceState
   -> RunnerMovedEvent
-  -> eventBus.emit("runner.moved")
-  -> dino-pose-domain-kit update
-  -> eventBus.emit("dino.pose.changed")
+  -> runner.moved
+  -> dino.pose.changed
   -> DinoPoseFrame
   -> CameraFrameRequest
   -> HudFrameRequest
@@ -84,6 +60,7 @@ RunnerSourceState
   -> SceneDispatchResult
   -> PresentationFrameRecord
   -> PresentationJournalSnapshot
+  -> RenderReadback
   -> PrehistoricRushHost.getState().presentation
   -> DOM-free fixture cases
 ```
@@ -95,12 +72,12 @@ RunnerSourceState
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md
-.agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md
-.agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md
-.agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md
-.agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T14-51-11-04-00.md
+.agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md
+.agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md
+.agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md
+.agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md
+.agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T16-40-56-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -125,14 +102,10 @@ src/domains/hud/hud-domain-kit.js
 
 Keep the visible runner playable and route-stable.
 
-Do not replace the whole runtime before a host-readable event/presentation record layer exists.
-
 The next implementation should add pure `src/presentation/*` projection modules and a DOM-free fixture first, then wire them additively into `src/game.js` and `runtime-terrain-v6.mjs` without removing current `PrehistoricRushHost.getState()` compatibility.
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Event Host Wire Map + Fixture Gate
+PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate
 ```
-
-Stop that ledge when fixture rows prove runner source projection, movement event emission, dino pose event consumption, camera/HUD request projection, hazard/pickup contact results, scene dispatch records, bounded presentation journals, and host snapshot readback without requiring DOM, WebGL, Rapier, browser, or `requestAnimationFrame`.
