@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T08:11:28-04:00`
+**Last aligned:** `2026-07-08T09:29:20-04:00`
 
 ## Purpose
 
@@ -14,11 +14,11 @@ Read this folder before changing implementation code.
 
 The accessible `LuminaryLabs-Publish` repo list was checked against central tracking in `LuminaryLabs-Dev/LuminaryLabs`.
 
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing root `.agent/START_HERE.md` state.
-
-`TheUnmappedHouse` has an older visible alignment time, but its own `.agent/START_HERE.md` says the closed central rollup gap should not keep selecting it. `PrehistoricRush` was selected as the oldest eligible fallback follow-up with unresolved runtime/presentation authority work.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
+
+`PrehistoricRush` was selected as the fallback follow-up because its repo-local domain scaffold is real, but the live presentation frame still lacks a source wire map and fixture-readable contract.
 
 ## Current product read
 
@@ -40,6 +40,19 @@ index.html
   -> PrehistoricRushHost.getState()
 ```
 
+## Current interaction loop
+
+```txt
+page load
+  -> composition installs dino, camera, and HUD domain scaffold
+  -> visual runner loads menu scene
+  -> player starts run
+  -> keyboard/button input drives lane, jump, and boost behavior
+  -> runtime-terrain-v6.mjs mutates movement, terrain, contacts, pickups, scene state, and baseline renderer frame
+  -> src/game.js presentation pass mutates close camera, readable stride, HUD DOM, and renderer frame
+  -> host exposes runtime snapshots
+```
+
 ## First files to read
 
 ```txt
@@ -48,13 +61,16 @@ index.html
 .agent/next-steps.md
 .agent/validation.md
 .agent/architecture-audit/domain-service-breakdown.md
+.agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md
 .agent/render-audit/render-surface-audit.md
+.agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md
 .agent/gameplay-audit/runner-loop-audit.md
 .agent/runner-authority-audit/action-result-fixture-gate.md
 .agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md
 .agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md
-.agent/trackers/2026-07-08T08-11-28-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T08-11-28-04-00.md
+.agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md
+.agent/trackers/2026-07-08T09-29-20-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T09-29-20-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -87,7 +103,7 @@ The current visual route should stay playable while the next implementation adds
 
 ```txt
 RunnerSourceState
-  -> runner.moved
+  -> RunnerMovedEvent
   -> DinoPoseFrame
   -> CameraFrameRequest
   -> HudFrameRequest
@@ -98,7 +114,7 @@ RunnerSourceState
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Frame Contract Acceptance Ledger
+PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
 ```
 
 Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable presentation frame contracts.
