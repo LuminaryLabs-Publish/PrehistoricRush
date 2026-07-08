@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T14:51:11-04:00`
+**Updated:** `2026-07-08T16-40-56-04-00`
 
 ## Validation status for this pass
 
@@ -14,20 +14,18 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
 - GitHub connector read of PrehistoricRush README.md.
-- GitHub connector read of PrehistoricRush index.html route pointer through prior agent state.
 - GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
 - GitHub connector read of PrehistoricRush event bus and domain host modules.
 - GitHub connector read of PrehistoricRush dino-pose-domain-kit.
 - GitHub connector read of PrehistoricRush camera-domain-kit.
-- GitHub connector read of PrehistoricRush hud-domain-kit.
 - GitHub connector read of PrehistoricRush existing .agent docs.
 - GitHub connector update of PrehistoricRush root .agent docs.
-- GitHub connector create of new PrehistoricRush presentation event host DSK map.
-- GitHub connector create of new PrehistoricRush camera/HUD render readback wire map.
-- GitHub connector create of new PrehistoricRush contact/scene result splice map.
-- GitHub connector create of new PrehistoricRush presentation event host wire map.
+- GitHub connector create of new PrehistoricRush event source fixture source-file manifest.
+- GitHub connector create of new PrehistoricRush presentation render readback manifest.
+- GitHub connector create of new PrehistoricRush runner action/contact/scene contract.
+- GitHub connector create of new PrehistoricRush source file manifest and host projection audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of central PrehistoricRush repo ledger.
@@ -46,17 +44,17 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - No Playwright smoke was run.
 - No live GitHub Pages route was opened.
 - No Rapier/Three.js runtime execution was performed.
-- No DOM-free presentation fixture was run.
+- No DOM-free presentation fixture was run because the fixture source files do not exist yet.
 ```
 
 ## Next validation commands
 
 There is no `package.json` in the repo root at the time of this pass, so do not assume `npm run check` exists.
 
-Recommended next checks:
+Recommended next checks after the source files are added:
 
 ```bash
-# From a local checkout:
+node scripts/prehistoric-rush-presentation-frame-fixture.mjs
 python3 -m http.server 4173
 # open http://localhost:4173/
 ```
@@ -93,9 +91,9 @@ camera.frame.requested-smoke
 hud.frame.requested-smoke
 contact-result-snapshot-smoke
 scene-dispatch-result-smoke
+render-readback-smoke
 presentation-frame-record-smoke
 presentation-descriptor-journal-smoke
-render-readback-smoke
 host-presentation-snapshot-smoke
 action-frame-smoke
 action-acceptance-smoke
@@ -121,9 +119,9 @@ run-movement-promotion-smoke
 08_hazard_contact_result_records_run_over_reason
 09_pickup_contact_result_records_shard_reason
 10_scene_dispatch_result_records_menu_game_run_over_win
-11_presentation_frame_record_journals_all_subrecords
-12_host_get_state_exposes_presentation_snapshot
-13_render_readback_reports_current_renderer_camera_hud_dino_paths
+11_render_readback_reports_current_renderer_camera_hud_dino_paths
+12_presentation_frame_record_journals_all_subrecords
+13_host_get_state_exposes_presentation_snapshot
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
