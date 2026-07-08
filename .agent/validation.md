@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T05:10:47-04:00`
+**Updated:** `2026-07-08T06:51:12-04:00`
 
 ## Validation status for this pass
 
@@ -11,17 +11,21 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ## Checks performed
 
 ```txt
-- GitHub connector read of full LuminaryLabs-Publish repo list.
+- GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush src/domains/camera/camera-domain-kit.js.
+- GitHub connector read of PrehistoricRush src/domains/hud/hud-domain-kit.js.
+- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
 - GitHub connector read of PrehistoricRush existing .agent docs.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger for PrehistoricRush.
-- GitHub connector write of new PrehistoricRush tracker entry.
-- GitHub connector write of new PrehistoricRush turn-ledger entry.
-- GitHub connector write of new PrehistoricRush runner-authority audit.
+- GitHub connector create of new PrehistoricRush presentation authority audit.
+- GitHub connector create of new PrehistoricRush tracker entry.
+- GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
+- GitHub connector update of PrehistoricRush kit registry.
 - GitHub connector update of central PrehistoricRush repo ledger.
 - GitHub connector create of central internal change-log entry.
 ```
@@ -63,8 +67,9 @@ Expected route facts:
 ```txt
 index.html loads ./src/runtime.mjs
 src/runtime.mjs imports ./game.js
-src/game.js installs dino domain scaffold
+src/game.js installs dino, camera, and HUD domain scaffolds
 src/game.js imports ./runtime-terrain-v6.mjs
+src/game.js starts the presentation pass
 ```
 
 ## Future smoke tests needed
@@ -73,12 +78,17 @@ src/game.js imports ./runtime-terrain-v6.mjs
 manifest-load-smoke
 manifest-drift-smoke
 scene-alias-smoke
+runner-source-state-smoke
+runner-moved-smoke
+dino.pose.changed-smoke
+camera.frame.requested-smoke
+hud.frame.requested-smoke
+presentation-descriptor-journal-smoke
+host-presentation-snapshot-smoke
 action-frame-smoke
 action-acceptance-smoke
 action-result-journal-smoke
-runner-source-state-smoke
 runner-step-smoke
-runner-moved-dino-pose-bridge-smoke
 contact-event-smoke
 scene-dispatch-smoke
 host-diagnostics-smoke
@@ -89,3 +99,14 @@ run-movement-promotion-smoke
 ## Pass/fail rule
 
 Do not mark the game as DSK-authority-complete until a DOM-free fixture can replay start, jump, lane move, hazard, pickup, run-over, retry, and win paths into stable action/result journals without depending on renderer frame timing.
+
+For the immediate presentation gate, do not mark the presentation seam complete until a fixture can prove:
+
+```txt
+runner source state
+  -> runner.moved
+  -> dino.pose.changed
+  -> camera.frame.requested
+  -> hud.frame.requested
+  -> host presentation snapshot
+```
