@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T10:39:22-04:00`
+**Updated:** `2026-07-08T12:09:27-04:00`
 
 ## Validation status for this pass
 
@@ -12,19 +12,16 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
-- GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs latest summary and PrehistoricRush repo ledger.
+- GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs PrehistoricRush repo ledger.
 - GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
-- GitHub connector read of PrehistoricRush domain runtime files.
-- GitHub connector read of PrehistoricRush dino-pose-domain-kit.
-- GitHub connector read of PrehistoricRush camera-domain-kit.
-- GitHub connector read of PrehistoricRush hud-domain-kit.
 - GitHub connector read of PrehistoricRush existing .agent docs.
-- GitHub connector create of new PrehistoricRush DSK/domain architecture audit.
-- GitHub connector create of new PrehistoricRush render event readback audit.
-- GitHub connector create of new PrehistoricRush event bridge fixture readiness audit.
+- GitHub connector create of new PrehistoricRush runner event DSK map.
+- GitHub connector create of new PrehistoricRush presentation readback contract audit.
+- GitHub connector create of new PrehistoricRush runner event loop gameplay audit.
+- GitHub connector create of new PrehistoricRush fixture source wire map.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
