@@ -1,9 +1,9 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "registryVersion": "1.5.0",
-  "updatedAt": "2026-07-07T21:59:06-04:00",
-  "latestTracker": ".agent/trackers/2026-07-07T21-59-06-04-00/project-breakdown.md",
-  "purpose": "Track kit ownership, service surfaces, manifest authority blockers, ActionFrame/ActionResult intake, RunnerSourceState snapshots, RunnerStepResult authority, ContactEvent replay, SceneDispatchResult ownership, GameHost diagnostics, and DOM-free smoke fixtures for the PrehistoricRush runner repo.",
+  "registryVersion": "1.6.0",
+  "updatedAt": "2026-07-07T23:21:18-04:00",
+  "latestTracker": ".agent/trackers/2026-07-07T23-21-18-04-00/project-breakdown.md",
+  "purpose": "Track kit ownership, service surfaces, manifest authority blockers, RuntimeSourceSnapshot requirements, ActionFrame/ActionResult intake, RunnerSourceState snapshots, RunnerStepResult authority, RunnerEvent journaling, ContactEvent replay, SceneDispatchResult ownership, GameHost diagnostics, DOM-free smoke fixtures, and the run-movement-kit promotion boundary for the PrehistoricRush runner repo.",
   "selectionPolicy": {
     "onlyOneRepoPerRun": true,
     "excludedRepos": [
@@ -53,11 +53,12 @@
     "ambiguous raw input semantics",
     "unreplayable live-only input state",
     "implicit accepted/rejected input behavior",
-    "implicit hazard/pickup/win contact results"
+    "implicit hazard/pickup/win contact results",
+    "implicit run-movement shared-kit boundary"
   ],
   "sourceOfTruthCutover": {
-    "canonicalNextSlice": "PrehistoricRush ActionFrame Manifest Harness + Contact Dispatch Replay Lock",
-    "problem": "game-scenes.json, scenes/game.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json define product intent, but src/runtime-terrain-v6.mjs still duplicates live tuning, scene transitions, input semantics, contact outcomes, spawn budgets, win threshold, and snapshot authority inline.",
+    "canonicalNextSlice": "PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate",
+    "problem": "game-scenes.json, scenes/game.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json define product intent, but src/runtime-terrain-v6.mjs still duplicates live tuning, scene transitions, input semantics, contact outcomes, spawn budgets, win threshold, source snapshot shape, and host diagnostics inline.",
     "driftObserved": [
       "runtime motion.speed = 15 vs runner-tuning.json motion.baseForwardSpeed = 13.5",
       "runtime motion.maxSpeed = 25 vs runner-tuning.json motion.maxForwardSpeed = 24",
@@ -71,19 +72,20 @@
       "runtime spawn counts and clear radius are inline instead of manifest-owned",
       "runtime jump consumption is a raw boolean reset instead of an ActionFrame/RunnerStepResult fact",
       "runtime hazard, pickup, and win outcomes mutate app.scene or runner state without durable ContactEvent records",
-      "runtime host exposes getState only; no diagnostics, dispatch, replay journal, or smoke runner exists yet"
+      "runtime host exposes getState only; no diagnostics, dispatch, replay journal, source snapshot, or smoke runner exists yet"
     ],
     "requiredFixes": [
       "load manifests before runtime setup",
       "emit ManifestLoadStatus and ManifestDriftReport before changing visible behavior",
       "normalize nextOnLoss from fail to run-over or keep fail as explicit compatibility alias only",
       "make inline tuning fallback-only",
-      "surface loaded config, fallback status, alias status, and drift status in PrehistoricRushHost.getDiagnostics()",
+      "surface loaded config, fallback status, alias status, drift status, source snapshot, and fixture status in PrehistoricRushHost.getDiagnostics()",
       "route button, keyboard, and future touch input through ActionFrame records",
       "separate accepted action journal from rejected input diagnostics",
       "route start, retry, menu, run-over, win, and run-again through SceneDispatchResult records",
       "route movement tick, hazard hit, shard pickup, and distance goal through RunnerStepResult, RunnerEvent, and ContactEvent records",
-      "add replayable scripted fixture coverage before terrain/render/raptor/camera/Rapier extraction"
+      "add replayable scripted fixture coverage before terrain/render/raptor/camera/flock/Rapier extraction",
+      "emit RunMovementPromotionReport after fixture parity defines the shared run-movement-kit boundary"
     ]
   },
   "domains": {
@@ -108,6 +110,8 @@
       "scene-file-authority",
       "scene-id-catalog",
       "scene-result-aliasing",
+      "runtime-source-bundle",
+      "runtime-source-snapshot",
       "runtime-tuning-adapter",
       "kit-composition-authority",
       "cutover-inventory-authority",
@@ -173,7 +177,8 @@
       "contact-event-smoke",
       "scene-dispatch-smoke",
       "host-diagnostics-smoke",
-      "replay-parity-smoke"
+      "replay-parity-smoke",
+      "run-movement-promotion-smoke"
     ]
   },
   "currentProductServices": [
@@ -210,13 +215,18 @@
     "engine.n.rapierPhysics.getSnapshot"
   ],
   "neededNextServices": [
+    "loadRuntimeSourceBundle",
     "loadProductManifests",
     "loadSceneManifest",
+    "loadRunnerTuning",
+    "loadKitComposition",
+    "loadCutoverInventory",
+    "loadFlockGeneration",
     "validateSceneFiles",
     "validateKitComposition",
     "validateCutoverInventory",
     "validateFlockGeneration",
-    "adaptRunnerTuning",
+    "adaptRuntimeRunnerTuning",
     "adaptSpawnBudgets",
     "adaptWinThreshold",
     "compareLiveTuningToManifest",
@@ -224,7 +234,9 @@
     "compareSpawnBudgets",
     "emitManifestLoadStatus",
     "emitManifestDriftReport",
+    "emitRuntimeSourceSnapshot",
     "normalizeResultScene",
+    "createSceneAliasCatalog",
     "createActionFrame",
     "createActionBatch",
     "acceptActionForScene",
@@ -248,7 +260,8 @@
     "getReplayJournal",
     "dispatch",
     "runSmoke",
-    "runReplayParitySmoke"
+    "runReplayParitySmoke",
+    "createRunMovementPromotionReport"
   ],
   "coreKitsTargeted": [
     "createCoreSkyboxKit",
@@ -314,12 +327,14 @@
         "RunnerStepResult metadata",
         "RunnerEvent journal",
         "ContactEvent journal",
-        "stable GameHost shape",
-        "DOM-free behavior fixtures"
+        "stable GameHost diagnostics",
+        "DOM-free behavior fixtures",
+        "RunMovementPromotionReport"
       ]
     }
   ],
   "repoLocalExtractionCandidates": [
+    "prehistoric-rush-runtime-source-bundle-kit",
     "prehistoric-rush-manifest-loader-kit",
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-manifest-drift-report-kit",
@@ -343,7 +358,8 @@
     "prehistoric-rush-scene-dispatch-result-kit",
     "prehistoric-rush-gamehost-diagnostics-kit",
     "prehistoric-rush-scripted-action-fixture-kit",
-    "prehistoric-rush-replay-parity-smoke-kit"
+    "prehistoric-rush-replay-parity-smoke-kit",
+    "prehistoric-rush-run-movement-promotion-report-kit"
   ],
   "deferredExtractionKits": [
     "prehistoric-rush-terrain-source-kit",
@@ -352,21 +368,22 @@
     "prehistoric-rush-camera-follow-kit",
     "prehistoric-rush-hud-renderer-kit",
     "prehistoric-rush-three-renderer-adapter-kit",
-    "prehistoric-rush-rapier-adapter-kit"
+    "prehistoric-rush-rapier-adapter-kit",
+    "prehistoric-rush-flock-render-kit"
   ],
   "nextImplementationSlice": {
-    "name": "PrehistoricRush ActionFrame Manifest Harness + Contact Dispatch Replay Lock",
-    "intent": "Make the current playable runner replayable and source-auditable before moving visual, terrain, physics, or movement rules into extracted kits.",
+    "name": "PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate",
+    "intent": "Make the current playable runner source-auditable, replayable, and ready for run-movement-kit promotion before moving visual, terrain, physics, movement, or flock rules into extracted kits.",
     "buildOrder": [
       "preserve index.html, src/runtime.mjs, current Three.js/Rapier visuals, current controls, and current PrehistoricRushHost.getState()",
-      "add a small manifest loader before setup()",
+      "add RuntimeSourceBundle loading before setup()",
       "load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json",
       "emit ManifestLoadStatus with loaded, failed, fallback, and source path details",
       "emit ManifestDriftReport with live-vs-manifest deltas",
       "add explicit fail -> run-over SceneAliasCatalog entry",
-      "adapt runner-tuning.json into RuntimeRunnerTuning while keeping current inline values as fallback-only",
+      "adapt runner-tuning.json into RuntimeRunnerTuning while keeping current inline values fallback-only",
       "add SpawnBudgetSource and WinThresholdSource descriptors populated from current inline behavior first",
-      "normalize button and keyboard input into ActionFrame records",
+      "normalize button, keyboard, and future touch input into ActionFrame records",
       "add ActionAcceptanceMatrix for start, retry, run-again, menu, left, right, boost, jump, and future touch actions",
       "emit ActionResult records with stable accepted/rejected reasons",
       "snapshot RunnerSourceState before and after movement",
@@ -376,13 +393,15 @@
       "reduce ContactResult snapshots from ContactEvent records",
       "route run-over and win transitions through SceneDispatchResult records",
       "expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), runSmoke(name), and runReplayParitySmoke()",
-      "add DOM-free fixtures for manifest load, tuning drift, fail alias, start, retry, run-again, jump accepted, jump rejected, hazard run-over, shard pickup, distance win, and replay parity",
-      "defer terrain/render/raptor/camera/Rapier extraction until source-lock fixtures pass"
+      "add DOM-free fixtures for manifest load, manifest missing fallback, tuning drift, fail alias, start, retry, run-again, jump accepted, jump rejected while airborne, hazard run-over, shard pickup, distance win, and replay parity",
+      "add RunMovementPromotionReport that names what should move into run-movement-kit after fixture parity passes",
+      "defer terrain/render/raptor/camera/Rapier/flock extraction until source-lock fixtures pass"
     ]
   },
   "acceptanceChecklist": [
     "Existing runner still boots from index.html.",
     "Existing visual scene and controls remain unchanged.",
+    "RuntimeSourceBundle can load all product manifests or report fallback.",
     "ManifestLoadStatus is available from PrehistoricRushHost.getDiagnostics().",
     "ManifestDriftReport lists all live-vs-manifest drift without breaking runtime.",
     "fail -> run-over alias is explicit and testable.",
@@ -390,10 +409,12 @@
     "ActionResultJournal records accepted and rejected actions.",
     "RunnerSourceState snapshots are serializable.",
     "RunnerStepResult wraps current movement and jump consumption.",
+    "RunnerEventJournal records movement, boost, jump, terrain rebuild, pickup, impact, goal, and scene request facts.",
     "ContactEvent records exist for hazard, pickup, and goal.",
     "SceneDispatchResult owns run-over and win scene changes.",
     "PrehistoricRushHost exposes diagnostics, snapshots, replay journal, dispatch, and smokes.",
-    "DOM-free replay fixture can reproduce a scripted accepted/rejected action sequence."
+    "DOM-free replay fixture can reproduce a scripted accepted/rejected action sequence.",
+    "RunMovementPromotionReport names the exact shared-kit API candidate and remaining blockers."
   ],
   "validation": {
     "runtimeSourceChanged": false,
