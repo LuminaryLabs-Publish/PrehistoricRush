@@ -1,11 +1,11 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T08:11:28-04:00",
+  "updated": "2026-07-08T09:29:20-04:00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T08-11-28-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T08-11-28-04-00.md",
-  "status": "presentation-frame-contract-acceptance-ledger-planned",
+  "latestTracker": ".agent/trackers/2026-07-08T09-29-20-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T09-29-20-04-00.md",
+  "status": "presentation-source-wire-map-frame-contract-fixture-gate-planned",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
@@ -104,10 +104,13 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestSystemAudit": ".agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md",
-  "previousSystemAudit": ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md",
-  "olderSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Presentation Frame Contract Acceptance Ledger",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md",
+  "previousSystemAudit": ".agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md",
+  "olderSystemAudit": ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md",
+  "runnerAuthorityAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
+  "nextSafeLedge": "PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate",
   "requiredFrameContract": [
     "RunnerSourceState",
     "RunnerMovedEvent",
@@ -116,6 +119,30 @@
     "HudFrameRequest",
     "PresentationFrameRecord",
     "PrehistoricRushHost.getState().presentation"
+  ],
+  "sourceWireMapFilesToAddNext": [
+    "src/presentation/runner-source-state.js",
+    "src/presentation/runner-moved-event.js",
+    "src/presentation/dino-pose-frame.js",
+    "src/presentation/camera-frame-request.js",
+    "src/presentation/hud-frame-request.js",
+    "src/presentation/presentation-frame-record.js",
+    "src/presentation/presentation-journal.js",
+    "scripts/prehistoric-rush-presentation-frame-fixture.mjs"
+  ],
+  "fixtureRows": [
+    "01_runner_source_state_projects_current_app_state",
+    "02_menu_scene_runner_source_does_not_emit_moved_delta",
+    "03_game_scene_runner_source_emits_runner_moved",
+    "04_runner_moved_feeds_dino_pose_domain",
+    "05_dino_pose_frame_matches_current_stride_inputs",
+    "06_camera_frame_request_matches_close_camera_visual_policy",
+    "07_hud_frame_request_matches_readability_hud_descriptor",
+    "08_presentation_frame_record_journals_all_subrecords",
+    "09_host_get_state_exposes_presentation_snapshot",
+    "10_dom_free_fixture_replays_source_to_presentation_chain",
+    "11_renderer_output_unchanged_by_contract_layer",
+    "12_legacy_runtime_remains_playable_during_cutover"
   ],
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
