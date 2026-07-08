@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T09:29:20-04:00`
+**Updated:** `2026-07-08T10:39:22-04:00`
 
 ## Validation status for this pass
 
@@ -14,17 +14,20 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs latest summary and PrehistoricRush repo ledger.
 - GitHub connector read of PrehistoricRush README.md.
+- GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush domain runtime files.
+- GitHub connector read of PrehistoricRush dino-pose-domain-kit.
+- GitHub connector read of PrehistoricRush camera-domain-kit.
+- GitHub connector read of PrehistoricRush hud-domain-kit.
 - GitHub connector read of PrehistoricRush existing .agent docs.
-- GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector create of new PrehistoricRush DSK/domain architecture audit.
-- GitHub connector create of new PrehistoricRush render presentation readback audit.
-- GitHub connector create of new PrehistoricRush presentation source wire map.
+- GitHub connector create of new PrehistoricRush render event readback audit.
+- GitHub connector create of new PrehistoricRush event bridge fixture readiness audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
-- GitHub connector update of PrehistoricRush kit registry.
 - GitHub connector update of central PrehistoricRush repo ledger.
 - GitHub connector create of central internal change-log entry.
 ```
@@ -118,13 +121,15 @@ run-movement-promotion-smoke
 
 ## Pass/fail rule
 
-Do not mark the game as DSK-authority-complete until a DOM-free fixture can replay start, jump, lane move, hazard, pickup, run-over, retry, and win paths into stable action/result journals without depending on renderer frame timing.
+Do not mark the game as DSK-authority-complete until a DOM-free fixture can replay start, jump, turn, boost, hazard, pickup, run-over, retry, and win paths into stable action/result journals without depending on renderer frame timing.
 
 For the immediate presentation gate, do not mark the presentation seam complete until a fixture can prove:
 
 ```txt
 RunnerSourceState
   -> RunnerMovedEvent
+  -> runner.moved event
+  -> dino.pose.changed event
   -> DinoPoseFrame
   -> CameraFrameRequest
   -> HudFrameRequest
