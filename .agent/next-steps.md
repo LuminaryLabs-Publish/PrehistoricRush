@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T10:39:22-04:00`
+**Updated:** `2026-07-08T12:09:27-04:00`
 
 ## Next safe ledge
 
-Build the runner event bridge and presentation frame fixture gate without changing the visible route.
+Build the runner event fixture source map without changing the visible route.
 
 ```txt
-PrehistoricRush Runner Event Bridge + Presentation Frame Fixture Gate
+PrehistoricRush Runner Event Fixture Source Map
 ```
 
 Preserve the current game first:
@@ -20,6 +20,7 @@ preserve current Three.js/Rapier look and feel
 preserve current PrehistoricRushComposition.snapshot()
 preserve current PrehistoricRushHost.getState()
 preserve current camera distance/HUD readability pass visually
+preserve menu -> game -> run-over -> win -> menu scene flow
 ```
 
 Then add fixture-readable facts around the current behavior:
@@ -47,6 +48,7 @@ add DOM-free smoke fixtures for the event and presentation chain
 - [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
 - [ ] Add `src/presentation/presentation-frame-record.js` with a pure record combiner.
 - [ ] Add `src/presentation/presentation-journal.js` with a bounded recent-frame journal.
+- [ ] Add `src/presentation/host-presentation-snapshot.js` with a host projection helper.
 - [ ] Keep `applyCloseCamera()` visually unchanged while recording camera requests beside it.
 - [ ] Keep `renderHud()` visually unchanged while recording HUD requests beside it.
 - [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
@@ -64,8 +66,8 @@ add DOM-free smoke fixtures for the event and presentation chain
 4. prehistoric-rush-dino-pose-frame-kit
 5. prehistoric-rush-camera-frame-request-kit
 6. prehistoric-rush-hud-frame-request-kit
-7. prehistoric-rush-presentation-frame-contract-kit
-8. prehistoric-rush-presentation-descriptor-journal-kit
+7. prehistoric-rush-presentation-frame-record-kit
+8. prehistoric-rush-presentation-journal-kit
 9. prehistoric-rush-host-presentation-snapshot-kit
 10. prehistoric-rush-dom-free-presentation-fixture-kit
 11. prehistoric-rush-action-frame-contract-kit
@@ -106,6 +108,7 @@ add DOM-free smoke fixtures for the event and presentation chain
 - Do not move everything into ProtoKits before local proof exists.
 - Do not create a generic kit if the behavior is still PrehistoricRush-specific.
 - Do not let renderer, DOM, keyboard handlers, camera lerp code, HUD strings, or Rapier frame stepping own reusable logic.
+- Do not require DOM, WebGL, Rapier, or requestAnimationFrame for the fixture rows.
 ```
 
 ## Validation target after implementation
@@ -150,4 +153,4 @@ RunnerSourceState
   -> PrehistoricRushHost.getState().presentation
 ```
 
-The fixture must not depend on DOM, WebGL, renderer frame timing, or Rapier execution.
+The fixture must not depend on DOM, WebGL, renderer frame timing, Rapier execution, or `requestAnimationFrame`.
