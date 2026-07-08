@@ -1,9 +1,11 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T06:51:12-04:00",
-  "latestTracker": ".agent/trackers/2026-07-08T06-51-12-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T06-51-12-04-00.md",
+  "updated": "2026-07-08T08:11:28-04:00",
+  "branchTarget": "main",
+  "latestTracker": ".agent/trackers/2026-07-08T08-11-28-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T08-11-28-04-00.md",
+  "status": "presentation-frame-contract-acceptance-ledger-planned",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
@@ -84,9 +86,12 @@
     "prehistoric-rush-runner-source-state-kit",
     "prehistoric-rush-runner-moved-event-kit",
     "prehistoric-rush-dino-domain-bridge-kit",
+    "prehistoric-rush-dino-pose-frame-kit",
     "prehistoric-rush-camera-frame-descriptor-kit",
     "prehistoric-rush-hud-frame-descriptor-kit",
+    "prehistoric-rush-presentation-frame-contract-kit",
     "prehistoric-rush-presentation-descriptor-journal-kit",
+    "prehistoric-rush-host-presentation-snapshot-kit",
     "prehistoric-rush-action-frame-contract-kit",
     "prehistoric-rush-action-acceptance-matrix-kit",
     "prehistoric-rush-action-result-journal-kit",
@@ -99,8 +104,18 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestSystemAudit": ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md",
-  "previousSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Presentation Descriptor Fixture Gate",
+  "latestSystemAudit": ".agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md",
+  "previousSystemAudit": ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md",
+  "olderSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
+  "nextSafeLedge": "PrehistoricRush Presentation Frame Contract Acceptance Ledger",
+  "requiredFrameContract": [
+    "RunnerSourceState",
+    "RunnerMovedEvent",
+    "DinoPoseFrame",
+    "CameraFrameRequest",
+    "HudFrameRequest",
+    "PresentationFrameRecord",
+    "PrehistoricRushHost.getState().presentation"
+  ],
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
