@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T06:51:12-04:00`
+**Updated:** `2026-07-08T08:11:28-04:00`
 
 ## Validation status for this pass
 
@@ -12,16 +12,14 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
+- GitHub connector read of root .agent state for the checked non-Cavalry Publish repos.
 - GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
-- GitHub connector read of PrehistoricRush src/domains/camera/camera-domain-kit.js.
-- GitHub connector read of PrehistoricRush src/domains/hud/hud-domain-kit.js.
-- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
 - GitHub connector read of PrehistoricRush existing .agent docs.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger for PrehistoricRush.
-- GitHub connector create of new PrehistoricRush presentation authority audit.
+- GitHub connector create of new PrehistoricRush presentation frame contract audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
@@ -81,8 +79,10 @@ scene-alias-smoke
 runner-source-state-smoke
 runner-moved-smoke
 dino.pose.changed-smoke
+DinoPoseFrame-smoke
 camera.frame.requested-smoke
 hud.frame.requested-smoke
+presentation-frame-record-smoke
 presentation-descriptor-journal-smoke
 host-presentation-snapshot-smoke
 action-frame-smoke
@@ -96,6 +96,23 @@ replay-parity-smoke
 run-movement-promotion-smoke
 ```
 
+## Fixture cases required next
+
+```txt
+01_runner_source_state_projects_current_app_state
+02_menu_scene_runner_source_does_not_emit_moved_delta
+03_game_scene_runner_source_emits_runner_moved
+04_runner_moved_feeds_dino_pose_domain
+05_dino_pose_frame_matches_current_stride_inputs
+06_camera_frame_request_matches_close_camera_visual_policy
+07_hud_frame_request_matches_readability_hud_descriptor
+08_presentation_frame_record_journals_all_subrecords
+09_host_get_state_exposes_presentation_snapshot
+10_dom_free_fixture_replays_source_to_presentation_chain
+11_renderer_output_unchanged_by_contract_layer
+12_legacy_runtime_remains_playable_during_cutover
+```
+
 ## Pass/fail rule
 
 Do not mark the game as DSK-authority-complete until a DOM-free fixture can replay start, jump, lane move, hazard, pickup, run-over, retry, and win paths into stable action/result journals without depending on renderer frame timing.
@@ -103,10 +120,11 @@ Do not mark the game as DSK-authority-complete until a DOM-free fixture can repl
 For the immediate presentation gate, do not mark the presentation seam complete until a fixture can prove:
 
 ```txt
-runner source state
+RunnerSourceState
   -> runner.moved
-  -> dino.pose.changed
-  -> camera.frame.requested
-  -> hud.frame.requested
-  -> host presentation snapshot
+  -> dino.pose.changed / DinoPoseFrame
+  -> camera.frame.requested / CameraFrameRequest
+  -> hud.frame.requested / HudFrameRequest
+  -> PresentationFrameRecord
+  -> PrehistoricRushHost.getState().presentation
 ```
