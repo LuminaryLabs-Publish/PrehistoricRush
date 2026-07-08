@@ -1,20 +1,21 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T16-51-11-04-00",
+  "updated": "2026-07-08T19-30-31-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T16-51-11-04-00.md",
-  "status": "source-to-host-presentation-fixture-contract-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T16-51-11-04-00-host-presentation-source-dsk-breakdown.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-08T16-51-11-04-00-render-readback-host-projection-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T16-51-11-04-00-runner-contact-scene-fixture-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T16-51-11-04-00-source-to-host-fixture-contract.md",
-  "previousTracker": ".agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-08T16-40-56-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-08T19-30-31-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T19-30-31-04-00.md",
+  "status": "presentation-authority-consumer-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T19-30-31-04-00-presentation-authority-consumer-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T19-30-31-04-00-render-readback-consumer-fixture-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T19-30-31-04-00-runner-step-contact-scene-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T19-30-31-04-00-consumer-fixture-acceptance-map.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-08T19-30-31-04-00-static-fixture-validation-without-package-json.md",
+  "previousTracker": ".agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-08T16-51-11-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected because repo-local .agent state had advanced beyond central ledger state and the source-to-host presentation fixture seam remains unresolved."
+    "reason": "PrehistoricRush selected as oldest eligible fallback after the current repo-list and root-agent comparison; presentation authority consumer proof remains unresolved."
   },
   "currentRepoLocalKits": [
     { "id": "domain-runtime/event-bus", "path": "src/domain-runtime/event-bus.js", "status": "present_needs_runner_contact_scene_presentation_events", "role": "event history and publish/subscribe scaffold" },
@@ -44,6 +45,7 @@
   "firstMissingProtoKit": "run-movement-kit",
   "nextRepoLocalExtractionCandidates": [
     "prehistoric-rush-runner-source-state-kit",
+    "prehistoric-rush-runner-step-delta-kit",
     "prehistoric-rush-runner-moved-event-kit",
     "prehistoric-rush-dino-event-bridge-kit",
     "prehistoric-rush-dino-pose-frame-kit",
@@ -68,6 +70,7 @@
   ],
   "requiredFrameContract": [
     "RunnerSourceState",
+    "RunnerStepDelta",
     "RunnerMovedEvent",
     "runner.moved",
     "dino.pose.changed",
@@ -83,6 +86,7 @@
   ],
   "sourceWireMapFilesToAddNext": [
     "src/presentation/runner-source-state.js",
+    "src/presentation/runner-step-delta.js",
     "src/presentation/runner-moved-event.js",
     "src/presentation/presentation-events.js",
     "src/presentation/dino-pose-frame.js",
@@ -98,7 +102,7 @@
   ],
   "fixtureRows": [
     "01_runner_source_state_projects_current_app_state",
-    "02_menu_scene_runner_source_does_not_emit_moved_delta",
+    "02_runner_step_delta_reports_noop_in_menu",
     "03_game_scene_runner_source_emits_runner_moved",
     "04_runner_moved_feeds_dino_pose_domain",
     "05_dino_pose_frame_matches_current_stride_inputs",
@@ -114,6 +118,6 @@
     "15_renderer_output_unchanged_by_contract_layer",
     "16_legacy_runtime_remains_playable_during_cutover"
   ],
-  "nextSafeLedge": "PrehistoricRush Source-to-Host Presentation Fixture Contract",
+  "nextSafeLedge": "PrehistoricRush Presentation Authority Consumer Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
