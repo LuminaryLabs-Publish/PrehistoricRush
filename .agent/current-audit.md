@@ -2,13 +2,15 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T03:01:20-04:00`
+**Updated:** `2026-07-08T05:10:47-04:00`
 
 ## Summary
 
-`PrehistoricRush` is a standalone static browser infinite-runner shell. It now has a thin composition entry at `src/game.js` that installs a repo-local domain runtime and dino domain scaffold, then imports the legacy live visual runner from `src/runtime-terrain-v6.mjs`.
+`PrehistoricRush` is a standalone static browser infinite-runner shell.
 
-The immediate architectural problem is that the DSK scaffold exists, but most playable authority still lives inside the legacy visual runtime.
+It now has a thin composition entry at `src/game.js` that installs a repo-local event bus, domain host, scheduler, and dino domain scaffold, then imports the live visual runner from `src/runtime-terrain-v6.mjs`.
+
+The immediate architecture problem is unchanged: the DSK scaffold exists, but most playable authority is still inside the legacy visual runtime.
 
 ## Current route
 
@@ -22,20 +24,21 @@ index.html
   -> exposes globalThis.PrehistoricRushComposition.snapshot()
   -> emits composition.ready
   -> imports ./runtime-terrain-v6.mjs
+  -> runtime-terrain-v6.mjs loads Three.js, Rapier, and rapier-physics-domain-kit from CDN
 ```
 
 ## Source-backed facts
 
-- `README.md` describes the game as a standalone additive game repo for a NexusEngine-powered infinite runner.
-- `README.md` defines the scene flow as `menu -> game -> run-over -> win -> menu`.
-- `README.md` says the product repo should stay thin and reusable behavior should move into NexusEngine core kits or ProtoKits.
-- `index.html` loads `./src/runtime.mjs` through a module script.
-- `src/runtime.mjs` imports `./game.js`.
-- `src/game.js` installs `createEventBus`, `createDomainHost`, `createTickScheduler`, and three dino domain kits.
-- `src/game.js` exposes `globalThis.PrehistoricRushComposition` with a `snapshot()` method.
-- `game-scenes.json` declares `entryScene: menu`, the `menu/game/run-over/win` scene order, and NexusEngine CDN metadata.
-- `kit-cutover-inventory.json` says manual runner movement, segment spawning, collision, score, flock movement, sky drawing, camera smoothing, and scene transition rules should be cut out of product code.
-- `kit-cutover-inventory.json` identifies `run-movement-kit` as the first missing ProtoKit.
+```txt
+- README.md describes the repo as a standalone additive game repo for a NexusEngine-powered infinite runner.
+- README.md declares the scene flow as menu -> game -> run-over -> win -> menu.
+- README.md says the product repo should stay thin and reusable behavior should move into NexusEngine core kits or ProtoKits.
+- src/game.js installs createEventBus, createDomainHost, createTickScheduler, and three dino domain kits.
+- src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
+- src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
+- runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
+- runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, and live route behavior.
+```
 
 ## Current interaction loop
 
@@ -51,7 +54,7 @@ page load
   -> Rapier physics bridge steps actor and colliders
   -> inline collision/contact checks decide run-over, pickup, or win
   -> DOM/HUD/camera/raptor pose/render frame update
-  -> host exposes a runtime snapshot
+  -> host exposes runtime snapshots
 ```
 
 ## Current domains in use
@@ -71,15 +74,18 @@ dino-material-domain
 dino-domain-bundle
 legacy-visual-runtime-bridge
 cdn-dependency-loading
+three-render-runtime
+rapier-physics-runtime
 dom-mount-ownership
 keyboard-input-adapter
 button-input-adapter
-scene-graph-authority
 scene-file-authority
-runner-movement-policy
+scene-transition-authority
+runner-motion-policy
+lane-shift-policy
 jump-policy
 boost-policy
-turn-yaw-policy
+speed-ramp-policy
 distance-score-policy
 procedural-terrain-rendering
 terrain-height-sampling
@@ -155,6 +161,14 @@ run-movement-kit
 
 ## Main risk
 
-The current repo can look more modular than it is because `src/game.js` has a clean domain scaffold, but the actual runner authority is still mostly inside `runtime-terrain-v6.mjs`.
+The current repo can look more modular than it is because `src/game.js` has a clean domain scaffold.
 
-Future work should avoid adding more visual complexity before the runner action/result contract and dino pose bridge are testable without DOM, renderer, or Rapier frame state.
+The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`.
+
+Future work should avoid adding more visual complexity before the runner action/result contract, runner-step result, contact-result snapshot, scene-dispatch result, and dino pose bridge are testable without DOM, renderer, or Rapier frame state.
+
+## Current next safe ledge
+
+```txt
+PrehistoricRush Runner Action/Result Authority + Dino Pose Bridge Fixture Gate
+```
