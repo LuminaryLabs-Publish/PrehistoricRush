@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-08T13:18:13-04:00`
+**Updated:** `2026-07-08T14:51:11-04:00`
 
 ## Highest-priority gaps
 
@@ -20,6 +20,9 @@
 13. The first missing shared ProtoKit is still run-movement-kit.
 14. The source-wire maps now exist, but the actual src/presentation/* files do not exist yet.
 15. There is no package.json in the root, so validation must not assume npm scripts exist.
+16. The event bus has history, but no bounded host-facing projection for runner/contact/scene/presentation facts.
+17. PrehistoricRushComposition.snapshot() reports installed domain state, but not live runner/presentation wire parity.
+18. PrehistoricRushHost.getState() reports renderer as a string, but not a structured render/presentation readback.
 ```
 
 ## Architecture gaps
@@ -47,6 +50,7 @@
 - Boost should first appear in RunnerSourceState before becoming a full ActionResult journal entry.
 - Distance win and run-over should eventually be scene requests/results, not direct scene mutation.
 - Hazard and pickup contacts need ContactResult records before DOM/HUD mutation.
+- Scene changes need oldScene/newScene/reason/source frame records.
 ```
 
 ## Presentation and runtime gaps
@@ -89,8 +93,6 @@
 - action-result-journal-kit is not yet materialized locally.
 - runner-step-result-kit is not yet materialized locally.
 - runner-event-journal-kit is not yet materialized locally.
-- contact-result-snapshot-kit is not yet materialized locally.
-- scene-dispatch-result-kit is not yet materialized locally.
 ```
 
 ## Documentation gaps fixed by this pass
@@ -102,18 +104,18 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-08T13-18-13-04-00-runner-source-journal-dsk-map.md added
-.agent/render-audit/2026-07-08T13-18-13-04-00-presentation-frame-readback-contract.md added
-.agent/gameplay-audit/2026-07-08T13-18-13-04-00-contact-scene-result-loop.md added
-.agent/presentation-authority-audit/2026-07-08T13-18-13-04-00-runner-source-journal-gate.md added
-.agent/trackers/2026-07-08T13-18-13-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-08T13-18-13-04-00.md added
+.agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md added
+.agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md added
+.agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md added
+.agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md added
+.agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-08T14-51-11-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
 
 ## Current unresolved seam
 
-The local `.agent` docs now exist and the source wire map is documented, so the primary remaining gap is implementation.
+The local `.agent` docs now identify the implementation cutline. The primary remaining gap is implementation.
 
-The next proof should materialize the presentation source files, add contact/scene result projections, and add the DOM-free fixture before adding visual polish or shared-kit promotion.
+The next proof should materialize the presentation source files, add contact/scene result projections, wire the existing event bus to the live route, and add the DOM-free fixture before adding visual polish or shared-kit promotion.
