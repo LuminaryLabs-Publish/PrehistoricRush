@@ -1,20 +1,21 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "registryVersion": "1.6.0",
-  "updatedAt": "2026-07-07T23:21:18-04:00",
-  "latestTracker": ".agent/trackers/2026-07-07T23-21-18-04-00/project-breakdown.md",
-  "purpose": "Track kit ownership, service surfaces, manifest authority blockers, RuntimeSourceSnapshot requirements, ActionFrame/ActionResult intake, RunnerSourceState snapshots, RunnerStepResult authority, RunnerEvent journaling, ContactEvent replay, SceneDispatchResult ownership, GameHost diagnostics, DOM-free smoke fixtures, and the run-movement-kit promotion boundary for the PrehistoricRush runner repo.",
+  "registryVersion": "1.7.0",
+  "updatedAt": "2026-07-08T00:49:44-04:00",
+  "latestTracker": ".agent/trackers/2026-07-08T00-49-44-04-00/project-breakdown.md",
+  "purpose": "Track route authority, repo-local domain runtime ownership, dino form/pose/material domain kits, manifest authority, ActionFrame intake, ActionResult journals, RunnerStepResult records, RunnerEvent journals, ContactEvent replay, SceneDispatchResult ownership, GameHost diagnostics, DOM-free smoke fixtures, and the run-movement-kit promotion boundary for the PrehistoricRush runner repo.",
   "selectionPolicy": {
     "onlyOneRepoPerRun": true,
     "excludedRepos": [
       "LuminaryLabs-Publish/TheCavalryOfRome"
     ],
     "selectionReason": "PrehistoricRush had the oldest latest central ledger timestamp among eligible tracked non-Cavalry Publish repos at the start of this pass.",
-    "currentRepoRole": "thin publish shell for a NexusEngine-powered prehistoric infinite runner"
+    "currentRepoRole": "thin publish shell plus repo-local dino-domain bridge scaffold for a NexusEngine-powered prehistoric infinite runner"
   },
   "currentRuntimeSummary": {
-    "entry": "index.html -> src/runtime.mjs -> src/runtime-terrain-v6.mjs",
-    "runtimeEntryStatus": "src/runtime.mjs is thin and imports the active runtime directly.",
+    "entry": "index.html -> src/runtime.mjs -> src/game.js -> dino domain scaffold -> src/runtime-terrain-v6.mjs",
+    "runtimeEntryStatus": "src/runtime.mjs imports src/game.js; src/game.js installs the repo-local domain runtime and dino domain kits before importing the legacy Three.js/Rapier visual runtime.",
+    "compositionHost": "globalThis.PrehistoricRushComposition",
     "debugHost": "globalThis.PrehistoricRushHost",
     "currentRenderer": "three-terrain-v6-raptor",
     "currentLoop": [
@@ -40,6 +41,7 @@
     "renderer bootstrap",
     "keyboard/touch/button adapter binding",
     "debug host exposure",
+    "repo-local composition bridge",
     "repo-local smoke fixtures"
   ],
   "repoShouldNotOwnLongTerm": [
@@ -54,12 +56,14 @@
     "unreplayable live-only input state",
     "implicit accepted/rejected input behavior",
     "implicit hazard/pickup/win contact results",
+    "manual raptor pose math duplicated outside the dino pose domain",
     "implicit run-movement shared-kit boundary"
   ],
   "sourceOfTruthCutover": {
-    "canonicalNextSlice": "PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate",
-    "problem": "game-scenes.json, scenes/game.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json define product intent, but src/runtime-terrain-v6.mjs still duplicates live tuning, scene transitions, input semantics, contact outcomes, spawn budgets, win threshold, source snapshot shape, and host diagnostics inline.",
+    "canonicalNextSlice": "PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate",
+    "problem": "src/game.js has introduced a domain runtime and dino domain kits, but src/runtime-terrain-v6.mjs still owns live runner math, raptor creation, raptor animation, input semantics, contact outcomes, spawn budgets, win threshold, scene transitions, and host diagnostics inline. The existing dino-pose-domain-kit listens for runner.moved, but the live runner never emits runner.moved yet.",
     "driftObserved": [
+      "active route is index.html -> src/runtime.mjs -> src/game.js -> dino scaffold -> src/runtime-terrain-v6.mjs, not the older index.html -> src/runtime.mjs -> src/runtime-terrain-v6.mjs route",
       "runtime motion.speed = 15 vs runner-tuning.json motion.baseForwardSpeed = 13.5",
       "runtime motion.maxSpeed = 25 vs runner-tuning.json motion.maxForwardSpeed = 24",
       "runtime motion.boostSpeed = 31 vs runner-tuning.json motion.boostForwardSpeed = 29",
@@ -72,14 +76,17 @@
       "runtime spawn counts and clear radius are inline instead of manifest-owned",
       "runtime jump consumption is a raw boolean reset instead of an ActionFrame/RunnerStepResult fact",
       "runtime hazard, pickup, and win outcomes mutate app.scene or runner state without durable ContactEvent records",
-      "runtime host exposes getState only; no diagnostics, dispatch, replay journal, source snapshot, or smoke runner exists yet"
+      "runtime host exposes getState only; no diagnostics, dispatch, replay journal, source snapshot, dino domain bridge report, or smoke runner exists yet"
     ],
     "requiredFixes": [
+      "treat src/game.js as the canonical composition entry after src/runtime.mjs",
+      "bridge live runner movement into runner.moved events",
+      "surface dino form, pose, and material domain snapshots in diagnostics",
       "load manifests before runtime setup",
       "emit ManifestLoadStatus and ManifestDriftReport before changing visible behavior",
       "normalize nextOnLoss from fail to run-over or keep fail as explicit compatibility alias only",
       "make inline tuning fallback-only",
-      "surface loaded config, fallback status, alias status, drift status, source snapshot, and fixture status in PrehistoricRushHost.getDiagnostics()",
+      "surface loaded config, fallback status, alias status, drift status, source snapshot, dino domain bridge status, and fixture status in PrehistoricRushHost.getDiagnostics()",
       "route button, keyboard, and future touch input through ActionFrame records",
       "separate accepted action journal from rejected input diagnostics",
       "route start, retry, menu, run-over, win, and run-again through SceneDispatchResult records",
@@ -92,6 +99,12 @@
     "runtimeAndShell": [
       "static-browser-shell",
       "module-runtime-entry",
+      "composition-bootstrap",
+      "event-bus-history",
+      "domain-host-installation",
+      "domain-idempotency",
+      "tick-scheduler-scaffold",
+      "legacy-visual-runtime-bridge",
       "cdn-dependency-loading",
       "import-fallback-diagnostics",
       "dom-mount-ownership",
@@ -101,6 +114,15 @@
       "resize-adapter-ownership",
       "future-touch-input-adapter",
       "debug-host-exposure"
+    ],
+    "dinoDomains": [
+      "dino-entity-domain",
+      "dino-form-domain",
+      "dino-pose-domain",
+      "dino-material-domain",
+      "dino-domain-bundle",
+      "raptor-domain-descriptor-consumption",
+      "dino-domain-bridge-smoke"
     ],
     "manifestAndSourceAuthority": [
       "manifest-authority",
@@ -176,11 +198,44 @@
       "runner-step-smoke",
       "contact-event-smoke",
       "scene-dispatch-smoke",
+      "dino-domain-bridge-smoke",
       "host-diagnostics-smoke",
       "replay-parity-smoke",
       "run-movement-promotion-smoke"
     ]
   },
+  "currentDomainRuntimeServices": [
+    "createEventBus",
+    "eventBus.on",
+    "eventBus.emit",
+    "eventBus.snapshot",
+    "createDomainHost",
+    "domainHost.install",
+    "domainHost.get",
+    "domainHost.tick",
+    "domainHost.snapshot",
+    "createTickScheduler",
+    "scheduler.start",
+    "scheduler.stop",
+    "scheduler.snapshot"
+  ],
+  "currentDinoDomainServices": [
+    "createDinoFormDomainKit",
+    "dino-form-domain-kit.getDescriptor",
+    "dino-form-domain-kit.snapshot",
+    "dino.form.ready",
+    "createDinoPoseDomainKit",
+    "dino-pose-domain-kit.update",
+    "dino-pose-domain-kit.getDescriptor",
+    "dino-pose-domain-kit.snapshot",
+    "dino.pose.ready",
+    "dino.pose.changed",
+    "runner.moved listener",
+    "createDinoMaterialDomainKit",
+    "dino-material-domain-kit.getDescriptor",
+    "dino-material-domain-kit.snapshot",
+    "dino.material.ready"
+  ],
   "currentProductServices": [
     "load",
     "shell",
@@ -248,6 +303,11 @@
     "reduceRunnerStep",
     "emitRunnerStepResult",
     "emitRunnerEvent",
+    "emitRunnerMovedForDinoPose",
+    "readDinoFormDescriptor",
+    "readDinoPoseDescriptor",
+    "readDinoMaterialDescriptor",
+    "bridgeDinoPoseToRaptorAnimation",
     "emitHazardHit",
     "emitShardPickup",
     "emitDistanceGoal",
@@ -274,6 +334,65 @@
     "createCoreUIKit",
     "createCoreDiagnosticsKit",
     "createCoreCompositionKit"
+  ],
+  "existingRepoLocalKits": [
+    {
+      "id": "event-bus",
+      "state": "installed-by-src-game-js",
+      "services": [
+        "on",
+        "emit",
+        "snapshot"
+      ]
+    },
+    {
+      "id": "domain-host",
+      "state": "installed-by-src-game-js",
+      "services": [
+        "install",
+        "get",
+        "tick",
+        "snapshot"
+      ]
+    },
+    {
+      "id": "tick-scheduler",
+      "state": "created-but-not-owning-live-runtime-loop",
+      "services": [
+        "start",
+        "stop",
+        "snapshot"
+      ]
+    },
+    {
+      "id": "dino-form-domain-kit",
+      "state": "installed-by-src-game-js",
+      "services": [
+        "getDescriptor",
+        "snapshot",
+        "dino.form.ready"
+      ]
+    },
+    {
+      "id": "dino-pose-domain-kit",
+      "state": "installed-by-src-game-js-but-waiting-for-runner-moved-events",
+      "services": [
+        "update",
+        "getDescriptor",
+        "snapshot",
+        "dino.pose.ready",
+        "dino.pose.changed"
+      ]
+    },
+    {
+      "id": "dino-material-domain-kit",
+      "state": "installed-by-src-game-js",
+      "services": [
+        "getDescriptor",
+        "snapshot",
+        "dino.material.ready"
+      ]
+    }
   ],
   "existingProtoKits": [
     {
@@ -305,7 +424,7 @@
   "missingProtoKits": [
     {
       "id": "run-movement-kit",
-      "reason": "No current shared kit owns runner movement, jump buffer/coyote timing, speed ramp, boost, accepted action consumption, step results, and motion/animation descriptors as one reusable contract.",
+      "reason": "No current shared kit owns runner movement, jump buffer/coyote timing, speed ramp, boost, accepted action consumption, step results, motion descriptors, pose event emission, and animation descriptors as one reusable contract.",
       "candidateServices": [
         "createRunnerController",
         "applyActionFrame",
@@ -314,6 +433,7 @@
         "tickFixedStep",
         "emitRunnerStepResult",
         "emitRunnerEvent",
+        "emitRunnerMoved",
         "emitMotionDescriptor",
         "emitAnimationPhaseDescriptor",
         "snapshot"
@@ -327,13 +447,14 @@
         "RunnerStepResult metadata",
         "RunnerEvent journal",
         "ContactEvent journal",
+        "dino pose bridge event coverage",
         "stable GameHost diagnostics",
         "DOM-free behavior fixtures",
         "RunMovementPromotionReport"
       ]
     }
   ],
-  "repoLocalExtractionCandidates": [
+  "nextCutRepoLocalKits": [
     "prehistoric-rush-runtime-source-bundle-kit",
     "prehistoric-rush-manifest-loader-kit",
     "prehistoric-rush-manifest-load-status-kit",
@@ -353,6 +474,7 @@
     "prehistoric-rush-runner-step-result-kit",
     "prehistoric-rush-runner-event-contract-kit",
     "prehistoric-rush-runner-event-journal-kit",
+    "prehistoric-rush-dino-domain-bridge-kit",
     "prehistoric-rush-contact-event-contract-kit",
     "prehistoric-rush-contact-result-snapshot-kit",
     "prehistoric-rush-scene-dispatch-result-kit",
@@ -362,64 +484,39 @@
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
   "deferredExtractionKits": [
-    "prehistoric-rush-terrain-source-kit",
+    "prehistoric-rush-terrain-streaming-kit",
     "prehistoric-rush-scatter-placement-kit",
-    "prehistoric-rush-raptor-rig-kit",
+    "prehistoric-rush-hazard-contact-kit",
+    "prehistoric-rush-pickup-contact-kit",
+    "prehistoric-rush-raptor-render-kit",
     "prehistoric-rush-camera-follow-kit",
-    "prehistoric-rush-hud-renderer-kit",
-    "prehistoric-rush-three-renderer-adapter-kit",
-    "prehistoric-rush-rapier-adapter-kit",
-    "prehistoric-rush-flock-render-kit"
+    "prehistoric-rush-hud-projection-kit",
+    "prehistoric-rush-flock-visual-kit"
   ],
-  "nextImplementationSlice": {
-    "name": "PrehistoricRush Manifest Action Contact Fixture Matrix + Run Movement Promotion Gate",
-    "intent": "Make the current playable runner source-auditable, replayable, and ready for run-movement-kit promotion before moving visual, terrain, physics, movement, or flock rules into extracted kits.",
+  "nextSlice": {
+    "name": "PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate",
+    "preserve": [
+      "index.html",
+      "src/runtime.mjs",
+      "current visible Three.js/Rapier behavior",
+      "current PrehistoricRushHost.getState() output compatibility"
+    ],
     "buildOrder": [
-      "preserve index.html, src/runtime.mjs, current Three.js/Rapier visuals, current controls, and current PrehistoricRushHost.getState()",
-      "add RuntimeSourceBundle loading before setup()",
-      "load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json",
-      "emit ManifestLoadStatus with loaded, failed, fallback, and source path details",
-      "emit ManifestDriftReport with live-vs-manifest deltas",
-      "add explicit fail -> run-over SceneAliasCatalog entry",
-      "adapt runner-tuning.json into RuntimeRunnerTuning while keeping current inline values fallback-only",
-      "add SpawnBudgetSource and WinThresholdSource descriptors populated from current inline behavior first",
-      "normalize button, keyboard, and future touch input into ActionFrame records",
-      "add ActionAcceptanceMatrix for start, retry, run-again, menu, left, right, boost, jump, and future touch actions",
-      "emit ActionResult records with stable accepted/rejected reasons",
-      "snapshot RunnerSourceState before and after movement",
-      "wrap current movement math in RunnerStepResult without changing feel",
-      "emit RunnerEvent facts for jump-consumed, boost-active, speed-delta, distance-delta, heading-delta, grounded-change, terrain-rebuild-requested, pickup, impact, goal, and scene-request",
-      "emit ContactEvent records for hazard-hit, shard-pickup, and distance-goal",
-      "reduce ContactResult snapshots from ContactEvent records",
-      "route run-over and win transitions through SceneDispatchResult records",
-      "expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), runSmoke(name), and runReplayParitySmoke()",
-      "add DOM-free fixtures for manifest load, manifest missing fallback, tuning drift, fail alias, start, retry, run-again, jump accepted, jump rejected while airborne, hazard run-over, shard pickup, distance win, and replay parity",
-      "add RunMovementPromotionReport that names what should move into run-movement-kit after fixture parity passes",
-      "defer terrain/render/raptor/camera/Rapier/flock extraction until source-lock fixtures pass"
+      "document and enforce active route authority",
+      "load manifests before runtime setup",
+      "emit ManifestLoadStatus and ManifestDriftReport",
+      "normalize fail -> run-over through SceneAliasCatalog",
+      "adapt RuntimeRunnerTuning",
+      "add RuntimeSourceSnapshot, SpawnBudgetSource, and WinThresholdSource",
+      "add ActionFrame and ActionResult records",
+      "add RunnerSourceState and RunnerStepResult records",
+      "emit runner.moved from the live movement step",
+      "connect dino-pose-domain-kit to live runner movement",
+      "surface dino snapshots in diagnostics",
+      "add RunnerEvent, ContactEvent, ContactResult, and SceneDispatchResult records",
+      "expand PrehistoricRushHost diagnostics and fixture APIs",
+      "add DOM-free dino bridge and replay parity fixtures",
+      "emit RunMovementPromotionReport"
     ]
-  },
-  "acceptanceChecklist": [
-    "Existing runner still boots from index.html.",
-    "Existing visual scene and controls remain unchanged.",
-    "RuntimeSourceBundle can load all product manifests or report fallback.",
-    "ManifestLoadStatus is available from PrehistoricRushHost.getDiagnostics().",
-    "ManifestDriftReport lists all live-vs-manifest drift without breaking runtime.",
-    "fail -> run-over alias is explicit and testable.",
-    "ActionFrame records are generated for button and keyboard input.",
-    "ActionResultJournal records accepted and rejected actions.",
-    "RunnerSourceState snapshots are serializable.",
-    "RunnerStepResult wraps current movement and jump consumption.",
-    "RunnerEventJournal records movement, boost, jump, terrain rebuild, pickup, impact, goal, and scene request facts.",
-    "ContactEvent records exist for hazard, pickup, and goal.",
-    "SceneDispatchResult owns run-over and win scene changes.",
-    "PrehistoricRushHost exposes diagnostics, snapshots, replay journal, dispatch, and smokes.",
-    "DOM-free replay fixture can reproduce a scripted accepted/rejected action sequence.",
-    "RunMovementPromotionReport names the exact shared-kit API candidate and remaining blockers."
-  ],
-  "validation": {
-    "runtimeSourceChanged": false,
-    "localBuildRun": false,
-    "smokeRun": false,
-    "notes": "Documentation-only pass. No runtime source files changed."
   }
 }
