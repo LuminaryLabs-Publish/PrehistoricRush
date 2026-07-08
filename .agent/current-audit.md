@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T13:18:13-04:00`
+**Updated:** `2026-07-08T14:51:11-04:00`
 
 ## Summary
 
@@ -12,27 +12,29 @@ It has a repo-local composition scaffold in `src/game.js` that installs an event
 
 The blocking seam is still not missing docs. It is that the live runner loop and the presentation pass do not emit fixture-readable source, movement, contact, scene, dino, camera, HUD, and presentation records.
 
+This pass narrows the next implementation to the exact event-host wire map between the legacy visual runtime, existing repo-local domain kits, and `PrehistoricRushHost.getState().presentation`.
+
 ## Full repo-list comparison result
 
 ```txt
-AetherVale            tracked; root .agent observed
-HorrorCorridor        tracked; root .agent observed
-IntoTheMeadow         tracked; root .agent observed
-MyCozyIsland          tracked; root .agent observed
-PhantomCommand        tracked; root .agent observed
-PrehistoricRush       selected fallback follow-up: runner source journal and contact/scene result gate
+AetherVale            tracked; root .agent observed; latest central update 2026-07-08T13:39:15-04:00
+HorrorCorridor        tracked; root .agent observed; latest central review 2026-07-08T13:59:50-04:00
+IntoTheMeadow         tracked; root .agent observed; latest central update 2026-07-08T13:50:37-04:00
+MyCozyIsland          tracked; root .agent observed; repo-local alignment observed 2026-07-08T14:39:38-04:00
+PhantomCommand        tracked; root .agent observed; latest central update 2026-07-08T14:08:24-04:00
+PrehistoricRush       selected fallback follow-up: presentation event host wire map
 TheCavalryOfRome      excluded by rule
-TheOpenAbove          tracked; root .agent observed
-TheUnmappedHouse      tracked; root .agent observed
-ZombieOrchard         tracked; root .agent observed
+TheOpenAbove          tracked; root .agent observed; latest central update 2026-07-08T13:31:29-04:00
+TheUnmappedHouse      tracked; root .agent observed; latest central review 2026-07-08T14:31:06-04:00
+ZombieOrchard         tracked; root .agent observed; latest central update 2026-07-08T14:18:45-04:00
 ```
 
 Selection reason:
 
 ```txt
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, or missing sampled root .agent/START_HERE.md state.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the eligible fallback target because it still needs an additive event/presentation readback layer plus contact and scene result records before implementation should move to renderer replacement, shared-kit promotion, or new gameplay content.
+PrehistoricRush was selected as the eligible fallback target because it still needs additive event/presentation readback plus contact and scene result records before implementation should move to renderer replacement, shared-kit promotion, or new gameplay content.
 ```
 
 ## Current route
@@ -264,4 +266,15 @@ prehistoric-rush-presentation-journal-kit
 prehistoric-rush-host-presentation-snapshot-kit
 prehistoric-rush-dom-free-presentation-fixture-kit
 prehistoric-rush-action-frame-contract-kit
+prehistoric-rush-action-acceptance-matrix-kit
+prehistoric-rush-action-result-journal-kit
+prehistoric-rush-runner-step-result-kit
+prehistoric-rush-runner-event-journal-kit
+prehistoric-rush-replay-parity-smoke-kit
+```
+
+## Next safe ledge
+
+```txt
+PrehistoricRush Presentation Event Host Wire Map + Fixture Gate
 ```
