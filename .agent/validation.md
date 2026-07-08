@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T08:11:28-04:00`
+**Updated:** `2026-07-08T09:29:20-04:00`
 
 ## Validation status for this pass
 
@@ -12,14 +12,15 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
-- GitHub connector read of root .agent state for the checked non-Cavalry Publish repos.
+- GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs latest summary and PrehistoricRush repo ledger.
 - GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
 - GitHub connector read of PrehistoricRush existing .agent docs.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
-- GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger for PrehistoricRush.
-- GitHub connector create of new PrehistoricRush presentation frame contract audit.
+- GitHub connector create of new PrehistoricRush DSK/domain architecture audit.
+- GitHub connector create of new PrehistoricRush render presentation readback audit.
+- GitHub connector create of new PrehistoricRush presentation source wire map.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
@@ -39,6 +40,7 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - No Playwright smoke was run.
 - No live GitHub Pages route was opened.
 - No Rapier/Three.js runtime execution was performed.
+- No DOM-free presentation fixture was run.
 ```
 
 ## Next validation commands
@@ -58,6 +60,7 @@ Browser console checks:
 ```js
 globalThis.PrehistoricRushComposition?.snapshot?.()
 globalThis.PrehistoricRushHost?.getState?.()
+globalThis.PrehistoricRushHost?.getState?.().presentation
 ```
 
 Expected route facts:
@@ -121,10 +124,10 @@ For the immediate presentation gate, do not mark the presentation seam complete 
 
 ```txt
 RunnerSourceState
-  -> runner.moved
-  -> dino.pose.changed / DinoPoseFrame
-  -> camera.frame.requested / CameraFrameRequest
-  -> hud.frame.requested / HudFrameRequest
+  -> RunnerMovedEvent
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
   -> PresentationFrameRecord
   -> PrehistoricRushHost.getState().presentation
 ```
