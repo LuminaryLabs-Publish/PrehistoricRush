@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T10:39:22-04:00`
+**Last aligned:** `2026-07-08T12:09:27-04:00`
 
 ## Purpose
 
@@ -12,13 +12,28 @@ Read this folder before changing implementation code.
 
 ## Selection result
 
-The accessible `LuminaryLabs-Publish` repo list was checked against central tracking in `LuminaryLabs-Dev/LuminaryLabs`.
+The accessible `LuminaryLabs-Publish` repository list was compared against tracked repo-ledger state in `LuminaryLabs-Dev/LuminaryLabs`.
 
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing sampled root `.agent/START_HERE.md` state.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the fallback follow-up because its prior pass established a presentation source wire map, but the live runner still does not emit fixture-readable `runner.moved`, `dino.pose.changed`, `camera.frame.requested`, or `hud.frame.requested` events from the actual route.
+`PrehistoricRush` was selected as the oldest eligible fallback because its previous alignment was older than the latest sampled follow-up updates and the live runner still needs fixture-readable event and presentation source records before further visual work or shared-kit promotion.
+
+## Publish repos checked
+
+```txt
+LuminaryLabs-Publish/AetherVale          tracked / root .agent present / latest sampled follow-up 2026-07-08T12:01:23-04:00
+LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent present / latest sampled follow-up 2026-07-08T11:09:38-04:00
+LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent present / latest sampled follow-up 2026-07-08T10:48:47-04:00
+LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent present / latest sampled follow-up 2026-07-08T11:40:00-04:00
+LuminaryLabs-Publish/PhantomCommand      tracked / root .agent present / latest sampled follow-up 2026-07-08T10:58:46-04:00
+LuminaryLabs-Publish/PrehistoricRush     selected fallback / previous alignment 2026-07-08T10:39:22-04:00
+LuminaryLabs-Publish/TheCavalryOfRome    excluded by rule
+LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent present / latest sampled follow-up 2026-07-08T11:49:04-04:00
+LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent present / latest sampled follow-up 2026-07-08T11:28:38-04:00
+LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent present / latest sampled follow-up 2026-07-08T11:19:53-04:00
+```
 
 ## Current product read
 
@@ -66,6 +81,7 @@ RunnerSourceState
   -> CameraFrameRequest
   -> HudFrameRequest
   -> PresentationFrameRecord
+  -> PresentationJournalSnapshot
   -> PrehistoricRushHost.getState().presentation
   -> DOM-free fixture cases
 ```
@@ -78,16 +94,16 @@ RunnerSourceState
 .agent/next-steps.md
 .agent/validation.md
 .agent/architecture-audit/domain-service-breakdown.md
-.agent/architecture-audit/2026-07-08T10-39-22-04-00-dsk-domain-breakdown.md
+.agent/architecture-audit/2026-07-08T12-09-27-04-00-runner-event-dsk-map.md
 .agent/render-audit/render-surface-audit.md
-.agent/render-audit/2026-07-08T10-39-22-04-00-render-event-readback.md
+.agent/render-audit/2026-07-08T12-09-27-04-00-presentation-readback-contract.md
 .agent/gameplay-audit/runner-loop-audit.md
+.agent/gameplay-audit/2026-07-08T12-09-27-04-00-runner-event-loop.md
 .agent/runner-authority-audit/action-result-fixture-gate.md
-.agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md
 .agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md
-.agent/presentation-authority-audit/2026-07-08T10-39-22-04-00-event-bridge-fixture-readiness.md
-.agent/trackers/2026-07-08T10-39-22-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T10-39-22-04-00.md
+.agent/presentation-authority-audit/2026-07-08T12-09-27-04-00-fixture-source-wire-map.md
+.agent/trackers/2026-07-08T12-09-27-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T12-09-27-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -114,14 +130,14 @@ kit-cutover-inventory.json
 
 ## Main rule
 
-Do not add more visual polish or shared-kit promotion until the current route can expose stable presentation and runner event records.
+Do not add more visual polish, renderer replacement, or shared-kit promotion until the current route exposes stable presentation and runner event records.
 
-The next runtime change should add an additive event bridge and journal:
+The next runtime change should add an additive source wire and journal:
 
 ```txt
 source runner state
   -> runner.moved event
-  -> dino pose descriptor
+  -> dino pose descriptor/event
   -> camera frame request
   -> HUD frame request
   -> presentation frame journal
@@ -131,7 +147,7 @@ source runner state
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Runner Event Bridge + Presentation Frame Fixture Gate
+PrehistoricRush Runner Event Fixture Source Map
 ```
 
-Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable event bridge records beside the existing direct renderer mutations.
+Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable records beside the existing direct renderer mutations.
