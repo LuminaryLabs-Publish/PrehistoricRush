@@ -11,12 +11,12 @@ The product repo should stay thin. It should own the browser shell, scene manife
 ## Latest documented run
 
 ```txt
-.agent/trackers/2026-07-07T20-38-27-04-00/project-breakdown.md
+.agent/trackers/2026-07-07T21-59-06-04-00/project-breakdown.md
 ```
 
-This run keeps the runner-source/contact authority direction, but tightens the next implementation slice into **PrehistoricRush Manifest Drift Gate + Replay Journal Source Lock**.
+This run keeps the manifest/source-authority direction and tightens the next implementation slice into **PrehistoricRush ActionFrame Manifest Harness + Contact Dispatch Replay Lock**.
 
-The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, terrain streaming, scatter/collider/pickup generation, contact checks, result transitions, camera, HUD, physics bridge calls, and partial host snapshots inline. The next pass should make manifest load status, manifest drift, scene alias normalization, ActionFrame intake, ActionResult journals, RunnerSourceState snapshots, RunnerStepResult records, RunnerEvent facts, ContactEvent records, ContactResult snapshots, SceneDispatchResult records, host diagnostics, and DOM-free replay parity explicit before any renderer, terrain, raptor, camera, or Rapier extraction.
+The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs` still owns live tuning, scene mutation, input booleans, runner motion, jump consumption, terrain streaming, scatter/collider/pickup generation, contact checks, result transitions, camera, HUD, physics bridge calls, and partial host snapshots inline. The next pass should wrap that runtime with manifest load status, manifest drift, explicit scene aliasing, ActionFrame intake, ActionResult journals, RunnerSourceState snapshots, RunnerStepResult records, RunnerEvent facts, ContactEvent records, ContactResult snapshots, SceneDispatchResult records, host diagnostics, and DOM-free replay parity before any renderer, terrain, raptor, camera, or Rapier extraction.
 
 ## Kit registry
 
@@ -24,11 +24,12 @@ The runner is playable and visually functional, but `src/runtime-terrain-v6.mjs`
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next Manifest Drift / Replay Journal source-lock gate.
+The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the missing `run-movement-kit`, existing ProtoKit families to consume first, repo-local extraction candidates, service ownership, known blockers, and the next ActionFrame / Manifest Harness / Contact Dispatch replay-lock gate.
 
 ## Prior documented runs
 
 ```txt
+.agent/trackers/2026-07-07T20-38-27-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T19-18-58-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T18-00-19-04-00/project-breakdown.md
 .agent/trackers/2026-07-07T16-40-29-04-00/project-breakdown.md
@@ -54,12 +55,13 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Manifest Drift Gate + Replay Journal Source Lock`:
+Run the `PrehistoricRush ActionFrame Manifest Harness + Contact Dispatch Replay Lock`:
 
 ```txt
 preserve index.html
 preserve src/runtime.mjs
 preserve current visual Three.js/Rapier behavior
+preserve current PrehistoricRushHost.getState()
 load game-scenes.json, scenes/*.json, runner-tuning.json, kit-composition.json, kit-cutover-inventory.json, and flock-generation.json before setup()
 emit ManifestLoadStatus with loaded, failed, fallback, and source path details
 emit ManifestDriftReport with live-vs-manifest tuning deltas
@@ -69,14 +71,14 @@ add SpawnBudgetSource and WinThresholdSource descriptors
 add ActionFrame records for start, retry, run-again, menu, left, right, boost, jump, and future touch intents
 add scene-scoped ActionAcceptanceMatrix rules
 add ActionResult records with stable accepted/rejected reasons
-add RunnerSourceState snapshot and hydrate helpers
+add RunnerSourceState snapshot, diff, and hydrate helpers
 wrap current movement tick in RunnerStepResult without visible math changes first
-record jump-consumed, boost-active, speed-delta, distance-delta, heading-delta, grounded-change, and terrain-rebuild-requested facts
+record jump-consumed, boost-active, speed-delta, distance-delta, heading-delta, grounded-change, terrain-rebuild-requested, pickup, impact, goal, and scene-request facts
 emit RunnerEvent journal entries for movement, jump, boost, rebuild, pickup, impact, goal, and scene request
 emit ContactEvent records for hazard-hit, shard-pickup, and distance-goal
 emit ContactResult snapshots from ContactEvent reduction
 emit SceneDispatchResult records for run-over and win
-expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), and runSmoke(name)
+expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), runSmoke(name), and runReplayParitySmoke()
 add DOM-free smoke fixtures for manifest load, tuning drift report, fail alias, start, retry, run-again, jump acceptance/rejection, hazard run-over, shard pickup, distance win, and replay parity
 defer terrain/render/raptor/camera/Rapier extraction until source-lock smokes pass
 ```
