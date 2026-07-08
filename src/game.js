@@ -2,22 +2,26 @@ import { createEventBus } from "./domain-runtime/event-bus.js";
 import { createDomainHost } from "./domain-runtime/domain-host.js";
 import { createTickScheduler } from "./domain-runtime/tick-scheduler.js";
 import { createDinoFormDomainKit, createDinoPoseDomainKit, createDinoMaterialDomainKit } from "./domains/dino/index.js";
+import { createCameraDomainKit } from "./domains/camera/camera-domain-kit.js";
+import { createHudDomainKit } from "./domains/hud/hud-domain-kit.js";
 
 const eventBus = createEventBus();
 const domainHost = createDomainHost({ eventBus });
 const scheduler = createTickScheduler({ host: domainHost, eventBus });
 
-const dinoDomains = [
+const domains = [
   createDinoFormDomainKit({ entityId: "dino" }),
   createDinoPoseDomainKit({ entityId: "dino" }),
-  createDinoMaterialDomainKit({ entityId: "dino" })
+  createDinoMaterialDomainKit({ entityId: "dino" }),
+  createCameraDomainKit(),
+  createHudDomainKit()
 ];
 
-for (const domain of dinoDomains) domainHost.install(domain);
+for (const domain of domains) domainHost.install(domain);
 
 globalThis.PrehistoricRushComposition = {
-  version: "dsk-composition-v1",
-  mode: "legacy-visual-runtime-with-dino-domain-scaffold",
+  version: "dsk-composition-v2-presentation",
+  mode: "legacy-visual-runtime-with-camera-hud-dino-domain-scaffold",
   eventBus,
   domainHost,
   scheduler,
