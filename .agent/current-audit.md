@@ -2,39 +2,39 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T08:11:28-04:00`
+**Updated:** `2026-07-08T09:29:20-04:00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite-runner shell.
 
-It now has a thin composition entry in `src/game.js` that installs repo-local event-bus, domain-host, scheduler, dino, camera, and HUD domains before importing the live Three.js/Rapier runner in `src/runtime-terrain-v6.mjs`.
+It has a repo-local composition scaffold in `src/game.js` that installs an event bus, domain host, scheduler, dino domains, camera domain, and HUD domain before importing the live Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-The current architecture issue is sharper than before: the project has presentation domain scaffolds, but the actual frame still comes from direct host-app mutation in `src/game.js` and `src/runtime-terrain-v6.mjs`.
+The current architecture issue is no longer documentation presence. It is the missing source wire between the live runner state and fixture-readable presentation records.
 
 ## Full repo-list comparison result
 
 ```txt
-AetherVale            tracked; root .agent observed; last aligned 2026-07-08T07:18:11-04:00
-HorrorCorridor        tracked; root .agent observed; last aligned 2026-07-08T07:01:54-04:00
-IntoTheMeadow         tracked; root .agent observed; last aligned 2026-07-08T07:41:52-04:00
-MyCozyIsland          tracked; root .agent observed; last aligned 2026-07-08T07:30:30-04:00
-PhantomCommand        tracked; root .agent observed; last aligned 2026-07-08T07:50:47-04:00
-PrehistoricRush       selected fallback follow-up; last aligned 2026-07-08T06:51:12-04:00
+AetherVale            tracked; root .agent observed
+HorrorCorridor        tracked; root .agent observed
+IntoTheMeadow         tracked; root .agent observed
+MyCozyIsland          tracked; root .agent observed
+PhantomCommand        tracked; root .agent observed
+PrehistoricRush       selected fallback follow-up: presentation source wire map
 TheCavalryOfRome      excluded by rule
-TheOpenAbove          tracked; root .agent observed; last aligned 2026-07-08T07:10:12-04:00
-TheUnmappedHouse      tracked; root .agent observed; skip stale-rollup repeat reason
-ZombieOrchard         tracked; root .agent observed; last aligned 2026-07-08T08:02:32-04:00
+TheOpenAbove          tracked; root .agent observed
+TheUnmappedHouse      tracked; root .agent observed; stale rollup gap already closed
+ZombieOrchard         tracked; root .agent observed
 ```
 
 Selection reason:
 
 ```txt
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing root .agent/START_HERE.md state.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing sampled root .agent/START_HERE.md state.
 
 TheUnmappedHouse has an older visible alignment time, but its own local docs say the closed central rollup gap should no longer be used as a reason to repeatedly select it.
 
-PrehistoricRush was selected as the oldest eligible fallback follow-up with unresolved runtime/presentation authority work.
+PrehistoricRush was selected as the oldest/high-value fallback follow-up with unresolved runtime/presentation authority work.
 ```
 
 ## Current route
@@ -134,8 +134,9 @@ raptor-pose-animation
 camera-follow-policy
 hud-telemetry-projection
 presentation-pass-authority
-host-diagnostics
 presentation-frame-contract
+presentation-descriptor-journal
+host-diagnostics
 repo-local-agent-state
 central-ledger-readback
 ```
@@ -231,16 +232,34 @@ createCoreCompositionKit
 run-movement-kit
 ```
 
-## Main risk
+## Source wire map finding
 
 The repo can look more modular than it is because `src/game.js` has a clean domain scaffold.
 
 The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`, and the presentation pass still directly mutates camera, HUD DOM, dino stride, and renderer output from `PrehistoricRushHost.app`.
 
-Future work should avoid adding visual complexity before runner source facts, runner movement, dino pose, camera frame, HUD frame, contact results, and scene-dispatch results are testable without DOM, renderer, or Rapier frame state.
+The next implementation needs a source wire map that records the current behavior as data:
+
+```txt
+RunnerSourceState
+  -> RunnerMovedEvent
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
+  -> PresentationFrameRecord
+  -> PrehistoricRushHost.getState().presentation
+```
+
+## New audit surfaces added
+
+```txt
+.agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md
+.agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md
+.agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md
+```
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Frame Contract Acceptance Ledger
+PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
 ```
