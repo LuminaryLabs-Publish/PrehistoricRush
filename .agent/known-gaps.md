@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-08T16-40-56-04-00`
+**Updated:** `2026-07-08T16-51-11-04-00`
 
 ## Highest-priority gaps
 
@@ -23,6 +23,7 @@
 16. The event bus has history, but no bounded host-facing projection for runner/contact/scene/presentation facts.
 17. PrehistoricRushComposition.snapshot() reports installed domain state, but not live runner/presentation wire parity.
 18. PrehistoricRushHost.getState() reports renderer as a string, but not a structured render/presentation readback.
+19. The central ledger had fallen behind repo-local .agent state before this pass.
 ```
 
 ## Architecture gaps
@@ -107,16 +108,16 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md added
-.agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md added
-.agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md added
-.agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md added
-.agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-08T16-40-56-04-00.md added
+.agent/architecture-audit/2026-07-08T16-51-11-04-00-host-presentation-source-dsk-breakdown.md added
+.agent/render-audit/2026-07-08T16-51-11-04-00-render-readback-host-projection-map.md added
+.agent/gameplay-audit/2026-07-08T16-51-11-04-00-runner-contact-scene-fixture-loop.md added
+.agent/presentation-authority-audit/2026-07-08T16-51-11-04-00-source-to-host-fixture-contract.md added
+.agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-08T16-51-11-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
 
 ## Current unresolved seam
 
-The local `.agent` docs now identify the source-file implementation manifest. The primary remaining gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
+The primary remaining gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
