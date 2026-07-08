@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T09:29:20-04:00`
+**Updated:** `2026-07-08T10:39:22-04:00`
 
 ## Summary
 
@@ -10,7 +10,7 @@
 
 It has a repo-local composition scaffold in `src/game.js` that installs an event bus, domain host, scheduler, dino domains, camera domain, and HUD domain before importing the live Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-The current architecture issue is no longer documentation presence. It is the missing source wire between the live runner state and fixture-readable presentation records.
+The current architecture issue is now narrower than documentation presence or a source wire map. The missing link is a live event bridge and fixture-readable presentation frame journal that proves the scaffold is connected to the actual route.
 
 ## Full repo-list comparison result
 
@@ -20,7 +20,7 @@ HorrorCorridor        tracked; root .agent observed
 IntoTheMeadow         tracked; root .agent observed
 MyCozyIsland          tracked; root .agent observed
 PhantomCommand        tracked; root .agent observed
-PrehistoricRush       selected fallback follow-up: presentation source wire map
+PrehistoricRush       selected fallback follow-up: runner event bridge and presentation frame fixture gate
 TheCavalryOfRome      excluded by rule
 TheOpenAbove          tracked; root .agent observed
 TheUnmappedHouse      tracked; root .agent observed; stale rollup gap already closed
@@ -32,9 +32,7 @@ Selection reason:
 ```txt
 No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing sampled root .agent/START_HERE.md state.
 
-TheUnmappedHouse has an older visible alignment time, but its own local docs say the closed central rollup gap should no longer be used as a reason to repeatedly select it.
-
-PrehistoricRush was selected as the oldest/high-value fallback follow-up with unresolved runtime/presentation authority work.
+PrehistoricRush was selected as a high-value fallback follow-up because the previous documentation pass established the intended presentation source wire, but the actual route still lacks runner.moved, dino.pose.changed, camera frame, HUD frame, and PresentationFrameRecord proof from the live loop.
 ```
 
 ## Current route
@@ -61,10 +59,14 @@ index.html
 README.md describes the repo as a standalone additive game repo for a NexusEngine-powered infinite runner.
 README.md declares the scene flow as menu -> game -> run-over -> win -> menu.
 README.md says the product repo should stay thin and reusable behavior should move into NexusEngine core kits or ProtoKits.
+src/runtime.mjs only imports ./game.js.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
 src/game.js runs styleHud, renderHud, applyCloseCamera, applyReadableStride, and a direct renderer frame in a presentation pass.
+dino-pose-domain-kit already listens for runner.moved and emits dino.pose.changed, but the live runtime does not yet emit runner.moved.
+camera-domain-kit exposes a close-third-person descriptor.
+hud-domain-kit exposes a readability HUD descriptor and render(snapshot).
 runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
 runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contact checks, scene mutation, baseline HUD/camera, and live route behavior.
 runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
@@ -79,7 +81,7 @@ page load
   -> legacy visual runner loads
   -> menu scene waits for start input
   -> game scene mutates live runner state
-  -> raw keyboard/button input drives lane/jump/boost behavior
+  -> raw keyboard/button input drives turn, jump, and boost behavior
   -> terrain chunks, props, hazards, pickups, and physics state update
   -> inline collision/contact checks decide run-over, pickup, or win
   -> presentation pass directly updates camera, HUD, dino stride, and render frame
@@ -113,7 +115,7 @@ button-input-adapter
 scene-file-authority
 scene-transition-authority
 runner-motion-policy
-lane-shift-policy
+turn-steering-policy
 jump-policy
 boost-policy
 speed-ramp-policy
@@ -134,6 +136,11 @@ raptor-pose-animation
 camera-follow-policy
 hud-telemetry-projection
 presentation-pass-authority
+runner-source-state-contract
+runner-moved-event-contract
+dino-pose-event-bridge
+camera-frame-request-contract
+hud-frame-request-contract
 presentation-frame-contract
 presentation-descriptor-journal
 host-diagnostics
@@ -184,6 +191,7 @@ Needed next services:
 
 ```txt
 snapshotRunnerSourceState
+createRunnerMovedEvent
 emitRunnerMoved
 bridgeRunnerMovedToDinoPose
 createDinoPoseFrame
@@ -232,34 +240,25 @@ createCoreCompositionKit
 run-movement-kit
 ```
 
-## Source wire map finding
+## Next local proof kits
+
+```txt
+prehistoric-rush-runner-source-state-kit
+prehistoric-rush-runner-moved-event-kit
+prehistoric-rush-dino-event-bridge-kit
+prehistoric-rush-dino-pose-frame-kit
+prehistoric-rush-camera-frame-request-kit
+prehistoric-rush-hud-frame-request-kit
+prehistoric-rush-presentation-frame-contract-kit
+prehistoric-rush-presentation-journal-kit
+prehistoric-rush-host-presentation-snapshot-kit
+prehistoric-rush-dom-free-presentation-fixture-kit
+```
+
+## Event bridge finding
 
 The repo can look more modular than it is because `src/game.js` has a clean domain scaffold.
 
 The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`, and the presentation pass still directly mutates camera, HUD DOM, dino stride, and renderer output from `PrehistoricRushHost.app`.
 
-The next implementation needs a source wire map that records the current behavior as data:
-
-```txt
-RunnerSourceState
-  -> RunnerMovedEvent
-  -> DinoPoseFrame
-  -> CameraFrameRequest
-  -> HudFrameRequest
-  -> PresentationFrameRecord
-  -> PrehistoricRushHost.getState().presentation
-```
-
-## New audit surfaces added
-
-```txt
-.agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md
-.agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md
-.agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md
-```
-
-## Current next safe ledge
-
-```txt
-PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
-```
+The useful next ledge is to add a narrow bridge from the live runner state to stable events and presentation records without changing the visuals.
