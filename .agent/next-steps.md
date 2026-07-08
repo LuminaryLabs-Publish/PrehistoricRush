@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T09:29:20-04:00`
+**Updated:** `2026-07-08T10:39:22-04:00`
 
 ## Next safe ledge
 
-Build the presentation source wire map and frame contract fixture gate without changing the visible route.
+Build the runner event bridge and presentation frame fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
+PrehistoricRush Runner Event Bridge + Presentation Frame Fixture Gate
 ```
 
 Preserve the current game first:
@@ -26,20 +26,22 @@ Then add fixture-readable facts around the current behavior:
 
 ```txt
 snapshot RunnerSourceState from current app.state
-emit RunnerMovedEvent from the live movement step
-let dino-pose-domain-kit consume runner.moved only after fixture proof
-create DinoPoseFrame from live runner facts
+create RunnerMovedEvent from the live movement step
+emit eventBus runner.moved only when live movement actually occurs
+use existing dino-pose-domain-kit runner.moved listener as the first bridge consumer
+record dino.pose.changed output as DinoPoseFrame
 create CameraFrameRequest from camera-domain-kit descriptor + RunnerSourceState
 create HudFrameRequest from hud-domain-kit descriptor + RunnerSourceState
 append PresentationFrameRecord
 surface presentation records through host diagnostics
-add DOM-free smoke fixtures for the presentation chain
+add DOM-free smoke fixtures for the event and presentation chain
 ```
 
 ## Implementation checklist
 
 - [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(app)` projector.
 - [ ] Add `src/presentation/runner-moved-event.js` with a pure movement-event projector.
+- [ ] Add `src/presentation/presentation-events.js` with a narrow adapter that can emit `runner.moved` through the existing event bus.
 - [ ] Add `src/presentation/dino-pose-frame.js` with a pure `DinoPoseFrame` projector.
 - [ ] Add `src/presentation/camera-frame-request.js` with a pure camera request projector.
 - [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
@@ -50,33 +52,33 @@ add DOM-free smoke fixtures for the presentation chain
 - [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
 - [ ] Expose latest/recent presentation records through `PrehistoricRushHost.getState().presentation`.
 - [ ] Add `scripts/prehistoric-rush-presentation-frame-fixture.mjs`.
-- [ ] Add fixture rows for source state, menu no-move, game move, dino pose, camera request, HUD request, presentation record, host snapshot, and DOM-free replay.
-- [ ] Only after presentation fixture proof, connect live `runner.moved` into `dino-pose-domain-kit` event flow.
-- [ ] Only after that, continue action/result, contact/result, scene-dispatch, and replay extraction.
+- [ ] Add fixture rows for source state, menu no-move, game move, dino pose event bridge, camera request, HUD request, presentation record, host snapshot, and DOM-free replay.
+- [ ] Only after presentation fixture proof, continue action/result, contact/result, scene-dispatch, and replay extraction.
 
 ## DSK extraction order
 
 ```txt
 1. prehistoric-rush-runner-source-state-kit
 2. prehistoric-rush-runner-moved-event-kit
-3. prehistoric-rush-dino-domain-bridge-kit
+3. prehistoric-rush-dino-event-bridge-kit
 4. prehistoric-rush-dino-pose-frame-kit
-5. prehistoric-rush-camera-frame-descriptor-kit
-6. prehistoric-rush-hud-frame-descriptor-kit
+5. prehistoric-rush-camera-frame-request-kit
+6. prehistoric-rush-hud-frame-request-kit
 7. prehistoric-rush-presentation-frame-contract-kit
 8. prehistoric-rush-presentation-descriptor-journal-kit
 9. prehistoric-rush-host-presentation-snapshot-kit
-10. prehistoric-rush-action-frame-contract-kit
-11. prehistoric-rush-action-acceptance-matrix-kit
-12. prehistoric-rush-action-result-journal-kit
-13. prehistoric-rush-runner-step-result-kit
-14. prehistoric-rush-runner-event-journal-kit
-15. prehistoric-rush-contact-result-snapshot-kit
-16. prehistoric-rush-scene-dispatch-result-kit
-17. prehistoric-rush-replay-parity-smoke-kit
-18. prehistoric-rush-runtime-source-bundle-kit
-19. prehistoric-rush-manifest-load-status-kit
-20. prehistoric-rush-run-movement-promotion-report-kit
+10. prehistoric-rush-dom-free-presentation-fixture-kit
+11. prehistoric-rush-action-frame-contract-kit
+12. prehistoric-rush-action-acceptance-matrix-kit
+13. prehistoric-rush-action-result-journal-kit
+14. prehistoric-rush-runner-step-result-kit
+15. prehistoric-rush-runner-event-journal-kit
+16. prehistoric-rush-contact-result-snapshot-kit
+17. prehistoric-rush-scene-dispatch-result-kit
+18. prehistoric-rush-replay-parity-smoke-kit
+19. prehistoric-rush-runtime-source-bundle-kit
+20. prehistoric-rush-manifest-load-status-kit
+21. prehistoric-rush-run-movement-promotion-report-kit
 ```
 
 ## Fixture rows to create first
@@ -139,6 +141,8 @@ Stop the implementation ledge when the same runner source state can produce:
 ```txt
 RunnerSourceState
   -> RunnerMovedEvent
+  -> runner.moved event
+  -> dino.pose.changed event
   -> DinoPoseFrame
   -> CameraFrameRequest
   -> HudFrameRequest
