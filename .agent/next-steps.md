@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T16-51-11-04-00`
+**Updated:** `2026-07-08T19-30-31-04-00`
 
 ## Next safe ledge
 
-Build the source-to-host presentation fixture contract without changing the visible route.
+Build the presentation authority consumer fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Source-to-Host Presentation Fixture Contract
+PrehistoricRush Presentation Authority Consumer Fixture Gate
 ```
 
 Preserve the current game first:
@@ -27,6 +27,7 @@ Then add fixture-readable facts around the current behavior:
 
 ```txt
 snapshot RunnerSourceState from current app.state
+create RunnerStepDelta from previous/current runner source snapshots
 create RunnerMovedEvent from the live movement step
 emit eventBus runner.moved only when live movement actually occurs
 use existing dino-pose-domain-kit runner.moved listener as the first bridge consumer
@@ -44,9 +45,10 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 ## Implementation checklist
 
 - [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(app)` projector.
+- [ ] Add `src/presentation/runner-step-delta.js` with a pure previous/current delta projector.
 - [ ] Add `src/presentation/runner-moved-event.js` with a pure movement-event projector.
 - [ ] Add `src/presentation/presentation-events.js` with a narrow adapter that can emit `runner.moved` through the existing event bus.
-- [ ] Add `src/presentation/dino-pose-frame.js` with a pure `DinoPoseFrame` projector.
+- [ ] Add `src/presentation/dino-pose-frame.js` with a pure `DinoPoseFrame` projector and event readback helper.
 - [ ] Add `src/presentation/camera-frame-request.js` with a pure camera request projector.
 - [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
 - [ ] Add `src/presentation/contact-result-snapshot.js` with pure hazard and pickup result projectors.
@@ -69,34 +71,35 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 
 ```txt
 1. prehistoric-rush-runner-source-state-kit
-2. prehistoric-rush-runner-moved-event-kit
-3. prehistoric-rush-dino-event-bridge-kit
-4. prehistoric-rush-dino-pose-frame-kit
-5. prehistoric-rush-camera-frame-request-kit
-6. prehistoric-rush-hud-frame-request-kit
-7. prehistoric-rush-contact-result-snapshot-kit
-8. prehistoric-rush-scene-dispatch-result-kit
-9. prehistoric-rush-render-readback-kit
-10. prehistoric-rush-presentation-frame-record-kit
-11. prehistoric-rush-presentation-journal-kit
-12. prehistoric-rush-host-presentation-snapshot-kit
-13. prehistoric-rush-dom-free-presentation-fixture-kit
-14. prehistoric-rush-action-frame-contract-kit
-15. prehistoric-rush-action-acceptance-matrix-kit
-16. prehistoric-rush-action-result-journal-kit
-17. prehistoric-rush-runner-step-result-kit
-18. prehistoric-rush-runner-event-journal-kit
-19. prehistoric-rush-replay-parity-smoke-kit
-20. prehistoric-rush-runtime-source-bundle-kit
-21. prehistoric-rush-manifest-load-status-kit
-22. prehistoric-rush-run-movement-promotion-report-kit
+2. prehistoric-rush-runner-step-delta-kit
+3. prehistoric-rush-runner-moved-event-kit
+4. prehistoric-rush-dino-event-bridge-kit
+5. prehistoric-rush-dino-pose-frame-kit
+6. prehistoric-rush-camera-frame-request-kit
+7. prehistoric-rush-hud-frame-request-kit
+8. prehistoric-rush-contact-result-snapshot-kit
+9. prehistoric-rush-scene-dispatch-result-kit
+10. prehistoric-rush-render-readback-kit
+11. prehistoric-rush-presentation-frame-record-kit
+12. prehistoric-rush-presentation-journal-kit
+13. prehistoric-rush-host-presentation-snapshot-kit
+14. prehistoric-rush-dom-free-presentation-fixture-kit
+15. prehistoric-rush-action-frame-contract-kit
+16. prehistoric-rush-action-acceptance-matrix-kit
+17. prehistoric-rush-action-result-journal-kit
+18. prehistoric-rush-runner-step-result-kit
+19. prehistoric-rush-runner-event-journal-kit
+20. prehistoric-rush-replay-parity-smoke-kit
+21. prehistoric-rush-runtime-source-bundle-kit
+22. prehistoric-rush-manifest-load-status-kit
+23. prehistoric-rush-run-movement-promotion-report-kit
 ```
 
 ## Fixture rows to create first
 
 ```txt
 01_runner_source_state_projects_current_app_state
-02_menu_scene_runner_source_does_not_emit_moved_delta
+02_runner_step_delta_reports_noop_in_menu
 03_game_scene_runner_source_emits_runner_moved
 04_runner_moved_feeds_dino_pose_domain
 05_dino_pose_frame_matches_current_stride_inputs
@@ -121,4 +124,6 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 - Do not move everything into ProtoKits before local proof exists.
 - Do not remove existing host snapshot fields.
 - Do not assume npm scripts exist in this repo until package.json exists.
+- Do not add a package.json only to satisfy this docs pass.
+- Do not create branches.
 ```
