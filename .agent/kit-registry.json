@@ -1,11 +1,11 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T14:51:11-04:00",
+  "updated": "2026-07-08T16-40-56-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T14-51-11-04-00.md",
-  "status": "presentation-event-host-wire-map-fixture-gate-planned",
+  "latestTracker": ".agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T16-40-56-04-00.md",
+  "status": "source-file-manifest-host-presentation-projection-fixture-gate-planned",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
@@ -102,10 +102,10 @@
     "prehistoric-rush-hud-frame-request-kit",
     "prehistoric-rush-contact-result-snapshot-kit",
     "prehistoric-rush-scene-dispatch-result-kit",
+    "prehistoric-rush-render-readback-kit",
     "prehistoric-rush-presentation-frame-record-kit",
     "prehistoric-rush-presentation-journal-kit",
     "prehistoric-rush-host-presentation-snapshot-kit",
-    "prehistoric-rush-render-readback-kit",
     "prehistoric-rush-dom-free-presentation-fixture-kit",
     "prehistoric-rush-action-frame-contract-kit",
     "prehistoric-rush-action-acceptance-matrix-kit",
@@ -117,20 +117,13 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md",
-  "previousSystemAudit": ".agent/presentation-authority-audit/2026-07-08T13-18-13-04-00-runner-source-journal-gate.md",
-  "olderSystemAudits": [
-    ".agent/presentation-authority-audit/2026-07-08T12-09-27-04-00-fixture-source-wire-map.md",
-    ".agent/presentation-authority-audit/2026-07-08T10-39-22-04-00-event-bridge-fixture-readiness.md",
-    ".agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md",
-    ".agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md",
-    ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md"
-  ],
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md",
+  "previousSystemAudit": ".agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md",
   "runnerAuthorityAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Presentation Event Host Wire Map + Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate",
   "requiredFrameContract": [
     "RunnerSourceState",
     "RunnerMovedEvent",
@@ -141,8 +134,8 @@
     "HudFrameRequest",
     "ContactResultSnapshot",
     "SceneDispatchResult",
-    "PresentationFrameRecord",
     "RenderReadback",
+    "PresentationFrameRecord",
     "PrehistoricRushHost.getState().presentation"
   ],
   "sourceWireMapFilesToAddNext": [
@@ -154,10 +147,10 @@
     "src/presentation/hud-frame-request.js",
     "src/presentation/contact-result-snapshot.js",
     "src/presentation/scene-dispatch-result.js",
+    "src/presentation/render-readback.js",
     "src/presentation/presentation-frame-record.js",
     "src/presentation/presentation-journal.js",
     "src/presentation/host-presentation-snapshot.js",
-    "src/presentation/render-readback.js",
     "scripts/prehistoric-rush-presentation-frame-fixture.mjs"
   ],
   "fixtureRows": [
@@ -171,9 +164,9 @@
     "08_hazard_contact_result_records_run_over_reason",
     "09_pickup_contact_result_records_shard_reason",
     "10_scene_dispatch_result_records_menu_game_run_over_win",
-    "11_presentation_frame_record_journals_all_subrecords",
-    "12_host_get_state_exposes_presentation_snapshot",
-    "13_render_readback_reports_current_renderer_camera_hud_dino_paths",
+    "11_render_readback_reports_current_renderer_camera_hud_dino_paths",
+    "12_presentation_frame_record_journals_all_subrecords",
+    "13_host_get_state_exposes_presentation_snapshot",
     "14_dom_free_fixture_replays_source_to_presentation_chain",
     "15_renderer_output_unchanged_by_contract_layer",
     "16_legacy_runtime_remains_playable_during_cutover"
