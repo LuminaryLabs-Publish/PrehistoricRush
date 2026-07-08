@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T16-51-11-04-00`
+**Updated:** `2026-07-08T19-30-31-04-00`
 
 ## Validation status for this pass
 
@@ -19,15 +19,17 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of PrehistoricRush .agent/next-steps.md.
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
+- GitHub connector read of PrehistoricRush README.md.
+- GitHub connector confirmed root package.json was not found.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs source anchors.
-- GitHub connector read of PrehistoricRush event bus and domain host modules.
 - GitHub connector read of PrehistoricRush dino-pose-domain-kit.
 - GitHub connector update of PrehistoricRush root .agent docs.
 - GitHub connector create of new PrehistoricRush architecture audit.
 - GitHub connector create of new PrehistoricRush render audit.
 - GitHub connector create of new PrehistoricRush gameplay audit.
 - GitHub connector create of new PrehistoricRush presentation authority audit.
+- GitHub connector create of new PrehistoricRush deploy audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of central PrehistoricRush repo ledger.
@@ -83,6 +85,7 @@ src/game.js starts the presentation pass
 
 ```txt
 runner-source-state-smoke
+runner-step-delta-smoke
 runner-moved-smoke
 dino.pose.changed-smoke
 DinoPoseFrame-smoke
@@ -109,7 +112,7 @@ run-movement-promotion-smoke
 
 ```txt
 01_runner_source_state_projects_current_app_state
-02_menu_scene_runner_source_does_not_emit_moved_delta
+02_runner_step_delta_reports_noop_in_menu
 03_game_scene_runner_source_emits_runner_moved
 04_runner_moved_feeds_dino_pose_domain
 05_dino_pose_frame_matches_current_stride_inputs
