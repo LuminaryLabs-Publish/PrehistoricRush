@@ -2,22 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T16-51-11-04-00`
+**Updated:** `2026-07-08T19-30-31-04-00`
 
 ## Summary
 
-`PrehistoricRush` is a standalone static browser infinite-runner shell.
+`PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-It has a repo-local composition scaffold in `src/game.js` that installs an event bus, domain host, scheduler, dino domains, camera domain, and HUD domain before importing the live Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
-
-The blocking seam is source-to-host proof: the game plays, but runner source state, movement events, contact results, scene dispatch, dino pose frames, camera requests, HUD requests, render readback, and presentation frame records are not yet exposed as stable host-readable facts.
+The next implementation should not rewrite visuals. It should add the missing presentation authority consumer layer: source-state projection, movement-event projection, dino pose event readback, camera/HUD frame requests, contact/scene result records, render readback, presentation journal, host projection, and DOM-free fixture replay.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected because repo-local .agent state had advanced to 2026-07-08T16-40-56-04-00 while the central ledger still pointed at 2026-07-08T14:51:11-04:00, and because the source-to-host presentation fixture seam remains unresolved.
+PrehistoricRush was selected as the oldest eligible fallback because its sampled repo-local alignment was 2026-07-08T16-51-11-04-00, older than the other checked non-Cavalry repo-local alignments.
 ```
 
 ## Current route
@@ -32,22 +30,24 @@ index.html
   -> exposes PrehistoricRushComposition.snapshot()
   -> emits composition.ready
   -> imports ./runtime-terrain-v6.mjs
-  -> runtime-terrain-v6.mjs loads Three.js, Rapier, and rapier-physics-domain-kit from CDN
+  -> runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN
+  -> runtime-terrain-v6.mjs owns menu/game/run-over/win loop
   -> src/game.js starts a presentation pass that reads PrehistoricRushHost.app
 ```
 
 ## Source-backed facts
 
 ```txt
+README.md describes a standalone additive infinite runner and notes the first missing ProtoKit as run-movement-kit.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
-src/game.js runs styleHud, renderHud, applyCloseCamera, applyReadableStride, and a direct renderer frame in a presentation pass.
+src/game.js directly applies styleHud, renderHud, applyCloseCamera, applyReadableStride, and renderer.render in startPresentationPass().
 dino-pose-domain-kit already listens for runner.moved and emits dino.pose.changed, but the live runtime does not yet emit runner.moved.
-camera-domain-kit exposes close-third-person-v1.
 runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
-runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contact checks, scene mutation, baseline HUD/camera, and live route behavior.
+runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contacts, scene mutation, baseline HUD/camera, and render behavior.
 runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
+No package.json exists in the repo root, so validation must not assume npm scripts.
 ```
 
 ## Current interaction loop
@@ -62,8 +62,31 @@ page load
   -> raw keyboard/button input drives turn, jump, and boost behavior
   -> terrain chunks, props, hazards, pickups, and physics state update
   -> inline collision/contact checks decide run-over, pickup, or win
-  -> presentation pass directly updates camera, HUD DOM, dino stride, and render frame
+  -> runtime-terrain-v6 baseline frame mutates camera, HUD, raptor pose, and renderer
+  -> src/game.js presentation pass applies close camera, readable stride, HUD rewrite, and second render
   -> host exposes runtime snapshots
+```
+
+## Target proof loop
+
+```txt
+app.state + previous frame snapshot
+  -> RunnerSourceState
+  -> RunnerStepDelta
+  -> RunnerMovedEvent
+  -> runner.moved eventBus emission
+  -> dino-pose-domain-kit update
+  -> dino.pose.changed event readback
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
+  -> ContactResultSnapshot
+  -> SceneDispatchResult
+  -> RenderReadback
+  -> PresentationFrameRecord
+  -> bounded PresentationJournalSnapshot
+  -> PrehistoricRushHost.getState().presentation
+  -> scripts/prehistoric-rush-presentation-frame-fixture.mjs
 ```
 
 ## Current domains in use
@@ -94,6 +117,7 @@ button-input-adapter
 scene-file-authority
 scene-transition-authority
 runner-motion-policy
+runner-step-delta-contract
 turn-steering-policy
 jump-policy
 boost-policy
@@ -124,7 +148,7 @@ hud-frame-request-contract
 contact-result-contract
 scene-dispatch-result-contract
 presentation-frame-contract
-presentation-descriptor-journal
+presentation-journal-contract
 render-readback-contract
 host-presentation-snapshot
 fixture-replay-contract
@@ -176,9 +200,10 @@ Needed next services:
 
 ```txt
 snapshotRunnerSourceState
+createRunnerStepDelta
 createRunnerMovedEvent
 emitRunnerMoved
-recordDinoPoseChangedEvent
+readLatestDinoPoseChangedEvent
 createDinoPoseFrame
 createCameraFrameRequest
 createHudFrameRequest
@@ -191,6 +216,63 @@ projectHostPresentationSnapshot
 runPresentationFrameFixture
 ```
 
+## Kits identified
+
+Implemented repo-local kits:
+
+```txt
+domain-runtime/event-bus
+domain-runtime/domain-host
+domain-runtime/tick-scheduler
+dino-form-domain-kit
+dino-pose-domain-kit
+dino-material-domain-kit
+dino-domain-bundle
+camera-domain-kit
+hud-domain-kit
+```
+
+Live external kit:
+
+```txt
+rapier-physics-domain-kit
+```
+
+Runtime-implied product kits:
+
+```txt
+prehistoric-static-shell-kit
+prehistoric-runtime-entry-kit
+prehistoric-legacy-visual-runtime-kit
+prehistoric-raptor-visual-rig-kit
+prehistoric-terrain-streaming-kit
+prehistoric-contact-check-kit
+prehistoric-scene-dispatch-kit
+prehistoric-hud-dom-render-kit
+prehistoric-close-camera-apply-kit
+```
+
+Next-cut repo-local kits:
+
+```txt
+prehistoric-rush-runner-source-state-kit
+prehistoric-rush-runner-step-delta-kit
+prehistoric-rush-runner-moved-event-kit
+prehistoric-rush-dino-event-bridge-kit
+prehistoric-rush-dino-pose-frame-kit
+prehistoric-rush-camera-frame-request-kit
+prehistoric-rush-hud-frame-request-kit
+prehistoric-rush-contact-result-snapshot-kit
+prehistoric-rush-scene-dispatch-result-kit
+prehistoric-rush-render-readback-kit
+prehistoric-rush-presentation-frame-record-kit
+prehistoric-rush-presentation-journal-kit
+prehistoric-rush-host-presentation-snapshot-kit
+prehistoric-rush-dom-free-presentation-fixture-kit
+```
+
 ## Main finding
 
-The next implementation must add pure `src/presentation/*` source/projection files plus a DOM-free fixture before any visual rewrite, movement extraction, renderer extraction, or shared-kit promotion.
+The current bottleneck is not the dinosaur model, camera, terrain, or HUD. The bottleneck is that live behavior is still direct mutable app state plus direct presentation mutation, while the domain scaffold already has the right first consumer waiting: `dino-pose-domain-kit` can consume `runner.moved` once the live route emits it as a stable record.
+
+The next implementation must add pure `src/presentation/*` source/projection files, additive host projection, and a DOM-free fixture before movement extraction, renderer extraction, terrain extraction, or ProtoKit promotion.
