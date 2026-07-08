@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T08:11:28-04:00`
+**Updated:** `2026-07-08T09:29:20-04:00`
 
 ## Next safe ledge
 
-Build the presentation frame contract acceptance gate without changing the visible route.
+Build the presentation source wire map and frame contract fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Frame Contract Acceptance Ledger
+PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
 ```
 
 Preserve the current game first:
@@ -26,11 +26,11 @@ Then add fixture-readable facts around the current behavior:
 
 ```txt
 snapshot RunnerSourceState from current app.state
-emit runner.moved from the live movement step
-let dino-pose-domain-kit consume runner.moved
-emit DinoPoseFrame / dino.pose.changed from live runner facts
-produce CameraFrameRequest from camera-domain-kit descriptor + RunnerSourceState
-produce HudFrameRequest from hud-domain-kit descriptor + RunnerSourceState
+emit RunnerMovedEvent from the live movement step
+let dino-pose-domain-kit consume runner.moved only after fixture proof
+create DinoPoseFrame from live runner facts
+create CameraFrameRequest from camera-domain-kit descriptor + RunnerSourceState
+create HudFrameRequest from hud-domain-kit descriptor + RunnerSourceState
 append PresentationFrameRecord
 surface presentation records through host diagnostics
 add DOM-free smoke fixtures for the presentation chain
@@ -38,21 +38,21 @@ add DOM-free smoke fixtures for the presentation chain
 
 ## Implementation checklist
 
-- [ ] Add a `RunnerSourceState` snapshot object from current `app.state` without changing the state shape.
-- [ ] Add a `RunnerMovedEvent` from the live movement step in `runtime-terrain-v6.mjs`.
-- [ ] Confirm `dino-pose-domain-kit` receives `runner.moved` and emits `dino.pose.changed`.
-- [ ] Keep current raptor visual pose behavior while recording the descriptor bridge.
-- [ ] Add a `DinoPoseFrame` record derived from runner movement facts.
-- [ ] Add a `CameraFrameRequest` derived from `camera-domain-kit` and runner source state.
-- [ ] Keep the current `applyCloseCamera` visual result while recording `camera.frame.requested`.
-- [ ] Add a `HudFrameRequest` derived from `hud-domain-kit.render()` and runner source state.
-- [ ] Keep the current `renderHud` visual result while recording `hud.frame.requested`.
-- [ ] Add a `PresentationFrameRecord` with runner/dino/camera/HUD subrecords and fallback reasons.
-- [ ] Add `host.presentation.snapshot` or an equivalent nested field to `PrehistoricRushHost.getState()`.
-- [ ] Add DOM-free fixtures for runner source -> dino pose -> camera frame -> HUD frame.
-- [ ] Add action/result records for start, retry, run-again, menu, left, right, boost, and jump after the presentation chain is proven.
-- [ ] Add contact event records for hazard hit, shard pickup, and distance goal after the runner source record exists.
-- [ ] Write a run movement promotion report only after local fixture proof exists.
+- [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(app)` projector.
+- [ ] Add `src/presentation/runner-moved-event.js` with a pure movement-event projector.
+- [ ] Add `src/presentation/dino-pose-frame.js` with a pure `DinoPoseFrame` projector.
+- [ ] Add `src/presentation/camera-frame-request.js` with a pure camera request projector.
+- [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
+- [ ] Add `src/presentation/presentation-frame-record.js` with a pure record combiner.
+- [ ] Add `src/presentation/presentation-journal.js` with a bounded recent-frame journal.
+- [ ] Keep `applyCloseCamera()` visually unchanged while recording camera requests beside it.
+- [ ] Keep `renderHud()` visually unchanged while recording HUD requests beside it.
+- [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
+- [ ] Expose latest/recent presentation records through `PrehistoricRushHost.getState().presentation`.
+- [ ] Add `scripts/prehistoric-rush-presentation-frame-fixture.mjs`.
+- [ ] Add fixture rows for source state, menu no-move, game move, dino pose, camera request, HUD request, presentation record, host snapshot, and DOM-free replay.
+- [ ] Only after presentation fixture proof, connect live `runner.moved` into `dino-pose-domain-kit` event flow.
+- [ ] Only after that, continue action/result, contact/result, scene-dispatch, and replay extraction.
 
 ## DSK extraction order
 
@@ -77,6 +77,23 @@ add DOM-free smoke fixtures for the presentation chain
 18. prehistoric-rush-runtime-source-bundle-kit
 19. prehistoric-rush-manifest-load-status-kit
 20. prehistoric-rush-run-movement-promotion-report-kit
+```
+
+## Fixture rows to create first
+
+```txt
+01_runner_source_state_projects_current_app_state
+02_menu_scene_runner_source_does_not_emit_moved_delta
+03_game_scene_runner_source_emits_runner_moved
+04_runner_moved_feeds_dino_pose_domain
+05_dino_pose_frame_matches_current_stride_inputs
+06_camera_frame_request_matches_close_camera_visual_policy
+07_hud_frame_request_matches_readability_hud_descriptor
+08_presentation_frame_record_journals_all_subrecords
+09_host_get_state_exposes_presentation_snapshot
+10_dom_free_fixture_replays_source_to_presentation_chain
+11_renderer_output_unchanged_by_contract_layer
+12_legacy_runtime_remains_playable_during_cutover
 ```
 
 ## Do not do next
@@ -117,4 +134,16 @@ replay parity smoke
 
 ## Stop condition
 
-Stop the implementation ledge when the same runner source state can produce `runner.moved`, `dino.pose.changed`, `DinoPoseFrame`, `CameraFrameRequest`, `HudFrameRequest`, `PresentationFrameRecord`, and a host presentation snapshot without depending on DOM, WebGL, renderer frame timing, or Rapier execution.
+Stop the implementation ledge when the same runner source state can produce:
+
+```txt
+RunnerSourceState
+  -> RunnerMovedEvent
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
+  -> PresentationFrameRecord
+  -> PrehistoricRushHost.getState().presentation
+```
+
+The fixture must not depend on DOM, WebGL, renderer frame timing, or Rapier execution.
