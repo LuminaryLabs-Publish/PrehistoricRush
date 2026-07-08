@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T16-40-56-04-00`
+**Last aligned:** `2026-07-08T16-51-11-04-00`
 
 ## Purpose
 
@@ -10,11 +10,13 @@ This `.agent/` folder is the repo-local operating memory for breakdown work on `
 
 ## Current selection result
 
-The accessible `LuminaryLabs-Publish` repo list was compared against the central `LuminaryLabs-Dev/LuminaryLabs` ledger. No checked non-excluded repo was fully new, absent from central tracking, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
+The accessible `LuminaryLabs-Publish` repo list was compared against the central `LuminaryLabs-Dev/LuminaryLabs` ledger.
 
-`LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
+No checked non-excluded repo was fully new, absent from central tracking, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
-`PrehistoricRush` was selected as the oldest eligible fallback. The current high-value seam is the source-file manifest plus host presentation projection gate: movement, contacts, scene dispatch, camera, HUD, and dino pose are visible, but not yet projected into fixture-readable host records.
+`LuminaryLabs-Publish/TheCavalryOfRome` remains excluded.
+
+`PrehistoricRush` was selected because repo-local `.agent` state had advanced beyond the central ledger and the source-to-host presentation fixture seam remains unresolved.
 
 ## Current route
 
@@ -28,7 +30,7 @@ index.html
   -> hud-domain-kit
   -> PrehistoricRushComposition.snapshot()
   -> runtime-terrain-v6.mjs
-  -> Three.js + Rapier terrain runner
+  -> Three.js + Rapier + rapier-physics-domain-kit
   -> presentation pass
   -> PrehistoricRushHost.getState()
 ```
@@ -49,7 +51,8 @@ page load
 ## Target proof loop
 
 ```txt
-RunnerSourceState
+PrehistoricRushHost.app.state
+  -> RunnerSourceState
   -> RunnerMovedEvent
   -> runner.moved
   -> dino.pose.changed
@@ -58,9 +61,9 @@ RunnerSourceState
   -> HudFrameRequest
   -> ContactResultSnapshot
   -> SceneDispatchResult
+  -> RenderReadback
   -> PresentationFrameRecord
   -> PresentationJournalSnapshot
-  -> RenderReadback
   -> PrehistoricRushHost.getState().presentation
   -> DOM-free fixture cases
 ```
@@ -72,12 +75,12 @@ RunnerSourceState
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md
-.agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md
-.agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md
-.agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md
-.agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T16-40-56-04-00.md
+.agent/architecture-audit/2026-07-08T16-51-11-04-00-host-presentation-source-dsk-breakdown.md
+.agent/render-audit/2026-07-08T16-51-11-04-00-render-readback-host-projection-map.md
+.agent/gameplay-audit/2026-07-08T16-51-11-04-00-runner-contact-scene-fixture-loop.md
+.agent/presentation-authority-audit/2026-07-08T16-51-11-04-00-source-to-host-fixture-contract.md
+.agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T16-51-11-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -107,5 +110,5 @@ The next implementation should add pure `src/presentation/*` projection modules 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate
+PrehistoricRush Source-to-Host Presentation Fixture Contract
 ```
