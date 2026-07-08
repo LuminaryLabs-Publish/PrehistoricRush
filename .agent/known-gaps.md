@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-08T14:51:11-04:00`
+**Updated:** `2026-07-08T16-40-56-04-00`
 
 ## Highest-priority gaps
 
@@ -10,7 +10,7 @@
 3. src/game.js can read PrehistoricRushHost.app, but it does not snapshot RunnerSourceState before applying direct presentation mutations.
 4. camera-domain-kit exposes a close-third-person descriptor, but applyCloseCamera still directly mutates the Three.js camera from PrehistoricRushHost.app.
 5. hud-domain-kit exposes a readability HUD descriptor and render(snapshot), but renderHud still directly writes DOM from PrehistoricRushHost.app.
-6. DinoPoseFrame, CameraFrameRequest, HudFrameRequest, ContactResultSnapshot, SceneDispatchResult, and PresentationFrameRecord are documented but not implemented.
+6. DinoPoseFrame, CameraFrameRequest, HudFrameRequest, ContactResultSnapshot, SceneDispatchResult, RenderReadback, and PresentationFrameRecord are documented but not implemented.
 7. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
 8. Movement authority still lives in the legacy visual runtime.
 9. Jump, boost, turn, hazard, pickup, run-over, retry, and win behavior are not yet wrapped in stable action/result records.
@@ -35,6 +35,7 @@
 - PrehistoricRushHost.getState() remains the main live debug surface, but it lacks a nested presentation snapshot.
 - No stable action/result journal is documented as live.
 - No presentation frame journal is documented as live.
+- No render-readback snapshot is documented as live.
 - No DOM-free replay parity fixture is documented as live.
 - No contact-result snapshot is documented as live.
 - No scene-dispatch result stream is documented as live.
@@ -64,7 +65,8 @@
 - HudFrameRequest should be a descriptor, not only an innerHTML string.
 - ContactResultSnapshot should capture hazard and pickup decisions before scene/score mutation.
 - SceneDispatchResult should capture menu, game, run-over, win, retry, and run-again transitions before DOM mutation.
-- PresentationFrameRecord should journal runner, dino, camera, HUD, contact, scene, and fallback reasons.
+- RenderReadback should capture renderer/camera/HUD/dino consumption state without requiring WebGL execution.
+- PresentationFrameRecord should journal runner, dino, camera, HUD, contact, scene, render, and fallback reasons.
 - PresentationJournalSnapshot should be bounded and readable from diagnostics.
 - The renderer should consume descriptors from runner, dino, terrain, sky, camera, and UI domains later.
 - The raptor visual rig should consume dino form, pose, and material descriptors later.
@@ -84,6 +86,7 @@
 - hud-frame-request-kit is not yet materialized locally.
 - contact-result-snapshot-kit is not yet materialized locally.
 - scene-dispatch-result-kit is not yet materialized locally.
+- render-readback-kit is not yet materialized locally.
 - presentation-frame-record-kit is not yet materialized locally.
 - presentation-journal-kit is not yet materialized locally.
 - host-presentation-snapshot-kit is not yet materialized locally.
@@ -104,18 +107,16 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md added
-.agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md added
-.agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md added
-.agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md added
-.agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-08T14-51-11-04-00.md added
+.agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md added
+.agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md added
+.agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md added
+.agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md added
+.agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-08T16-40-56-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
 
 ## Current unresolved seam
 
-The local `.agent` docs now identify the implementation cutline. The primary remaining gap is implementation.
-
-The next proof should materialize the presentation source files, add contact/scene result projections, wire the existing event bus to the live route, and add the DOM-free fixture before adding visual polish or shared-kit promotion.
+The local `.agent` docs now identify the source-file implementation manifest. The primary remaining gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
