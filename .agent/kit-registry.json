@@ -1,9 +1,9 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T05:10:47-04:00",
-  "latestTracker": ".agent/trackers/2026-07-08T05-10-47-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T05-10-47-04-00.md",
+  "updated": "2026-07-08T06:51:12-04:00",
+  "latestTracker": ".agent/trackers/2026-07-08T06-51-12-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T06-51-12-04-00.md",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
@@ -46,6 +46,18 @@
       "path": "src/domains/dino/index.js",
       "status": "present",
       "role": "bundle wrapper for dino form, pose, and material domains"
+    },
+    {
+      "id": "camera-domain-kit",
+      "path": "src/domains/camera/camera-domain-kit.js",
+      "status": "present_needs_live_camera_frame_descriptor_bridge",
+      "role": "close third-person camera descriptor"
+    },
+    {
+      "id": "hud-domain-kit",
+      "path": "src/domains/hud/hud-domain-kit.js",
+      "status": "present_needs_live_hud_frame_descriptor_bridge",
+      "role": "readability HUD descriptor and projection service"
     }
   ],
   "currentExternalKits": [
@@ -69,13 +81,17 @@
   ],
   "firstMissingProtoKit": "run-movement-kit",
   "nextRepoLocalExtractionCandidates": [
+    "prehistoric-rush-runner-source-state-kit",
+    "prehistoric-rush-runner-moved-event-kit",
+    "prehistoric-rush-dino-domain-bridge-kit",
+    "prehistoric-rush-camera-frame-descriptor-kit",
+    "prehistoric-rush-hud-frame-descriptor-kit",
+    "prehistoric-rush-presentation-descriptor-journal-kit",
     "prehistoric-rush-action-frame-contract-kit",
     "prehistoric-rush-action-acceptance-matrix-kit",
     "prehistoric-rush-action-result-journal-kit",
-    "prehistoric-rush-runner-source-state-kit",
     "prehistoric-rush-runner-step-result-kit",
     "prehistoric-rush-runner-event-journal-kit",
-    "prehistoric-rush-dino-domain-bridge-kit",
     "prehistoric-rush-contact-result-snapshot-kit",
     "prehistoric-rush-scene-dispatch-result-kit",
     "prehistoric-rush-replay-parity-smoke-kit",
@@ -83,7 +99,8 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Runner Action/Result Authority + Dino Pose Bridge Fixture Gate",
+  "latestSystemAudit": ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md",
+  "previousSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
+  "nextSafeLedge": "PrehistoricRush Presentation Descriptor Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
