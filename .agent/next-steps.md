@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T16-40-56-04-00`
+**Updated:** `2026-07-08T16-51-11-04-00`
 
 ## Next safe ledge
 
-Build the source-file manifest and host presentation projection fixture gate without changing the visible route.
+Build the source-to-host presentation fixture contract without changing the visible route.
 
 ```txt
-PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate
+PrehistoricRush Source-to-Host Presentation Fixture Contract
 ```
 
 Preserve the current game first:
@@ -120,4 +120,5 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 - Do not replace the whole runtime in one pass.
 - Do not move everything into ProtoKits before local proof exists.
 - Do not remove existing host snapshot fields.
+- Do not assume npm scripts exist in this repo until package.json exists.
 ```
