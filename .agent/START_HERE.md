@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T13:18:13-04:00`
+**Last aligned:** `2026-07-08T14:51:11-04:00`
 
 ## Purpose
 
@@ -10,29 +10,29 @@ This `.agent/` folder is the repo-local operating memory for scheduled and manua
 
 Read this folder before changing implementation code.
 
-## Selection result
+## Current selection result
 
-The current accessible `LuminaryLabs-Publish` repository list was compared against tracked repo-ledger state in `LuminaryLabs-Dev/LuminaryLabs`.
+The full accessible `LuminaryLabs-Publish` repository list was compared against tracked repo-ledger state in `LuminaryLabs-Dev/LuminaryLabs`.
 
-No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, or missing sampled root `.agent/START_HERE.md` state.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the eligible fallback because its live runner still has the same source-authority seam: movement, dino pose, camera, HUD, contact, and scene outcomes are visible at runtime but are not yet journaled as fixture-readable source records.
+`PrehistoricRush` was selected as the oldest eligible fallback after current central/root-agent readback. The current high-value seam is the presentation/event host wire map: runtime movement, contacts, scene dispatch, camera, HUD, and dino pose are visible, but they are not yet projected into fixture-readable host records.
 
 ## Publish repos checked
 
 ```txt
-LuminaryLabs-Publish/AetherVale          tracked / root .agent observed
-LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent observed
-LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent observed
-LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent observed
-LuminaryLabs-Publish/PhantomCommand      tracked / root .agent observed
-LuminaryLabs-Publish/PrehistoricRush     selected fallback / runner source-journal gate
+LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent present / latest central review 2026-07-08T13:59:50-04:00
+LuminaryLabs-Publish/AetherVale          tracked / root .agent present / latest central update 2026-07-08T13:39:15-04:00
+LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent present / latest central update 2026-07-08T13:31:29-04:00
 LuminaryLabs-Publish/TheCavalryOfRome    excluded by rule
-LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent observed
-LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent observed
-LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent observed
+LuminaryLabs-Publish/PhantomCommand      tracked / root .agent present / latest central update 2026-07-08T14:08:24-04:00
+LuminaryLabs-Publish/PrehistoricRush     selected fallback / previous central update 2026-07-08T13:18:13-04:00
+LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent present / latest central update 2026-07-08T14:18:45-04:00
+LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent present / latest central update 2026-07-08T13:50:37-04:00
+LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent present / repo-local alignment observed 2026-07-08T14:39:38-04:00
+LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent present / latest central review 2026-07-08T14:31:06-04:00
 ```
 
 ## Current product read
@@ -95,15 +95,12 @@ RunnerSourceState
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/domain-service-breakdown.md
-.agent/architecture-audit/2026-07-08T13-18-13-04-00-runner-source-journal-dsk-map.md
-.agent/render-audit/render-surface-audit.md
-.agent/render-audit/2026-07-08T13-18-13-04-00-presentation-frame-readback-contract.md
-.agent/gameplay-audit/runner-loop-audit.md
-.agent/gameplay-audit/2026-07-08T13-18-13-04-00-contact-scene-result-loop.md
-.agent/presentation-authority-audit/2026-07-08T13-18-13-04-00-runner-source-journal-gate.md
-.agent/trackers/2026-07-08T13-18-13-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T13-18-13-04-00.md
+.agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md
+.agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md
+.agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md
+.agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md
+.agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T14-51-11-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -122,34 +119,20 @@ src/domains/dino/index.js
 src/domains/dino/dino-pose-domain-kit.js
 src/domains/camera/camera-domain-kit.js
 src/domains/hud/hud-domain-kit.js
-runner-tuning.json
-game-scenes.json
-kit-composition.json
-kit-cutover-inventory.json
 ```
 
 ## Main rule
 
-Do not add more visual polish, renderer replacement, or shared-kit promotion until the current route exposes stable runner source, contact, scene, and presentation journal records.
+Keep the visible runner playable and route-stable.
 
-The next runtime change should add an additive source wire and journal:
+Do not replace the whole runtime before a host-readable event/presentation record layer exists.
 
-```txt
-source runner state
-  -> runner.moved event
-  -> dino pose descriptor/event
-  -> camera frame request
-  -> HUD frame request
-  -> contact result snapshot
-  -> scene dispatch result
-  -> presentation frame journal
-  -> host presentation snapshot
-```
+The next implementation should add pure `src/presentation/*` projection modules and a DOM-free fixture first, then wire them additively into `src/game.js` and `runtime-terrain-v6.mjs` without removing current `PrehistoricRushHost.getState()` compatibility.
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Runner Source Journal + Contact/Scene Result Fixture Gate
+PrehistoricRush Presentation Event Host Wire Map + Fixture Gate
 ```
 
-Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable records beside the existing direct renderer mutations.
+Stop that ledge when fixture rows prove runner source projection, movement event emission, dino pose event consumption, camera/HUD request projection, hazard/pickup contact results, scene dispatch records, bounded presentation journals, and host snapshot readback without requiring DOM, WebGL, Rapier, browser, or `requestAnimationFrame`.
