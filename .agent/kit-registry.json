@@ -1,16 +1,16 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T13:18:13-04:00",
+  "updated": "2026-07-08T14:51:11-04:00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T13-18-13-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T13-18-13-04-00.md",
-  "status": "runner-source-journal-contact-scene-fixture-gate-planned",
+  "latestTracker": ".agent/trackers/2026-07-08T14-51-11-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T14-51-11-04-00.md",
+  "status": "presentation-event-host-wire-map-fixture-gate-planned",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
       "path": "src/domain-runtime/event-bus.js",
-      "status": "present",
+      "status": "present_needs_runner_contact_scene_presentation_events",
       "role": "event history and publish/subscribe scaffold"
     },
     {
@@ -22,7 +22,7 @@
     {
       "id": "domain-runtime/tick-scheduler",
       "path": "src/domain-runtime/tick-scheduler.js",
-      "status": "present",
+      "status": "present_future_authority",
       "role": "future tick-owned domain update scaffold"
     },
     {
@@ -69,6 +69,17 @@
       "role": "Rapier physics bridge used by the visual runner"
     }
   ],
+  "runtimeImpliedKits": [
+    "prehistoric-static-shell-kit",
+    "prehistoric-runtime-entry-kit",
+    "prehistoric-legacy-visual-runtime-kit",
+    "prehistoric-raptor-visual-rig-kit",
+    "prehistoric-terrain-streaming-kit",
+    "prehistoric-contact-check-kit",
+    "prehistoric-scene-dispatch-kit",
+    "prehistoric-hud-dom-render-kit",
+    "prehistoric-close-camera-apply-kit"
+  ],
   "targetCoreKits": [
     "createCoreSkyboxKit",
     "createCoreSceneKit",
@@ -94,6 +105,7 @@
     "prehistoric-rush-presentation-frame-record-kit",
     "prehistoric-rush-presentation-journal-kit",
     "prehistoric-rush-host-presentation-snapshot-kit",
+    "prehistoric-rush-render-readback-kit",
     "prehistoric-rush-dom-free-presentation-fixture-kit",
     "prehistoric-rush-action-frame-contract-kit",
     "prehistoric-rush-action-acceptance-matrix-kit",
@@ -105,19 +117,20 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T13-18-13-04-00-runner-source-journal-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-08T13-18-13-04-00-presentation-frame-readback-contract.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T13-18-13-04-00-contact-scene-result-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T13-18-13-04-00-runner-source-journal-gate.md",
-  "previousSystemAudit": ".agent/presentation-authority-audit/2026-07-08T12-09-27-04-00-fixture-source-wire-map.md",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T14-51-11-04-00-presentation-event-host-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T14-51-11-04-00-camera-hud-render-readback-wire-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T14-51-11-04-00-contact-scene-result-splice-map.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md",
+  "previousSystemAudit": ".agent/presentation-authority-audit/2026-07-08T13-18-13-04-00-runner-source-journal-gate.md",
   "olderSystemAudits": [
+    ".agent/presentation-authority-audit/2026-07-08T12-09-27-04-00-fixture-source-wire-map.md",
     ".agent/presentation-authority-audit/2026-07-08T10-39-22-04-00-event-bridge-fixture-readiness.md",
     ".agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md",
     ".agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md",
     ".agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md"
   ],
   "runnerAuthorityAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Runner Source Journal + Contact/Scene Result Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Presentation Event Host Wire Map + Fixture Gate",
   "requiredFrameContract": [
     "RunnerSourceState",
     "RunnerMovedEvent",
@@ -129,6 +142,7 @@
     "ContactResultSnapshot",
     "SceneDispatchResult",
     "PresentationFrameRecord",
+    "RenderReadback",
     "PrehistoricRushHost.getState().presentation"
   ],
   "sourceWireMapFilesToAddNext": [
@@ -143,6 +157,7 @@
     "src/presentation/presentation-frame-record.js",
     "src/presentation/presentation-journal.js",
     "src/presentation/host-presentation-snapshot.js",
+    "src/presentation/render-readback.js",
     "scripts/prehistoric-rush-presentation-frame-fixture.mjs"
   ],
   "fixtureRows": [
@@ -158,9 +173,10 @@
     "10_scene_dispatch_result_records_menu_game_run_over_win",
     "11_presentation_frame_record_journals_all_subrecords",
     "12_host_get_state_exposes_presentation_snapshot",
-    "13_dom_free_fixture_replays_source_to_presentation_chain",
-    "14_renderer_output_unchanged_by_contract_layer",
-    "15_legacy_runtime_remains_playable_during_cutover"
+    "13_render_readback_reports_current_renderer_camera_hud_dino_paths",
+    "14_dom_free_fixture_replays_source_to_presentation_chain",
+    "15_renderer_output_unchanged_by_contract_layer",
+    "16_legacy_runtime_remains_playable_during_cutover"
   ],
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
