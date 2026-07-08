@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T06:51:12-04:00`
+**Last aligned:** `2026-07-08T08:11:28-04:00`
 
 ## Purpose
 
@@ -14,9 +14,9 @@ Read this folder before changing implementation code.
 
 The accessible `LuminaryLabs-Publish` repo list was checked against central tracking in `LuminaryLabs-Dev/LuminaryLabs`.
 
-No new untracked non-excluded publish repo was selected first.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing root `.agent/START_HERE.md` state.
 
-`PrehistoricRush` was selected as the next fallback follow-up because it has active repo-local DSK scaffolding, and the latest source read showed camera/HUD domains now exist but are not yet the live presentation authority.
+`TheUnmappedHouse` has an older visible alignment time, but its own `.agent/START_HERE.md` says the closed central rollup gap should not keep selecting it. `PrehistoricRush` was selected as the oldest eligible fallback follow-up with unresolved runtime/presentation authority work.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
@@ -34,20 +34,10 @@ index.html
   -> dino form, pose, and material domains
   -> camera-domain-kit
   -> hud-domain-kit
-  -> await import("./runtime-terrain-v6.mjs")
-  -> presentation pass reads PrehistoricRushHost.app
-```
-
-The repo is in a mixed state:
-
-```txt
-src/game.js
-  -> has cleaner DSK composition scaffolding
-  -> installs dino, camera, and HUD domains
-  -> still applies a presentation pass directly
-
-src/runtime-terrain-v6.mjs
-  -> still owns live runner, renderer, input, contact, scene result, camera baseline, HUD baseline, and raptor visual behavior
+  -> PrehistoricRushComposition.snapshot()
+  -> runtime-terrain-v6.mjs
+  -> Three.js + Rapier terrain runner
+  -> PrehistoricRushHost.getState()
 ```
 
 ## First files to read
@@ -58,23 +48,14 @@ src/runtime-terrain-v6.mjs
 .agent/next-steps.md
 .agent/validation.md
 .agent/architecture-audit/domain-service-breakdown.md
-.agent/render-audit/runner-render-audit.md
+.agent/render-audit/render-surface-audit.md
 .agent/gameplay-audit/runner-loop-audit.md
-.agent/dino-domain-audit/dino-scaffold-bridge.md
 .agent/runner-authority-audit/action-result-fixture-gate.md
 .agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md
-.agent/trackers/2026-07-08T06-51-12-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T06-51-12-04-00.md
+.agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md
+.agent/trackers/2026-07-08T08-11-28-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T08-11-28-04-00.md
 .agent/kit-registry.json
-```
-
-Prior breakdowns:
-
-```txt
-.agent/trackers/2026-07-08T05-10-47-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T05-10-47-04-00.md
-.agent/trackers/2026-07-08T03-01-20-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T03-01-20-04-00.md
 ```
 
 ## Source files to inspect next
@@ -89,41 +70,35 @@ src/domain-runtime/event-bus.js
 src/domain-runtime/domain-host.js
 src/domain-runtime/tick-scheduler.js
 src/domains/dino/index.js
-src/domains/dino/dino-form-domain-kit.js
 src/domains/dino/dino-pose-domain-kit.js
-src/domains/dino/dino-material-domain-kit.js
 src/domains/camera/camera-domain-kit.js
 src/domains/hud/hud-domain-kit.js
-game-scenes.json
 runner-tuning.json
-flock-generation.json
+game-scenes.json
 kit-composition.json
 kit-cutover-inventory.json
-RUNNER_RESEARCH.md
-.github/workflows/deploy-pages.yml
 ```
 
 ## Main rule
 
-Do not let `runtime-terrain-v6.mjs`, DOM handlers, renderer state, camera lerp code, HUD DOM strings, or Rapier frame timing become permanent source-of-truth seams for reusable runner behavior.
+Do not add more visual polish or shared-kit promotion until the current frame can be expressed as stable presentation data.
 
-Extract fixture-readable facts first.
+The current visual route should stay playable while the next implementation adds:
+
+```txt
+RunnerSourceState
+  -> runner.moved
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
+  -> PresentationFrameRecord
+  -> PrehistoricRushHost.getState().presentation
+```
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Descriptor Fixture Gate
+PrehistoricRush Presentation Frame Contract Acceptance Ledger
 ```
 
-The immediate proof chain is:
-
-```txt
-runner source state
-  -> runner.moved
-  -> dino.pose.changed
-  -> camera.frame.requested
-  -> hud.frame.requested
-  -> host presentation snapshot
-```
-
-Keep the public route working while wrapping the current behavior in stable descriptors and journals.
+Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable presentation frame contracts.
