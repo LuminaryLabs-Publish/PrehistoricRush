@@ -2,15 +2,40 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T06:51:12-04:00`
+**Updated:** `2026-07-08T08:11:28-04:00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite-runner shell.
 
-It has a thin composition entry at `src/game.js` that installs a repo-local event bus, domain host, scheduler, dino domains, camera domain, and HUD domain, then imports the live visual runner from `src/runtime-terrain-v6.mjs`.
+It now has a thin composition entry in `src/game.js` that installs repo-local event-bus, domain-host, scheduler, dino, camera, and HUD domains before importing the live Three.js/Rapier runner in `src/runtime-terrain-v6.mjs`.
 
-The immediate architecture problem changed slightly: the repo now has a broader presentation scaffold, but the camera/HUD/dino presentation pass is still not descriptor-authoritative.
+The current architecture issue is sharper than before: the project has presentation domain scaffolds, but the actual frame still comes from direct host-app mutation in `src/game.js` and `src/runtime-terrain-v6.mjs`.
+
+## Full repo-list comparison result
+
+```txt
+AetherVale            tracked; root .agent observed; last aligned 2026-07-08T07:18:11-04:00
+HorrorCorridor        tracked; root .agent observed; last aligned 2026-07-08T07:01:54-04:00
+IntoTheMeadow         tracked; root .agent observed; last aligned 2026-07-08T07:41:52-04:00
+MyCozyIsland          tracked; root .agent observed; last aligned 2026-07-08T07:30:30-04:00
+PhantomCommand        tracked; root .agent observed; last aligned 2026-07-08T07:50:47-04:00
+PrehistoricRush       selected fallback follow-up; last aligned 2026-07-08T06:51:12-04:00
+TheCavalryOfRome      excluded by rule
+TheOpenAbove          tracked; root .agent observed; last aligned 2026-07-08T07:10:12-04:00
+TheUnmappedHouse      tracked; root .agent observed; skip stale-rollup repeat reason
+ZombieOrchard         tracked; root .agent observed; last aligned 2026-07-08T08:02:32-04:00
+```
+
+Selection reason:
+
+```txt
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, or missing root .agent/START_HERE.md state.
+
+TheUnmappedHouse has an older visible alignment time, but its own local docs say the closed central rollup gap should no longer be used as a reason to repeatedly select it.
+
+PrehistoricRush was selected as the oldest eligible fallback follow-up with unresolved runtime/presentation authority work.
+```
 
 ## Current route
 
@@ -33,18 +58,16 @@ index.html
 ## Source-backed facts
 
 ```txt
-- README.md describes the repo as a standalone additive game repo for a NexusEngine-powered infinite runner.
-- README.md declares the scene flow as menu -> game -> run-over -> win -> menu.
-- README.md says the product repo should stay thin and reusable behavior should move into NexusEngine core kits or ProtoKits.
-- src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
-- src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
-- src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
-- src/game.js runs styleHud, renderHud, applyCloseCamera, applyReadableStride, and a direct renderer frame in a presentation pass.
-- camera-domain-kit exposes a close-third-person-v1 descriptor and emits camera.preset.ready.
-- hud-domain-kit exposes a readability-hud-v1 descriptor, has a render(snapshot) projection service, and emits hud.ready.
-- dino-pose-domain-kit listens for runner.moved and emits dino.pose.changed.
-- runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
-- runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contact checks, scene mutation, and live route behavior.
+README.md describes the repo as a standalone additive game repo for a NexusEngine-powered infinite runner.
+README.md declares the scene flow as menu -> game -> run-over -> win -> menu.
+README.md says the product repo should stay thin and reusable behavior should move into NexusEngine core kits or ProtoKits.
+src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
+src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
+src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
+src/game.js runs styleHud, renderHud, applyCloseCamera, applyReadableStride, and a direct renderer frame in a presentation pass.
+runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
+runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contact checks, scene mutation, baseline HUD/camera, and live route behavior.
+runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
 ```
 
 ## Current interaction loop
@@ -57,8 +80,7 @@ page load
   -> menu scene waits for start input
   -> game scene mutates live runner state
   -> raw keyboard/button input drives lane/jump/boost behavior
-  -> terrain chunks, props, hazards, pickups, and flock are updated
-  -> Rapier physics bridge steps actor and colliders
+  -> terrain chunks, props, hazards, pickups, and physics state update
   -> inline collision/contact checks decide run-over, pickup, or win
   -> presentation pass directly updates camera, HUD, dino stride, and render frame
   -> host exposes runtime snapshots
@@ -113,6 +135,9 @@ camera-follow-policy
 hud-telemetry-projection
 presentation-pass-authority
 host-diagnostics
+presentation-frame-contract
+repo-local-agent-state
+central-ledger-readback
 ```
 
 ## Current services in use
@@ -144,9 +169,35 @@ hud.ready
 hudDomain.render
 hudDomain.getDescriptor
 hudDomain.snapshot
+styleHud
+renderHud
+applyCloseCamera
+applyReadableStride
+startPresentationPass
 PrehistoricRushComposition.snapshot
 PrehistoricRushHost.getState
 rapier-physics-domain-kit services
+```
+
+Needed next services:
+
+```txt
+snapshotRunnerSourceState
+emitRunnerMoved
+bridgeRunnerMovedToDinoPose
+createDinoPoseFrame
+createCameraFrameRequest
+createHudFrameRequest
+appendPresentationFrameRecord
+readHostPresentationSnapshot
+runPresentationFrameFixture
+createActionFrame
+classifyActionAcceptance
+appendActionResult
+reduceRunnerStep
+snapshotContactResult
+appendSceneDispatchResult
+createRunMovementPromotionReport
 ```
 
 ## Current kits identified
@@ -184,12 +235,12 @@ run-movement-kit
 
 The repo can look more modular than it is because `src/game.js` has a clean domain scaffold.
 
-The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`, and the newer presentation pass still directly mutates camera, HUD DOM, dino stride, and renderer output from the host app object.
+The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`, and the presentation pass still directly mutates camera, HUD DOM, dino stride, and renderer output from `PrehistoricRushHost.app`.
 
-Future work should avoid adding more visual complexity before runner source facts, runner.moved, dino.pose.changed, camera frame descriptors, HUD frame descriptors, contact results, and scene-dispatch results are testable without DOM, renderer, or Rapier frame state.
+Future work should avoid adding visual complexity before runner source facts, runner movement, dino pose, camera frame, HUD frame, contact results, and scene-dispatch results are testable without DOM, renderer, or Rapier frame state.
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Descriptor Fixture Gate
+PrehistoricRush Presentation Frame Contract Acceptance Ledger
 ```
