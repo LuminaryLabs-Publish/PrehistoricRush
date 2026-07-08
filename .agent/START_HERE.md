@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T09:29:20-04:00`
+**Last aligned:** `2026-07-08T10:39:22-04:00`
 
 ## Purpose
 
@@ -18,7 +18,7 @@ No checked non-Cavalry Publish repo was fully new, absent from the central ledge
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the fallback follow-up because its repo-local domain scaffold is real, but the live presentation frame still lacks a source wire map and fixture-readable contract.
+`PrehistoricRush` was selected as the fallback follow-up because its prior pass established a presentation source wire map, but the live runner still does not emit fixture-readable `runner.moved`, `dino.pose.changed`, `camera.frame.requested`, or `hud.frame.requested` events from the actual route.
 
 ## Current product read
 
@@ -37,6 +37,7 @@ index.html
   -> PrehistoricRushComposition.snapshot()
   -> runtime-terrain-v6.mjs
   -> Three.js + Rapier terrain runner
+  -> src/game.js presentation pass
   -> PrehistoricRushHost.getState()
 ```
 
@@ -47,10 +48,26 @@ page load
   -> composition installs dino, camera, and HUD domain scaffold
   -> visual runner loads menu scene
   -> player starts run
-  -> keyboard/button input drives lane, jump, and boost behavior
+  -> keyboard/button input drives turn, jump, and boost behavior
   -> runtime-terrain-v6.mjs mutates movement, terrain, contacts, pickups, scene state, and baseline renderer frame
   -> src/game.js presentation pass mutates close camera, readable stride, HUD DOM, and renderer frame
   -> host exposes runtime snapshots
+```
+
+## Target proof loop
+
+```txt
+RunnerSourceState
+  -> RunnerMovedEvent
+  -> eventBus.emit("runner.moved")
+  -> dino-pose-domain-kit update
+  -> eventBus.emit("dino.pose.changed")
+  -> DinoPoseFrame
+  -> CameraFrameRequest
+  -> HudFrameRequest
+  -> PresentationFrameRecord
+  -> PrehistoricRushHost.getState().presentation
+  -> DOM-free fixture cases
 ```
 
 ## First files to read
@@ -61,16 +78,16 @@ page load
 .agent/next-steps.md
 .agent/validation.md
 .agent/architecture-audit/domain-service-breakdown.md
-.agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md
+.agent/architecture-audit/2026-07-08T10-39-22-04-00-dsk-domain-breakdown.md
 .agent/render-audit/render-surface-audit.md
-.agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md
+.agent/render-audit/2026-07-08T10-39-22-04-00-render-event-readback.md
 .agent/gameplay-audit/runner-loop-audit.md
 .agent/runner-authority-audit/action-result-fixture-gate.md
 .agent/presentation-authority-audit/camera-hud-descriptor-fixture-matrix.md
 .agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md
-.agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md
-.agent/trackers/2026-07-08T09-29-20-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T09-29-20-04-00.md
+.agent/presentation-authority-audit/2026-07-08T10-39-22-04-00-event-bridge-fixture-readiness.md
+.agent/trackers/2026-07-08T10-39-22-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T10-39-22-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -97,24 +114,24 @@ kit-cutover-inventory.json
 
 ## Main rule
 
-Do not add more visual polish or shared-kit promotion until the current frame can be expressed as stable presentation data.
+Do not add more visual polish or shared-kit promotion until the current route can expose stable presentation and runner event records.
 
-The current visual route should stay playable while the next implementation adds:
+The next runtime change should add an additive event bridge and journal:
 
 ```txt
-RunnerSourceState
-  -> RunnerMovedEvent
-  -> DinoPoseFrame
-  -> CameraFrameRequest
-  -> HudFrameRequest
-  -> PresentationFrameRecord
-  -> PrehistoricRushHost.getState().presentation
+source runner state
+  -> runner.moved event
+  -> dino pose descriptor
+  -> camera frame request
+  -> HUD frame request
+  -> presentation frame journal
+  -> host presentation snapshot
 ```
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Source Wire Map + Frame Contract Fixture Gate
+PrehistoricRush Runner Event Bridge + Presentation Frame Fixture Gate
 ```
 
-Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable presentation frame contracts.
+Preserve the current route, visuals, control feel, `PrehistoricRushComposition.snapshot()`, and `PrehistoricRushHost.getState()` while adding fixture-readable event bridge records beside the existing direct renderer mutations.
