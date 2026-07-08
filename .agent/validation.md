@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T12:09:27-04:00`
+**Updated:** `2026-07-08T13:18:13-04:00`
 
 ## Validation status for this pass
 
@@ -14,14 +14,16 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs PrehistoricRush repo ledger.
 - GitHub connector read of PrehistoricRush README.md.
-- GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
+- GitHub connector read of PrehistoricRush dino-pose-domain-kit.
+- GitHub connector read of PrehistoricRush camera-domain-kit.
+- GitHub connector read of PrehistoricRush hud-domain-kit.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
 - GitHub connector read of PrehistoricRush existing .agent docs.
-- GitHub connector create of new PrehistoricRush runner event DSK map.
-- GitHub connector create of new PrehistoricRush presentation readback contract audit.
-- GitHub connector create of new PrehistoricRush runner event loop gameplay audit.
-- GitHub connector create of new PrehistoricRush fixture source wire map.
+- GitHub connector create of new PrehistoricRush runner source journal DSK map.
+- GitHub connector create of new PrehistoricRush presentation frame readback contract audit.
+- GitHub connector create of new PrehistoricRush contact/scene result gameplay audit.
+- GitHub connector create of new PrehistoricRush runner source journal gate audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of PrehistoricRush root .agent docs.
@@ -33,6 +35,7 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 
 ```txt
 - No local checkout was available in this connector pass.
+- No package.json exists in the repo root, so npm commands were not assumed.
 - No npm install was run.
 - No npm run check was run.
 - No local static server was run.
@@ -50,7 +53,7 @@ There is no `package.json` in the repo root at the time of this pass, so do not 
 Recommended next checks:
 
 ```bash
-# If working from a local checkout:
+# From a local checkout:
 python3 -m http.server 4173
 # open http://localhost:4173/
 ```
@@ -85,6 +88,8 @@ dino.pose.changed-smoke
 DinoPoseFrame-smoke
 camera.frame.requested-smoke
 hud.frame.requested-smoke
+contact-result-snapshot-smoke
+scene-dispatch-result-smoke
 presentation-frame-record-smoke
 presentation-descriptor-journal-smoke
 host-presentation-snapshot-smoke
@@ -109,11 +114,14 @@ run-movement-promotion-smoke
 05_dino_pose_frame_matches_current_stride_inputs
 06_camera_frame_request_matches_close_camera_visual_policy
 07_hud_frame_request_matches_readability_hud_descriptor
-08_presentation_frame_record_journals_all_subrecords
-09_host_get_state_exposes_presentation_snapshot
-10_dom_free_fixture_replays_source_to_presentation_chain
-11_renderer_output_unchanged_by_contract_layer
-12_legacy_runtime_remains_playable_during_cutover
+08_hazard_contact_result_records_run_over_reason
+09_pickup_contact_result_records_shard_reason
+10_scene_dispatch_result_records_menu_game_run_over_win
+11_presentation_frame_record_journals_all_subrecords
+12_host_get_state_exposes_presentation_snapshot
+13_dom_free_fixture_replays_source_to_presentation_chain
+14_renderer_output_unchanged_by_contract_layer
+15_legacy_runtime_remains_playable_during_cutover
 ```
 
 ## Pass/fail rule
@@ -130,6 +138,8 @@ RunnerSourceState
   -> DinoPoseFrame
   -> CameraFrameRequest
   -> HudFrameRequest
+  -> ContactResultSnapshot
+  -> SceneDispatchResult
   -> PresentationFrameRecord
   -> PrehistoricRushHost.getState().presentation
 ```
