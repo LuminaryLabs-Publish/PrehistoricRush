@@ -1,34 +1,38 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T03:01:20-04:00`
+**Updated:** `2026-07-08T05:10:47-04:00`
 
 ## Validation status for this pass
 
 No runtime source files were changed in this pass.
 
-This pass created documentation and operating memory under `.agent/` only.
+This pass updated documentation and operating memory under `.agent/` only, then updated the central `LuminaryLabs-Dev/LuminaryLabs` tracking ledger.
 
 ## Checks performed
 
 ```txt
-- GitHub connector read of full LuminaryLabs-Publish installation repo list.
+- GitHub connector read of full LuminaryLabs-Publish repo list.
 - GitHub connector read of PrehistoricRush README.md.
-- GitHub connector read of PrehistoricRush index.html.
-- GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
-- GitHub connector read of PrehistoricRush game-scenes.json.
-- GitHub connector read of PrehistoricRush kit-cutover-inventory.json.
-- GitHub connector read of PrehistoricRush src/domains/dino/index.js.
-- GitHub connector read of PrehistoricRush src/domain-runtime/domain-host.js.
+- GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush existing .agent docs.
+- GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger for PrehistoricRush.
+- GitHub connector write of new PrehistoricRush tracker entry.
+- GitHub connector write of new PrehistoricRush turn-ledger entry.
+- GitHub connector write of new PrehistoricRush runner-authority audit.
+- GitHub connector update of PrehistoricRush root .agent docs.
+- GitHub connector update of central PrehistoricRush repo ledger.
+- GitHub connector create of central internal change-log entry.
 ```
 
 ## Checks not performed
 
 ```txt
 - No local checkout was available in this connector pass.
-- No `npm install` was run.
-- No `npm run check` was run.
+- No npm install was run.
+- No npm run check was run.
+- No local static server was run.
 - No browser route validation was run.
 - No Playwright smoke was run.
 - No live GitHub Pages route was opened.
@@ -69,6 +73,7 @@ src/game.js imports ./runtime-terrain-v6.mjs
 manifest-load-smoke
 manifest-drift-smoke
 scene-alias-smoke
+action-frame-smoke
 action-acceptance-smoke
 action-result-journal-smoke
 runner-source-state-smoke
