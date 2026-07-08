@@ -1,12 +1,12 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-08T08:11:28-04:00`
+**Updated:** `2026-07-08T09:29:20-04:00`
 
 ## Highest-priority gaps
 
 ```txt
 1. src/game.js installs dino, camera, and HUD domain scaffolds, but the live runner does not yet emit stable runner movement facts.
-2. dino-pose-domain-kit already listens for runner.moved, but runtime-terrain-v6.mjs does not yet emit that event from the live movement step.
+2. dino-pose-domain-kit already listens for runner.moved, but runtime-terrain-v6.mjs does not yet expose that event as a fixture-readable live result.
 3. camera-domain-kit exposes a close-third-person descriptor, but applyCloseCamera still directly mutates the Three.js camera from PrehistoricRushHost.app.
 4. hud-domain-kit exposes a readability HUD descriptor and render(snapshot), but renderHud still directly writes DOM from PrehistoricRushHost.app.
 5. The live presentation frame is not represented by a stable PresentationFrameRecord.
@@ -16,6 +16,7 @@
 9. Scene dispatch is still product-side and direct instead of command/result based.
 10. Manifest files exist but are not yet the full runtime source of truth.
 11. The first missing shared ProtoKit is still run-movement-kit.
+12. The implementation now has a written source wire map, but no source files for it exist yet.
 ```
 
 ## Architecture gaps
@@ -49,7 +50,7 @@
 
 ```txt
 - RunnerSourceState should be projected from app.state before any presentation mutation.
-- runner.moved should be emitted from the live movement step.
+- RunnerMovedEvent should be projected from the live movement step.
 - DinoPoseFrame should be derived from runner movement facts.
 - CameraFrameRequest should be a descriptor, not only a Three.js camera mutation.
 - HudFrameRequest should be a descriptor, not only an innerHTML string.
@@ -72,6 +73,7 @@
 - action-acceptance-matrix-kit is not yet materialized locally.
 - action-result-journal-kit is not yet materialized locally.
 - runner-source-state-kit is not yet materialized locally.
+- runner-moved-event-kit is not yet materialized locally.
 - runner-step-result-kit is not yet materialized locally.
 - runner-event-journal-kit is not yet materialized locally.
 - camera-frame-descriptor-kit is not yet materialized locally.
@@ -91,9 +93,11 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/trackers/2026-07-08T08-11-28-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-08T08-11-28-04-00.md added
-.agent/presentation-authority-audit/presentation-frame-contract-acceptance-ledger.md added
+.agent/architecture-audit/2026-07-08T09-29-20-04-00-dsk-domain-breakdown.md added
+.agent/render-audit/2026-07-08T09-29-20-04-00-render-presentation-readback.md added
+.agent/presentation-authority-audit/2026-07-08T09-29-20-04-00-source-wire-map.md added
+.agent/trackers/2026-07-08T09-29-20-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-08T09-29-20-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
@@ -104,4 +108,4 @@ The local `.agent` docs now exist, so the primary remaining gap is not documenta
 
 The primary remaining gap is the authority boundary between the current visual runtime and future testable runner/presentation kits.
 
-The next proof should be a frame contract, not visual polish.
+The next proof should be a presentation source wire map and frame contract fixture, not visual polish.
