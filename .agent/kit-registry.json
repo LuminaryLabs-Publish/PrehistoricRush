@@ -1,73 +1,34 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T16-40-56-04-00",
+  "updated": "2026-07-08T16-51-11-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T16-40-56-04-00.md",
-  "status": "source-file-manifest-host-presentation-projection-fixture-gate-planned",
+  "latestTracker": ".agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T16-51-11-04-00.md",
+  "status": "source-to-host-presentation-fixture-contract-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T16-51-11-04-00-host-presentation-source-dsk-breakdown.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T16-51-11-04-00-render-readback-host-projection-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T16-51-11-04-00-runner-contact-scene-fixture-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T16-51-11-04-00-source-to-host-fixture-contract.md",
+  "previousTracker": ".agent/trackers/2026-07-08T16-40-56-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-08T16-40-56-04-00.md",
+  "selection": {
+    "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
+    "reason": "PrehistoricRush selected because repo-local .agent state had advanced beyond central ledger state and the source-to-host presentation fixture seam remains unresolved."
+  },
   "currentRepoLocalKits": [
-    {
-      "id": "domain-runtime/event-bus",
-      "path": "src/domain-runtime/event-bus.js",
-      "status": "present_needs_runner_contact_scene_presentation_events",
-      "role": "event history and publish/subscribe scaffold"
-    },
-    {
-      "id": "domain-runtime/domain-host",
-      "path": "src/domain-runtime/domain-host.js",
-      "status": "present",
-      "role": "idempotent domain installation and snapshot scaffold"
-    },
-    {
-      "id": "domain-runtime/tick-scheduler",
-      "path": "src/domain-runtime/tick-scheduler.js",
-      "status": "present_future_authority",
-      "role": "future tick-owned domain update scaffold"
-    },
-    {
-      "id": "dino-form-domain-kit",
-      "path": "src/domains/dino/dino-form-domain-kit.js",
-      "status": "present",
-      "role": "dino form descriptor"
-    },
-    {
-      "id": "dino-pose-domain-kit",
-      "path": "src/domains/dino/dino-pose-domain-kit.js",
-      "status": "present_needs_live_runner_moved_event",
-      "role": "dino pose descriptor updated by runner movement facts"
-    },
-    {
-      "id": "dino-material-domain-kit",
-      "path": "src/domains/dino/dino-material-domain-kit.js",
-      "status": "present",
-      "role": "dino material descriptor"
-    },
-    {
-      "id": "dino-domain-bundle",
-      "path": "src/domains/dino/index.js",
-      "status": "present",
-      "role": "bundle wrapper for dino form, pose, and material domains"
-    },
-    {
-      "id": "camera-domain-kit",
-      "path": "src/domains/camera/camera-domain-kit.js",
-      "status": "present_needs_live_camera_frame_descriptor_bridge",
-      "role": "close third-person camera descriptor"
-    },
-    {
-      "id": "hud-domain-kit",
-      "path": "src/domains/hud/hud-domain-kit.js",
-      "status": "present_needs_live_hud_frame_descriptor_bridge",
-      "role": "readability HUD descriptor and projection service"
-    }
+    { "id": "domain-runtime/event-bus", "path": "src/domain-runtime/event-bus.js", "status": "present_needs_runner_contact_scene_presentation_events", "role": "event history and publish/subscribe scaffold" },
+    { "id": "domain-runtime/domain-host", "path": "src/domain-runtime/domain-host.js", "status": "present", "role": "idempotent domain installation and snapshot scaffold" },
+    { "id": "domain-runtime/tick-scheduler", "path": "src/domain-runtime/tick-scheduler.js", "status": "present_future_authority", "role": "future tick-owned domain update scaffold" },
+    { "id": "dino-form-domain-kit", "path": "src/domains/dino/dino-form-domain-kit.js", "status": "present", "role": "dino form descriptor" },
+    { "id": "dino-pose-domain-kit", "path": "src/domains/dino/dino-pose-domain-kit.js", "status": "present_needs_live_runner_moved_event", "role": "dino pose descriptor updated by runner movement facts" },
+    { "id": "dino-material-domain-kit", "path": "src/domains/dino/dino-material-domain-kit.js", "status": "present", "role": "dino material descriptor" },
+    { "id": "dino-domain-bundle", "path": "src/domains/dino/index.js", "status": "present", "role": "bundle wrapper for dino form, pose, and material domains" },
+    { "id": "camera-domain-kit", "path": "src/domains/camera/camera-domain-kit.js", "status": "present_needs_live_camera_frame_descriptor_bridge", "role": "close third-person camera descriptor" },
+    { "id": "hud-domain-kit", "path": "src/domains/hud/hud-domain-kit.js", "status": "present_needs_live_hud_frame_descriptor_bridge", "role": "readability HUD descriptor and projection service" }
   ],
   "currentExternalKits": [
-    {
-      "id": "rapier-physics-domain-kit",
-      "status": "live_external_kit",
-      "role": "Rapier physics bridge used by the visual runner"
-    }
+    { "id": "rapier-physics-domain-kit", "status": "live_external_kit", "role": "Rapier physics bridge used by the visual runner" }
   ],
   "runtimeImpliedKits": [
     "prehistoric-static-shell-kit",
@@ -79,18 +40,6 @@
     "prehistoric-scene-dispatch-kit",
     "prehistoric-hud-dom-render-kit",
     "prehistoric-close-camera-apply-kit"
-  ],
-  "targetCoreKits": [
-    "createCoreSkyboxKit",
-    "createCoreSceneKit",
-    "createCoreInputKit",
-    "createCoreMotionKit",
-    "createCoreCameraKit",
-    "createCoreGraphicsKit",
-    "createCoreAnimationKit",
-    "createCoreUIKit",
-    "createCoreDiagnosticsKit",
-    "createCoreCompositionKit"
   ],
   "firstMissingProtoKit": "run-movement-kit",
   "nextRepoLocalExtractionCandidates": [
@@ -117,13 +66,6 @@
     "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T16-40-56-04-00-event-source-fixture-source-file-manifest.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-08T16-40-56-04-00-presentation-render-readback-source-manifest.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T16-40-56-04-00-runner-action-contact-scene-contract.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T16-40-56-04-00-source-file-manifest-and-host-projection.md",
-  "previousSystemAudit": ".agent/presentation-authority-audit/2026-07-08T14-51-11-04-00-event-host-wire-map.md",
-  "runnerAuthorityAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
-  "nextSafeLedge": "PrehistoricRush Source File Manifest + Host Presentation Projection Fixture Gate",
   "requiredFrameContract": [
     "RunnerSourceState",
     "RunnerMovedEvent",
@@ -136,6 +78,7 @@
     "SceneDispatchResult",
     "RenderReadback",
     "PresentationFrameRecord",
+    "PresentationJournalSnapshot",
     "PrehistoricRushHost.getState().presentation"
   ],
   "sourceWireMapFilesToAddNext": [
@@ -171,5 +114,6 @@
     "15_renderer_output_unchanged_by_contract_layer",
     "16_legacy_runtime_remains_playable_during_cutover"
   ],
+  "nextSafeLedge": "PrehistoricRush Source-to-Host Presentation Fixture Contract",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
