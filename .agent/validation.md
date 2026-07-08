@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T16-40-56-04-00`
+**Updated:** `2026-07-08T16-51-11-04-00`
 
 ## Validation status for this pass
 
@@ -13,19 +13,21 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
-- GitHub connector read of PrehistoricRush README.md.
-- GitHub connector read of PrehistoricRush src/runtime.mjs.
+- GitHub connector read of PrehistoricRush .agent/START_HERE.md.
+- GitHub connector read of PrehistoricRush .agent/current-audit.md.
+- GitHub connector read of PrehistoricRush .agent/known-gaps.md.
+- GitHub connector read of PrehistoricRush .agent/next-steps.md.
+- GitHub connector read of PrehistoricRush .agent/validation.md.
+- GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of PrehistoricRush src/game.js.
-- GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs source anchors.
 - GitHub connector read of PrehistoricRush event bus and domain host modules.
 - GitHub connector read of PrehistoricRush dino-pose-domain-kit.
-- GitHub connector read of PrehistoricRush camera-domain-kit.
-- GitHub connector read of PrehistoricRush existing .agent docs.
 - GitHub connector update of PrehistoricRush root .agent docs.
-- GitHub connector create of new PrehistoricRush event source fixture source-file manifest.
-- GitHub connector create of new PrehistoricRush presentation render readback manifest.
-- GitHub connector create of new PrehistoricRush runner action/contact/scene contract.
-- GitHub connector create of new PrehistoricRush source file manifest and host projection audit.
+- GitHub connector create of new PrehistoricRush architecture audit.
+- GitHub connector create of new PrehistoricRush render audit.
+- GitHub connector create of new PrehistoricRush gameplay audit.
+- GitHub connector create of new PrehistoricRush presentation authority audit.
 - GitHub connector create of new PrehistoricRush tracker entry.
 - GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector update of central PrehistoricRush repo ledger.
@@ -80,9 +82,6 @@ src/game.js starts the presentation pass
 ## Future smoke tests needed
 
 ```txt
-manifest-load-smoke
-manifest-drift-smoke
-scene-alias-smoke
 runner-source-state-smoke
 runner-moved-smoke
 dino.pose.changed-smoke
@@ -125,4 +124,22 @@ run-movement-promotion-smoke
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
+```
+
+## Current proof status
+
+```txt
+repo-list comparison: performed
+central ledger comparison: performed
+source readback: performed
+root .agent updated: performed
+tracker created: performed
+turn ledger created: performed
+central change-log created: performed
+runtime implementation changed: no
+build proof: missing
+browser proof: missing
+fixture replay proof: missing
+branch created: no
+pushed to main: yes
 ```
