@@ -1,8 +1,9 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T03:01:20-04:00",
-  "latestTracker": ".agent/trackers/2026-07-08T03-01-20-04-00/project-breakdown.md",
+  "updated": "2026-07-08T05:10:47-04:00",
+  "latestTracker": ".agent/trackers/2026-07-08T05-10-47-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T05-10-47-04-00.md",
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
@@ -68,8 +69,6 @@
   ],
   "firstMissingProtoKit": "run-movement-kit",
   "nextRepoLocalExtractionCandidates": [
-    "prehistoric-rush-runtime-source-bundle-kit",
-    "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-action-frame-contract-kit",
     "prehistoric-rush-action-acceptance-matrix-kit",
     "prehistoric-rush-action-result-journal-kit",
@@ -80,7 +79,11 @@
     "prehistoric-rush-contact-result-snapshot-kit",
     "prehistoric-rush-scene-dispatch-result-kit",
     "prehistoric-rush-replay-parity-smoke-kit",
+    "prehistoric-rush-runtime-source-bundle-kit",
+    "prehistoric-rush-manifest-load-status-kit",
     "prehistoric-rush-run-movement-promotion-report-kit"
   ],
+  "latestSystemAudit": ".agent/runner-authority-audit/action-result-fixture-gate.md",
+  "nextSafeLedge": "PrehistoricRush Runner Action/Result Authority + Dino Pose Bridge Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
