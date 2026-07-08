@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T12:09:27-04:00`
+**Updated:** `2026-07-08T13:18:13-04:00`
 
 ## Summary
 
@@ -10,21 +10,21 @@
 
 It has a repo-local composition scaffold in `src/game.js` that installs an event bus, domain host, scheduler, dino domains, camera domain, and HUD domain before importing the live Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-The current architecture issue is not missing documentation presence. The blocking seam is that the live runner loop and the presentation pass still do not emit fixture-readable source, movement, dino, camera, HUD, and presentation records.
+The blocking seam is still not missing docs. It is that the live runner loop and the presentation pass do not emit fixture-readable source, movement, contact, scene, dino, camera, HUD, and presentation records.
 
 ## Full repo-list comparison result
 
 ```txt
-AetherVale            tracked; root .agent observed; latest sampled follow-up 2026-07-08T12:01:23-04:00
-HorrorCorridor        tracked; root .agent observed; latest sampled follow-up 2026-07-08T11:09:38-04:00
-IntoTheMeadow         tracked; root .agent observed; latest sampled follow-up 2026-07-08T10:48:47-04:00
-MyCozyIsland          tracked; root .agent observed; latest sampled follow-up 2026-07-08T11:40:00-04:00
-PhantomCommand        tracked; root .agent observed; latest sampled follow-up 2026-07-08T10:58:46-04:00
-PrehistoricRush       selected fallback follow-up: runner event fixture source map
+AetherVale            tracked; root .agent observed
+HorrorCorridor        tracked; root .agent observed
+IntoTheMeadow         tracked; root .agent observed
+MyCozyIsland          tracked; root .agent observed
+PhantomCommand        tracked; root .agent observed
+PrehistoricRush       selected fallback follow-up: runner source journal and contact/scene result gate
 TheCavalryOfRome      excluded by rule
-TheOpenAbove          tracked; root .agent observed; latest sampled follow-up 2026-07-08T11:49:04-04:00
-TheUnmappedHouse      tracked; root .agent observed; latest sampled follow-up 2026-07-08T11:28:38-04:00
-ZombieOrchard         tracked; root .agent observed; latest sampled follow-up 2026-07-08T11:19:53-04:00
+TheOpenAbove          tracked; root .agent observed
+TheUnmappedHouse      tracked; root .agent observed
+ZombieOrchard         tracked; root .agent observed
 ```
 
 Selection reason:
@@ -32,7 +32,7 @@ Selection reason:
 ```txt
 No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible fallback target because it still needs an additive event/presentation readback layer around the live route before implementation should move to renderer replacement, action/result extraction, or shared-kit promotion.
+PrehistoricRush was selected as the eligible fallback target because it still needs an additive event/presentation readback layer plus contact and scene result records before implementation should move to renderer replacement, shared-kit promotion, or new gameplay content.
 ```
 
 ## Current route
@@ -65,8 +65,8 @@ src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
 src/game.js runs styleHud, renderHud, applyCloseCamera, applyReadableStride, and a direct renderer frame in a presentation pass.
 dino-pose-domain-kit already listens for runner.moved and emits dino.pose.changed, but the live runtime does not yet emit runner.moved.
-camera-domain-kit exposes a close-third-person descriptor.
-hud-domain-kit exposes a readability HUD descriptor and render(snapshot).
+camera-domain-kit exposes close-third-person-v1.
+hud-domain-kit exposes readability-hud-v1 and render(snapshot).
 runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
 runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contact checks, scene mutation, baseline HUD/camera, and live route behavior.
 runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
@@ -142,6 +142,8 @@ dino-pose-event-bridge
 dino-pose-frame-contract
 camera-frame-request-contract
 hud-frame-request-contract
+contact-result-contract
+scene-dispatch-result-contract
 presentation-frame-contract
 presentation-descriptor-journal
 host-presentation-snapshot
@@ -200,6 +202,8 @@ recordDinoPoseChangedEvent
 createDinoPoseFrame
 createCameraFrameRequest
 createHudFrameRequest
+createContactResultSnapshot
+createSceneDispatchResult
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
@@ -253,23 +257,11 @@ prehistoric-rush-dino-event-bridge-kit
 prehistoric-rush-dino-pose-frame-kit
 prehistoric-rush-camera-frame-request-kit
 prehistoric-rush-hud-frame-request-kit
+prehistoric-rush-contact-result-snapshot-kit
+prehistoric-rush-scene-dispatch-result-kit
 prehistoric-rush-presentation-frame-record-kit
 prehistoric-rush-presentation-journal-kit
 prehistoric-rush-host-presentation-snapshot-kit
 prehistoric-rush-dom-free-presentation-fixture-kit
 prehistoric-rush-action-frame-contract-kit
-prehistoric-rush-action-acceptance-matrix-kit
-prehistoric-rush-action-result-journal-kit
-prehistoric-rush-runner-step-result-kit
-prehistoric-rush-runner-event-journal-kit
-prehistoric-rush-contact-result-snapshot-kit
-prehistoric-rush-scene-dispatch-result-kit
 ```
-
-## Main finding
-
-The repo can look more modular than it is because `src/game.js` has a clean domain scaffold.
-
-The actual runner authority is still mostly inside `runtime-terrain-v6.mjs`, and the presentation pass still directly mutates camera, HUD DOM, dino stride, and renderer output from `PrehistoricRushHost.app`.
-
-The useful next ledge is to add a narrow source wire from the live runner state to stable events and presentation records without changing the visuals.
