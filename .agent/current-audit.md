@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T16-40-56-04-00`
+**Updated:** `2026-07-08T16-51-11-04-00`
 
 ## Summary
 
@@ -10,14 +10,14 @@
 
 It has a repo-local composition scaffold in `src/game.js` that installs an event bus, domain host, scheduler, dino domains, camera domain, and HUD domain before importing the live Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-The blocking seam is source authority, not missing visuals: the live runner loop and presentation pass do not yet emit fixture-readable source, movement, contact, scene, dino, camera, HUD, render, and presentation records.
+The blocking seam is source-to-host proof: the game plays, but runner source state, movement events, contact results, scene dispatch, dino pose frames, camera requests, HUD requests, render readback, and presentation frame records are not yet exposed as stable host-readable facts.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible fallback because it still needs additive source-file and host-presentation readback before implementation should move to renderer replacement, shared-kit promotion, or new gameplay content.
+PrehistoricRush was selected because repo-local .agent state had advanced to 2026-07-08T16-40-56-04-00 while the central ledger still pointed at 2026-07-08T14:51:11-04:00, and because the source-to-host presentation fixture seam remains unresolved.
 ```
 
 ## Current route
@@ -39,10 +39,6 @@ index.html
 ## Source-backed facts
 
 ```txt
-README.md describes the repo as a standalone additive game repo for a NexusEngine-powered infinite runner.
-README.md declares the scene flow as menu -> game -> run-over -> win -> menu.
-README.md says reusable behavior should move into NexusEngine core kits or ProtoKits.
-src/runtime.mjs only imports ./game.js.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
@@ -91,6 +87,7 @@ legacy-visual-runtime-bridge
 cdn-dependency-loading
 three-render-runtime
 rapier-physics-runtime
+rapier-physics-domain-kit-bridge
 dom-mount-ownership
 keyboard-input-adapter
 button-input-adapter
@@ -187,10 +184,10 @@ createCameraFrameRequest
 createHudFrameRequest
 createContactResultSnapshot
 createSceneDispatchResult
+createRenderReadback
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
-createRenderReadback
 runPresentationFrameFixture
 ```
 
