@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T13:18:13-04:00`
+**Updated:** `2026-07-08T14:51:11-04:00`
 
 ## Next safe ledge
 
-Build the runner source journal, contact/scene result projections, and presentation fixture without changing the visible route.
+Build the presentation event host wire map and DOM-free fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Runner Source Journal + Contact/Scene Result Fixture Gate
+PrehistoricRush Presentation Event Host Wire Map + Fixture Gate
 ```
 
 Preserve the current game first:
@@ -53,6 +53,7 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 - [ ] Add `src/presentation/presentation-frame-record.js` with a pure record combiner.
 - [ ] Add `src/presentation/presentation-journal.js` with a bounded recent-frame journal.
 - [ ] Add `src/presentation/host-presentation-snapshot.js` with a host projection helper.
+- [ ] Add `src/presentation/render-readback.js` with a minimal render-readback projector for renderer/camera/HUD/dino consumption state.
 - [ ] Keep `applyCloseCamera()` visually unchanged while recording camera requests beside it.
 - [ ] Keep `renderHud()` visually unchanged while recording HUD requests beside it.
 - [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
@@ -77,16 +78,17 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 9. prehistoric-rush-presentation-frame-record-kit
 10. prehistoric-rush-presentation-journal-kit
 11. prehistoric-rush-host-presentation-snapshot-kit
-12. prehistoric-rush-dom-free-presentation-fixture-kit
-13. prehistoric-rush-action-frame-contract-kit
-14. prehistoric-rush-action-acceptance-matrix-kit
-15. prehistoric-rush-action-result-journal-kit
-16. prehistoric-rush-runner-step-result-kit
-17. prehistoric-rush-runner-event-journal-kit
-18. prehistoric-rush-replay-parity-smoke-kit
-19. prehistoric-rush-runtime-source-bundle-kit
-20. prehistoric-rush-manifest-load-status-kit
-21. prehistoric-rush-run-movement-promotion-report-kit
+12. prehistoric-rush-render-readback-kit
+13. prehistoric-rush-dom-free-presentation-fixture-kit
+14. prehistoric-rush-action-frame-contract-kit
+15. prehistoric-rush-action-acceptance-matrix-kit
+16. prehistoric-rush-action-result-journal-kit
+17. prehistoric-rush-runner-step-result-kit
+18. prehistoric-rush-runner-event-journal-kit
+19. prehistoric-rush-replay-parity-smoke-kit
+20. prehistoric-rush-runtime-source-bundle-kit
+21. prehistoric-rush-manifest-load-status-kit
+22. prehistoric-rush-run-movement-promotion-report-kit
 ```
 
 ## Fixture rows to create first
@@ -104,9 +106,10 @@ add DOM-free smoke fixtures for the event, contact, scene, and presentation chai
 10_scene_dispatch_result_records_menu_game_run_over_win
 11_presentation_frame_record_journals_all_subrecords
 12_host_get_state_exposes_presentation_snapshot
-13_dom_free_fixture_replays_source_to_presentation_chain
-14_renderer_output_unchanged_by_contract_layer
-15_legacy_runtime_remains_playable_during_cutover
+13_render_readback_reports_current_renderer_camera_hud_dino_paths
+14_dom_free_fixture_replays_source_to_presentation_chain
+15_renderer_output_unchanged_by_contract_layer
+16_legacy_runtime_remains_playable_during_cutover
 ```
 
 ## Do not do next
@@ -135,6 +138,7 @@ hud.frame.requested fixture
 contact-result-snapshot fixture
 scene-dispatch-result fixture
 PresentationFrameRecord fixture
+render-readback fixture
 host-presentation-snapshot smoke
 action-frame smoke
 action-acceptance smoke
@@ -163,6 +167,7 @@ RunnerSourceState
   -> ContactResultSnapshot
   -> SceneDispatchResult
   -> PresentationFrameRecord
+  -> RenderReadback
   -> PrehistoricRushHost.getState().presentation
 ```
 
