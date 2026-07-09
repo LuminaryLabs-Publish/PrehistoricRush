@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T21-50-56-04-00`
+**Updated:** `2026-07-09T00-09-22-04-00`
 
 ## Next safe ledge
 
-Build the source-projection and host-readback fixture gate without changing the visible route.
+Build the presentation consumer catch-up and host projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Source Projection + Host Readback Fixture Gate
+PrehistoricRush Presentation Consumer Catch-up + Host Projection Fixture Gate
 ```
 
 Preserve the current game first:
