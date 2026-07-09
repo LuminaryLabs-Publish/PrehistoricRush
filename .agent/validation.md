@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T09-02-44-04-00`
+**Updated:** `2026-07-09T09-10-50-04-00`
 
 ## Validation status for this pass
 
@@ -13,14 +13,14 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
-- GitHub connector read of PrehistoricRush README.md.
-- GitHub connector read of PrehistoricRush index.html.
-- GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
-- GitHub connector read of PrehistoricRush domain runtime files.
-- GitHub connector read of PrehistoricRush dino/camera kit files.
 - GitHub connector read of PrehistoricRush .agent/START_HERE.md.
+- GitHub connector read of PrehistoricRush .agent/current-audit.md.
+- GitHub connector read of PrehistoricRush .agent/next-steps.md.
+- GitHub connector read of PrehistoricRush .agent/known-gaps.md.
+- GitHub connector read of PrehistoricRush .agent/validation.md.
+- GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector write to PrehistoricRush .agent docs on main.
 - GitHub connector write to LuminaryLabs central ledger and internal change log on main.
 ```
