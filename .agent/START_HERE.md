@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-09T03-00-46-04-00`
+**Last aligned:** `2026-07-09T03-10-05-04-00`
 
 ## Purpose
 
@@ -18,21 +18,21 @@ No checked non-Cavalry Publish repo was fully new, absent from central tracking,
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected because it had the oldest eligible central alignment among checked non-excluded repos.
+`PrehistoricRush` was selected because its repo-local `.agent` state had advanced to `2026-07-09T03-00-46-04-00` while the central ledger still pointed to `2026-07-09T00-09-22-04-00`. This pass keeps the repo on the same presentation event bridge ledge and syncs central tracking.
 
 ## Publish repos checked
 
 ```txt
-LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central alignment 2026-07-09T00-50-00-04-00
-LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central alignment 2026-07-09T01-09-24-04-00
-LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central alignment 2026-07-09T02-41-17-04-00
-LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central alignment 2026-07-09T02-05-52-04-00
-LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central alignment 2026-07-09T02-11-07-04-00
-LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central alignment 2026-07-09T02-31-41-04-00
-LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central alignment 2026-07-09T00-40-20-04-00
-LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central alignment 2026-07-09T01-28-10-04-00
+LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central tracked
+LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central tracked
+LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central tracked
+LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central tracked
+LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central tracked
+LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central tracked
+LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central tracked
+LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central tracked
 LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
-LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central alignment 2026-07-09T00-09-22-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / central ledger drift behind repo-local .agent
 ```
 
 ## Current product read
@@ -92,13 +92,13 @@ PrehistoricRushHost.app.state + previous frame snapshot
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-09T03-00-46-04-00-presentation-event-bridge-dsk-map.md
-.agent/render-audit/2026-07-09T03-00-46-04-00-host-presentation-projection-readback.md
-.agent/gameplay-audit/2026-07-09T03-00-46-04-00-runner-event-fixture-loop.md
-.agent/presentation-authority-audit/2026-07-09T03-00-46-04-00-runner-moved-consumer-contract.md
-.agent/deploy-audit/2026-07-09T03-00-46-04-00-static-dom-free-fixture-gate.md
-.agent/trackers/2026-07-09T03-00-46-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-09T03-00-46-04-00.md
+.agent/architecture-audit/2026-07-09T03-10-05-04-00-central-ledger-presentation-freeze-dsk-map.md
+.agent/render-audit/2026-07-09T03-10-05-04-00-host-presentation-readback-freeze.md
+.agent/gameplay-audit/2026-07-09T03-10-05-04-00-runner-moved-replay-freeze.md
+.agent/presentation-authority-audit/2026-07-09T03-10-05-04-00-consumer-contract-central-sync.md
+.agent/deploy-audit/2026-07-09T03-10-05-04-00-dom-free-fixture-validation-freeze.md
+.agent/trackers/2026-07-09T03-10-05-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T03-10-05-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -146,5 +146,5 @@ Do not extract movement, collision, terrain, renderer, or shared ProtoKits until
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Event Bridge Consumer Contract + Host Projection Fixture Gate
+PrehistoricRush Central Ledger Sync + Presentation Event Bridge Consumer Freeze
 ```
