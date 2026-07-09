@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T03-10-05-04-00`
+**Updated:** `2026-07-09T06-10-35-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps the next implementation boundary unchanged but syncs the repo-local and central ledgers: add the presentation event bridge that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
+This pass keeps the source implementation unchanged and refreshes the next implementation boundary: add the presentation event readback chain that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected because central tracking was behind the repo-local .agent alignment.
+PrehistoricRush was selected because it had the oldest eligible central ledger timestamp after the latest same-day catch-up passes.
 
 TheCavalryOfRome remains excluded by rule.
 ```
@@ -276,5 +276,5 @@ The first useful cut is the consumer bridge from live app state to `runner.moved
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Central Ledger Sync + Presentation Event Bridge Consumer Freeze
+PrehistoricRush Presentation Event Readback + Host Projection Fixture Freeze
 ```
