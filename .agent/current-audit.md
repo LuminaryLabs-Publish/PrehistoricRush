@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T15-31-40-04-00`
+**Updated:** `2026-07-09T18-11-58-04-00`
 
 ## Summary
 
-`PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
+`PrehistoricRush` is a static browser infinite runner that currently combines a repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a presentation event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable. It also repairs the prior repo-local root pointers that referenced `2026-07-09T15-20-00-04-00` tracker/audit files that were not present.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a presentation event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible central-ledger fallback and repo-local pointer repair target.
+PrehistoricRush was selected as the oldest eligible documented fallback.
 
 TheCavalryOfRome remains excluded by rule.
 ```
@@ -107,13 +107,13 @@ central-ledger-sync-domain
 
 ```txt
 createEventBus() -> on, emit, and snapshot with recent event history.
-createDomainHost() -> domain install, domain lookup, and snapshot.
+createDomainHost() -> domain install, domain lookup, tick, and snapshot.
 createTickScheduler() -> future tick service around the domain host and event bus.
 createDinoFormDomainKit() -> dino form descriptor.
 createDinoPoseDomainKit() -> runner.moved consumer and dino.pose.changed producer.
 createDinoMaterialDomainKit() -> material descriptor for the dino.
-createCameraDomainKit() -> camera descriptor scaffold.
-createHudDomainKit() -> HUD descriptor scaffold.
+createCameraDomainKit() -> close third-person camera descriptor scaffold.
+createHudDomainKit() -> readable HUD descriptor and render projection.
 createPhysics() -> external Rapier kit configure/register/step/snapshot bridge.
 createTerrain() -> terrain chunk creation, height sampling, and chunk update.
 populate() -> instanced tree/rock/shard placement and collider/pickup state refresh.
@@ -187,5 +187,5 @@ The blocker is source/consumer proof: `runtime-terrain-v6.mjs` mutates live app 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Event Bridge Ledger Repair + Host Readback Fixture Gate
+PrehistoricRush Presentation Event Bridge Readback + Host Fixture Gate
 ```
