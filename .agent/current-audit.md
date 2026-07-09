@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T15-20-00-04-00`
+**Updated:** `2026-07-09T15-31-40-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a presentation event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a presentation event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable. It also repairs the prior repo-local root pointers that referenced `2026-07-09T15-20-00-04-00` tracker/audit files that were not present.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible central-ledger fallback after TheOpenAbove had already been updated to 2026-07-09T15-09-09-04-00.
+PrehistoricRush was selected as the oldest eligible central-ledger fallback and repo-local pointer repair target.
 
 TheCavalryOfRome remains excluded by rule.
 ```
@@ -100,6 +100,7 @@ planned-presentation-frame-record
 planned-presentation-journal
 planned-host-presentation-snapshot
 planned-DOM-free-fixture-gate
+central-ledger-sync-domain
 ```
 
 ## Services that kits offer
@@ -158,6 +159,7 @@ Runtime-implied product kits:
 - presentation-raptor-stride-consumer-kit
 - render-readback-kit
 - host-state-projection-kit
+- central-ledger-readback-kit
 
 Next-cut proof kits:
 - runner-source-state-kit
@@ -185,5 +187,5 @@ The blocker is source/consumer proof: `runtime-terrain-v6.mjs` mutates live app 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate
+PrehistoricRush Presentation Event Bridge Ledger Repair + Host Readback Fixture Gate
 ```
