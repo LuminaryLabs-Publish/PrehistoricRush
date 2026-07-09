@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T03-00-46-04-00`
+**Updated:** `2026-07-09T03-10-05-04-00`
 
 ## Next safe ledge
 
 Build the presentation event bridge and host projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Event Bridge Consumer Contract + Host Projection Fixture Gate
+PrehistoricRush Central Ledger Sync + Presentation Event Bridge Consumer Freeze
 ```
 
 Preserve the current game first:
@@ -40,6 +40,7 @@ create RenderReadback from renderer/camera/HUD/dino consumption state
 append PresentationFrameRecord
 surface presentation records through host diagnostics
 add DOM-free smoke fixtures for the event, contact, scene, render, and presentation chain
+keep central ledger synchronized with repo-local .agent state
 ```
 
 ## Implementation checklist
@@ -65,6 +66,7 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 - [ ] Expose latest/recent presentation records through `PrehistoricRushHost.getState().presentation`.
 - [ ] Add `scripts/prehistoric-rush-presentation-frame-fixture.mjs`.
 - [ ] Add fixture rows for source state, menu no-move, game move, dino pose event bridge, camera request, HUD request, contact snapshot, scene dispatch, render readback, presentation record, host snapshot, and DOM-free replay.
+- [ ] Keep central `LuminaryLabs-Dev/LuminaryLabs` ledger pointed at the newest repo-local audit set.
 - [ ] Only after presentation fixture proof, continue action/result, runner movement extraction, manifest authority, and shared-kit promotion.
 
 ## DSK extraction order
@@ -116,6 +118,7 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 16_legacy_runtime_remains_playable_during_cutover
 17_event_bus_recent_history_contains_runner_and_pose_events
 18_host_projection_keeps_legacy_state_fields_unchanged
+19_central_ledger_points_to_latest_repo_local_tracker
 ```
 
 ## Do not do next
