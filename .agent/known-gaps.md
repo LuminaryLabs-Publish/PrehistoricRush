@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T09-10-50-04-00`
+**Updated:** `2026-07-09T11-46-08-04-00`
 
 ## Highest-priority gaps
 
@@ -9,18 +9,19 @@
 2. dino-pose-domain-kit already listens for runner.moved, but runtime-terrain-v6.mjs does not yet emit runner.moved from live state changes.
 3. There is no RunnerSourceState record projected from current app.state.
 4. There is no RunnerStepDelta record that compares previous runner source state against current runner source state.
-5. src/game.js can read PrehistoricRushHost.app, but it does not snapshot RunnerSourceState before applying direct presentation mutations.
-6. applyCloseCamera still directly mutates the Three.js camera and does not leave behind a CameraFrameRequest.
-7. renderHud still directly writes DOM and does not leave behind a HudFrameRequest.
-8. applyReadableStride directly mutates the raptor rig and does not leave behind a DinoPoseFrame or pose consumer readback.
-9. Contact checks still mutate scene/shards inline without a ContactResultSnapshot.
-10. Scene dispatch still mutates menu/game/run-over/win inline without a SceneDispatchResult.
-11. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
-12. Render readback is only the string renderer field, not structured frame consumption evidence.
-13. Movement authority still lives inside the legacy visual runtime.
-14. The README still describes older scene manifests/tuning files that are not the live route authority.
-15. The repo has no DOM-free presentation fixture script.
-16. The central ledger can lag behind repo-local .agent state when scheduled passes land close together; each docs pass needs explicit central catch-up.
+5. There is no RunnerMovedEvent record consumed by the existing dino pose kit.
+6. src/game.js can read PrehistoricRushHost.app, but it does not snapshot RunnerSourceState before applying direct presentation mutations.
+7. applyCloseCamera still directly mutates the Three.js camera and does not leave behind a CameraFrameRequest.
+8. renderHud still directly writes DOM and does not leave behind a HudFrameRequest.
+9. applyReadableStride directly mutates the raptor rig and does not leave behind a DinoPoseFrame or pose consumer readback.
+10. Contact checks still mutate scene/shards inline without a ContactResultSnapshot.
+11. Scene dispatch still mutates menu/game/run-over/win inline without a SceneDispatchResult.
+12. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
+13. Render readback is only the string renderer field, not structured frame consumption evidence.
+14. Movement authority still lives inside the legacy visual runtime.
+15. The README still describes older scene manifests/tuning files that are not the live route authority.
+16. The repo has no DOM-free presentation fixture script.
+17. The central ledger can lag behind repo-local .agent state when scheduled passes land close together; each docs pass needs explicit central catch-up.
 ```
 
 ## Do not solve next
@@ -54,6 +55,7 @@ missing fixture row for shard pickup
 missing fixture row for collision run-over
 missing fixture row for win threshold
 missing fixture row for render readback unchanged by presentation proof layer
+missing fixture row for host legacy fields unchanged
 missing fixture row for central ledger newest-tracker readback
 ```
 
@@ -65,6 +67,7 @@ PrehistoricRushHost.getState().presentation.latestFrame missing
 PrehistoricRushHost.getState().presentation.journal missing
 PrehistoricRushHost.getState().presentation.runnerSource missing
 PrehistoricRushHost.getState().presentation.runnerDelta missing
+PrehistoricRushHost.getState().presentation.runnerMoved missing
 PrehistoricRushHost.getState().presentation.dinoPose missing
 PrehistoricRushHost.getState().presentation.cameraRequest missing
 PrehistoricRushHost.getState().presentation.hudRequest missing
@@ -76,5 +79,5 @@ PrehistoricRushHost.getState().presentation.renderReadback missing
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
+PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
 ```
