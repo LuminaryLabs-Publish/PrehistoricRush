@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T03-10-05-04-00`
+**Updated:** `2026-07-09T06-10-35-04-00`
 
 ## Next safe ledge
 
-Build the presentation event bridge and host projection fixture gate without changing the visible route.
+Build the presentation event readback and host projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Central Ledger Sync + Presentation Event Bridge Consumer Freeze
+PrehistoricRush Presentation Event Readback + Host Projection Fixture Freeze
 ```
 
 Preserve the current game first:
@@ -20,7 +20,8 @@ preserve current Three.js/Rapier look and feel
 preserve current PrehistoricRushComposition.snapshot()
 preserve current PrehistoricRushHost.getState() existing fields
 preserve current camera distance/HUD readability pass visually
-preserve menu -> game -> run-over -> win -> menu scene flow
+preserve current menu -> game -> run-over -> win -> menu scene flow
+preserve current double-render behavior until render readback proves parity
 ```
 
 Then add fixture-readable facts around the current behavior:
