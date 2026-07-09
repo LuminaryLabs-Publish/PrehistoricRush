@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-09T12-00-36-04-00`
+**Last aligned:** `2026-07-09T15-20-00-04-00`
 
 ## Purpose
 
@@ -18,28 +18,28 @@ No checked non-Cavalry Publish repo was fully new, absent from the central ledge
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the oldest eligible central-ledger fallback. Its central ledger still pointed at `2026-07-09T09-10-50-04-00`, while repo-local `.agent` state had advanced to `2026-07-09T11-46-08-04-00`. This pass keeps repo-local docs current and explicitly catches central tracking up to `2026-07-09T12-00-36-04-00`.
+`PrehistoricRush` was selected as the oldest eligible central-ledger fallback after the latest checked updates. Its central ledger still pointed at `2026-07-09T12-00-36-04-00`, and the repo still needs the host presentation event/readback fixture before any movement, terrain, renderer, physics, or ProtoKit extraction.
 
 ## Publish repos checked
 
 ```txt
-LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T10-10-32-04-00
-LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central latest 2026-07-09T11-30-50-04-00
-LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T09-36-24-04-00
+LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T12-08-46-04-00
+LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T12-20-08-04-00
+LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central latest 2026-07-09T14-16-00-04-00
+LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T13-18-48-04-00
+LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central latest 2026-07-09T13-38-15-04-00
+LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T14-20-00-04-00
+LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T15-09-09-04-00
+LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T13-00-37-04-00 sampled from change-log search
 LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
-LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T10-29-02-04-00
-LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central-ledger fallback / repo-local state ahead of central tracking
-LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T10-40-00-04-00
-LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T09-50-00-04-00
-LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T11-39-50-04-00
-LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central latest 2026-07-09T11-00-39-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central-ledger fallback / central latest 2026-07-09T12-00-36-04-00
 ```
 
 ## Current product read
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
 
-The game already plays. The next useful work is not new visual content. It is a host presentation readback gate: the live runner should emit fixture-readable movement, dino pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
+The game already plays. The next useful work is not new visual content. It is a presentation event bridge and host readback gate: the live runner should emit fixture-readable movement, dino pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
 
 ## Current interaction loop
 
@@ -92,13 +92,13 @@ PrehistoricRushHost.app.state + previous frame snapshot
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-09T12-00-36-04-00-host-presentation-readback-central-catchup-dsk-map.md
-.agent/render-audit/2026-07-09T12-00-36-04-00-render-readback-frame-consumption-map.md
-.agent/gameplay-audit/2026-07-09T12-00-36-04-00-runner-event-pose-proof-loop.md
-.agent/presentation-authority-audit/2026-07-09T12-00-36-04-00-host-presentation-snapshot-readback-contract.md
-.agent/deploy-audit/2026-07-09T12-00-36-04-00-dom-free-fixture-central-ledger-gate.md
-.agent/trackers/2026-07-09T12-00-36-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-09T12-00-36-04-00.md
+.agent/architecture-audit/2026-07-09T15-20-00-04-00-presentation-event-bridge-fixture-freeze-dsk-map.md
+.agent/render-audit/2026-07-09T15-20-00-04-00-render-readback-host-consumption-map.md
+.agent/gameplay-audit/2026-07-09T15-20-00-04-00-runner-event-bridge-loop.md
+.agent/presentation-authority-audit/2026-07-09T15-20-00-04-00-host-presentation-event-fixture-contract.md
+.agent/deploy-audit/2026-07-09T15-20-00-04-00-dom-free-fixture-wire-map.md
+.agent/trackers/2026-07-09T15-20-00-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T15-20-00-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -141,10 +141,10 @@ scripts/prehistoric-rush-presentation-frame-fixture.mjs
 
 Keep the current static route, visuals, `PrehistoricRushComposition.snapshot()`, `PrehistoricRushHost.getState()` existing fields, camera readability pass, HUD readability pass, and menu/game/run-over/win flow stable.
 
-Do not extract movement, collision, terrain, renderer, or shared ProtoKits until the presentation event bridge fixture proves source state, movement events, dino pose output, camera/HUD descriptors, contacts, scene dispatch, render readback, and host projection.
+Do not extract movement, collision, terrain, renderer, physics, or shared ProtoKits until the presentation event bridge fixture proves source state, movement events, dino pose output, camera/HUD descriptors, contacts, scene dispatch, render readback, and host projection.
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
+PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate
 ```
