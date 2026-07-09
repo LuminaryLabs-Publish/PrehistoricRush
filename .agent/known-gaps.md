@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T06-10-35-04-00`
+**Updated:** `2026-07-09T09-02-44-04-00`
 
 ## Highest-priority gaps
 
@@ -18,113 +18,61 @@
 11. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
 12. Render readback is only the string renderer field, not structured frame consumption evidence.
 13. Movement authority still lives inside the legacy visual runtime.
-14. Jump, boost, turn, hazard, pickup, run-over, retry, and win behavior are not wrapped in stable action/result records.
-15. The first missing shared ProtoKit is still run-movement-kit.
-16. The actual src/presentation/* files do not exist yet.
-17. There is no package.json in the root, so validation must not assume npm scripts exist.
-18. The event bus has history, but no bounded host-facing projection for runner/contact/scene/presentation facts.
-19. The central ledger can drift behind repo-local .agent state unless each run updates both repos in the same pass.
-20. The visible app currently renders twice per frame after the presentation pass; this must be preserved until render readback proves parity.
+14. The README still describes older scene manifests/tuning files that are not the live route authority.
+15. The repo has no DOM-free presentation fixture script.
 ```
 
-## Architecture gaps
+## Do not solve next
 
 ```txt
-- Domain runtime scaffold exists, but scheduler ticks are not yet the primary live authority.
-- The dino domains are installed before the legacy runtime, but the legacy runtime still owns raptor pose animation.
-- The dino pose domain has the correct event consumer shape, but the live route does not feed it.
-- Camera and HUD domains are installed, but live camera/HUD presentation still happens through direct app mutation.
-- PrehistoricRushComposition.snapshot() exposes scaffold state, but not enough live runner or presentation authority state.
-- PrehistoricRushHost.getState() remains the main live debug surface, but it lacks a nested presentation snapshot.
-- No stable action/result journal is documented as live.
-- No presentation frame journal is documented as live.
-- No render-readback snapshot is documented as live.
-- No DOM-free replay parity fixture is documented as live.
-- No contact-result snapshot is documented as live.
-- No scene-dispatch result stream is documented as live.
+Do not add more dinosaur art.
+Do not add more trees.
+Do not tune terrain visuals.
+Do not extract renderer authority.
+Do not replace Rapier integration.
+Do not promote anything to ProtoKits yet.
+Do not rewrite runtime-terrain-v6.mjs wholesale.
 ```
 
-## Gameplay authority gaps
+## Exact blocker
+
+The blocker is proof, not playability.
+
+The game plays, but the domain composition cannot yet prove that live runner state flows into the dino pose kit, camera descriptor, HUD descriptor, contact results, scene dispatch, render readback, and host diagnostics.
+
+## Fixture gaps
 
 ```txt
-- Start, retry, run-again, menu, left, right, boost, and jump should become ActionFrame records later.
-- Accepted and rejected actions need stable reasons later.
-- Jump buffering, coyote timing, and jump consumption need fixture coverage later.
-- Turn and movement changes should first emit deterministic RunnerMovedEvent records.
-- Boost should first appear in RunnerSourceState and RunnerStepDelta before becoming a full ActionResult journal entry.
-- Distance win and run-over should eventually be scene requests/results, not direct scene mutation.
-- Hazard and pickup contacts need ContactResult records before scene/score mutation.
-- Scene changes need oldScene/newScene/reason/source frame records.
+missing fixture row for menu idle
+missing fixture row for first game movement frame
+missing fixture row for turn left / turn right
+missing fixture row for boost
+missing fixture row for jump start
+missing fixture row for jump fall / grounded recovery
+missing fixture row for shard pickup
+missing fixture row for collision run-over
+missing fixture row for win threshold
+missing fixture row for render readback unchanged by presentation proof layer
 ```
 
-## Presentation and runtime gaps
+## Host-state gaps
 
 ```txt
-- RunnerSourceState should be projected from app.state before any presentation mutation.
-- RunnerStepDelta should record dx, dz, distanceDelta, yawDelta, speedDelta, jumpDelta, shardDelta, sceneBefore, and sceneAfter.
-- RunnerMovedEvent should be projected from the live movement step.
-- The existing event bus should receive runner.moved from the live route.
-- DinoPoseFrame should be derived from runner movement facts and the existing dino-pose-domain-kit output.
-- CameraFrameRequest should be a descriptor, not only a Three.js camera mutation.
-- HudFrameRequest should be a descriptor, not only an innerHTML string.
-- ContactResultSnapshot should capture hazard and pickup decisions before scene/score mutation.
-- SceneDispatchResult should capture menu, game, run-over, win, retry, and run-again transitions before DOM mutation.
-- RenderReadback should capture renderer/camera/HUD/dino consumption state without requiring WebGL execution.
-- PresentationFrameRecord should journal runner, dino, camera, HUD, contact, scene, render, and fallback reasons.
-- PresentationJournalSnapshot should be bounded and readable from diagnostics.
-- The renderer should consume descriptors from runner, dino, terrain, sky, camera, and UI domains later.
-- The raptor visual rig should consume dino form, pose, and material descriptors later.
-- Terrain streaming should expose chunk decisions as data before render mutation later.
-- Prop, hazard, and pickup scatter should be descriptor-driven later.
+PrehistoricRushHost.getState().presentation missing
+PrehistoricRushHost.getState().presentation.latestFrame missing
+PrehistoricRushHost.getState().presentation.journal missing
+PrehistoricRushHost.getState().presentation.runnerSource missing
+PrehistoricRushHost.getState().presentation.runnerDelta missing
+PrehistoricRushHost.getState().presentation.dinoPose missing
+PrehistoricRushHost.getState().presentation.cameraRequest missing
+PrehistoricRushHost.getState().presentation.hudRequest missing
+PrehistoricRushHost.getState().presentation.contact missing
+PrehistoricRushHost.getState().presentation.sceneDispatch missing
+PrehistoricRushHost.getState().presentation.renderReadback missing
 ```
 
-## Kit gaps
+## Current next safe ledge
 
 ```txt
-- run-movement-kit does not exist yet as a shared ProtoKit.
-- runner-source-state-kit is not yet materialized locally.
-- runner-step-delta-kit is not yet materialized locally.
-- runner-moved-event-kit is not yet materialized locally.
-- dino-event-bridge-kit is not yet materialized locally.
-- dino-pose-frame-kit is not yet materialized locally.
-- camera-frame-request-kit is not yet materialized locally.
-- hud-frame-request-kit is not yet materialized locally.
-- contact-result-snapshot-kit is not yet materialized locally.
-- scene-dispatch-result-kit is not yet materialized locally.
-- render-readback-kit is not yet materialized locally.
-- presentation-frame-record-kit is not yet materialized locally.
-- presentation-journal-kit is not yet materialized locally.
-- host-presentation-snapshot-kit is not yet materialized locally.
-- dom-free-presentation-fixture-kit is not yet materialized locally.
-- action-frame-contract-kit is not yet materialized locally.
-- action-acceptance-matrix-kit is not yet materialized locally.
-- action-result-journal-kit is not yet materialized locally.
-- runner-step-result-kit is not yet materialized locally.
-- runner-event-journal-kit is not yet materialized locally.
+PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
 ```
-
-## Documentation gaps fixed by this pass
-
-```txt
-.agent/START_HERE.md refreshed
-.agent/current-audit.md refreshed
-.agent/known-gaps.md refreshed
-.agent/next-steps.md refreshed
-.agent/validation.md refreshed
-.agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-09T06-10-35-04-00-presentation-event-readback-dsk-map.md added
-.agent/render-audit/2026-07-09T06-10-35-04-00-host-presentation-render-readback.md added
-.agent/gameplay-audit/2026-07-09T06-10-35-04-00-runner-moved-consumer-loop.md added
-.agent/presentation-authority-audit/2026-07-09T06-10-35-04-00-host-projection-fixture-freeze.md added
-.agent/deploy-audit/2026-07-09T06-10-35-04-00-dom-free-fixture-wire-map.md added
-.agent/trackers/2026-07-09T06-10-35-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-09T06-10-35-04-00.md added
-central repo ledger refreshed
-central internal change log added
-```
-
-## Current unresolved seam
-
-The primary remaining gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
-
-The first useful cut is the consumer bridge from live app state to `runner.moved`, because it activates the existing `dino-pose-domain-kit` instead of creating another parallel animation path.
