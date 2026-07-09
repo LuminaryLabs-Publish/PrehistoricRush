@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-08T19-30-31-04-00`
+**Updated:** `2026-07-08T21-40-45-04-00`
 
 ## Validation status for this pass
 
@@ -20,10 +20,13 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of PrehistoricRush README.md.
-- GitHub connector confirmed root package.json was not found.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs source anchors.
+- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
+- GitHub connector read of PrehistoricRush src/domain-runtime/domain-host.js.
 - GitHub connector read of PrehistoricRush dino-pose-domain-kit.
+- GitHub connector read of PrehistoricRush camera-domain-kit.
+- GitHub connector read of PrehistoricRush hud-domain-kit.
 - GitHub connector update of PrehistoricRush root .agent docs.
 - GitHub connector create of new PrehistoricRush architecture audit.
 - GitHub connector create of new PrehistoricRush render audit.
@@ -49,6 +52,7 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - No live GitHub Pages route was opened.
 - No Rapier/Three.js runtime execution was performed.
 - No DOM-free presentation fixture was run because the fixture source files do not exist yet.
+- No runtime source edit was made.
 ```
 
 ## Next validation commands
@@ -144,5 +148,6 @@ build proof: missing
 browser proof: missing
 fixture replay proof: missing
 branch created: no
+pull request created: no
 pushed to main: yes
 ```
