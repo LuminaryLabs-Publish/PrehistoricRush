@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T15-20-00-04-00`
+**Updated:** `2026-07-09T15-31-40-04-00`
 
 ## Next safe ledge
 
 Build the presentation event bridge and DOM-free host readback fixture without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate
+PrehistoricRush Presentation Event Bridge Ledger Repair + Host Readback Fixture Gate
 ```
 
 ## Preserve first
@@ -45,6 +45,7 @@ preserve current PrehistoricRushHost.getState() top-level fields
 14. Wire src/game.js presentation pass to produce records and emit runner.moved while preserving existing visible behavior.
 15. Add scripts/prehistoric-rush-presentation-frame-fixture.mjs.
 16. Add or wire an explicit check command only after the fixture exists.
+17. Confirm root .agent pointers and central ledger paths reference files that actually exist.
 ```
 
 ## Required fixture rows
@@ -79,6 +80,7 @@ RenderReadback records frame consumption without becoming renderer authority.
 PrehistoricRushHost.getState().presentation exists additively.
 Existing PrehistoricRushHost.getState() top-level fields remain stable.
 The fixture runs without DOM, WebGL, Three.js, or Rapier.
+Repo-local .agent and central ledger pointers resolve to real files.
 ```
 
 ## Defer
