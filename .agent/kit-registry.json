@@ -1,21 +1,21 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-08T19-30-31-04-00",
+  "updated": "2026-07-08T21-40-45-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-08T19-30-31-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T19-30-31-04-00.md",
-  "status": "presentation-authority-consumer-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T19-30-31-04-00-presentation-authority-consumer-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-08T19-30-31-04-00-render-readback-consumer-fixture-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T19-30-31-04-00-runner-step-contact-scene-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T19-30-31-04-00-consumer-fixture-acceptance-map.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-08T19-30-31-04-00-static-fixture-validation-without-package-json.md",
-  "previousTracker": ".agent/trackers/2026-07-08T16-51-11-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-08T16-51-11-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-08T21-40-45-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-08T21-40-45-04-00.md",
+  "status": "presentation-consumer-source-manifest-host-projection-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-08T21-40-45-04-00-presentation-consumer-source-manifest-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-08T21-40-45-04-00-render-readback-host-projection-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-08T21-40-45-04-00-runner-moved-contact-scene-consumer-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-08T21-40-45-04-00-consumer-source-file-fixture-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-08T21-40-45-04-00-static-fixture-script-validation-map.md",
+  "previousTracker": ".agent/trackers/2026-07-08T19-30-31-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-08T19-30-31-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected as oldest eligible fallback after the current repo-list and root-agent comparison; presentation authority consumer proof remains unresolved."
+    "reason": "PrehistoricRush selected as oldest eligible fallback after current repo-list and central ledger comparison; presentation consumer source manifest proof remains unresolved."
   },
   "currentRepoLocalKits": [
     { "id": "domain-runtime/event-bus", "path": "src/domain-runtime/event-bus.js", "status": "present_needs_runner_contact_scene_presentation_events", "role": "event history and publish/subscribe scaffold" },
@@ -118,6 +118,6 @@
     "15_renderer_output_unchanged_by_contract_layer",
     "16_legacy_runtime_remains_playable_during_cutover"
   ],
-  "nextSafeLedge": "PrehistoricRush Presentation Authority Consumer Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Presentation Consumer Source Manifest + Host Projection Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
