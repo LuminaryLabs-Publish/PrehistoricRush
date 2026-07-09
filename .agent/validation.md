@@ -1,73 +1,53 @@
-# PrehistoricRush Validation
+# Validation: PrehistoricRush
 
-**Updated:** `2026-07-09T18-11-58-04-00`
+**Updated:** `2026-07-09T19-29-23-04-00`
 
-## Validation status for this pass
-
-No runtime source files were changed in this pass.
-
-This pass updated documentation and operating memory under `.agent/` only, then updated the central `LuminaryLabs-Dev/LuminaryLabs` tracking ledger and internal change log.
-
-## Checks performed
+## This pass
 
 ```txt
-- Live web read of current public LuminaryLabs-Publish repo page.
-- GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
-- GitHub connector read of PrehistoricRush .agent/START_HERE.md.
-- GitHub connector read of PrehistoricRush .agent/current-audit.md.
-- GitHub connector read of PrehistoricRush .agent/next-steps.md.
-- GitHub connector read of PrehistoricRush .agent/known-gaps.md.
-- GitHub connector read of PrehistoricRush .agent/validation.md.
-- GitHub connector read of PrehistoricRush .agent/kit-registry.json.
-- GitHub connector read of PrehistoricRush index.html.
-- GitHub connector read of PrehistoricRush src/runtime.mjs.
-- GitHub connector read of PrehistoricRush src/game.js.
-- GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
-- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
-- GitHub connector read of PrehistoricRush src/domain-runtime/domain-host.js.
-- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
-- GitHub connector read of PrehistoricRush src/domains/camera/camera-domain-kit.js.
-- GitHub connector read of PrehistoricRush src/domains/hud/hud-domain-kit.js.
-- GitHub connector confirmed root package.json was not found.
-- GitHub connector write to PrehistoricRush .agent docs on main.
-- GitHub connector write to LuminaryLabs central ledger and internal change log on main.
-```
-
-## Checks not performed
-
-```txt
-- local checkout
-- npm install
-- npm run check
-- static server launch
-- browser smoke
-- GitHub Pages smoke
-- DOM-free presentation fixture run
-- runtime source edit
-```
-
-## Known validation limitation
-
-The repo currently lacks the planned DOM-free presentation fixture. Any future fixture validation script should either run directly with Node from a checked-out repo or add explicit package metadata as part of the implementation pass.
-
-The root `package.json` was not found during this pass, so no local package-script contract was verified.
-
-## Branch policy
-
-```txt
+runtime source changed: no
+agent docs changed: yes
+central ledger changed: yes
 branch created: no
 pull request created: no
-write target: main
+pushed to main: yes
 ```
 
-## Runtime risk
-
-Low for this pass because only `.agent` docs and central ledger docs changed.
-
-## Next validation gate
+## Local validation
 
 ```txt
-scripts/prehistoric-rush-presentation-frame-fixture.mjs
+local checkout: no
+root package.json found: no
+npm install: not run
+npm run check: not run
+npm test: not run
+browser smoke: not run
+GitHub Pages smoke: not run
+DOM-free presentation fixture: not run
 ```
 
-The fixture should prove the presentation event bridge before movement, terrain, renderer, physics, or ProtoKit extraction begins.
+## Why validation did not run
+
+This was a documentation and ledger pass. The next proof fixture is planned but does not exist yet.
+
+The repo currently needs these before a meaningful local validation command exists:
+
+```txt
+src/presentation/* source modules
+scripts/prehistoric-rush-presentation-frame-fixture.mjs
+root package.json or equivalent validation script
+```
+
+## Next validation target
+
+After implementing the presentation bridge, validate with:
+
+```txt
+node scripts/prehistoric-rush-presentation-frame-fixture.mjs
+```
+
+If a package script is added later, use:
+
+```txt
+npm run check
+```
