@@ -1,21 +1,21 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T09-02-44-04-00",
+  "updated": "2026-07-09T09-10-50-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T09-02-44-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T09-02-44-04-00.md",
-  "status": "host-state-event-bridge-presentation-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T09-02-44-04-00-presentation-render-readback-host-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T09-02-44-04-00-runner-moved-fixture-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T09-02-44-04-00-dom-free-presentation-fixture-gate.md",
-  "previousTracker": ".agent/trackers/2026-07-09T06-10-35-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T06-10-35-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T09-10-50-04-00.md",
+  "status": "central-ledger-host-event-proof-presentation-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T09-10-50-04-00-central-ledger-host-event-proof-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T09-10-50-04-00-presentation-render-readback-consumer-freeze.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T09-10-50-04-00-runner-moved-host-event-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T09-10-50-04-00-central-catchup-host-state-fixture-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T09-10-50-04-00-dom-free-presentation-fixture-wire-map.md",
+  "previousTracker": ".agent/trackers/2026-07-09T09-02-44-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T09-02-44-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected because it had the oldest eligible central-ledger timestamp among checked non-excluded Publish repos; host-state event bridge proof remains unresolved."
+    "reason": "PrehistoricRush selected because central tracking was stale versus repo-local .agent state and host-state event proof remains unresolved."
   },
   "currentRepoLocalKits": [
     {
@@ -82,16 +82,20 @@
   ],
   "runtimeImpliedKits": [
     "prehistoric-static-shell-kit",
+    "prehistoric-runtime-entry-kit",
+    "prehistoric-legacy-visual-runtime-kit",
     "runner-input-kit",
     "runner-motion-kit",
     "runner-terrain-stream-kit",
     "runner-spawn-population-kit",
     "runner-contact-kit",
+    "runner-pickup-kit",
     "runner-scene-dispatch-kit",
     "runner-score-kit",
     "raptor-render-adapter-kit",
     "presentation-camera-consumer-kit",
     "presentation-hud-consumer-kit",
+    "presentation-raptor-stride-consumer-kit",
     "render-readback-kit",
     "host-state-projection-kit"
   ],
@@ -112,6 +116,11 @@
       "role": "emit payload consumed by dino-pose-domain-kit"
     },
     {
+      "id": "presentation-events-kit",
+      "plannedPath": "src/presentation/presentation-events.js",
+      "role": "normalize event names and payload contracts"
+    },
+    {
       "id": "presentation-frame-record-kit",
       "plannedPath": "src/presentation/presentation-frame-record.js",
       "role": "bundle dino pose, camera, HUD, contact, scene, and render readback"
@@ -125,6 +134,11 @@
       "id": "host-presentation-snapshot-kit",
       "plannedPath": "src/presentation/host-presentation-snapshot.js",
       "role": "additive PrehistoricRushHost.getState().presentation projection"
+    },
+    {
+      "id": "dom-free-presentation-fixture-kit",
+      "plannedPath": "scripts/prehistoric-rush-presentation-frame-fixture.mjs",
+      "role": "prove movement/presentation host readback without browser or WebGL"
     }
   ],
   "fixtureRowsNeeded": [
@@ -139,8 +153,9 @@
     "collision_run_over",
     "win_threshold",
     "render_readback_unchanged",
-    "host_legacy_fields_unchanged"
+    "host_legacy_fields_unchanged",
+    "central_ledger_latest_tracker_readback"
   ],
-  "nextSafeLedge": "PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
