@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T12-00-36-04-00`
+**Updated:** `2026-07-09T15-20-00-04-00`
 
 ## Highest-priority gaps
 
@@ -18,77 +18,44 @@
 11. Scene dispatch still mutates menu/game/run-over/win inline without a SceneDispatchResult.
 12. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
 13. Render readback is only the string renderer field, not structured frame consumption evidence.
-14. Movement authority still lives inside the legacy visual runtime.
-15. The README still describes older scene manifests/tuning files that are not the live route authority.
-16. The repo has no DOM-free presentation fixture script.
-17. The central ledger can lag behind repo-local .agent state when scheduled passes land close together; each docs pass needs explicit central catch-up.
-18. The current presentation pass performs a second render but does not preserve the inputs, outputs, or parity facts that would make that pass auditable.
+14. The event bus records composition.ready and can record runner.moved, but the live loop does not feed it presentation events.
+15. No DOM-free fixture proves menu idle, first movement, turning, boost, jump, pickup, collision, win, render readback, or host legacy-field compatibility.
+16. There is no root package script proven for the next fixture gate.
 ```
 
-## Do not solve next
+## Non-gaps for this pass
 
 ```txt
-Do not add more dinosaur art.
-Do not add more trees.
-Do not tune terrain visuals.
-Do not extract renderer authority.
-Do not replace Rapier integration.
-Do not promote anything to ProtoKits yet.
-Do not rewrite runtime-terrain-v6.mjs wholesale.
+The static route exists.
+The game is playable.
+The raptor visual exists.
+The terrain stream exists.
+Five tree pool types exist.
+Rapier bridge/fallback path exists.
+The close-camera/HUD presentation pass exists.
+The DSK scaffold exists.
+The current problem is not lack of visuals.
 ```
 
-## Exact blocker
-
-The blocker is proof, not playability.
-
-The game plays, but the domain composition cannot yet prove that live runner state flows into the dino pose kit, camera descriptor, HUD descriptor, contact results, scene dispatch, render readback, and host diagnostics.
-
-## Fixture gaps
+## Do not fix first
 
 ```txt
-missing fixture row for menu idle
-missing fixture row for first game movement frame
-missing fixture row for turn left / turn right
-missing fixture row for boost
-missing fixture row for jump start
-missing fixture row for jump fall / grounded recovery
-missing fixture row for shard pickup
-missing fixture row for collision run-over
-missing fixture row for win threshold
-missing fixture row for render readback unchanged by presentation proof layer
-missing fixture row for host legacy fields unchanged
-missing fixture row for central ledger newest-tracker readback
+Do not rewrite terrain first.
+Do not extract Rapier first.
+Do not add new enemies first.
+Do not add new tree visuals first.
+Do not promote movement to ProtoKits first.
+Do not replace renderer architecture first.
+Do not remove the second render pass before the readback fixture can prove what replaced it.
 ```
 
-## Host-state gaps
+## Root cause
+
+The repo has two overlapping systems:
 
 ```txt
-PrehistoricRushHost.getState().presentation missing
-PrehistoricRushHost.getState().presentation.latestFrame missing
-PrehistoricRushHost.getState().presentation.journal missing
-PrehistoricRushHost.getState().presentation.runnerSource missing
-PrehistoricRushHost.getState().presentation.runnerDelta missing
-PrehistoricRushHost.getState().presentation.runnerMoved missing
-PrehistoricRushHost.getState().presentation.dinoPose missing
-PrehistoricRushHost.getState().presentation.cameraRequest missing
-PrehistoricRushHost.getState().presentation.hudRequest missing
-PrehistoricRushHost.getState().presentation.contact missing
-PrehistoricRushHost.getState().presentation.sceneDispatch missing
-PrehistoricRushHost.getState().presentation.renderReadback missing
-PrehistoricRushHost.getState().presentation.centralLedger missing
+source-like DSK scaffold in src/game.js
+live browser-authoritative runtime in src/runtime-terrain-v6.mjs
 ```
 
-## Central tracking gaps closed by this docs pass
-
-```txt
-central repo-ledger should point to 2026-07-09T12-00-36-04-00 tracker
-central repo-ledger should point to 2026-07-09T12-00-36-04-00 turn ledger
-central repo-ledger should point to latest architecture/render/gameplay/presentation/deploy audits
-central internal-change-log should describe why PrehistoricRush was selected and what remains blocked
-```
-
-## Current next safe ledge
-
-```txt
-PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
-```
+The next implementation has to connect them through source-owned records rather than by visually rewriting the running route.
