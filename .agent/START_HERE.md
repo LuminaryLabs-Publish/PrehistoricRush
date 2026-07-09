@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-09T09-02-44-04-00`
+**Last aligned:** `2026-07-09T09-10-50-04-00`
 
 ## Purpose
 
@@ -18,7 +18,7 @@ No checked non-Cavalry Publish repo was fully new, absent from central tracking,
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected because it had the oldest eligible central-ledger timestamp among the checked non-excluded repos.
+`PrehistoricRush` was selected because central tracking still pointed at `2026-07-09T06-10-35-04-00`, while repo-local `.agent` state had advanced to `2026-07-09T09-02-44-04-00`. This pass adds a fresh timestamped repo-local breakdown and syncs the central ledger forward.
 
 ## Publish repos checked
 
@@ -28,7 +28,7 @@ LuminaryLabs-Publish/AetherVale           tracked / root .agent present / centra
 LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T06-20-00-04-00
 LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
 LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T07-19-41-04-00
-LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central latest 2026-07-09T06-10-35-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / central ledger stale versus repo-local .agent 2026-07-09T09-02-44-04-00
 LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T07-41-29-04-00
 LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T06-28-53-04-00
 LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T08-29-38-04-00
@@ -39,7 +39,7 @@ LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / centra
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
 
-The game already plays. The next useful work is not new visual content. It is a host-state event bridge: the live runner should emit fixture-readable movement, pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
+The game already plays. The next useful work is not new visual content. It is a host-state event proof bridge: the live runner should emit fixture-readable movement, pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
 
 ## Current interaction loop
 
@@ -92,13 +92,13 @@ PrehistoricRushHost.app.state + previous frame snapshot
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-dsk-map.md
-.agent/render-audit/2026-07-09T09-02-44-04-00-presentation-render-readback-host-map.md
-.agent/gameplay-audit/2026-07-09T09-02-44-04-00-runner-moved-fixture-loop.md
-.agent/presentation-authority-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-contract.md
-.agent/deploy-audit/2026-07-09T09-02-44-04-00-dom-free-presentation-fixture-gate.md
-.agent/trackers/2026-07-09T09-02-44-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-09T09-02-44-04-00.md
+.agent/architecture-audit/2026-07-09T09-10-50-04-00-central-ledger-host-event-proof-dsk-map.md
+.agent/render-audit/2026-07-09T09-10-50-04-00-presentation-render-readback-consumer-freeze.md
+.agent/gameplay-audit/2026-07-09T09-10-50-04-00-runner-moved-host-event-loop.md
+.agent/presentation-authority-audit/2026-07-09T09-10-50-04-00-central-catchup-host-state-fixture-contract.md
+.agent/deploy-audit/2026-07-09T09-10-50-04-00-dom-free-presentation-fixture-wire-map.md
+.agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T09-10-50-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -146,5 +146,5 @@ Do not extract movement, collision, terrain, renderer, or shared ProtoKits until
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
+PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
 ```
