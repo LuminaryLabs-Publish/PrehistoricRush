@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T03-10-05-04-00`
+**Updated:** `2026-07-09T06-10-35-04-00`
 
 ## Validation status for this pass
 
@@ -127,7 +127,9 @@ central-ledger-latest-pointer-smoke
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
-17_central_ledger_points_to_latest_repo_local_audit
+17_event_bus_recent_history_contains_runner_and_pose_events
+18_host_projection_keeps_legacy_state_fields_unchanged
+19_central_ledger_points_to_latest_repo_local_audit
 ```
 
 ## Current proof status
