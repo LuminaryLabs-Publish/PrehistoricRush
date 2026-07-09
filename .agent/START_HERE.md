@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T21-50-56-04-00`
+**Last aligned:** `2026-07-08T21-40-45-04-00`
 
 ## Purpose
 
@@ -18,28 +18,28 @@ No checked non-Cavalry Publish repo was fully new, absent from central tracking,
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the current fallback because the central ledger still showed `2026-07-08T19-30-31-04-00` while repo-local `.agent` state had advanced to `2026-07-08T21-40-45-04-00`. This pass creates a fresh repo-local tracker and brings central tracking forward again.
+`PrehistoricRush` was selected as the oldest eligible fallback by current central ledger alignment. Its prior central alignment was `2026-07-08T19-30-31-04-00`.
 
 ## Publish repos checked
 
 ```txt
 LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent present / central alignment 2026-07-08T20-21-59-04-00
 LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent present / central alignment 2026-07-08T20-38-28-04-00
-LuminaryLabs-Publish/AetherVale          tracked / root .agent present / central alignment 2026-07-08T21-31-35-04-00
+LuminaryLabs-Publish/AetherVale          tracked / root .agent present / central alignment 2026-07-08T21-08-41-04-00
 LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent present / central alignment 2026-07-08T21-18-39-04-00
 LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent present / central alignment 2026-07-08T21-00-12-04-00
 LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent present / central alignment 2026-07-08T19-50-20-04-00
 LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent present / central alignment 2026-07-08T20-10-32-04-00
 LuminaryLabs-Publish/PhantomCommand      tracked / root .agent present / central alignment 2026-07-08T20-52-00-04-00
 LuminaryLabs-Publish/TheCavalryOfRome    excluded by rule
-LuminaryLabs-Publish/PrehistoricRush     selected / central catch-up + oldest eligible fallback seam
+LuminaryLabs-Publish/PrehistoricRush     selected / oldest eligible central alignment 2026-07-08T19-30-31-04-00
 ```
 
 ## Current product read
 
 `PrehistoricRush` is a standalone static browser infinite-runner shell with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
 
-The game already plays. The highest-value seam remains the source-projection and host-presentation proof layer: live runner state, movement deltas, `runner.moved`, dino pose consumer output, camera/HUD requests, contact/scene results, render readback, and host presentation records are not yet proven through fixture rows.
+The highest-value seam remains presentation consumer authority. The game already plays, but live source-state, runner movement, dino pose consumer output, camera/HUD requests, contact/scene results, render readback, and host presentation records are not yet proven through fixture rows.
 
 ## Current interaction loop
 
@@ -92,13 +92,13 @@ app.state + previous app.state
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-08T21-50-56-04-00-presentation-source-projection-dsk-map.md
-.agent/render-audit/2026-07-08T21-50-56-04-00-render-readback-consumer-host-map.md
-.agent/gameplay-audit/2026-07-08T21-50-56-04-00-runner-event-contact-scene-loop.md
-.agent/presentation-authority-audit/2026-07-08T21-50-56-04-00-source-projection-fixture-contract.md
-.agent/deploy-audit/2026-07-08T21-50-56-04-00-static-fixture-validation-map.md
-.agent/trackers/2026-07-08T21-50-56-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T21-50-56-04-00.md
+.agent/architecture-audit/2026-07-08T21-40-45-04-00-presentation-consumer-source-manifest-dsk-map.md
+.agent/render-audit/2026-07-08T21-40-45-04-00-render-readback-host-projection-map.md
+.agent/gameplay-audit/2026-07-08T21-40-45-04-00-runner-moved-contact-scene-consumer-loop.md
+.agent/presentation-authority-audit/2026-07-08T21-40-45-04-00-consumer-source-file-fixture-contract.md
+.agent/deploy-audit/2026-07-08T21-40-45-04-00-static-fixture-script-validation-map.md
+.agent/trackers/2026-07-08T21-40-45-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-08T21-40-45-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -141,10 +141,10 @@ scripts/prehistoric-rush-presentation-frame-fixture.mjs
 
 Keep the current static route, current visuals, `PrehistoricRushComposition.snapshot()`, `PrehistoricRushHost.getState()` existing fields, camera readability pass, HUD readability pass, and menu/game/run-over/win flow stable.
 
-Do not extract movement, collision, terrain, renderer, or shared ProtoKits until the presentation source-projection fixture proves source state, movement events, dino pose output, camera/HUD descriptors, contacts, scene dispatch, render readback, and host projection.
+Do not extract movement, collision, terrain, renderer, or shared ProtoKits until the presentation consumer fixture proves source state, movement events, dino pose output, camera/HUD descriptors, contacts, scene dispatch, render readback, and host projection.
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Source Projection + Host Readback Fixture Gate
+PrehistoricRush Presentation Consumer Source Manifest + Host Projection Fixture Gate
 ```
