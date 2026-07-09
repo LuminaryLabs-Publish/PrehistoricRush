@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-08T19-30-31-04-00`
+**Updated:** `2026-07-08T21-40-45-04-00`
 
 ## Next safe ledge
 
-Build the presentation authority consumer fixture gate without changing the visible route.
+Build the presentation consumer source-manifest and host projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Authority Consumer Fixture Gate
+PrehistoricRush Presentation Consumer Source Manifest + Host Projection Fixture Gate
 ```
 
 Preserve the current game first:
@@ -44,7 +44,7 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 
 ## Implementation checklist
 
-- [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(app)` projector.
+- [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(appOrState)` projector.
 - [ ] Add `src/presentation/runner-step-delta.js` with a pure previous/current delta projector.
 - [ ] Add `src/presentation/runner-moved-event.js` with a pure movement-event projector.
 - [ ] Add `src/presentation/presentation-events.js` with a narrow adapter that can emit `runner.moved` through the existing event bus.
