@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T09-10-50-04-00`
+**Updated:** `2026-07-09T11-46-08-04-00`
 
 ## Next safe ledge
 
-Build the central-ledger host event proof bridge and presentation fixture gate without changing the visible route.
+Build the host-presentation event ledger and DOM-free fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
+PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
 ```
 
 ## Preserve first
