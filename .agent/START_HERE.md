@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-09T09-10-50-04-00`
+**Last aligned:** `2026-07-09T11-46-08-04-00`
 
 ## Purpose
 
@@ -14,32 +14,32 @@ Read this folder before changing implementation code.
 
 The accessible `LuminaryLabs-Publish` repository list was compared against the tracked/documented repo ledger in `LuminaryLabs-Dev/LuminaryLabs` and sampled root `.agent` state.
 
-No checked non-Cavalry Publish repo was fully new, absent from central tracking, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
+No checked non-Cavalry Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected because central tracking still pointed at `2026-07-09T06-10-35-04-00`, while repo-local `.agent` state had advanced to `2026-07-09T09-02-44-04-00`. This pass adds a fresh timestamped repo-local breakdown and syncs the central ledger forward.
+`PrehistoricRush` was selected as the oldest eligible central-ledger fallback. Its central ledger and repo-local docs still pointed at `2026-07-09T09-10-50-04-00`, older than the other checked non-Cavalry repos during this pass.
 
 ## Publish repos checked
 
 ```txt
-LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T07-05-52-04-00
-LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central latest 2026-07-09T08-50-00-04-00
-LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T06-20-00-04-00
+LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T10-10-32-04-00
+LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central latest 2026-07-09T11-30-50-04-00
+LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T09-36-24-04-00
 LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
-LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T07-19-41-04-00
-LuminaryLabs-Publish/PrehistoricRush      selected / central ledger stale versus repo-local .agent 2026-07-09T09-02-44-04-00
-LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T07-41-29-04-00
-LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T06-28-53-04-00
-LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T08-29-38-04-00
-LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central latest 2026-07-09T08-02-33-04-00
+LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T10-29-02-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central-ledger fallback
+LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T10-40-00-04-00
+LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T09-50-00-04-00
+LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T11-21-06-04-00
+LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central latest 2026-07-09T11-00-39-04-00
 ```
 
 ## Current product read
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
 
-The game already plays. The next useful work is not new visual content. It is a host-state event proof bridge: the live runner should emit fixture-readable movement, pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
+The game already plays. The next useful work is not new visual content. It is a host-presentation event proof bridge: the live runner should emit fixture-readable movement, dino pose, camera, HUD, contact, scene, render, and host projection records while preserving the current route.
 
 ## Current interaction loop
 
@@ -92,13 +92,13 @@ PrehistoricRushHost.app.state + previous frame snapshot
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-09T09-10-50-04-00-central-ledger-host-event-proof-dsk-map.md
-.agent/render-audit/2026-07-09T09-10-50-04-00-presentation-render-readback-consumer-freeze.md
-.agent/gameplay-audit/2026-07-09T09-10-50-04-00-runner-moved-host-event-loop.md
-.agent/presentation-authority-audit/2026-07-09T09-10-50-04-00-central-catchup-host-state-fixture-contract.md
-.agent/deploy-audit/2026-07-09T09-10-50-04-00-dom-free-presentation-fixture-wire-map.md
-.agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-09T09-10-50-04-00.md
+.agent/architecture-audit/2026-07-09T11-46-08-04-00-host-presentation-event-ledger-dsk-map.md
+.agent/render-audit/2026-07-09T11-46-08-04-00-render-readback-presentation-frame-contract.md
+.agent/gameplay-audit/2026-07-09T11-46-08-04-00-runner-moved-dino-pose-loop.md
+.agent/presentation-authority-audit/2026-07-09T11-46-08-04-00-host-presentation-snapshot-fixture-contract.md
+.agent/deploy-audit/2026-07-09T11-46-08-04-00-dom-free-fixture-command-map.md
+.agent/trackers/2026-07-09T11-46-08-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T11-46-08-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -146,5 +146,5 @@ Do not extract movement, collision, terrain, renderer, or shared ProtoKits until
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
+PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
 ```
