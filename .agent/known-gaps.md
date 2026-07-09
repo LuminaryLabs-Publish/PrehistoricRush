@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T03-10-05-04-00`
+**Updated:** `2026-07-09T06-10-35-04-00`
 
 ## Highest-priority gaps
 
@@ -112,13 +112,13 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-09T03-10-05-04-00-central-ledger-presentation-freeze-dsk-map.md added
-.agent/render-audit/2026-07-09T03-10-05-04-00-host-presentation-readback-freeze.md added
-.agent/gameplay-audit/2026-07-09T03-10-05-04-00-runner-moved-replay-freeze.md added
-.agent/presentation-authority-audit/2026-07-09T03-10-05-04-00-consumer-contract-central-sync.md added
-.agent/deploy-audit/2026-07-09T03-10-05-04-00-dom-free-fixture-validation-freeze.md added
-.agent/trackers/2026-07-09T03-10-05-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-09T03-10-05-04-00.md added
+.agent/architecture-audit/2026-07-09T06-10-35-04-00-presentation-event-readback-dsk-map.md added
+.agent/render-audit/2026-07-09T06-10-35-04-00-host-presentation-render-readback.md added
+.agent/gameplay-audit/2026-07-09T06-10-35-04-00-runner-moved-consumer-loop.md added
+.agent/presentation-authority-audit/2026-07-09T06-10-35-04-00-host-projection-fixture-freeze.md added
+.agent/deploy-audit/2026-07-09T06-10-35-04-00-dom-free-fixture-wire-map.md added
+.agent/trackers/2026-07-09T06-10-35-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-09T06-10-35-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
