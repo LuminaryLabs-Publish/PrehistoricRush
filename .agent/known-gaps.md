@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-08T21-40-45-04-00`
+**Updated:** `2026-07-08T21-50-56-04-00`
 
 ## Highest-priority gaps
 
@@ -24,6 +24,7 @@
 17. The source-wire maps now exist, but the actual src/presentation/* files do not exist yet.
 18. There is no package.json in the root, so validation must not assume npm scripts exist.
 19. The event bus has history, but no bounded host-facing projection for runner/contact/scene/presentation facts.
+20. The central ledger can drift behind repo-local .agent state unless each run updates both repos in the same pass.
 ```
 
 ## Architecture gaps
@@ -111,13 +112,13 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-08T21-40-45-04-00-presentation-consumer-source-manifest-dsk-map.md added
-.agent/render-audit/2026-07-08T21-40-45-04-00-render-readback-host-projection-map.md added
-.agent/gameplay-audit/2026-07-08T21-40-45-04-00-runner-moved-contact-scene-consumer-loop.md added
-.agent/presentation-authority-audit/2026-07-08T21-40-45-04-00-consumer-source-file-fixture-contract.md added
-.agent/deploy-audit/2026-07-08T21-40-45-04-00-static-fixture-script-validation-map.md added
-.agent/trackers/2026-07-08T21-40-45-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-08T21-40-45-04-00.md added
+.agent/architecture-audit/2026-07-08T21-50-56-04-00-presentation-source-projection-dsk-map.md added
+.agent/render-audit/2026-07-08T21-50-56-04-00-render-readback-consumer-host-map.md added
+.agent/gameplay-audit/2026-07-08T21-50-56-04-00-runner-event-contact-scene-loop.md added
+.agent/presentation-authority-audit/2026-07-08T21-50-56-04-00-source-projection-fixture-contract.md added
+.agent/deploy-audit/2026-07-08T21-50-56-04-00-static-fixture-validation-map.md added
+.agent/trackers/2026-07-08T21-50-56-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-08T21-50-56-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
