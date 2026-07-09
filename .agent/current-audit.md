@@ -2,13 +2,13 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T06-10-35-04-00`
+**Updated:** `2026-07-09T09-02-44-04-00`
 
 ## Summary
 
-`PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
+`PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps the source implementation unchanged and refreshes the next implementation boundary: add the presentation event readback chain that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a host-state event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
 
 ## Selection result
 
@@ -20,81 +20,40 @@ PrehistoricRush was selected because it had the oldest eligible central ledger t
 TheCavalryOfRome remains excluded by rule.
 ```
 
-## Current route
+## Current repo route
 
 ```txt
 index.html
-  -> src/runtime.mjs imports ./game.js
-  -> src/game.js creates eventBus/domainHost/scheduler
-  -> installs dino form, pose, and material domains
-  -> installs camera-domain-kit
-  -> installs hud-domain-kit
-  -> exposes PrehistoricRushComposition.snapshot()
-  -> emits composition.ready
-  -> imports ./runtime-terrain-v6.mjs
-  -> runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN
-  -> runtime-terrain-v6.mjs owns menu/game/run-over/win loop
-  -> src/game.js starts a presentation pass that reads PrehistoricRushHost.app
+  -> src/runtime.mjs
+  -> src/game.js
+  -> src/runtime-terrain-v6.mjs
 ```
 
-## Source-backed facts
+`index.html` is a static shell that loads `src/runtime.mjs`. `src/runtime.mjs` only imports `src/game.js`. `src/game.js` installs the DSK scaffold and then imports `runtime-terrain-v6.mjs`.
+
+## Interaction loop
 
 ```txt
-index.html loads ./src/runtime.mjs.
-src/runtime.mjs only imports ./game.js.
-src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
-src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
-src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
-src/game.js directly applies styleHud, renderHud, applyCloseCamera, applyReadableStride, and renderer.render in startPresentationPass().
-dino-pose-domain-kit already listens for runner.moved and emits dino.pose.changed, but the live runtime does not yet emit runner.moved.
-camera-domain-kit exposes a close-third-person descriptor.
-hud-domain-kit exposes a readability HUD descriptor and pure render projection.
-runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
-runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contacts, scene mutation, baseline HUD/camera, and render behavior.
-runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
-No package.json exists in the repo root, so validation must not assume npm scripts.
+index.html
+  -> src/runtime.mjs
+  -> src/game.js
+  -> createEventBus / createDomainHost / createTickScheduler
+  -> install dino form, dino pose, dino material, camera, and HUD domain kits
+  -> expose PrehistoricRushComposition.snapshot()
+  -> emit composition.ready
+  -> import runtime-terrain-v6.mjs
+  -> load Three.js, Rapier, and rapier-physics-domain-kit from CDNs
+  -> create DOM shell and Start button
+  -> create Three.js scene, terrain, raptor, rocks, tree pools, shards, camera, renderer
+  -> menu waits for Start / Enter / Space
+  -> keydown/keyup mutate app.input
+  -> game loop mutates speed, yaw, jump, distance, terrain chunks, colliders, pickups, scene, and score inline
+  -> runtime-terrain-v6 renders baseline raptor/camera/HUD frame
+  -> game.js presentation pass mutates rig, close camera, HUD, and renders a second frame
+  -> PrehistoricRushHost.getState() exposes scene, runner, physics, terrain count, and renderer string
 ```
 
-## Current interaction loop
-
-```txt
-page load
-  -> runtime entry imports game composition
-  -> composition installs dino, camera, and HUD domain scaffold
-  -> legacy visual terrain runner loads
-  -> menu scene waits for start input
-  -> game scene mutates live runner state
-  -> raw keyboard/button input drives turn, jump, and boost behavior
-  -> terrain chunks, props, hazards, pickups, and physics state update
-  -> inline collision/contact checks decide run-over, pickup, or win
-  -> runtime-terrain-v6 baseline frame mutates camera, HUD, raptor pose, and renderer
-  -> src/game.js presentation pass applies close camera, readable stride, HUD rewrite, and second render
-  -> host exposes runtime snapshots
-```
-
-## Target proof loop
-
-```txt
-app.state + previous frame snapshot
-  -> RunnerSourceState
-  -> RunnerStepDelta
-  -> RunnerMovedEvent
-  -> runner.moved eventBus emission
-  -> dino-pose-domain-kit update
-  -> dino.pose.changed event readback
-  -> DinoPoseFrame
-  -> CameraFrameRequest
-  -> HudFrameRequest
-  -> ContactResultSnapshot
-  -> SceneDispatchResult
-  -> RenderReadback
-  -> PresentationFrameRecord
-  -> bounded PresentationJournalSnapshot
-  -> PrehistoricRushHost.getState().presentation
-  -> scripts/prehistoric-rush-presentation-frame-fixture.mjs
-```
-
-## Current domains in use
+## Domains in use
 
 ```txt
 static-browser-shell
@@ -108,173 +67,95 @@ dino-entity-domain
 dino-form-domain
 dino-pose-domain
 dino-material-domain
-dino-domain-bundle
-camera-domain
-hud-domain
-legacy-visual-runtime-bridge
-cdn-dependency-loading
-three-render-runtime
-rapier-physics-runtime
-rapier-physics-domain-kit-bridge
-dom-mount-ownership
-keyboard-input-adapter
-button-input-adapter
-scene-file-authority
-scene-transition-authority
-runner-motion-policy
-runner-source-state-contract
-runner-step-delta-contract
-runner-moved-event-contract
-turn-steering-policy
-jump-policy
-boost-policy
-speed-ramp-policy
-distance-score-policy
-procedural-terrain-rendering
-terrain-height-sampling
-terrain-chunk-streaming
-procedural-scatter-placement
-collider-descriptor-generation
-pickup-descriptor-generation
-rapier-runtime-bridge
-kinematic-actor-transform
-hazard-contact-detection
-pickup-contact-detection
-distance-goal-detection
-raptor-visual-rig
-raptor-pose-animation
-dino-pose-event-bridge
-camera-follow-policy
-camera-frame-request-contract
-hud-telemetry-projection
-hud-frame-request-contract
-contact-result-contract
-scene-dispatch-result-contract
-presentation-pass-authority
-presentation-frame-contract
-presentation-journal-contract
-render-readback-contract
-host-presentation-snapshot
-fixture-replay-contract
-host-diagnostics
-repo-local-agent-state
-central-ledger-readback
+camera-preset-domain
+hud-preset-domain
+presentation-pass-domain
+three-render-host-domain
+rapier-physics-bridge-domain
+terrain-streaming-domain
+spawn-population-domain
+runner-motion-domain
+runner-input-domain
+runner-contact-domain
+pickup-collection-domain
+scene-dispatch-domain
+score-state-domain
+host-readback-domain
+presentation-fixture-target-domain
 ```
 
-## Current services in use
+## Services offered by current kits
 
 ```txt
-createEventBus
-eventBus.on
-eventBus.emit
-eventBus.snapshot
-createDomainHost
-domainHost.install
-domainHost.get
-domainHost.tick
-domainHost.snapshot
-createTickScheduler
-scheduler.start
-scheduler.stop
-scheduler.snapshot
-createDinoFormDomainKit
-createDinoPoseDomainKit
-createDinoMaterialDomainKit
-createDinoDomainBundle
-createCameraDomainKit
-camera.preset.ready
-cameraDomain.getDescriptor
-cameraDomain.snapshot
-createHudDomainKit
-hud.ready
-hudDomain.render
-hudDomain.getDescriptor
-hudDomain.snapshot
-styleHud
-renderHud
-applyCloseCamera
-applyReadableStride
-startPresentationPass
-PrehistoricRushComposition.snapshot
-PrehistoricRushHost.getState
-rapier-physics-domain-kit services
+createEventBus: on / emit / snapshot with recent event history
+createDomainHost: idempotent install / get / tick / snapshot
+createTickScheduler: requestAnimationFrame-backed host ticking scaffold
+createDinoFormDomainKit: dino form descriptor
+createDinoPoseDomainKit: runner.moved consumer and dino.pose.changed emitter
+createDinoMaterialDomainKit: dino material descriptor
+createDinoDomainBundle: dino form/pose/material bundle descriptor
+createCameraDomainKit: close third-person camera preset descriptor
+createHudDomainKit: readability HUD descriptor and projection service
+rapier-physics-domain-kit: external Rapier world bridge, kinematic actor, contacts, snapshot
+globalThis.PrehistoricRushComposition.snapshot: composition/domain/event/scheduler readback
+globalThis.PrehistoricRushHost.getState: scene/runner/physics/terrain/renderer readback
 ```
 
-Needed next services:
+## Kits identified
+
+### Implemented repo-local kits
 
 ```txt
-snapshotRunnerSourceState
-createRunnerStepDelta
-createRunnerMovedEvent
-shouldEmitRunnerMoved
-emitRunnerMoved
-readLatestDinoPoseChangedEvent
-createDinoPoseFrame
-createCameraFrameRequest
-createHudFrameRequest
-createContactResultSnapshot
-createSceneDispatchResult
-createRenderReadback
-createPresentationFrameRecord
-appendPresentationJournalEntry
-projectPresentationJournalSnapshot
-projectHostPresentationSnapshot
-runPresentationEventBridgeFixture
+src/domain-runtime/event-bus.js
+src/domain-runtime/domain-host.js
+src/domain-runtime/tick-scheduler.js
+src/domains/dino/dino-form-domain-kit.js
+src/domains/dino/dino-pose-domain-kit.js
+src/domains/dino/dino-material-domain-kit.js
+src/domains/dino/index.js
+src/domains/camera/camera-domain-kit.js
+src/domains/hud/hud-domain-kit.js
 ```
 
-## Current kits
+### Live external kit
 
 ```txt
-repo-local implemented:
-  domain-runtime/event-bus
-  domain-runtime/domain-host
-  domain-runtime/tick-scheduler
-  dino-form-domain-kit
-  dino-pose-domain-kit
-  dino-material-domain-kit
-  dino-domain-bundle
-  camera-domain-kit
-  hud-domain-kit
-
-live external:
-  rapier-physics-domain-kit
-
-runtime-implied:
-  prehistoric-static-shell-kit
-  prehistoric-runtime-entry-kit
-  prehistoric-legacy-visual-runtime-kit
-  prehistoric-raptor-visual-rig-kit
-  prehistoric-terrain-streaming-kit
-  prehistoric-contact-check-kit
-  prehistoric-scene-dispatch-kit
-  prehistoric-hud-dom-render-kit
-  prehistoric-close-camera-apply-kit
-
-next-cut:
-  prehistoric-rush-runner-source-state-kit
-  prehistoric-rush-runner-step-delta-kit
-  prehistoric-rush-runner-moved-event-kit
-  prehistoric-rush-dino-event-bridge-kit
-  prehistoric-rush-dino-pose-frame-kit
-  prehistoric-rush-camera-frame-request-kit
-  prehistoric-rush-hud-frame-request-kit
-  prehistoric-rush-contact-result-snapshot-kit
-  prehistoric-rush-scene-dispatch-result-kit
-  prehistoric-rush-render-readback-kit
-  prehistoric-rush-presentation-frame-record-kit
-  prehistoric-rush-presentation-journal-kit
-  prehistoric-rush-host-presentation-snapshot-kit
-  prehistoric-rush-dom-free-presentation-fixture-kit
+https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusRealtime-ProtoKits@main/protokits/rapier-physics-domain-kit/index.js
 ```
 
-## Main finding
+### Runtime-implied kits still inline
 
-The primary remaining source gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
+```txt
+prehistoric-static-shell-kit
+runner-input-kit
+runner-motion-kit
+runner-terrain-stream-kit
+runner-spawn-population-kit
+runner-contact-kit
+runner-scene-dispatch-kit
+runner-score-kit
+raptor-render-adapter-kit
+presentation-camera-consumer-kit
+presentation-hud-consumer-kit
+render-readback-kit
+host-state-projection-kit
+```
 
-The first useful cut is the consumer bridge from live app state to `runner.moved`, because it activates the existing `dino-pose-domain-kit` instead of creating another parallel animation path.
+## Main blocker
+
+`dino-pose-domain-kit` already listens to `runner.moved`, but the live runtime does not emit `runner.moved`. The visible runner state mutates directly in `runtime-terrain-v6.mjs`, and the presentation pass reads that mutable host state after the fact.
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Event Readback + Host Projection Fixture Freeze
+PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
+```
+
+## Not changed
+
+```txt
+No runtime source changed.
+No visual route changed.
+No movement, collision, terrain, renderer, or physics behavior changed.
+No branch was created.
 ```
