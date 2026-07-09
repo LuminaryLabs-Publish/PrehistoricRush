@@ -1,21 +1,21 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T09-10-50-04-00",
+  "updated": "2026-07-09T11-46-08-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T09-10-50-04-00.md",
-  "status": "central-ledger-host-event-proof-presentation-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T09-10-50-04-00-central-ledger-host-event-proof-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T09-10-50-04-00-presentation-render-readback-consumer-freeze.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T09-10-50-04-00-runner-moved-host-event-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T09-10-50-04-00-central-catchup-host-state-fixture-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T09-10-50-04-00-dom-free-presentation-fixture-wire-map.md",
-  "previousTracker": ".agent/trackers/2026-07-09T09-02-44-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T09-02-44-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-09T11-46-08-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T11-46-08-04-00.md",
+  "status": "host-presentation-event-ledger-dom-free-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T11-46-08-04-00-host-presentation-event-ledger-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T11-46-08-04-00-render-readback-presentation-frame-contract.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T11-46-08-04-00-runner-moved-dino-pose-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T11-46-08-04-00-host-presentation-snapshot-fixture-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T11-46-08-04-00-dom-free-fixture-command-map.md",
+  "previousTracker": ".agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T09-10-50-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected because central tracking was stale versus repo-local .agent state and host-state event proof remains unresolved."
+    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback; host-presentation event proof remains unresolved."
   },
   "currentRepoLocalKits": [
     {
@@ -121,6 +121,36 @@
       "role": "normalize event names and payload contracts"
     },
     {
+      "id": "dino-pose-frame-kit",
+      "plannedPath": "src/presentation/dino-pose-frame.js",
+      "role": "record dino pose kit output"
+    },
+    {
+      "id": "camera-frame-request-kit",
+      "plannedPath": "src/presentation/camera-frame-request.js",
+      "role": "record close-camera descriptor inputs"
+    },
+    {
+      "id": "hud-frame-request-kit",
+      "plannedPath": "src/presentation/hud-frame-request.js",
+      "role": "record HUD projection descriptor inputs"
+    },
+    {
+      "id": "contact-result-snapshot-kit",
+      "plannedPath": "src/presentation/contact-result-snapshot.js",
+      "role": "record collision and pickup result facts"
+    },
+    {
+      "id": "scene-dispatch-result-kit",
+      "plannedPath": "src/presentation/scene-dispatch-result.js",
+      "role": "record scene transition reason and result"
+    },
+    {
+      "id": "render-readback-kit",
+      "plannedPath": "src/presentation/render-readback.js",
+      "role": "record renderer/camera/scene consumption evidence"
+    },
+    {
       "id": "presentation-frame-record-kit",
       "plannedPath": "src/presentation/presentation-frame-record.js",
       "role": "bundle dino pose, camera, HUD, contact, scene, and render readback"
@@ -156,6 +186,6 @@
     "host_legacy_fields_unchanged",
     "central_ledger_latest_tracker_readback"
   ],
-  "nextSafeLedge": "PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
