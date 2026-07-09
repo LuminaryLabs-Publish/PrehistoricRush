@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T09-02-44-04-00`
+**Updated:** `2026-07-09T09-10-50-04-00`
 
 ## Next safe ledge
 
-Build the host-state event bridge and presentation fixture gate without changing the visible route.
+Build the central-ledger host event proof bridge and presentation fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
+PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
 ```
 
 ## Preserve first
@@ -106,7 +106,16 @@ render readback unchanged
 host legacy fields unchanged
 ```
 
-### 5. Add package validation only if package.json exists or is introduced intentionally
+### 5. Keep central ledger readback current
+
+```txt
+repo-ledger/LuminaryLabs-Publish/PrehistoricRush.md
+internal-change-log/<timestamp>-prehistoric-rush-*.md
+```
+
+Each docs pass should keep the central ledger aligned with the latest repo-local tracker and turn-ledger entry.
+
+### 6. Add package validation only if package.json exists or is introduced intentionally
 
 There is no root `package.json` in the current source read. Do not invent an npm workflow unless the implementation pass intentionally adds the fixture script and package metadata together.
 
@@ -122,6 +131,7 @@ There is no root `package.json` in the current source read. Do not invent an npm
 7. PrehistoricRushHost.getState() existing scene, runner, physics, terrain, and renderer fields remain stable.
 8. DOM-free fixture can replay representative source records and assert output shape.
 9. The presentation proof layer does not own movement, collision, terrain, renderer, or physics behavior.
+10. The central LuminaryLabs ledger points to the newest repo-local tracker and audit set.
 ```
 
 ## Promotion rule
