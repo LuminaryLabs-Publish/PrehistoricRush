@@ -1,21 +1,22 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T15-20-00-04-00",
+  "updated": "2026-07-09T15-31-40-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T15-20-00-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T15-20-00-04-00.md",
-  "status": "presentation-event-bridge-fixture-freeze-host-readback-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T15-20-00-04-00-presentation-event-bridge-fixture-freeze-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T15-20-00-04-00-render-readback-host-consumption-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T15-20-00-04-00-runner-event-bridge-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T15-20-00-04-00-host-presentation-event-fixture-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T15-20-00-04-00-dom-free-fixture-wire-map.md",
+  "latestTracker": ".agent/trackers/2026-07-09T15-31-40-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T15-31-40-04-00.md",
+  "status": "presentation-event-bridge-ledger-repair-host-readback-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T15-31-40-04-00-presentation-event-bridge-ledger-repair-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T15-31-40-04-00-render-readback-host-consumption-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T15-31-40-04-00-runner-event-bridge-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T15-31-40-04-00-host-presentation-event-fixture-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T15-31-40-04-00-dom-free-fixture-central-sync-map.md",
   "previousTracker": ".agent/trackers/2026-07-09T12-00-36-04-00/project-breakdown.md",
   "previousTurnLedger": ".agent/turn-ledger/2026-07-09T12-00-36-04-00.md",
+  "repairedPartialPointer": "2026-07-09T15-20-00-04-00",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback after current checked non-Cavalry repos were confirmed tracked with root .agent state."
+    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback and repo-local partial pointer repair target after current checked non-Cavalry repos were confirmed tracked with root .agent state."
   },
   "currentRepoLocalKits": [
     {
@@ -119,73 +120,57 @@
     {
       "id": "presentation-events-kit",
       "plannedPath": "src/presentation/presentation-events.js",
-      "role": "normalize event names and payload contracts"
+      "role": "stable event names and payload contracts"
     },
     {
       "id": "dino-pose-frame-kit",
       "plannedPath": "src/presentation/dino-pose-frame.js",
-      "role": "record dino pose kit output"
+      "role": "serializable pose result proof"
     },
     {
       "id": "camera-frame-request-kit",
       "plannedPath": "src/presentation/camera-frame-request.js",
-      "role": "record close-camera descriptor inputs"
+      "role": "serializable camera consumer intent"
     },
     {
       "id": "hud-frame-request-kit",
       "plannedPath": "src/presentation/hud-frame-request.js",
-      "role": "record HUD projection descriptor inputs"
+      "role": "serializable HUD consumer intent"
     },
     {
       "id": "contact-result-snapshot-kit",
       "plannedPath": "src/presentation/contact-result-snapshot.js",
-      "role": "record collision and pickup result facts"
+      "role": "collision and pickup result proof"
     },
     {
       "id": "scene-dispatch-result-kit",
       "plannedPath": "src/presentation/scene-dispatch-result.js",
-      "role": "record scene transition reason and result"
+      "role": "scene transition result proof"
     },
     {
       "id": "render-readback-kit",
       "plannedPath": "src/presentation/render-readback.js",
-      "role": "record renderer/camera/scene consumption evidence"
+      "role": "render frame consumer proof"
     },
     {
       "id": "presentation-frame-record-kit",
       "plannedPath": "src/presentation/presentation-frame-record.js",
-      "role": "bundle dino pose, camera, HUD, contact, scene, and render readback"
+      "role": "single-frame proof bundle"
     },
     {
       "id": "presentation-journal-kit",
       "plannedPath": "src/presentation/presentation-journal.js",
-      "role": "bounded presentation proof history"
+      "role": "bounded proof history"
     },
     {
       "id": "host-presentation-snapshot-kit",
       "plannedPath": "src/presentation/host-presentation-snapshot.js",
-      "role": "additive PrehistoricRushHost.getState().presentation projection"
+      "role": "additive PrehistoricRushHost.getState().presentation readback"
     },
     {
-      "id": "dom-free-presentation-fixture-kit",
+      "id": "DOM-free-presentation-fixture-kit",
       "plannedPath": "scripts/prehistoric-rush-presentation-frame-fixture.mjs",
-      "role": "prove movement/presentation host readback without browser or WebGL"
+      "role": "Node-compatible proof rows without DOM, WebGL, Three.js, or Rapier"
     }
-  ],
-  "fixtureRowsNeeded": [
-    "menu_idle",
-    "game_first_movement_frame",
-    "turn_left",
-    "turn_right",
-    "boost",
-    "jump_start",
-    "jump_recover",
-    "shard_pickup",
-    "collision_run_over",
-    "win_threshold",
-    "render_readback_unchanged",
-    "host_legacy_fields_unchanged"
-  ],
-  "nextSafeLedge": "PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate",
-  "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
+  ]
 }
