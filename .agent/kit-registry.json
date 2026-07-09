@@ -1,22 +1,20 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T15-31-40-04-00",
+  "updated": "2026-07-09T18-11-58-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T15-31-40-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T15-31-40-04-00.md",
-  "status": "presentation-event-bridge-ledger-repair-host-readback-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T15-31-40-04-00-presentation-event-bridge-ledger-repair-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T15-31-40-04-00-render-readback-host-consumption-map.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T15-31-40-04-00-runner-event-bridge-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T15-31-40-04-00-host-presentation-event-fixture-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T15-31-40-04-00-dom-free-fixture-central-sync-map.md",
-  "previousTracker": ".agent/trackers/2026-07-09T12-00-36-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T12-00-36-04-00.md",
-  "repairedPartialPointer": "2026-07-09T15-20-00-04-00",
+  "latestTracker": ".agent/trackers/2026-07-09T18-11-58-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T18-11-58-04-00.md",
+  "status": "presentation-event-bridge-readback-host-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T18-11-58-04-00-presentation-event-readback-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T18-11-58-04-00-host-presentation-render-readback.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T18-11-58-04-00-runner-moved-event-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T18-11-58-04-00-event-bridge-fixture-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T18-11-58-04-00-dom-free-fixture-gate.md",
+  "previousTracker": ".agent/trackers/2026-07-09T15-31-40-04-00/project-breakdown.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback and repo-local partial pointer repair target after current checked non-Cavalry repos were confirmed tracked with root .agent state."
+    "reason": "PrehistoricRush selected as the oldest eligible documented fallback after current checked non-Cavalry public repos were confirmed tracked with root .agent state."
   },
   "currentRepoLocalKits": [
     {
@@ -29,7 +27,7 @@
       "id": "domain-runtime/domain-host",
       "path": "src/domain-runtime/domain-host.js",
       "status": "present",
-      "role": "idempotent domain installation and snapshot scaffold"
+      "role": "idempotent domain installation, tick, and snapshot scaffold"
     },
     {
       "id": "domain-runtime/tick-scheduler",
