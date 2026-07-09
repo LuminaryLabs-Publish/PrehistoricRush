@@ -1,16 +1,16 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T06-10-35-04-00`
+**Updated:** `2026-07-09T09-02-44-04-00`
 
 ## Next safe ledge
 
-Build the presentation event readback and host projection fixture gate without changing the visible route.
+Build the host-state event bridge and presentation fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Event Readback + Host Projection Fixture Freeze
+PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
 ```
 
-Preserve the current game first:
+## Preserve first
 
 ```txt
 preserve index.html
@@ -18,118 +18,112 @@ preserve src/runtime.mjs
 preserve src/game.js route composition
 preserve current Three.js/Rapier look and feel
 preserve current PrehistoricRushComposition.snapshot()
-preserve current PrehistoricRushHost.getState() existing fields
-preserve current camera distance/HUD readability pass visually
-preserve current menu -> game -> run-over -> win -> menu scene flow
-preserve current double-render behavior until render readback proves parity
+preserve current PrehistoricRushHost.getState() legacy fields
+preserve current menu/game/run-over/win flow
+preserve current keyboard controls
+preserve current camera/HUD readability pass behavior
 ```
 
-Then add fixture-readable facts around the current behavior:
+## Implementation order
+
+### 1. Add pure source records
 
 ```txt
-snapshot RunnerSourceState from current app.state
-create RunnerStepDelta from previous/current runner source snapshots
-create RunnerMovedEvent from the live movement step
-emit eventBus runner.moved only when live movement actually occurs
-use existing dino-pose-domain-kit runner.moved listener as the first bridge consumer
-record dino.pose.changed output as DinoPoseFrame
-create CameraFrameRequest from camera-domain-kit descriptor + RunnerSourceState
-create HudFrameRequest from hud-domain-kit descriptor + RunnerSourceState
-create ContactResultSnapshot from hazard and pickup decisions
-create SceneDispatchResult from menu/game/run-over/win transitions
-create RenderReadback from renderer/camera/HUD/dino consumption state
-append PresentationFrameRecord
-surface presentation records through host diagnostics
-add DOM-free smoke fixtures for the event, contact, scene, render, and presentation chain
-keep central ledger synchronized with repo-local .agent state
+src/presentation/runner-source-state.js
+src/presentation/runner-step-delta.js
+src/presentation/runner-moved-event.js
 ```
 
-## Implementation checklist
-
-- [ ] Add `src/presentation/runner-source-state.js` with a pure `snapshotRunnerSourceState(appOrState)` projector.
-- [ ] Add `src/presentation/runner-step-delta.js` with a pure previous/current delta projector.
-- [ ] Add `src/presentation/runner-moved-event.js` with a pure movement-event projector.
-- [ ] Add `src/presentation/presentation-events.js` with a narrow adapter that can emit `runner.moved` through the existing event bus.
-- [ ] Add `src/presentation/dino-pose-frame.js` with a pure `DinoPoseFrame` projector and event readback helper.
-- [ ] Add `src/presentation/camera-frame-request.js` with a pure camera request projector.
-- [ ] Add `src/presentation/hud-frame-request.js` with a pure HUD request projector.
-- [ ] Add `src/presentation/contact-result-snapshot.js` with pure hazard and pickup result projectors.
-- [ ] Add `src/presentation/scene-dispatch-result.js` with pure menu/game/run-over/win transition records.
-- [ ] Add `src/presentation/render-readback.js` with a minimal render-readback projector for renderer/camera/HUD/dino consumption state.
-- [ ] Add `src/presentation/presentation-frame-record.js` with a pure record combiner.
-- [ ] Add `src/presentation/presentation-journal.js` with a bounded recent-frame journal.
-- [ ] Add `src/presentation/host-presentation-snapshot.js` with a host projection helper.
-- [ ] Keep `applyCloseCamera()` visually unchanged while recording camera requests beside it.
-- [ ] Keep `renderHud()` visually unchanged while recording HUD requests beside it.
-- [ ] Keep `applyReadableStride()` visually unchanged while recording dino pose frames beside it.
-- [ ] Keep contact checks visually and behaviorally unchanged while recording contact results beside them.
-- [ ] Keep scene changes unchanged while recording scene dispatch results beside them.
-- [ ] Expose latest/recent presentation records through `PrehistoricRushHost.getState().presentation`.
-- [ ] Add `scripts/prehistoric-rush-presentation-frame-fixture.mjs`.
-- [ ] Add fixture rows for source state, menu no-move, game move, dino pose event bridge, camera request, HUD request, contact snapshot, scene dispatch, render readback, presentation record, host snapshot, and DOM-free replay.
-- [ ] Keep central `LuminaryLabs-Dev/LuminaryLabs` ledger pointed at the newest repo-local audit set.
-- [ ] Only after presentation fixture proof, continue action/result, runner movement extraction, manifest authority, and shared-kit promotion.
-
-## DSK extraction order
+Required output:
 
 ```txt
-1. prehistoric-rush-runner-source-state-kit
-2. prehistoric-rush-runner-step-delta-kit
-3. prehistoric-rush-runner-moved-event-kit
-4. prehistoric-rush-dino-event-bridge-kit
-5. prehistoric-rush-dino-pose-frame-kit
-6. prehistoric-rush-camera-frame-request-kit
-7. prehistoric-rush-hud-frame-request-kit
-8. prehistoric-rush-contact-result-snapshot-kit
-9. prehistoric-rush-scene-dispatch-result-kit
-10. prehistoric-rush-render-readback-kit
-11. prehistoric-rush-presentation-frame-record-kit
-12. prehistoric-rush-presentation-journal-kit
-13. prehistoric-rush-host-presentation-snapshot-kit
-14. prehistoric-rush-dom-free-presentation-fixture-kit
-15. prehistoric-rush-action-frame-contract-kit
-16. prehistoric-rush-action-acceptance-matrix-kit
-17. prehistoric-rush-action-result-journal-kit
-18. prehistoric-rush-runner-step-result-kit
-19. prehistoric-rush-runner-event-journal-kit
-20. prehistoric-rush-replay-parity-smoke-kit
-21. prehistoric-rush-runtime-source-bundle-kit
-22. prehistoric-rush-manifest-load-status-kit
-23. prehistoric-rush-run-movement-promotion-report-kit
+RunnerSourceState from app.state
+RunnerStepDelta from previous/current source state
+RunnerMovedEvent payload suitable for eventBus.emit("runner.moved")
 ```
 
-## Fixture rows to create first
+### 2. Add presentation frame records
 
 ```txt
-01_runner_source_state_projects_current_app_state
-02_runner_step_delta_reports_noop_in_menu
-03_game_scene_runner_source_emits_runner_moved
-04_runner_moved_feeds_dino_pose_domain
-05_dino_pose_frame_matches_current_stride_inputs
-06_camera_frame_request_matches_close_camera_visual_policy
-07_hud_frame_request_matches_readability_hud_descriptor
-08_hazard_contact_result_records_run_over_reason
-09_pickup_contact_result_records_shard_reason
-10_scene_dispatch_result_records_menu_game_run_over_win
-11_render_readback_reports_current_renderer_camera_hud_dino_paths
-12_presentation_frame_record_journals_all_subrecords
-13_host_get_state_exposes_presentation_snapshot
-14_dom_free_fixture_replays_source_to_presentation_chain
-15_renderer_output_unchanged_by_contract_layer
-16_legacy_runtime_remains_playable_during_cutover
-17_event_bus_recent_history_contains_runner_and_pose_events
-18_host_projection_keeps_legacy_state_fields_unchanged
-19_central_ledger_points_to_latest_repo_local_tracker
+src/presentation/dino-pose-frame.js
+src/presentation/camera-frame-request.js
+src/presentation/hud-frame-request.js
+src/presentation/contact-result-snapshot.js
+src/presentation/scene-dispatch-result.js
+src/presentation/render-readback.js
+src/presentation/presentation-frame-record.js
 ```
 
-## Do not do next
+Required output:
 
 ```txt
-- Do not redesign the visible scene before authority extraction.
-- Do not replace the whole runtime in one pass.
-- Do not move everything into ProtoKits before local proof exists.
-- Do not remove existing host snapshot fields.
-- Do not assume npm scripts exist in this repo until package.json exists.
-- Do not add a package.json only to satisfy this docs pass.
-- Do not create branches.
+DinoPoseFrame records pose kit output
+CameraFrameRequest records close-camera target inputs
+HudFrameRequest records HUD projection inputs
+ContactResultSnapshot records collision and pickup state
+SceneDispatchResult records menu/game/run-over/win transition reason
+RenderReadback records renderer/camera/scene consumption evidence
+PresentationFrameRecord bundles one frame of presentation proof
 ```
+
+### 3. Add journal and host projection
+
+```txt
+src/presentation/presentation-events.js
+src/presentation/presentation-journal.js
+src/presentation/host-presentation-snapshot.js
+```
+
+Required output:
+
+```txt
+bounded presentation journal
+latest frame readback
+legacy host fields unchanged
+PrehistoricRushHost.getState().presentation added additively
+```
+
+### 4. Add DOM-free fixture
+
+```txt
+scripts/prehistoric-rush-presentation-frame-fixture.mjs
+```
+
+Fixture rows:
+
+```txt
+menu idle
+game first movement frame
+turn left
+turn right
+boost
+jump start
+jump recover
+shard pickup
+collision run-over
+win threshold
+render readback unchanged
+host legacy fields unchanged
+```
+
+### 5. Add package validation only if package.json exists or is introduced intentionally
+
+There is no root `package.json` in the current source read. Do not invent an npm workflow unless the implementation pass intentionally adds the fixture script and package metadata together.
+
+## Acceptance criteria
+
+```txt
+1. runtime-terrain-v6 remains visually stable.
+2. src/game.js still imports runtime-terrain-v6.
+3. eventBus emits runner.moved from live state deltas.
+4. dino-pose-domain-kit consumes live runner.moved events.
+5. eventBus history contains runner.moved and dino.pose.changed rows after a movement frame.
+6. PrehistoricRushHost.getState().presentation exists.
+7. PrehistoricRushHost.getState() existing scene, runner, physics, terrain, and renderer fields remain stable.
+8. DOM-free fixture can replay representative source records and assert output shape.
+9. The presentation proof layer does not own movement, collision, terrain, renderer, or physics behavior.
+```
+
+## Promotion rule
+
+Keep the bridge repo-local until the fixture proves a stable reusable API candidate. Promote to ProtoKits only after host projection and fixture rows are stable.
