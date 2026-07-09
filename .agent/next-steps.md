@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T12-00-36-04-00`
+**Updated:** `2026-07-09T15-20-00-04-00`
 
 ## Next safe ledge
 
-Build the host presentation readback layer and DOM-free fixture gate without changing the visible route.
+Build the presentation event bridge and DOM-free host readback fixture without changing the visible route.
 
 ```txt
-PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
+PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate
 ```
 
 ## Preserve first
@@ -16,137 +16,80 @@ PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture G
 preserve index.html
 preserve src/runtime.mjs
 preserve src/game.js route composition
+preserve src/runtime-terrain-v6.mjs visual route
 preserve current Three.js/Rapier look and feel
-preserve current PrehistoricRushComposition.snapshot()
-preserve current PrehistoricRushHost.getState() legacy fields
-preserve current menu/game/run-over/win flow
-preserve current keyboard controls
-preserve current camera/HUD readability pass behavior
+preserve current raptor visual
+preserve current terrain streaming
+preserve current input controls
+preserve current menu/game/run-over/win scenes
+preserve current PrehistoricRushComposition.snapshot() shape
+preserve current PrehistoricRushHost.getState() top-level fields
 ```
 
 ## Implementation order
 
-### 1. Add pure source records
-
 ```txt
-src/presentation/runner-source-state.js
-src/presentation/runner-step-delta.js
-src/presentation/runner-moved-event.js
+1. Add src/presentation/presentation-events.js with stable event names and payload contracts.
+2. Add src/presentation/runner-source-state.js to clone only serializable runner state fields.
+3. Add src/presentation/runner-step-delta.js to compare previous/current runner records.
+4. Add src/presentation/runner-moved-event.js to create the payload expected by dino-pose-domain-kit.
+5. Add src/presentation/dino-pose-frame.js to record dino pose kit output without depending on the rig mesh.
+6. Add src/presentation/camera-frame-request.js to describe the close-camera intent before mutating Three camera objects.
+7. Add src/presentation/hud-frame-request.js to describe the HUD projection before mutating DOM.
+8. Add src/presentation/contact-result-snapshot.js to record collision and shard pickup facts.
+9. Add src/presentation/scene-dispatch-result.js to record scene transition reason and result.
+10. Add src/presentation/render-readback.js to capture renderer/camera/scene consumption facts.
+11. Add src/presentation/presentation-frame-record.js to bundle the frame proof.
+12. Add src/presentation/presentation-journal.js as a bounded proof history.
+13. Add src/presentation/host-presentation-snapshot.js for additive PrehistoricRushHost.getState().presentation.
+14. Wire src/game.js presentation pass to produce records and emit runner.moved while preserving existing visible behavior.
+15. Add scripts/prehistoric-rush-presentation-frame-fixture.mjs.
+16. Add or wire an explicit check command only after the fixture exists.
 ```
 
-Required output:
+## Required fixture rows
 
 ```txt
-RunnerSourceState from app.state
-RunnerStepDelta from previous/current source state
-RunnerMovedEvent payload suitable for eventBus.emit("runner.moved")
-```
-
-### 2. Add presentation frame records
-
-```txt
-src/presentation/dino-pose-frame.js
-src/presentation/camera-frame-request.js
-src/presentation/hud-frame-request.js
-src/presentation/contact-result-snapshot.js
-src/presentation/scene-dispatch-result.js
-src/presentation/render-readback.js
-src/presentation/presentation-frame-record.js
-```
-
-Required output:
-
-```txt
-DinoPoseFrame records pose kit output
-CameraFrameRequest records close-camera target inputs
-HudFrameRequest records HUD projection inputs
-ContactResultSnapshot records collision and pickup state
-SceneDispatchResult records menu/game/run-over/win transition reason
-RenderReadback records renderer/camera/scene consumption evidence
-PresentationFrameRecord bundles one frame of presentation proof
-```
-
-### 3. Add journal and host projection
-
-```txt
-src/presentation/presentation-events.js
-src/presentation/presentation-journal.js
-src/presentation/host-presentation-snapshot.js
-```
-
-Required output:
-
-```txt
-bounded presentation journal
-latest frame readback
-legacy host fields unchanged
-PrehistoricRushHost.getState().presentation added additively
-central ledger pointer included in presentation/validation readback only after source docs are synced
-```
-
-### 4. Add DOM-free fixture
-
-```txt
-scripts/prehistoric-rush-presentation-frame-fixture.mjs
-```
-
-Fixture rows:
-
-```txt
-menu idle
-game first movement frame
-turn left
-turn right
+menu_idle
+game_first_movement_frame
+turn_left
+turn_right
 boost
-jump start
-jump recover
-shard pickup
-collision run-over
-win threshold
-render readback unchanged
-host legacy fields unchanged
-central ledger newest tracker readback
+jump_start
+jump_recover
+shard_pickup
+collision_run_over
+win_threshold
+render_readback_unchanged
+host_legacy_fields_unchanged
 ```
 
-### 5. Wire live runtime with minimal additive splice
+## Acceptance contract
 
 ```txt
-src/game.js reads PrehistoricRushHost.app after runtime-terrain-v6 imports
-source record builder snapshots app.state before presentation mutations
-presentation layer emits runner.moved through the existing eventBus
-existing dino-pose-domain-kit consumes runner.moved
-presentation journal records emitted event, pose output, camera request, HUD request, contact, scene, and render readback
-PrehistoricRushHost.getState() keeps existing fields and adds presentation
+RunnerSourceState is serializable.
+RunnerStepDelta is deterministic.
+RunnerMovedEvent matches dino-pose-domain-kit update payload shape.
+dino.pose.changed can be produced from the live runner moved payload.
+CameraFrameRequest is serializable and does not require Three.js.
+HudFrameRequest is serializable and does not require DOM.
+ContactResultSnapshot captures hit/pickup/no-op branches.
+SceneDispatchResult captures menu, game, run-over, and win transitions.
+RenderReadback records frame consumption without becoming renderer authority.
+PrehistoricRushHost.getState().presentation exists additively.
+Existing PrehistoricRushHost.getState() top-level fields remain stable.
+The fixture runs without DOM, WebGL, Three.js, or Rapier.
 ```
 
-### 6. Keep central ledger readback current
+## Defer
 
 ```txt
-repo-ledger/LuminaryLabs-Publish/PrehistoricRush.md
-internal-change-log/<timestamp>-prehistoric-rush-*.md
+terrain extraction
+Rapier extraction
+renderer extraction
+new visual assets
+new enemy systems
+flock rewrite
+ProtoKit promotion
+scene manifest rewrite
 ```
-
-Each docs pass should keep the central ledger aligned with the latest repo-local tracker and turn-ledger entry.
-
-### 7. Add package validation only if package.json exists or is introduced intentionally
-
-There is no root `package.json` in the current source read. Do not invent an npm workflow unless the implementation pass intentionally adds the fixture script and package metadata together.
-
-## Acceptance criteria
-
-```txt
-1. runtime-terrain-v6 remains visually stable.
-2. src/game.js still imports runtime-terrain-v6.
-3. eventBus emits runner.moved from live state deltas.
-4. dino-pose-domain-kit consumes live runner.moved events.
-5. eventBus history contains runner.moved and dino.pose.changed rows after a movement frame.
-6. PrehistoricRushHost.getState().presentation exists.
-7. PrehistoricRushHost.getState() existing scene, runner, physics, terrain, and renderer fields remain stable.
-8. DOM-free fixture can replay representative source records and assert output shape.
-9. The presentation proof layer does not own movement, collision, terrain, renderer, or physics behavior.
-10. The central LuminaryLabs ledger points to the newest repo-local tracker and audit set.
-```
-
-## Promotion rule
-
-Keep the bridge repo-local until the fixture proves a stable reusable API candidate. Promote to ProtoKits only after host projection and fixture rows are stable.
