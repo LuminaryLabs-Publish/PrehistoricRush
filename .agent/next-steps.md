@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T00-09-22-04-00`
+**Updated:** `2026-07-09T03-00-46-04-00`
 
 ## Next safe ledge
 
-Build the presentation consumer catch-up and host projection fixture gate without changing the visible route.
+Build the presentation event bridge and host projection fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Consumer Catch-up + Host Projection Fixture Gate
+PrehistoricRush Presentation Event Bridge Consumer Contract + Host Projection Fixture Gate
 ```
 
 Preserve the current game first:
@@ -114,6 +114,8 @@ add DOM-free smoke fixtures for the event, contact, scene, render, and presentat
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
+17_event_bus_recent_history_contains_runner_and_pose_events
+18_host_projection_keeps_legacy_state_fields_unchanged
 ```
 
 ## Do not do next
