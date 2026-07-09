@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T15-31-40-04-00`
+**Updated:** `2026-07-09T18-11-58-04-00`
 
 ## Validation status for this pass
 
@@ -11,7 +11,7 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ## Checks performed
 
 ```txt
-- GitHub connector read of accessible LuminaryLabs-Publish repo list.
+- Live web read of current public LuminaryLabs-Publish repo page.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
 - GitHub connector read of PrehistoricRush .agent/START_HERE.md.
 - GitHub connector read of PrehistoricRush .agent/current-audit.md.
@@ -19,11 +19,16 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of PrehistoricRush .agent/known-gaps.md.
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
-- GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush index.html.
 - GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
+- GitHub connector read of PrehistoricRush src/domain-runtime/domain-host.js.
+- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
+- GitHub connector read of PrehistoricRush src/domains/camera/camera-domain-kit.js.
+- GitHub connector read of PrehistoricRush src/domains/hud/hud-domain-kit.js.
+- GitHub connector confirmed root package.json was not found.
 - GitHub connector write to PrehistoricRush .agent docs on main.
 - GitHub connector write to LuminaryLabs central ledger and internal change log on main.
 ```
