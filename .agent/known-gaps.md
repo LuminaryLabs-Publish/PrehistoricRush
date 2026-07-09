@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T03-00-46-04-00`
+**Updated:** `2026-07-09T03-10-05-04-00`
 
 ## Highest-priority gaps
 
@@ -20,7 +20,7 @@
 13. Movement authority still lives inside the legacy visual runtime.
 14. Jump, boost, turn, hazard, pickup, run-over, retry, and win behavior are not wrapped in stable action/result records.
 15. The first missing shared ProtoKit is still run-movement-kit.
-16. The source-wire maps now exist, but the actual src/presentation/* files do not exist yet.
+16. The actual src/presentation/* files do not exist yet.
 17. There is no package.json in the root, so validation must not assume npm scripts exist.
 18. The event bus has history, but no bounded host-facing projection for runner/contact/scene/presentation facts.
 19. The central ledger can drift behind repo-local .agent state unless each run updates both repos in the same pass.
@@ -112,13 +112,13 @@
 .agent/next-steps.md refreshed
 .agent/validation.md refreshed
 .agent/kit-registry.json refreshed
-.agent/architecture-audit/2026-07-09T03-00-46-04-00-presentation-event-bridge-dsk-map.md added
-.agent/render-audit/2026-07-09T03-00-46-04-00-host-presentation-projection-readback.md added
-.agent/gameplay-audit/2026-07-09T03-00-46-04-00-runner-event-fixture-loop.md added
-.agent/presentation-authority-audit/2026-07-09T03-00-46-04-00-runner-moved-consumer-contract.md added
-.agent/deploy-audit/2026-07-09T03-00-46-04-00-static-dom-free-fixture-gate.md added
-.agent/trackers/2026-07-09T03-00-46-04-00/project-breakdown.md added
-.agent/turn-ledger/2026-07-09T03-00-46-04-00.md added
+.agent/architecture-audit/2026-07-09T03-10-05-04-00-central-ledger-presentation-freeze-dsk-map.md added
+.agent/render-audit/2026-07-09T03-10-05-04-00-host-presentation-readback-freeze.md added
+.agent/gameplay-audit/2026-07-09T03-10-05-04-00-runner-moved-replay-freeze.md added
+.agent/presentation-authority-audit/2026-07-09T03-10-05-04-00-consumer-contract-central-sync.md added
+.agent/deploy-audit/2026-07-09T03-10-05-04-00-dom-free-fixture-validation-freeze.md added
+.agent/trackers/2026-07-09T03-10-05-04-00/project-breakdown.md added
+.agent/turn-ledger/2026-07-09T03-10-05-04-00.md added
 central repo ledger refreshed
 central internal change log added
 ```
