@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T15-31-40-04-00`
+**Updated:** `2026-07-09T18-11-58-04-00`
 
 ## Next safe ledge
 
 Build the presentation event bridge and DOM-free host readback fixture without changing the visible route.
 
 ```txt
-PrehistoricRush Presentation Event Bridge Ledger Repair + Host Readback Fixture Gate
+PrehistoricRush Presentation Event Bridge Readback + Host Fixture Gate
 ```
 
 ## Preserve first
