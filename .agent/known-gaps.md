@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T09-02-44-04-00`
+**Updated:** `2026-07-09T09-10-50-04-00`
 
 ## Highest-priority gaps
 
@@ -20,6 +20,7 @@
 13. Movement authority still lives inside the legacy visual runtime.
 14. The README still describes older scene manifests/tuning files that are not the live route authority.
 15. The repo has no DOM-free presentation fixture script.
+16. The central ledger can lag behind repo-local .agent state when scheduled passes land close together; each docs pass needs explicit central catch-up.
 ```
 
 ## Do not solve next
@@ -53,6 +54,7 @@ missing fixture row for shard pickup
 missing fixture row for collision run-over
 missing fixture row for win threshold
 missing fixture row for render readback unchanged by presentation proof layer
+missing fixture row for central ledger newest-tracker readback
 ```
 
 ## Host-state gaps
@@ -74,5 +76,5 @@ PrehistoricRushHost.getState().presentation.renderReadback missing
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
+PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
 ```
