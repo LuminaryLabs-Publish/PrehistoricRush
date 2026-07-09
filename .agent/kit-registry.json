@@ -1,21 +1,21 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T11-46-08-04-00",
+  "updated": "2026-07-09T12-00-36-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T11-46-08-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T11-46-08-04-00.md",
-  "status": "host-presentation-event-ledger-dom-free-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T11-46-08-04-00-host-presentation-event-ledger-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T11-46-08-04-00-render-readback-presentation-frame-contract.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T11-46-08-04-00-runner-moved-dino-pose-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T11-46-08-04-00-host-presentation-snapshot-fixture-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T11-46-08-04-00-dom-free-fixture-command-map.md",
-  "previousTracker": ".agent/trackers/2026-07-09T09-10-50-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T09-10-50-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-09T12-00-36-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T12-00-36-04-00.md",
+  "status": "host-presentation-readback-central-catchup-dom-free-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T12-00-36-04-00-host-presentation-readback-central-catchup-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T12-00-36-04-00-render-readback-frame-consumption-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T12-00-36-04-00-runner-event-pose-proof-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T12-00-36-04-00-host-presentation-snapshot-readback-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T12-00-36-04-00-dom-free-fixture-central-ledger-gate.md",
+  "previousTracker": ".agent/trackers/2026-07-09T11-46-08-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T11-46-08-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback; host-presentation event proof remains unresolved."
+    "reason": "PrehistoricRush selected as the oldest eligible central-ledger fallback; repo-local host-presentation event proof remained ahead of stale central tracking."
   },
   "currentRepoLocalKits": [
     {
@@ -97,7 +97,8 @@
     "presentation-hud-consumer-kit",
     "presentation-raptor-stride-consumer-kit",
     "render-readback-kit",
-    "host-state-projection-kit"
+    "host-state-projection-kit",
+    "central-ledger-readback-kit"
   ],
   "nextCutKits": [
     {
@@ -166,6 +167,11 @@
       "role": "additive PrehistoricRushHost.getState().presentation projection"
     },
     {
+      "id": "central-ledger-readback-kit",
+      "plannedPath": "src/presentation/central-ledger-readback.js",
+      "role": "optional source-readable docs pointer facts after central sync"
+    },
+    {
       "id": "dom-free-presentation-fixture-kit",
       "plannedPath": "scripts/prehistoric-rush-presentation-frame-fixture.mjs",
       "role": "prove movement/presentation host readback without browser or WebGL"
@@ -186,6 +192,6 @@
     "host_legacy_fields_unchanged",
     "central_ledger_latest_tracker_readback"
   ],
-  "nextSafeLedge": "PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate",
+  "nextSafeLedge": "PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
