@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T09-10-50-04-00`
+**Updated:** `2026-07-09T11-46-08-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a central-ledger host event proof bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a host-presentation event ledger that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected because central tracking was stale versus repo-local .agent state and it remained the oldest eligible central-sync candidate.
+PrehistoricRush was selected as the oldest eligible central-ledger fallback.
 
 TheCavalryOfRome remains excluded by rule.
 ```
@@ -29,7 +29,7 @@ index.html
   -> src/runtime-terrain-v6.mjs
 ```
 
-`index.html` is a static shell that loads `src/runtime.mjs`. `src/runtime.mjs` only imports `src/game.js`. `src/game.js` installs the DSK scaffold and then imports `runtime-terrain-v6.mjs`.
+`index.html` is a static shell that loads `src/runtime.mjs`. `src/runtime.mjs` imports `src/game.js`. `src/game.js` installs the DSK scaffold and then imports `runtime-terrain-v6.mjs`.
 
 ## Interaction loop
 
@@ -82,6 +82,7 @@ pickup-collection-domain
 scene-dispatch-domain
 score-state-domain
 host-readback-domain
+presentation-event-ledger-domain
 presentation-fixture-target-domain
 central-ledger-sync-domain
 ```
@@ -157,7 +158,7 @@ host-state-projection-kit
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
+PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
 ```
 
 ## Not changed
