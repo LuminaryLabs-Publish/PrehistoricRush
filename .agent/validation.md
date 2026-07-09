@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T15-20-00-04-00`
+**Updated:** `2026-07-09T15-31-40-04-00`
 
 ## Validation status for this pass
 
@@ -20,11 +20,10 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
 - GitHub connector read of PrehistoricRush README.md.
+- GitHub connector read of PrehistoricRush index.html.
 - GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
-- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
-- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
 - GitHub connector write to PrehistoricRush .agent docs on main.
 - GitHub connector write to LuminaryLabs central ledger and internal change log on main.
 ```
@@ -45,6 +44,8 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ## Known validation limitation
 
 The repo currently lacks the planned DOM-free presentation fixture. Any future fixture validation script should either run directly with Node from a checked-out repo or add explicit package metadata as part of the implementation pass.
+
+The root `package.json` was not found during this pass, so no local package-script contract was verified.
 
 ## Branch policy
 
