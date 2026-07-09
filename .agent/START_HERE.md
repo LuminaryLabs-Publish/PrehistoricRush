@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-09T15-20-00-04-00`
+**Last aligned:** `2026-07-09T15-31-40-04-00`
 
 ## Purpose
 
@@ -18,21 +18,21 @@ No checked non-Cavalry Publish repo was fully new, absent from the central ledge
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the oldest eligible central-ledger fallback after the latest checked updates. Its central ledger still pointed at `2026-07-09T12-00-36-04-00`, and the repo still needs the host presentation event/readback fixture before any movement, terrain, renderer, physics, or ProtoKit extraction.
+`PrehistoricRush` was selected as the oldest eligible central-ledger fallback and repo-local pointer repair target. Its central ledger still pointed at `2026-07-09T12-00-36-04-00`, while the repo-local root docs had a partial `2026-07-09T15-20-00-04-00` pointer set that referenced missing timestamped tracker/audit files. This pass normalizes the repo-local `.agent` folder to a complete `2026-07-09T15-31-40-04-00` audit set and syncs the central ledger.
 
 ## Publish repos checked
 
 ```txt
 LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central latest 2026-07-09T12-08-46-04-00
-LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T12-20-08-04-00
+LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central latest 2026-07-09T12-30-09-04-00
 LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central latest 2026-07-09T14-16-00-04-00
 LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central latest 2026-07-09T13-18-48-04-00
 LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central latest 2026-07-09T13-38-15-04-00
-LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T14-20-00-04-00
+LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central latest 2026-07-09T14-28-45-04-00
 LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central latest 2026-07-09T15-09-09-04-00
-LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T13-00-37-04-00 sampled from change-log search
+LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central latest 2026-07-09T13-00-37-04-00
 LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
-LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central-ledger fallback / central latest 2026-07-09T12-00-36-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central-ledger fallback / central latest 2026-07-09T12-00-36-04-00 / repo-local partial pointer 2026-07-09T15-20-00-04-00 repaired
 ```
 
 ## Current product read
@@ -92,13 +92,13 @@ PrehistoricRushHost.app.state + previous frame snapshot
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-09T15-20-00-04-00-presentation-event-bridge-fixture-freeze-dsk-map.md
-.agent/render-audit/2026-07-09T15-20-00-04-00-render-readback-host-consumption-map.md
-.agent/gameplay-audit/2026-07-09T15-20-00-04-00-runner-event-bridge-loop.md
-.agent/presentation-authority-audit/2026-07-09T15-20-00-04-00-host-presentation-event-fixture-contract.md
-.agent/deploy-audit/2026-07-09T15-20-00-04-00-dom-free-fixture-wire-map.md
-.agent/trackers/2026-07-09T15-20-00-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-09T15-20-00-04-00.md
+.agent/architecture-audit/2026-07-09T15-31-40-04-00-presentation-event-bridge-ledger-repair-dsk-map.md
+.agent/render-audit/2026-07-09T15-31-40-04-00-render-readback-host-consumption-map.md
+.agent/gameplay-audit/2026-07-09T15-31-40-04-00-runner-event-bridge-loop.md
+.agent/presentation-authority-audit/2026-07-09T15-31-40-04-00-host-presentation-event-fixture-contract.md
+.agent/deploy-audit/2026-07-09T15-31-40-04-00-dom-free-fixture-central-sync-map.md
+.agent/trackers/2026-07-09T15-31-40-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T15-31-40-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -116,35 +116,4 @@ src/domain-runtime/tick-scheduler.js
 src/domains/dino/dino-pose-domain-kit.js
 src/domains/camera/camera-domain-kit.js
 src/domains/hud/hud-domain-kit.js
-```
-
-## Source files to add next
-
-```txt
-src/presentation/runner-source-state.js
-src/presentation/runner-step-delta.js
-src/presentation/runner-moved-event.js
-src/presentation/presentation-events.js
-src/presentation/dino-pose-frame.js
-src/presentation/camera-frame-request.js
-src/presentation/hud-frame-request.js
-src/presentation/contact-result-snapshot.js
-src/presentation/scene-dispatch-result.js
-src/presentation/render-readback.js
-src/presentation/presentation-frame-record.js
-src/presentation/presentation-journal.js
-src/presentation/host-presentation-snapshot.js
-scripts/prehistoric-rush-presentation-frame-fixture.mjs
-```
-
-## Main rule
-
-Keep the current static route, visuals, `PrehistoricRushComposition.snapshot()`, `PrehistoricRushHost.getState()` existing fields, camera readability pass, HUD readability pass, and menu/game/run-over/win flow stable.
-
-Do not extract movement, collision, terrain, renderer, physics, or shared ProtoKits until the presentation event bridge fixture proves source state, movement events, dino pose output, camera/HUD descriptors, contacts, scene dispatch, render readback, and host projection.
-
-## Current next safe ledge
-
-```txt
-PrehistoricRush Presentation Event Bridge Fixture Freeze + Host Readback Gate
 ```
