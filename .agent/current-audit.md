@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T09-02-44-04-00`
+**Updated:** `2026-07-09T09-10-50-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a host-state event bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a central-ledger host event proof bridge that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected because it had the oldest eligible central ledger timestamp after the latest same-day catch-up passes.
+PrehistoricRush was selected because central tracking was stale versus repo-local .agent state and it remained the oldest eligible central-sync candidate.
 
 TheCavalryOfRome remains excluded by rule.
 ```
@@ -73,6 +73,7 @@ presentation-pass-domain
 three-render-host-domain
 rapier-physics-bridge-domain
 terrain-streaming-domain
+terrain-height-sampling-domain
 spawn-population-domain
 runner-motion-domain
 runner-input-domain
@@ -82,6 +83,7 @@ scene-dispatch-domain
 score-state-domain
 host-readback-domain
 presentation-fixture-target-domain
+central-ledger-sync-domain
 ```
 
 ## Services offered by current kits
@@ -99,6 +101,11 @@ createHudDomainKit: readability HUD descriptor and projection service
 rapier-physics-domain-kit: external Rapier world bridge, kinematic actor, contacts, snapshot
 globalThis.PrehistoricRushComposition.snapshot: composition/domain/event/scheduler readback
 globalThis.PrehistoricRushHost.getState: scene/runner/physics/terrain/renderer readback
+styleHud: DOM HUD readability styling
+renderHud: DOM HUD projection
+applyCloseCamera: close camera mutation pass
+applyReadableStride: raptor rig readability stride pass
+startPresentationPass: secondary presentation render loop
 ```
 
 ## Kits identified
@@ -132,11 +139,13 @@ runner-motion-kit
 runner-terrain-stream-kit
 runner-spawn-population-kit
 runner-contact-kit
+runner-pickup-kit
 runner-scene-dispatch-kit
 runner-score-kit
 raptor-render-adapter-kit
 presentation-camera-consumer-kit
 presentation-hud-consumer-kit
+presentation-raptor-stride-consumer-kit
 render-readback-kit
 host-state-projection-kit
 ```
@@ -148,7 +157,7 @@ host-state-projection-kit
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate
+PrehistoricRush Central Ledger Host Event Proof + Presentation Fixture Gate
 ```
 
 ## Not changed
