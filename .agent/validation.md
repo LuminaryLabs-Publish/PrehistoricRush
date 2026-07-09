@@ -1,12 +1,12 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T11-46-08-04-00`
+**Updated:** `2026-07-09T12-00-36-04-00`
 
 ## Validation status for this pass
 
 No runtime source files were changed in this pass.
 
-This pass updated documentation and operating memory under `.agent/` only, then updated the central `LuminaryLabs-Dev/LuminaryLabs` tracking ledger.
+This pass updated documentation and operating memory under `.agent/` only, then updated the central `LuminaryLabs-Dev/LuminaryLabs` tracking ledger and internal change log.
 
 ## Checks performed
 
@@ -19,8 +19,12 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 - GitHub connector read of PrehistoricRush .agent/known-gaps.md.
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
+- GitHub connector read of PrehistoricRush README.md.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs.
+- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
+- GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
+- GitHub connector check for root package.json.
 - GitHub connector write to PrehistoricRush .agent docs on main.
 - GitHub connector write to LuminaryLabs central ledger and internal change log on main.
 ```
@@ -60,4 +64,4 @@ Low for this pass because only `.agent` docs and central ledger docs changed.
 scripts/prehistoric-rush-presentation-frame-fixture.mjs
 ```
 
-The fixture should prove the host-presentation event bridge before movement, terrain, renderer, physics, or ProtoKit extraction begins.
+The fixture should prove the host presentation readback bridge before movement, terrain, renderer, physics, or ProtoKit extraction begins.
