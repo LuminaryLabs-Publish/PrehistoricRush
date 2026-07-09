@@ -2,7 +2,7 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Last aligned:** `2026-07-08T21-40-45-04-00`
+**Last aligned:** `2026-07-09T00-09-22-04-00`
 
 ## Purpose
 
@@ -12,34 +12,34 @@ Read this folder before changing implementation code.
 
 ## Current selection result
 
-The accessible `LuminaryLabs-Publish` repository list was compared against the tracked/documented repo ledger in `LuminaryLabs-Dev/LuminaryLabs` and sampled root `.agent/START_HERE.md` state.
+The accessible `LuminaryLabs-Publish` repository list was compared against the tracked/documented repo ledger in `LuminaryLabs-Dev/LuminaryLabs` and sampled root `.agent` state.
 
 No checked non-Cavalry Publish repo was fully new, absent from central tracking, undocumented, recently added but undocumented, or missing sampled root `.agent/START_HERE.md` state.
 
 `LuminaryLabs-Publish/TheCavalryOfRome` remains excluded by standing rule.
 
-`PrehistoricRush` was selected as the oldest eligible fallback by current central ledger alignment. Its prior central alignment was `2026-07-08T19-30-31-04-00`.
+`PrehistoricRush` was selected as the oldest eligible current central alignment among checked non-excluded repos.
 
 ## Publish repos checked
 
 ```txt
-LuminaryLabs-Publish/IntoTheMeadow       tracked / root .agent present / central alignment 2026-07-08T20-21-59-04-00
-LuminaryLabs-Publish/HorrorCorridor      tracked / root .agent present / central alignment 2026-07-08T20-38-28-04-00
-LuminaryLabs-Publish/AetherVale          tracked / root .agent present / central alignment 2026-07-08T21-08-41-04-00
-LuminaryLabs-Publish/ZombieOrchard       tracked / root .agent present / central alignment 2026-07-08T21-18-39-04-00
-LuminaryLabs-Publish/TheUnmappedHouse    tracked / root .agent present / central alignment 2026-07-08T21-00-12-04-00
-LuminaryLabs-Publish/MyCozyIsland        tracked / root .agent present / central alignment 2026-07-08T19-50-20-04-00
-LuminaryLabs-Publish/TheOpenAbove        tracked / root .agent present / central alignment 2026-07-08T20-10-32-04-00
-LuminaryLabs-Publish/PhantomCommand      tracked / root .agent present / central alignment 2026-07-08T20-52-00-04-00
-LuminaryLabs-Publish/TheCavalryOfRome    excluded by rule
-LuminaryLabs-Publish/PrehistoricRush     selected / oldest eligible central alignment 2026-07-08T19-30-31-04-00
+LuminaryLabs-Publish/HorrorCorridor       tracked / root .agent present / central alignment 2026-07-08T22-51-43-04-00
+LuminaryLabs-Publish/AetherVale           tracked / root .agent present / central alignment 2026-07-08T23-50-40-04-00
+LuminaryLabs-Publish/TheOpenAbove         tracked / root .agent present / central alignment 2026-07-08T22-19-38-04-00
+LuminaryLabs-Publish/TheCavalryOfRome     excluded by rule
+LuminaryLabs-Publish/PhantomCommand       tracked / root .agent present / central alignment 2026-07-08T22-58-02-04-00
+LuminaryLabs-Publish/PrehistoricRush      selected / oldest eligible central alignment 2026-07-08T21-50-56-04-00
+LuminaryLabs-Publish/ZombieOrchard        tracked / root .agent present / central alignment 2026-07-08T23-40-55-04-00
+LuminaryLabs-Publish/IntoTheMeadow        tracked / root .agent present / central alignment 2026-07-08T22-38-17-04-00
+LuminaryLabs-Publish/MyCozyIsland         tracked / root .agent present / central alignment 2026-07-08T21-58-34-04-00
+LuminaryLabs-Publish/TheUnmappedHouse     tracked / root .agent present / central alignment 2026-07-08T23-19-33-04-00
 ```
 
 ## Current product read
 
-`PrehistoricRush` is a standalone static browser infinite-runner shell with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
+`PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK composition scaffold layered beside a live Three.js/Rapier terrain route.
 
-The highest-value seam remains presentation consumer authority. The game already plays, but live source-state, runner movement, dino pose consumer output, camera/HUD requests, contact/scene results, render readback, and host presentation records are not yet proven through fixture rows.
+The highest-value seam remains presentation consumer authority. The game already plays, but live source-state, movement deltas, `runner.moved`, dino pose consumer output, camera/HUD requests, contact/scene results, render readback, and host presentation records are not yet proven through fixture rows.
 
 ## Current interaction loop
 
@@ -66,7 +66,7 @@ index.html
 ## Target proof loop
 
 ```txt
-app.state + previous app.state
+PrehistoricRushHost.app.state + previous frame snapshot
   -> RunnerSourceState
   -> RunnerStepDelta
   -> RunnerMovedEvent
@@ -92,13 +92,13 @@ app.state + previous app.state
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-08T21-40-45-04-00-presentation-consumer-source-manifest-dsk-map.md
-.agent/render-audit/2026-07-08T21-40-45-04-00-render-readback-host-projection-map.md
-.agent/gameplay-audit/2026-07-08T21-40-45-04-00-runner-moved-contact-scene-consumer-loop.md
-.agent/presentation-authority-audit/2026-07-08T21-40-45-04-00-consumer-source-file-fixture-contract.md
-.agent/deploy-audit/2026-07-08T21-40-45-04-00-static-fixture-script-validation-map.md
-.agent/trackers/2026-07-08T21-40-45-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-08T21-40-45-04-00.md
+.agent/architecture-audit/2026-07-09T00-09-22-04-00-presentation-consumer-catchup-dsk-map.md
+.agent/render-audit/2026-07-09T00-09-22-04-00-host-presentation-readback-map.md
+.agent/gameplay-audit/2026-07-09T00-09-22-04-00-runner-moved-consumer-loop.md
+.agent/presentation-authority-audit/2026-07-09T00-09-22-04-00-host-projection-fixture-gate.md
+.agent/deploy-audit/2026-07-09T00-09-22-04-00-static-fixture-validation-catchup.md
+.agent/trackers/2026-07-09T00-09-22-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-09T00-09-22-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -146,5 +146,5 @@ Do not extract movement, collision, terrain, renderer, or shared ProtoKits until
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Presentation Consumer Source Manifest + Host Projection Fixture Gate
+PrehistoricRush Presentation Consumer Catch-up + Host Projection Fixture Gate
 ```
