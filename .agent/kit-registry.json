@@ -1,82 +1,68 @@
 {
-  "id": "prehistoric-rush-agent-kit-registry",
-  "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T18-11-58-04-00",
-  "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T18-11-58-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T18-11-58-04-00.md",
-  "status": "presentation-event-bridge-readback-host-fixture-gate-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T18-11-58-04-00-presentation-event-readback-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T18-11-58-04-00-host-presentation-render-readback.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T18-11-58-04-00-runner-moved-event-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T18-11-58-04-00-event-bridge-fixture-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T18-11-58-04-00-dom-free-fixture-gate.md",
-  "previousTracker": ".agent/trackers/2026-07-09T15-31-40-04-00/project-breakdown.md",
-  "selection": {
-    "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected as the oldest eligible documented fallback after current checked non-Cavalry public repos were confirmed tracked with root .agent state."
+  "repo": "LuminaryLabs-Publish/PrehistoricRush",
+  "updated": "2026-07-09T19-29-23-04-00",
+  "currentLedge": "PrehistoricRush Presentation Host Fixture Refresh + DOM-Free Event Bridge Gate",
+  "latestTracker": ".agent/trackers/2026-07-09T19-29-23-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T19-29-23-04-00.md",
+  "audits": {
+    "architecture": ".agent/architecture-audit/2026-07-09T19-29-23-04-00-presentation-host-fixture-refresh-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-09T19-29-23-04-00-render-readback-presentation-frame.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-09T19-29-23-04-00-runner-moved-event-bridge-loop.md",
+    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-09T19-29-23-04-00-host-presentation-fixture-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-09T19-29-23-04-00-dom-free-presentation-fixture-gate.md"
   },
-  "currentRepoLocalKits": [
+  "implementedRepoLocalKits": [
     {
-      "id": "domain-runtime/event-bus",
+      "id": "event-bus-kit",
       "path": "src/domain-runtime/event-bus.js",
-      "status": "present_needs_live_runner_contact_scene_presentation_events",
-      "role": "event history and publish/subscribe scaffold"
+      "services": ["on", "emit", "snapshot"]
     },
     {
-      "id": "domain-runtime/domain-host",
+      "id": "domain-host-kit",
       "path": "src/domain-runtime/domain-host.js",
-      "status": "present",
-      "role": "idempotent domain installation, tick, and snapshot scaffold"
+      "services": ["install", "get", "tick", "snapshot"]
     },
     {
-      "id": "domain-runtime/tick-scheduler",
+      "id": "tick-scheduler-kit",
       "path": "src/domain-runtime/tick-scheduler.js",
-      "status": "present_future_authority",
-      "role": "future tick-owned domain update scaffold"
+      "services": ["start", "stop", "snapshot"]
     },
     {
       "id": "dino-form-domain-kit",
       "path": "src/domains/dino/dino-form-domain-kit.js",
-      "status": "present",
-      "role": "dino form descriptor"
+      "services": ["descriptor", "snapshot"]
     },
     {
       "id": "dino-pose-domain-kit",
       "path": "src/domains/dino/dino-pose-domain-kit.js",
-      "status": "present_needs_live_runner_moved_event",
-      "role": "dino pose descriptor updated by runner movement facts"
+      "services": ["runner.moved consumer", "dino.pose.changed emitter", "getDescriptor", "snapshot"]
     },
     {
       "id": "dino-material-domain-kit",
       "path": "src/domains/dino/dino-material-domain-kit.js",
-      "status": "present",
-      "role": "dino material descriptor"
+      "services": ["descriptor", "snapshot"]
     },
     {
-      "id": "dino-domain-bundle",
+      "id": "dino-domain-bundle-kit",
       "path": "src/domains/dino/index.js",
-      "status": "present",
-      "role": "bundle wrapper for dino form, pose, and material domains"
+      "services": ["dino form/pose/material bundle"]
     },
     {
       "id": "camera-domain-kit",
       "path": "src/domains/camera/camera-domain-kit.js",
-      "status": "present_needs_live_camera_frame_descriptor_bridge",
-      "role": "close third-person camera descriptor"
+      "services": ["close third-person camera preset", "getDescriptor", "snapshot"]
     },
     {
       "id": "hud-domain-kit",
       "path": "src/domains/hud/hud-domain-kit.js",
-      "status": "present_needs_live_hud_frame_descriptor_bridge",
-      "role": "readability HUD descriptor and projection service"
+      "services": ["progress", "render", "getDescriptor", "snapshot"]
     }
   ],
-  "currentExternalKits": [
+  "liveExternalKits": [
     {
       "id": "rapier-physics-domain-kit",
-      "status": "live_external_kit",
-      "role": "Rapier physics bridge used by the visual runner"
+      "source": "LuminaryLabs-Agents/NexusRealtime-ProtoKits@main CDN",
+      "services": ["Rapier world bridge", "kinematic actor", "contact snapshot"]
     }
   ],
   "runtimeImpliedKits": [
@@ -100,75 +86,27 @@
     "central-ledger-readback-kit"
   ],
   "nextCutKits": [
-    {
-      "id": "runner-source-state-kit",
-      "plannedPath": "src/presentation/runner-source-state.js",
-      "role": "project legacy app.state into stable source records"
-    },
-    {
-      "id": "runner-step-delta-kit",
-      "plannedPath": "src/presentation/runner-step-delta.js",
-      "role": "derive frame-to-frame movement facts"
-    },
-    {
-      "id": "runner-moved-event-kit",
-      "plannedPath": "src/presentation/runner-moved-event.js",
-      "role": "emit payload consumed by dino-pose-domain-kit"
-    },
-    {
-      "id": "presentation-events-kit",
-      "plannedPath": "src/presentation/presentation-events.js",
-      "role": "stable event names and payload contracts"
-    },
-    {
-      "id": "dino-pose-frame-kit",
-      "plannedPath": "src/presentation/dino-pose-frame.js",
-      "role": "serializable pose result proof"
-    },
-    {
-      "id": "camera-frame-request-kit",
-      "plannedPath": "src/presentation/camera-frame-request.js",
-      "role": "serializable camera consumer intent"
-    },
-    {
-      "id": "hud-frame-request-kit",
-      "plannedPath": "src/presentation/hud-frame-request.js",
-      "role": "serializable HUD consumer intent"
-    },
-    {
-      "id": "contact-result-snapshot-kit",
-      "plannedPath": "src/presentation/contact-result-snapshot.js",
-      "role": "collision and pickup result proof"
-    },
-    {
-      "id": "scene-dispatch-result-kit",
-      "plannedPath": "src/presentation/scene-dispatch-result.js",
-      "role": "scene transition result proof"
-    },
-    {
-      "id": "render-readback-kit",
-      "plannedPath": "src/presentation/render-readback.js",
-      "role": "render frame consumer proof"
-    },
-    {
-      "id": "presentation-frame-record-kit",
-      "plannedPath": "src/presentation/presentation-frame-record.js",
-      "role": "single-frame proof bundle"
-    },
-    {
-      "id": "presentation-journal-kit",
-      "plannedPath": "src/presentation/presentation-journal.js",
-      "role": "bounded proof history"
-    },
-    {
-      "id": "host-presentation-snapshot-kit",
-      "plannedPath": "src/presentation/host-presentation-snapshot.js",
-      "role": "additive PrehistoricRushHost.getState().presentation readback"
-    },
-    {
-      "id": "DOM-free-presentation-fixture-kit",
-      "plannedPath": "scripts/prehistoric-rush-presentation-frame-fixture.mjs",
-      "role": "Node-compatible proof rows without DOM, WebGL, Three.js, or Rapier"
-    }
+    "presentation-events-kit",
+    "runner-source-state-kit",
+    "runner-step-delta-kit",
+    "runner-moved-event-kit",
+    "dino-pose-frame-kit",
+    "camera-frame-request-kit",
+    "hud-frame-request-kit",
+    "contact-result-snapshot-kit",
+    "scene-dispatch-result-kit",
+    "render-readback-kit",
+    "presentation-frame-record-kit",
+    "presentation-journal-kit",
+    "host-presentation-snapshot-kit",
+    "dom-free-presentation-fixture-kit"
+  ],
+  "deferredUntilFixture": [
+    "visual expansion",
+    "terrain rewrite",
+    "movement retune",
+    "renderer extraction",
+    "new pickup economy",
+    "ProtoKit promotion"
   ]
 }
