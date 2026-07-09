@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T21-40-45-04-00`
+**Updated:** `2026-07-08T21-50-56-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-The next implementation should not rewrite visuals. It should add the missing presentation consumer source-manifest layer: source-state projection, movement delta, runner.moved emission, dino pose event readback, camera/HUD frame requests, contact/scene result records, render readback, presentation journal, host projection, and DOM-free fixture replay.
+This pass reaffirms the next implementation boundary: do not rewrite visuals first. Add a source-projection and host-readback layer around the current behavior so live runner state becomes fixture-readable before movement, collision, terrain, or renderer extraction.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible fallback because its central alignment was 2026-07-08T19-30-31-04-00, older than the other checked non-Cavalry repo alignments after later catch-up passes.
+PrehistoricRush was selected as the central catch-up fallback because the central ledger still pointed at 2026-07-08T19-30-31-04-00 while repo-local root .agent docs already showed 2026-07-08T21-40-45-04-00.
 ```
 
 ## Current route
@@ -38,7 +38,7 @@ index.html
 ## Source-backed facts
 
 ```txt
-README.md describes a standalone additive infinite runner and notes the first missing ProtoKit as run-movement-kit.
+README.md describes a standalone additive infinite runner and identifies run-movement-kit as the first missing ProtoKit.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
@@ -119,7 +119,9 @@ button-input-adapter
 scene-file-authority
 scene-transition-authority
 runner-motion-policy
+runner-source-state-contract
 runner-step-delta-contract
+runner-moved-event-contract
 turn-steering-policy
 jump-policy
 boost-policy
@@ -138,17 +140,14 @@ pickup-contact-detection
 distance-goal-detection
 raptor-visual-rig
 raptor-pose-animation
-camera-follow-policy
-hud-telemetry-projection
-presentation-pass-authority
-runner-source-state-contract
-runner-moved-event-contract
 dino-pose-event-bridge
-dino-pose-frame-contract
+camera-follow-policy
 camera-frame-request-contract
+hud-telemetry-projection
 hud-frame-request-contract
 contact-result-contract
 scene-dispatch-result-contract
+presentation-pass-authority
 presentation-frame-contract
 presentation-journal-contract
 render-readback-contract
@@ -215,7 +214,7 @@ createRenderReadback
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
-runPresentationConsumerFixture
+runPresentationSourceProjectionFixture
 ```
 
 ## Kits identified
