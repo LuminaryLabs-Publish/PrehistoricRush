@@ -1,13 +1,13 @@
 # PrehistoricRush Next Steps
 
-**Updated:** `2026-07-09T11-46-08-04-00`
+**Updated:** `2026-07-09T12-00-36-04-00`
 
 ## Next safe ledge
 
-Build the host-presentation event ledger and DOM-free fixture gate without changing the visible route.
+Build the host presentation readback layer and DOM-free fixture gate without changing the visible route.
 
 ```txt
-PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
+PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
 ```
 
 ## Preserve first
@@ -81,6 +81,7 @@ bounded presentation journal
 latest frame readback
 legacy host fields unchanged
 PrehistoricRushHost.getState().presentation added additively
+central ledger pointer included in presentation/validation readback only after source docs are synced
 ```
 
 ### 4. Add DOM-free fixture
@@ -104,9 +105,21 @@ collision run-over
 win threshold
 render readback unchanged
 host legacy fields unchanged
+central ledger newest tracker readback
 ```
 
-### 5. Keep central ledger readback current
+### 5. Wire live runtime with minimal additive splice
+
+```txt
+src/game.js reads PrehistoricRushHost.app after runtime-terrain-v6 imports
+source record builder snapshots app.state before presentation mutations
+presentation layer emits runner.moved through the existing eventBus
+existing dino-pose-domain-kit consumes runner.moved
+presentation journal records emitted event, pose output, camera request, HUD request, contact, scene, and render readback
+PrehistoricRushHost.getState() keeps existing fields and adds presentation
+```
+
+### 6. Keep central ledger readback current
 
 ```txt
 repo-ledger/LuminaryLabs-Publish/PrehistoricRush.md
@@ -115,7 +128,7 @@ internal-change-log/<timestamp>-prehistoric-rush-*.md
 
 Each docs pass should keep the central ledger aligned with the latest repo-local tracker and turn-ledger entry.
 
-### 6. Add package validation only if package.json exists or is introduced intentionally
+### 7. Add package validation only if package.json exists or is introduced intentionally
 
 There is no root `package.json` in the current source read. Do not invent an npm workflow unless the implementation pass intentionally adds the fixture script and package metadata together.
 
