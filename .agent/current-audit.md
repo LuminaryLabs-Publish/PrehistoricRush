@@ -2,20 +2,22 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T21-50-56-04-00`
+**Updated:** `2026-07-09T00-09-22-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-This pass reaffirms the next implementation boundary: do not rewrite visuals first. Add a source-projection and host-readback layer around the current behavior so live runner state becomes fixture-readable before movement, collision, terrain, or renderer extraction.
+This pass reaffirms the next implementation boundary: do not rewrite visuals first. Add the presentation consumer catch-up layer that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the central catch-up fallback because the central ledger still pointed at 2026-07-08T19-30-31-04-00 while repo-local root .agent docs already showed 2026-07-08T21-40-45-04-00.
+PrehistoricRush was selected because it was the oldest eligible current central alignment among checked non-excluded repos.
+
+TheCavalryOfRome remains excluded by rule.
 ```
 
 ## Current route
@@ -39,6 +41,7 @@ index.html
 
 ```txt
 README.md describes a standalone additive infinite runner and identifies run-movement-kit as the first missing ProtoKit.
+src/runtime.mjs only imports ./game.js.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
@@ -203,6 +206,7 @@ Needed next services:
 snapshotRunnerSourceState
 createRunnerStepDelta
 createRunnerMovedEvent
+shouldEmitRunnerMoved
 emitRunnerMoved
 readLatestDinoPoseChangedEvent
 createDinoPoseFrame
@@ -214,7 +218,7 @@ createRenderReadback
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
-runPresentationSourceProjectionFixture
+runPresentationConsumerFixture
 ```
 
 ## Kits identified
