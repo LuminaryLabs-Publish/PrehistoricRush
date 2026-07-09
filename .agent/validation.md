@@ -1,6 +1,6 @@
 # PrehistoricRush Validation
 
-**Updated:** `2026-07-09T00-09-22-04-00`
+**Updated:** `2026-07-09T03-00-46-04-00`
 
 ## Validation status for this pass
 
@@ -13,26 +13,27 @@ This pass updated documentation and operating memory under `.agent/` only, then 
 ```txt
 - GitHub connector read of accessible LuminaryLabs-Publish repo list.
 - GitHub connector read of central LuminaryLabs-Dev/LuminaryLabs repo ledger files.
-- GitHub connector read of PrehistoricRush repository metadata through known repo paths.
 - GitHub connector read of PrehistoricRush .agent/START_HERE.md.
 - GitHub connector read of PrehistoricRush .agent/current-audit.md.
 - GitHub connector read of PrehistoricRush .agent/known-gaps.md.
 - GitHub connector read of PrehistoricRush .agent/next-steps.md.
 - GitHub connector read of PrehistoricRush .agent/validation.md.
 - GitHub connector read of PrehistoricRush .agent/kit-registry.json.
-- GitHub connector read of PrehistoricRush README.md.
+- GitHub connector read of PrehistoricRush index.html.
 - GitHub connector read of PrehistoricRush src/runtime.mjs.
 - GitHub connector read of PrehistoricRush src/game.js.
 - GitHub connector read of PrehistoricRush src/runtime-terrain-v6.mjs source anchors.
 - GitHub connector read of PrehistoricRush src/domains/dino/dino-pose-domain-kit.js.
-- GitHub connector update of PrehistoricRush root .agent docs.
+- GitHub connector read of PrehistoricRush src/domain-runtime/event-bus.js.
+- GitHub connector create of new PrehistoricRush tracker entry.
+- GitHub connector create of new PrehistoricRush turn-ledger entry.
 - GitHub connector create of new PrehistoricRush architecture audit.
 - GitHub connector create of new PrehistoricRush render audit.
 - GitHub connector create of new PrehistoricRush gameplay audit.
 - GitHub connector create of new PrehistoricRush presentation authority audit.
 - GitHub connector create of new PrehistoricRush deploy audit.
-- GitHub connector create of new PrehistoricRush tracker entry.
-- GitHub connector create of new PrehistoricRush turn-ledger entry.
+- GitHub connector update of PrehistoricRush root .agent docs.
+- GitHub connector update of PrehistoricRush kit registry.
 - GitHub connector update of central PrehistoricRush repo ledger.
 - GitHub connector create of central internal change-log entry.
 ```
@@ -129,6 +130,8 @@ run-movement-promotion-smoke
 14_dom_free_fixture_replays_source_to_presentation_chain
 15_renderer_output_unchanged_by_contract_layer
 16_legacy_runtime_remains_playable_during_cutover
+17_event_bus_recent_history_contains_runner_and_pose_events
+18_host_projection_keeps_legacy_state_fields_unchanged
 ```
 
 ## Current proof status
