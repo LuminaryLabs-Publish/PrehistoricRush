@@ -1,6 +1,6 @@
 # PrehistoricRush Known Gaps
 
-**Updated:** `2026-07-09T11-46-08-04-00`
+**Updated:** `2026-07-09T12-00-36-04-00`
 
 ## Highest-priority gaps
 
@@ -22,6 +22,7 @@
 15. The README still describes older scene manifests/tuning files that are not the live route authority.
 16. The repo has no DOM-free presentation fixture script.
 17. The central ledger can lag behind repo-local .agent state when scheduled passes land close together; each docs pass needs explicit central catch-up.
+18. The current presentation pass performs a second render but does not preserve the inputs, outputs, or parity facts that would make that pass auditable.
 ```
 
 ## Do not solve next
@@ -74,10 +75,20 @@ PrehistoricRushHost.getState().presentation.hudRequest missing
 PrehistoricRushHost.getState().presentation.contact missing
 PrehistoricRushHost.getState().presentation.sceneDispatch missing
 PrehistoricRushHost.getState().presentation.renderReadback missing
+PrehistoricRushHost.getState().presentation.centralLedger missing
+```
+
+## Central tracking gaps closed by this docs pass
+
+```txt
+central repo-ledger should point to 2026-07-09T12-00-36-04-00 tracker
+central repo-ledger should point to 2026-07-09T12-00-36-04-00 turn ledger
+central repo-ledger should point to latest architecture/render/gameplay/presentation/deploy audits
+central internal-change-log should describe why PrehistoricRush was selected and what remains blocked
 ```
 
 ## Current next safe ledge
 
 ```txt
-PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
+PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
 ```
