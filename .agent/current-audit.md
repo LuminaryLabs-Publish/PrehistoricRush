@@ -2,13 +2,13 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T00-09-22-04-00`
+**Updated:** `2026-07-09T03-00-46-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-This pass reaffirms the next implementation boundary: do not rewrite visuals first. Add the presentation consumer catch-up layer that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
+The next implementation boundary is still not a visual rewrite. Add the presentation event bridge that turns live app state into fixture-readable source, movement, dino pose, camera, HUD, contact, scene, render, and host projection records.
 
 ## Selection result
 
@@ -40,7 +40,7 @@ index.html
 ## Source-backed facts
 
 ```txt
-README.md describes a standalone additive infinite runner and identifies run-movement-kit as the first missing ProtoKit.
+index.html loads ./src/runtime.mjs.
 src/runtime.mjs only imports ./game.js.
 src/game.js installs createEventBus, createDomainHost, createTickScheduler, dino domain kits, camera-domain-kit, and hud-domain-kit.
 src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
@@ -218,66 +218,62 @@ createRenderReadback
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
-runPresentationConsumerFixture
+runPresentationEventBridgeFixture
 ```
 
-## Kits identified
-
-Implemented repo-local kits:
+## Current kits
 
 ```txt
-domain-runtime/event-bus
-domain-runtime/domain-host
-domain-runtime/tick-scheduler
-dino-form-domain-kit
-dino-pose-domain-kit
-dino-material-domain-kit
-dino-domain-bundle
-camera-domain-kit
-hud-domain-kit
-```
+repo-local implemented:
+  domain-runtime/event-bus
+  domain-runtime/domain-host
+  domain-runtime/tick-scheduler
+  dino-form-domain-kit
+  dino-pose-domain-kit
+  dino-material-domain-kit
+  dino-domain-bundle
+  camera-domain-kit
+  hud-domain-kit
 
-Live external kit:
+live external:
+  rapier-physics-domain-kit
 
-```txt
-rapier-physics-domain-kit
-```
+runtime-implied:
+  prehistoric-static-shell-kit
+  prehistoric-runtime-entry-kit
+  prehistoric-legacy-visual-runtime-kit
+  prehistoric-raptor-visual-rig-kit
+  prehistoric-terrain-streaming-kit
+  prehistoric-contact-check-kit
+  prehistoric-scene-dispatch-kit
+  prehistoric-hud-dom-render-kit
+  prehistoric-close-camera-apply-kit
 
-Runtime-implied product kits:
-
-```txt
-prehistoric-static-shell-kit
-prehistoric-runtime-entry-kit
-prehistoric-legacy-visual-runtime-kit
-prehistoric-raptor-visual-rig-kit
-prehistoric-terrain-streaming-kit
-prehistoric-contact-check-kit
-prehistoric-scene-dispatch-kit
-prehistoric-hud-dom-render-kit
-prehistoric-close-camera-apply-kit
-```
-
-Next-cut repo-local kits:
-
-```txt
-prehistoric-rush-runner-source-state-kit
-prehistoric-rush-runner-step-delta-kit
-prehistoric-rush-runner-moved-event-kit
-prehistoric-rush-dino-event-bridge-kit
-prehistoric-rush-dino-pose-frame-kit
-prehistoric-rush-camera-frame-request-kit
-prehistoric-rush-hud-frame-request-kit
-prehistoric-rush-contact-result-snapshot-kit
-prehistoric-rush-scene-dispatch-result-kit
-prehistoric-rush-render-readback-kit
-prehistoric-rush-presentation-frame-record-kit
-prehistoric-rush-presentation-journal-kit
-prehistoric-rush-host-presentation-snapshot-kit
-prehistoric-rush-dom-free-presentation-fixture-kit
+next-cut:
+  prehistoric-rush-runner-source-state-kit
+  prehistoric-rush-runner-step-delta-kit
+  prehistoric-rush-runner-moved-event-kit
+  prehistoric-rush-dino-event-bridge-kit
+  prehistoric-rush-dino-pose-frame-kit
+  prehistoric-rush-camera-frame-request-kit
+  prehistoric-rush-hud-frame-request-kit
+  prehistoric-rush-contact-result-snapshot-kit
+  prehistoric-rush-scene-dispatch-result-kit
+  prehistoric-rush-render-readback-kit
+  prehistoric-rush-presentation-frame-record-kit
+  prehistoric-rush-presentation-journal-kit
+  prehistoric-rush-host-presentation-snapshot-kit
+  prehistoric-rush-dom-free-presentation-fixture-kit
 ```
 
 ## Main finding
 
-The current bottleneck is not the dinosaur model, camera, terrain, physics, or HUD. The bottleneck is that live behavior is still direct mutable app state plus direct presentation mutation, while the domain scaffold already has the first consumer waiting: `dino-pose-domain-kit` can consume `runner.moved` once the live route emits it as a stable record.
+The primary remaining source gap is implementation of the pure `src/presentation/*` files, additive host projection, and DOM-free fixture.
 
-The next implementation must add pure `src/presentation/*` source/projection files, additive host projection, and a DOM-free fixture before movement extraction, renderer extraction, terrain extraction, or ProtoKit promotion.
+The first useful cut is the consumer bridge from live app state to `runner.moved`, because it activates the existing `dino-pose-domain-kit` instead of creating another parallel animation path.
+
+## Next safe ledge
+
+```txt
+PrehistoricRush Presentation Event Bridge Consumer Contract + Host Projection Fixture Gate
+```
