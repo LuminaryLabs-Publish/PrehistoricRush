@@ -1,27 +1,27 @@
 {
   "id": "prehistoric-rush-agent-kit-registry",
   "repository": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-09T06-10-35-04-00",
+  "updated": "2026-07-09T09-02-44-04-00",
   "branchTarget": "main",
-  "latestTracker": ".agent/trackers/2026-07-09T06-10-35-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T06-10-35-04-00.md",
-  "status": "presentation-event-readback-host-projection-fixture-freeze-planned",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T06-10-35-04-00-presentation-event-readback-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-09T06-10-35-04-00-host-presentation-render-readback.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T06-10-35-04-00-runner-moved-consumer-loop.md",
-  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T06-10-35-04-00-host-projection-fixture-freeze.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T06-10-35-04-00-dom-free-fixture-wire-map.md",
-  "previousTracker": ".agent/trackers/2026-07-09T03-10-05-04-00/project-breakdown.md",
-  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T03-10-05-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-09T09-02-44-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-09T09-02-44-04-00.md",
+  "status": "host-state-event-bridge-presentation-fixture-gate-planned",
+  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-dsk-map.md",
+  "latestRenderAudit": ".agent/render-audit/2026-07-09T09-02-44-04-00-presentation-render-readback-host-map.md",
+  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-09T09-02-44-04-00-runner-moved-fixture-loop.md",
+  "latestSystemAudit": ".agent/presentation-authority-audit/2026-07-09T09-02-44-04-00-host-state-event-bridge-contract.md",
+  "latestDeployAudit": ".agent/deploy-audit/2026-07-09T09-02-44-04-00-dom-free-presentation-fixture-gate.md",
+  "previousTracker": ".agent/trackers/2026-07-09T06-10-35-04-00/project-breakdown.md",
+  "previousTurnLedger": ".agent/turn-ledger/2026-07-09T06-10-35-04-00.md",
   "selection": {
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush selected because it was the oldest eligible central-ledger fallback after same-day catch-up passes; presentation event readback remains unresolved."
+    "reason": "PrehistoricRush selected because it had the oldest eligible central-ledger timestamp among checked non-excluded Publish repos; host-state event bridge proof remains unresolved."
   },
   "currentRepoLocalKits": [
     {
       "id": "domain-runtime/event-bus",
       "path": "src/domain-runtime/event-bus.js",
-      "status": "present_needs_runner_contact_scene_presentation_events",
+      "status": "present_needs_live_runner_contact_scene_presentation_events",
       "role": "event history and publish/subscribe scaffold"
     },
     {
@@ -82,94 +82,65 @@
   ],
   "runtimeImpliedKits": [
     "prehistoric-static-shell-kit",
-    "prehistoric-runtime-entry-kit",
-    "prehistoric-legacy-visual-runtime-kit",
-    "prehistoric-raptor-visual-rig-kit",
-    "prehistoric-terrain-streaming-kit",
-    "prehistoric-contact-check-kit",
-    "prehistoric-scene-dispatch-kit",
-    "prehistoric-hud-dom-render-kit",
-    "prehistoric-close-camera-apply-kit"
+    "runner-input-kit",
+    "runner-motion-kit",
+    "runner-terrain-stream-kit",
+    "runner-spawn-population-kit",
+    "runner-contact-kit",
+    "runner-scene-dispatch-kit",
+    "runner-score-kit",
+    "raptor-render-adapter-kit",
+    "presentation-camera-consumer-kit",
+    "presentation-hud-consumer-kit",
+    "render-readback-kit",
+    "host-state-projection-kit"
   ],
-  "firstMissingProtoKit": "run-movement-kit",
-  "nextRepoLocalExtractionCandidates": [
-    "prehistoric-rush-runner-source-state-kit",
-    "prehistoric-rush-runner-step-delta-kit",
-    "prehistoric-rush-runner-moved-event-kit",
-    "prehistoric-rush-dino-event-bridge-kit",
-    "prehistoric-rush-dino-pose-frame-kit",
-    "prehistoric-rush-camera-frame-request-kit",
-    "prehistoric-rush-hud-frame-request-kit",
-    "prehistoric-rush-contact-result-snapshot-kit",
-    "prehistoric-rush-scene-dispatch-result-kit",
-    "prehistoric-rush-render-readback-kit",
-    "prehistoric-rush-presentation-frame-record-kit",
-    "prehistoric-rush-presentation-journal-kit",
-    "prehistoric-rush-host-presentation-snapshot-kit",
-    "prehistoric-rush-dom-free-presentation-fixture-kit",
-    "prehistoric-rush-action-frame-contract-kit",
-    "prehistoric-rush-action-acceptance-matrix-kit",
-    "prehistoric-rush-action-result-journal-kit",
-    "prehistoric-rush-runner-step-result-kit",
-    "prehistoric-rush-runner-event-journal-kit",
-    "prehistoric-rush-replay-parity-smoke-kit",
-    "prehistoric-rush-runtime-source-bundle-kit",
-    "prehistoric-rush-manifest-load-status-kit",
-    "prehistoric-rush-run-movement-promotion-report-kit"
+  "nextCutKits": [
+    {
+      "id": "runner-source-state-kit",
+      "plannedPath": "src/presentation/runner-source-state.js",
+      "role": "project legacy app.state into stable source records"
+    },
+    {
+      "id": "runner-step-delta-kit",
+      "plannedPath": "src/presentation/runner-step-delta.js",
+      "role": "derive frame-to-frame movement facts"
+    },
+    {
+      "id": "runner-moved-event-kit",
+      "plannedPath": "src/presentation/runner-moved-event.js",
+      "role": "emit payload consumed by dino-pose-domain-kit"
+    },
+    {
+      "id": "presentation-frame-record-kit",
+      "plannedPath": "src/presentation/presentation-frame-record.js",
+      "role": "bundle dino pose, camera, HUD, contact, scene, and render readback"
+    },
+    {
+      "id": "presentation-journal-kit",
+      "plannedPath": "src/presentation/presentation-journal.js",
+      "role": "bounded presentation proof history"
+    },
+    {
+      "id": "host-presentation-snapshot-kit",
+      "plannedPath": "src/presentation/host-presentation-snapshot.js",
+      "role": "additive PrehistoricRushHost.getState().presentation projection"
+    }
   ],
-  "requiredFrameContract": [
-    "RunnerSourceState",
-    "RunnerStepDelta",
-    "RunnerMovedEvent",
-    "runner.moved",
-    "dino.pose.changed",
-    "DinoPoseFrame",
-    "CameraFrameRequest",
-    "HudFrameRequest",
-    "ContactResultSnapshot",
-    "SceneDispatchResult",
-    "RenderReadback",
-    "PresentationFrameRecord",
-    "PresentationJournalSnapshot",
-    "PrehistoricRushHost.getState().presentation"
+  "fixtureRowsNeeded": [
+    "menu_idle",
+    "game_first_movement_frame",
+    "turn_left",
+    "turn_right",
+    "boost",
+    "jump_start",
+    "jump_recover",
+    "shard_pickup",
+    "collision_run_over",
+    "win_threshold",
+    "render_readback_unchanged",
+    "host_legacy_fields_unchanged"
   ],
-  "sourceWireMapFilesToAddNext": [
-    "src/presentation/runner-source-state.js",
-    "src/presentation/runner-step-delta.js",
-    "src/presentation/runner-moved-event.js",
-    "src/presentation/presentation-events.js",
-    "src/presentation/dino-pose-frame.js",
-    "src/presentation/camera-frame-request.js",
-    "src/presentation/hud-frame-request.js",
-    "src/presentation/contact-result-snapshot.js",
-    "src/presentation/scene-dispatch-result.js",
-    "src/presentation/render-readback.js",
-    "src/presentation/presentation-frame-record.js",
-    "src/presentation/presentation-journal.js",
-    "src/presentation/host-presentation-snapshot.js",
-    "scripts/prehistoric-rush-presentation-frame-fixture.mjs"
-  ],
-  "fixtureRows": [
-    "01_runner_source_state_projects_current_app_state",
-    "02_runner_step_delta_reports_noop_in_menu",
-    "03_game_scene_runner_source_emits_runner_moved",
-    "04_runner_moved_feeds_dino_pose_domain",
-    "05_dino_pose_frame_matches_current_stride_inputs",
-    "06_camera_frame_request_matches_close_camera_visual_policy",
-    "07_hud_frame_request_matches_readability_hud_descriptor",
-    "08_hazard_contact_result_records_run_over_reason",
-    "09_pickup_contact_result_records_shard_reason",
-    "10_scene_dispatch_result_records_menu_game_run_over_win",
-    "11_render_readback_reports_current_renderer_camera_hud_dino_paths",
-    "12_presentation_frame_record_journals_all_subrecords",
-    "13_host_get_state_exposes_presentation_snapshot",
-    "14_dom_free_fixture_replays_source_to_presentation_chain",
-    "15_renderer_output_unchanged_by_contract_layer",
-    "16_legacy_runtime_remains_playable_during_cutover",
-    "17_event_bus_recent_history_contains_runner_and_pose_events",
-    "18_host_projection_keeps_legacy_state_fields_unchanged",
-    "19_central_ledger_points_to_latest_repo_local_tracker"
-  ],
-  "nextSafeLedge": "PrehistoricRush Presentation Event Readback + Host Projection Fixture Freeze",
+  "nextSafeLedge": "PrehistoricRush Host-State Event Bridge + Presentation Fixture Gate",
   "promotionRule": "Keep behavior repo-local until DOM-free fixture proof shows a stable reusable API candidate. Promote to ProtoKits only after proof."
 }
