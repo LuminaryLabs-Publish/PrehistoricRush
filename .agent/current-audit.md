@@ -2,20 +2,20 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-08T19-30-31-04-00`
+**Updated:** `2026-07-08T21-40-45-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a standalone static browser infinite runner with a repo-local DSK scaffold in `src/game.js` and a live terrain/raptor route in `src/runtime-terrain-v6.mjs`.
 
-The next implementation should not rewrite visuals. It should add the missing presentation authority consumer layer: source-state projection, movement-event projection, dino pose event readback, camera/HUD frame requests, contact/scene result records, render readback, presentation journal, host projection, and DOM-free fixture replay.
+The next implementation should not rewrite visuals. It should add the missing presentation consumer source-manifest layer: source-state projection, movement delta, runner.moved emission, dino pose event readback, camera/HUD frame requests, contact/scene result records, render readback, presentation journal, host projection, and DOM-free fixture replay.
 
 ## Selection result
 
 ```txt
 No checked non-excluded Publish repo was fully new, absent from the central ledger, undocumented, recently added but undocumented, or missing sampled root .agent/START_HERE.md state.
 
-PrehistoricRush was selected as the oldest eligible fallback because its sampled repo-local alignment was 2026-07-08T16-51-11-04-00, older than the other checked non-Cavalry repo-local alignments.
+PrehistoricRush was selected as the oldest eligible fallback because its central alignment was 2026-07-08T19-30-31-04-00, older than the other checked non-Cavalry repo alignments after later catch-up passes.
 ```
 
 ## Current route
@@ -44,6 +44,8 @@ src/game.js exposes globalThis.PrehistoricRushComposition.snapshot().
 src/game.js imports ./runtime-terrain-v6.mjs after emitting composition.ready.
 src/game.js directly applies styleHud, renderHud, applyCloseCamera, applyReadableStride, and renderer.render in startPresentationPass().
 dino-pose-domain-kit already listens for runner.moved and emits dino.pose.changed, but the live runtime does not yet emit runner.moved.
+camera-domain-kit exposes a close-third-person descriptor.
+hud-domain-kit exposes a readability HUD descriptor and pure render projection.
 runtime-terrain-v6.mjs imports Three.js, Rapier, and rapier-physics-domain-kit from CDN.
 runtime-terrain-v6.mjs contains terrain sampling, terrain chunk rebuilds, raptor visual rig construction, pose animation, DOM shell creation, input, movement, contacts, scene mutation, baseline HUD/camera, and render behavior.
 runtime-terrain-v6.mjs exposes PrehistoricRushHost.getState() with scene, runner, physics, terrain, and renderer data.
@@ -56,7 +58,7 @@ No package.json exists in the repo root, so validation must not assume npm scrip
 page load
   -> runtime entry imports game composition
   -> composition installs dino, camera, and HUD domain scaffold
-  -> legacy visual runner loads
+  -> legacy visual terrain runner loads
   -> menu scene waits for start input
   -> game scene mutates live runner state
   -> raw keyboard/button input drives turn, jump, and boost behavior
@@ -213,7 +215,7 @@ createRenderReadback
 createPresentationFrameRecord
 appendPresentationJournalEntry
 projectHostPresentationSnapshot
-runPresentationFrameFixture
+runPresentationConsumerFixture
 ```
 
 ## Kits identified
@@ -273,6 +275,6 @@ prehistoric-rush-dom-free-presentation-fixture-kit
 
 ## Main finding
 
-The current bottleneck is not the dinosaur model, camera, terrain, or HUD. The bottleneck is that live behavior is still direct mutable app state plus direct presentation mutation, while the domain scaffold already has the right first consumer waiting: `dino-pose-domain-kit` can consume `runner.moved` once the live route emits it as a stable record.
+The current bottleneck is not the dinosaur model, camera, terrain, physics, or HUD. The bottleneck is that live behavior is still direct mutable app state plus direct presentation mutation, while the domain scaffold already has the first consumer waiting: `dino-pose-domain-kit` can consume `runner.moved` once the live route emits it as a stable record.
 
 The next implementation must add pure `src/presentation/*` source/projection files, additive host projection, and a DOM-free fixture before movement extraction, renderer extraction, terrain extraction, or ProtoKit promotion.
