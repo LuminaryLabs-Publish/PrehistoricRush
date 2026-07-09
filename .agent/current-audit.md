@@ -2,13 +2,13 @@
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
-**Updated:** `2026-07-09T11-46-08-04-00`
+**Updated:** `2026-07-09T12-00-36-04-00`
 
 ## Summary
 
 `PrehistoricRush` is a static browser infinite runner that currently combines a small repo-local DSK scaffold in `src/game.js` with a live monolithic Three.js/Rapier route in `src/runtime-terrain-v6.mjs`.
 
-This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a host-presentation event ledger that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable.
+This pass keeps implementation source unchanged and refreshes the next implementation boundary: add a host presentation readback gate that makes movement, pose, camera, HUD, contact, scene, render, and presentation host state fixture-readable. The central ledger was stale versus repo-local `.agent` state, so this run also makes central tracking explicit.
 
 ## Selection result
 
@@ -29,7 +29,7 @@ index.html
   -> src/runtime-terrain-v6.mjs
 ```
 
-`index.html` is a static shell that loads `src/runtime.mjs`. `src/runtime.mjs` imports `src/game.js`. `src/game.js` installs the DSK scaffold and then imports `runtime-terrain-v6.mjs`.
+`index.html` is a static shell that loads `src/runtime.mjs`. `src/runtime.mjs` imports `src/game.js`. `src/game.js` installs the repo-local DSK scaffold and then imports `runtime-terrain-v6.mjs`.
 
 ## Interaction loop
 
@@ -83,6 +83,7 @@ scene-dispatch-domain
 score-state-domain
 host-readback-domain
 presentation-event-ledger-domain
+presentation-frame-record-domain
 presentation-fixture-target-domain
 central-ledger-sync-domain
 ```
@@ -151,14 +152,36 @@ render-readback-kit
 host-state-projection-kit
 ```
 
+### Next-cut proof kits
+
+```txt
+runner-source-state-kit
+runner-step-delta-kit
+runner-moved-event-kit
+presentation-events-kit
+dino-pose-frame-kit
+camera-frame-request-kit
+hud-frame-request-kit
+contact-result-snapshot-kit
+scene-dispatch-result-kit
+render-readback-kit
+presentation-frame-record-kit
+presentation-journal-kit
+host-presentation-snapshot-kit
+dom-free-presentation-fixture-kit
+central-ledger-readback-kit
+```
+
 ## Main blocker
 
 `dino-pose-domain-kit` already listens to `runner.moved`, but the live runtime does not emit `runner.moved`. The visible runner state mutates directly in `runtime-terrain-v6.mjs`, and the presentation pass reads that mutable host state after the fact.
 
+The immediate blocker is proof continuity: the repo can show a playable runner, but it cannot yet prove that the live runner state produced source records, emitted movement events, fed the pose kit, produced camera/HUD frame requests, captured contact/scene decisions, produced render readback, and exposed all of that through `PrehistoricRushHost.getState().presentation`.
+
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Host Presentation Event Ledger + DOM-Free Fixture Gate
+PrehistoricRush Host Presentation Readback Central Catch-up + DOM-Free Fixture Gate
 ```
 
 ## Not changed
