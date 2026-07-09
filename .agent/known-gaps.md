@@ -1,50 +1,80 @@
-# PrehistoricRush Known Gaps
+# Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-09T18-11-58-04-00`
+**Updated:** `2026-07-09T19-29-23-04-00`
 
-## Highest-priority gaps
+## Source and event gaps
 
 ```txt
-1. src/game.js installs dino, camera, and HUD domain scaffolds, but the live runner still does not emit stable runner movement facts.
-2. dino-pose-domain-kit already listens for runner.moved, but runtime-terrain-v6.mjs does not yet emit runner.moved from live state changes.
-3. There is no RunnerSourceState record projected from current app.state.
-4. There is no RunnerStepDelta record that compares previous runner source state against current runner source state.
-5. There is no RunnerMovedEvent record consumed by the existing dino pose kit.
-6. src/game.js can read PrehistoricRushHost.app, but it does not snapshot RunnerSourceState before applying direct presentation mutations.
-7. applyCloseCamera still directly mutates the Three.js camera and does not leave behind a CameraFrameRequest.
-8. renderHud still directly writes DOM and does not leave behind a HudFrameRequest.
-9. applyReadableStride directly mutates the raptor rig and does not leave behind a DinoPoseFrame or pose consumer readback.
-10. Contact checks still mutate scene/shards inline without a ContactResultSnapshot.
-11. Scene dispatch still mutates menu/game/run-over/win inline without a SceneDispatchResult.
-12. PrehistoricRushHost.getState() lacks a nested presentation snapshot.
-13. Render readback is only the string renderer field, not structured frame consumption evidence.
-14. The event bus records composition.ready and can record runner.moved, but the live loop does not feed it presentation events.
-15. No DOM-free fixture proves menu idle, first movement, turning, boost, jump, pickup, collision, win, render readback, or host legacy-field compatibility.
-16. There is no root package.json, so there is no package-script validation contract yet.
+no RunnerSourceState module
+no RunnerStepDelta module
+no RunnerMovedEvent module
+runtime-terrain-v6 does not emit runner.moved
+live raptor pose bypasses dino-pose-domain-kit
+movement has no accepted/rejected/result row
+jump/contact/pickup/scene transitions have no reason codes
 ```
 
-## Non-gaps for this pass
+## Presentation gaps
 
 ```txt
-The static route exists.
-The game is playable.
-The raptor visual exists.
-The terrain stream exists.
-Five tree pool types exist.
-Rapier bridge/fallback path exists.
-The close-camera/HUD presentation pass exists.
-The DSK scaffold exists.
-The current problem is not lack of visuals.
+src/game.js applies readable stride directly to the rig
+src/game.js applies close camera directly to the camera
+src/game.js rewrites HUD DOM directly
+src/game.js submits a second renderer frame
+no DinoPoseFrame record
+no CameraFrameRequest record
+no HudFrameRequest record
+no PresentationFrameRecord
+no PresentationJournalSnapshot
 ```
 
-## Do not fix first
+## Host readback gaps
 
 ```txt
-Do not start with new art.
-Do not start with terrain rewrite.
-Do not start with movement rewrite.
-Do not start with renderer extraction.
-Do not start with ProtoKit promotion.
-Do not start with collision feel tuning.
-Do not start with a new package script before the DOM-free fixture contract exists.
+PrehistoricRushHost.getState() has no presentation object
+no latest presentation frame
+no recent presentation frames
+no event counts
+no render readback
+no fixture contract metadata
+```
+
+## Render gaps
+
+```txt
+baseline runtime render has no render-readback row
+secondary presentation render has no render-readback row
+no stable frame id shared between movement, pose, camera, HUD, and render
+no serialized instanced count summary per frame
+```
+
+## Gameplay proof gaps
+
+```txt
+contact resolution is not represented as ContactResultSnapshot
+pickup collection is not represented as result rows
+win/run-over scene changes are direct scene mutation
+best distance localStorage update has no proof row
+```
+
+## Validation gaps
+
+```txt
+no root package.json found
+no npm run check
+no DOM-free presentation fixture
+no browser smoke in this pass
+no GitHub Pages smoke in this pass
+```
+
+## Do not solve these first
+
+```txt
+visual expansion
+terrain rewrite
+movement tuning
+renderer extraction
+new pickups
+new obstacle set
+ProtoKit promotion
 ```
