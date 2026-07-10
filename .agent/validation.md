@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T10-38-55-04-00`
+**Updated:** `2026-07-10T12-10-27-04-00`
 
 ## This pass
 
@@ -23,7 +23,7 @@ npm run check: not run
 npm test: not run
 browser smoke: not run
 GitHub Pages smoke: not run
-DOM-free runner event fixture: not run
+DOM-free runner presentation fixture: not run
 ```
 
 ## Why validation did not run
@@ -36,16 +36,16 @@ The repo currently needs these before a meaningful local validation command exis
 
 ```txt
 src/presentation/* source modules
-scripts/prehistoric-rush-runner-event-fixture.mjs
+scripts/prehistoric-rush-runner-presentation-fixture.mjs
 root package.json or equivalent validation script
 ```
 
 ## Next validation target
 
-After implementing the runner event bridge, validate with:
+After implementing the runner presentation source ledger, validate with:
 
 ```txt
-node scripts/prehistoric-rush-runner-event-fixture.mjs
+node scripts/prehistoric-rush-runner-presentation-fixture.mjs
 ```
 
 If a package script is added later, use:
@@ -57,5 +57,5 @@ npm run check
 ## Current ledge
 
 ```txt
-PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate
+PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
