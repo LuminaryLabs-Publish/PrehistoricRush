@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T13-30-15-04-00`
+**Updated:** `2026-07-10T14-59-00-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
 
 ## Why this comes next
@@ -14,11 +14,14 @@ The project already has a useful DSK wrapper, an event bus, a domain host, and a
 
 The live runtime does not emit `runner.moved` yet, does not retain input or movement result rows, and does not expose presentation proof through `PrehistoricRushHost.getState()`.
 
+The next pass should add shared frame identity before visual changes, because otherwise rows can exist but still fail to prove which input/movement state produced a rendered frame.
+
 ## Implementation order
 
 1. Add pure runner/presentation source modules.
 
 ```txt
+src/presentation/frame-id.js
 src/presentation/presentation-events.js
 src/presentation/runner-source-state.js
 src/presentation/runner-step-delta.js
@@ -41,13 +44,14 @@ src/presentation/host-presentation-snapshot.js
 2. Add the DOM-free fixture.
 
 ```txt
-scripts/prehistoric-rush-runner-source-event-fixture.mjs
+scripts/prehistoric-rush-frame-correlation-fixture.mjs
 ```
 
 3. Wire runtime movement to source records without changing game feel.
 
 ```txt
 runtime current state
+  -> FrameId / SourceFrameId
   -> RunnerSourceState
   -> RunnerStepDelta
   -> InputResultRow
@@ -84,9 +88,10 @@ rock/tree contact to run-over
 shard pickup
 win threshold
 best distance write
+baseline render readback
+secondary presentation render readback
 legacy host shape preserved
 presentation pass does not erase source frame ids
-render readback row shape
 ```
 
 ## Stop conditions
