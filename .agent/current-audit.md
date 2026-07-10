@@ -1,12 +1,14 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-09T23-58-41-04-00`
+**Updated:** `2026-07-10T01-31-29-04-00`
 
 ## Summary
 
-`PrehistoricRush` is playable and has a useful DSK wrapper, but the live runner still bypasses event proof.
+`PrehistoricRush` is playable and has a useful DSK wrapper, but the live runner still bypasses movement event proof.
 
-`src/game.js` installs the repo-local event bus, domain host, scheduler, dino, camera, and HUD kits. `src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, and renderer.
+`src/game.js` installs the repo-local event bus, domain host, scheduler, dino, camera, and HUD kits.
+
+`src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, and host projection.
 
 ## Current route
 
@@ -37,9 +39,55 @@ runtime-terrain-v6
   -> expose PrehistoricRushHost.getState()
 ```
 
+## Domains in use
+
+```txt
+static-browser-shell
+runtime-entry
+composition-entry
+event-bus
+domain-host
+tick-scheduler
+dino-form
+dino-pose
+dino-material
+camera-domain
+hud-domain
+legacy-visual-runtime
+three-cdn-runtime
+rapier-cdn-runtime
+rapier-physics-domain-kit
+menu-scene
+game-scene
+run-over-scene
+win-scene
+keyboard-input
+runner-motion
+runner-turn-yaw
+runner-jump-gravity
+runner-terrain-stream
+runner-spawn-population
+runner-contact
+runner-pickup
+runner-score
+best-distance-storage
+raptor-render-adapter
+presentation-camera-consumer
+presentation-hud-consumer
+presentation-raptor-stride-consumer
+render-submission
+host-state-projection
+movement-event-readback-next
+presentation-journal-next
+dom-free-presentation-fixture-next
+central-ledger-sync
+```
+
 ## Important source fact
 
-`dino-pose-domain-kit` already listens for `runner.moved` and emits `dino.pose.changed`. The live runner does not emit `runner.moved`; it computes and applies raptor animation directly.
+`dino-pose-domain-kit` already listens for `runner.moved` and emits `dino.pose.changed`.
+
+The live runner does not emit `runner.moved`; it computes and applies raptor animation directly.
 
 ## Main gap
 
@@ -58,6 +106,7 @@ HudFrameRequest
 ContactResultSnapshot
 PickupResultSnapshot
 SceneDispatchResult
+BestDistanceResult
 RenderReadback
 PresentationFrameRecord
 PresentationJournalSnapshot
@@ -82,21 +131,13 @@ It does not expose:
 presentation.latestFrame
 presentation.recentFrames
 presentation.eventCounts
-presentation.runnerMovedEvents
+presentation.movementRows
+presentation.renderReadback
 presentation.fixtureContract
 ```
 
-## Latest audits
+## Current ledge
 
 ```txt
-.agent/trackers/2026-07-09T23-58-41-04-00/project-breakdown.md
-.agent/architecture-audit/2026-07-09T23-58-41-04-00-movement-event-journal-dsk-map.md
-.agent/render-audit/2026-07-09T23-58-41-04-00-presentation-render-readback-gap.md
-.agent/gameplay-audit/2026-07-09T23-58-41-04-00-runner-movement-result-loop.md
-.agent/presentation-authority-audit/2026-07-09T23-58-41-04-00-event-journal-host-contract.md
-.agent/deploy-audit/2026-07-09T23-58-41-04-00-dom-free-movement-fixture-gate.md
+PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
 ```
-
-## Recommendation
-
-Implement the movement event journal and DOM-free presentation fixture before touching movement feel, terrain generation, visual fidelity, renderer extraction, or shared ProtoKit promotion.
