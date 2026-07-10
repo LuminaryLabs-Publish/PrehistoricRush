@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T12-10-27-04-00`
+**Updated:** `2026-07-10T13-30-15-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
 ```
 
 ## Why this comes next
@@ -41,7 +41,7 @@ src/presentation/host-presentation-snapshot.js
 2. Add the DOM-free fixture.
 
 ```txt
-scripts/prehistoric-rush-runner-presentation-fixture.mjs
+scripts/prehistoric-rush-runner-source-event-fixture.mjs
 ```
 
 3. Wire runtime movement to source records without changing game feel.
