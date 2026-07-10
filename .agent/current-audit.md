@@ -1,14 +1,14 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T10-38-55-04-00`
+**Updated:** `2026-07-10T12-10-27-04-00`
 
 ## Summary
 
-`PrehistoricRush` is playable and has a useful repo-local DSK wrapper, but the live runner still bypasses runner-event and host-readback proof.
+`PrehistoricRush` is playable and has a useful repo-local DSK wrapper, but the live runner still bypasses source-owned event/result rows and host presentation readback.
 
-`src/game.js` installs the event bus, domain host, scheduler, dino, camera, and HUD kits. It also runs a second presentation pass.
+`src/game.js` installs the event bus, domain host, scheduler, dino, camera, and HUD kits. It also runs a second presentation pass that directly changes stride, camera, HUD, and render submission.
 
-`src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, host projection, and best-distance storage.
+`src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, host projection, and best-distance storage inline.
 
 ## Current route
 
@@ -79,6 +79,7 @@ presentation-hud-consumer
 presentation-raptor-stride-consumer
 secondary-render-submission
 host-state-projection
+runner-source-ledger-next
 runner-event-proof-next
 input-result-journal-next
 movement-result-journal-next
@@ -109,10 +110,10 @@ rapier-physics-domain-kit: Rapier world bridge, kinematic actor, contact snapsho
 
 ## Main finding
 
-The route should not be visually expanded next. The safe ledge is a presentation proof ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
+The route should not be visually expanded next. The safe ledge is a runner presentation source ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate
+PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
