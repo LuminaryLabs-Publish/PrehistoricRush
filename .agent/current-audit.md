@@ -1,6 +1,6 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T06-21-03-04-00`
+**Updated:** `2026-07-10T07-50-29-04-00`
 
 ## Summary
 
@@ -8,7 +8,7 @@
 
 `src/game.js` installs the repo-local event bus, domain host, scheduler, dino, camera, and HUD kits. It also runs a second presentation pass.
 
-`src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, and host projection.
+`src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, host projection, and best-distance storage.
 
 ## Current route
 
@@ -80,6 +80,7 @@ presentation-raptor-stride-consumer
 secondary-render-submission
 host-state-projection
 runner-event-proof-next
+input-result-journal-next
 movement-result-journal-next
 presentation-frame-journal-next
 host-readback-next
@@ -87,15 +88,30 @@ dom-free-runner-fixture-next
 central-ledger-sync
 ```
 
+## Kit services
+
+```txt
+event-bus-kit: on, emit, snapshot, recent event history.
+domain-host-kit: install, get, tick, snapshot.
+tick-scheduler-kit: start, stop, host tick bridge, scheduler snapshot.
+dino-form-domain-kit: raptor proportions, silhouette descriptor, feature-set descriptor, snapshot.
+dino-pose-domain-kit: runner.moved consumer, dino.pose.changed emitter, pose update, getDescriptor, snapshot.
+dino-material-domain-kit: palette descriptor, style descriptor, snapshot.
+camera-domain-kit: close third-person camera preset, getDescriptor, snapshot.
+hud-domain-kit: target distance, progress, HUD model render, getDescriptor, snapshot.
+rapier-physics-domain-kit: Rapier world bridge, kinematic actor, contact snapshot.
+runtime-implied kits: shell, input, motion, terrain stream, spawn population, contact, pickup, scene dispatch, score, best distance, raptor render adapter, presentation consumers, render submission, and host state projection.
+```
+
 ## Important source fact
 
 `dino-pose-domain-kit` already listens for `runner.moved` and emits `dino.pose.changed`.
 
-The live runner does not emit `runner.moved`; it computes and applies movement, raptor animation, camera, HUD, scene, and render state directly.
+The live runner does not emit `runner.moved`; it computes and applies movement, raptor animation, camera, HUD, scene, storage, and render state directly.
 
 ## Main gap
 
-The route needs runner event and host presentation readback proof, not visual expansion.
+The route needs runner-event journal and host presentation readback proof, not visual expansion.
 
 Missing proof layer:
 
@@ -103,6 +119,7 @@ Missing proof layer:
 RunnerSourceState
 RunnerStepDelta
 RunnerMovedEvent
+InputResultRow
 MovementResultRow
 DinoPoseFrame
 CameraFrameRequest
@@ -135,6 +152,7 @@ It does not expose:
 presentation.latestFrame
 presentation.recentFrames
 presentation.eventCounts
+presentation.inputRows
 presentation.movementRows
 presentation.contactRows
 presentation.pickupRows
@@ -147,5 +165,5 @@ presentation.fixtureContract
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
 ```
