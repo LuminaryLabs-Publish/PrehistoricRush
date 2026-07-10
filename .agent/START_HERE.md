@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T01-31-29-04-00`
+**Last aligned:** `2026-07-10T02-51-39-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,31 +9,31 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
+PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T01-31-29-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T01-31-29-04-00.md
+.agent/trackers/2026-07-10T02-51-39-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T02-51-39-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T01-31-29-04-00-movement-event-readback-dsk-map.md
-.agent/render-audit/2026-07-10T01-31-29-04-00-presentation-render-readback-catchup.md
-.agent/gameplay-audit/2026-07-10T01-31-29-04-00-runner-event-result-loop.md
-.agent/presentation-authority-audit/2026-07-10T01-31-29-04-00-host-presentation-journal-contract.md
-.agent/deploy-audit/2026-07-10T01-31-29-04-00-dom-free-presentation-fixture-gate.md
+.agent/architecture-audit/2026-07-10T02-51-39-04-00-runner-moved-host-journal-dsk-map.md
+.agent/render-audit/2026-07-10T02-51-39-04-00-presentation-render-journal-gap.md
+.agent/gameplay-audit/2026-07-10T02-51-39-04-00-runner-moved-event-fixture-loop.md
+.agent/presentation-authority-audit/2026-07-10T02-51-39-04-00-host-journal-readback-contract.md
+.agent/deploy-audit/2026-07-10T02-51-39-04-00-dom-free-runner-event-fixture-gate.md
 ```
 
 ## What this repo is
 
 `PrehistoricRush` is a static browser infinite runner.
 
-The repo has a useful DSK wrapper around the live runner, but the live runner still bypasses the event-proof path.
+The repo has a useful event-bus/domain-host DSK wrapper around the live runner, but the live runner still bypasses the event-proof path.
 
 ## Current interaction loop
 
@@ -43,6 +43,7 @@ index.html
   -> src/game.js
   -> createEventBus / createDomainHost / createTickScheduler
   -> install dino form, dino pose, dino material, camera, and HUD domain kits
+  -> dino-pose-domain-kit subscribes to runner.moved
   -> emit composition.ready
   -> import src/runtime-terrain-v6.mjs
   -> load Three.js 0.179.1, Rapier 0.15.0, and rapier-physics-domain-kit from CDN
@@ -58,7 +59,7 @@ index.html
 
 Do not start with visual expansion, terrain rewrite, movement retune, renderer extraction, new pickups, or ProtoKit promotion.
 
-The blocker is movement and presentation proof.
+The blocker is runner movement and host presentation proof.
 
 `dino-pose-domain-kit` already listens for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` records.
 
