@@ -7,7 +7,7 @@
 ```txt
 runtime source changed: no
 agent docs changed: yes
-central ledger changed: pending this pass
+central ledger changed: yes
 branch created: no
 pull request created: no
 pushed to main: yes
