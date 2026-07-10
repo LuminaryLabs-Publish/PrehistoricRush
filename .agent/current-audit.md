@@ -1,6 +1,6 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T01-31-29-04-00`
+**Updated:** `2026-07-10T02-51-39-04-00`
 
 ## Summary
 
@@ -25,6 +25,7 @@ index.html
 src/game.js
   -> create event bus, domain host, and tick scheduler
   -> install dino form, dino pose, dino material, camera, and HUD domain kits
+  -> dino-pose-domain-kit subscribes to runner.moved
   -> expose PrehistoricRushComposition.snapshot()
   -> emit composition.ready
   -> import runtime-terrain-v6
@@ -66,6 +67,7 @@ runner-motion
 runner-turn-yaw
 runner-jump-gravity
 runner-terrain-stream
+terrain-height-sampling
 runner-spawn-population
 runner-contact
 runner-pickup
@@ -75,10 +77,11 @@ raptor-render-adapter
 presentation-camera-consumer
 presentation-hud-consumer
 presentation-raptor-stride-consumer
-render-submission
+secondary-render-submission
 host-state-projection
-movement-event-readback-next
+runner-moved-event-proof-next
 presentation-journal-next
+host-journal-readback-next
 dom-free-presentation-fixture-next
 central-ledger-sync
 ```
@@ -91,7 +94,7 @@ The live runner does not emit `runner.moved`; it computes and applies raptor ani
 
 ## Main gap
 
-The route needs movement event proof, not visual expansion.
+The route needs runner movement event proof, not visual expansion.
 
 Missing proof layer:
 
@@ -139,5 +142,5 @@ presentation.fixtureContract
 ## Current ledge
 
 ```txt
-PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
+PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
 ```
