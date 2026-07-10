@@ -1,28 +1,30 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T16-28-47-04-00",
-  "currentLedge": "PrehistoricRush Single Frame Authority + Restart Transaction Fixture Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T16-28-47-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T16-28-47-04-00.md",
+  "updated": "2026-07-10T18-01-03-04-00",
+  "currentLedge": "PrehistoricRush Runtime Dependency Admission + Single-Owner Session Lifecycle Fixture Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T18-01-03-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T18-01-03-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T16-28-47-04-00-runtime-frame-authority-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T16-28-47-04-00-dual-raf-render-authority-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T16-28-47-04-00-restart-scene-lifecycle-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-10T16-28-47-04-00-input-scene-command-authority-map.md",
-    "frameAuthority": ".agent/frame-authority-audit/2026-07-10T16-28-47-04-00-scheduler-live-loop-presentation-pass-contract.md",
-    "sourceContract": ".agent/source-contract-audit/2026-07-10T16-28-47-04-00-manifest-readme-runtime-drift.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T16-28-47-04-00-single-frame-restart-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T18-01-03-04-00-runtime-admission-lifecycle-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T18-01-03-04-00-render-resource-lifetime-observation-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T18-01-03-04-00-session-start-retry-run-again-transaction-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-10T18-01-03-04-00-input-listener-command-lifetime-map.md",
+    "externalKit": ".agent/external-kit-audit/2026-07-10T18-01-03-04-00-cdn-module-admission-provenance-contract.md",
+    "lifecycle": ".agent/lifecycle-audit/2026-07-10T18-01-03-04-00-mount-dispose-remount-ownership-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T18-01-03-04-00-runtime-admission-lifecycle-fixture-gate.md"
   },
-  "currentInteractionLoop": [
+  "interactionLoop": [
     "index.html",
     "src/runtime.mjs",
     "src/game.js composition bootstrap",
     "event bus / domain host / dormant tick scheduler",
-    "dino form / pose / material / camera / HUD kit installation",
-    "src/runtime-terrain-v6.mjs live runtime",
+    "dino form / pose / material / camera / HUD installation",
+    "Three.js / Rapier / external physics kit runtime admission",
+    "runtime-terrain-v6 mount",
     "primary simulation/presentation/render RAF",
-    "src/game.js secondary presentation/render RAF",
-    "PrehistoricRushHost mutable aggregate readback"
+    "secondary presentation/render RAF",
+    "scene-only Start / Retry / Run Again",
+    "mutable PrehistoricRushHost readback"
   ],
   "domains": [
     "static-browser-shell",
@@ -37,7 +39,11 @@
     "dino-material",
     "camera-preset",
     "hud-model",
-    "legacy-visual-runtime",
+    "external-module-resolution",
+    "runtime-dependency-admission",
+    "source-provenance",
+    "required-capability-policy",
+    "degraded-mode-policy",
     "three-cdn-runtime",
     "rapier-cdn-runtime",
     "rapier-physics-domain-kit",
@@ -46,7 +52,14 @@
     "run-over-scene",
     "win-scene",
     "scene-transition-policy",
+    "session-start",
     "restart-lifecycle",
+    "mount-lifecycle",
+    "dispose-lifecycle",
+    "listener-ownership",
+    "raf-ownership",
+    "graphics-resource-lifetime",
+    "physics-resource-lifetime",
     "keyboard-input",
     "button-input",
     "runner-motion",
@@ -73,13 +86,14 @@
     "scene-manifest-contract",
     "readme-product-contract",
     "dom-free-fixture",
+    "static-pages-deploy",
     "central-ledger-sync"
   ],
   "implementedRepoLocalKits": [
     {
       "id": "event-bus-kit",
       "path": "src/domain-runtime/event-bus.js",
-      "services": ["on", "emit", "wildcard dispatch", "recent event snapshot"]
+      "services": ["subscribe", "unsubscribe closure", "emit", "wildcard dispatch", "bounded recent snapshot"]
     },
     {
       "id": "domain-host-kit",
@@ -89,7 +103,7 @@
     {
       "id": "tick-scheduler-kit",
       "path": "src/domain-runtime/tick-scheduler.js",
-      "services": ["start", "stop", "RAF-to-host.tick bridge", "running/frame snapshot"],
+      "services": ["start", "stop flag", "RAF-to-host tick bridge", "frame snapshot"],
       "consumption": "constructed but never started"
     },
     {
@@ -117,25 +131,40 @@
       "id": "camera-domain-kit",
       "path": "src/domains/camera/camera-domain-kit.js",
       "services": ["close-third-person preset", "descriptor", "snapshot"],
-      "consumption": "preset values duplicated by direct presentation code"
+      "consumption": "direct camera constants bypass it"
     },
     {
       "id": "hud-domain-kit",
       "path": "src/domains/hud/hud-domain-kit.js",
-      "services": ["target distance", "progress", "HUD model render", "descriptor", "snapshot"],
-      "consumption": "direct innerHTML path bypasses render service"
+      "services": ["target distance", "progress policy", "HUD model projection", "descriptor", "snapshot"],
+      "consumption": "direct innerHTML bypasses it"
     }
   ],
   "liveExternalKits": [
     {
+      "id": "three-runtime-module",
+      "source": "jsDelivr npm three@0.179.1",
+      "policy": "required in practice, not typed"
+    },
+    {
+      "id": "rapier-runtime-module",
+      "source": "jsDelivr npm @dimforge/rapier3d-compat@0.15.0",
+      "policy": "fallback-capable in practice, not typed"
+    },
+    {
       "id": "rapier-physics-domain-kit",
       "source": "LuminaryLabs-Agents/NexusRealtime-ProtoKits@main CDN",
-      "services": ["Rapier world bridge", "kinematic actor", "fixed colliders", "step", "contacts", "snapshot"]
+      "services": ["world bridge", "Rapier configuration", "kinematic actor", "fixed colliders", "step", "contacts", "snapshot"],
+      "risk": "mutable branch source and legacy repository identity"
     }
   ],
   "runtimeImpliedKits": [
     "prehistoric-static-shell-kit",
     "prehistoric-runtime-entry-kit",
+    "external-module-loader-kit",
+    "runtime-dependency-admission-kit",
+    "source-provenance-kit",
+    "degraded-mode-policy-kit",
     "legacy-runner-runtime-kit",
     "runner-input-kit",
     "runner-motion-kit",
@@ -145,39 +174,33 @@
     "contact-resolution-kit",
     "pickup-collection-kit",
     "scene-dispatch-kit",
-    "restart-lifecycle-kit",
+    "session-start-kit",
+    "restart-transaction-kit",
+    "mount-lifecycle-kit",
+    "dispose-lifecycle-kit",
+    "listener-ownership-kit",
+    "raf-ownership-kit",
+    "graphics-resource-disposal-kit",
+    "physics-resource-disposal-kit",
     "best-distance-storage-kit",
     "raptor-render-adapter-kit",
     "primary-presentation-kit",
     "secondary-presentation-kit",
     "render-submission-kit",
     "host-state-projection-kit",
-    "runtime-source-contract-kit"
-  ],
-  "nextCutKits": [
-    "frame-authority-kit",
-    "frame-phase-contract-kit",
-    "simulation-frame-transaction-kit",
-    "runner-moved-event-kit",
-    "render-request-kit",
-    "render-commit-authority-kit",
-    "scene-transition-result-kit",
-    "restart-transaction-kit",
-    "runtime-source-manifest-kit",
-    "detached-host-snapshot-kit",
-    "frame-authority-fixture-kit",
-    "package-validation-kit"
+    "runtime-source-contract-kit",
+    "runtime-admission-lifecycle-fixture-kit"
   ],
   "nextImplementationFiles": [
+    "src/runtime/runtime-dependency-registry.js",
+    "src/runtime/runtime-dependency-result.js",
+    "src/runtime/runtime-source-provenance.js",
     "src/runtime/frame-authority.js",
-    "src/runtime/frame-transaction.js",
-    "src/runtime/frame-phases.js",
     "src/runtime/render-commit.js",
-    "src/runtime/scene-transition-result.js",
-    "src/runtime/restart-transaction.js",
-    "src/runtime/runtime-source-manifest.js",
+    "src/runtime/session-transaction.js",
+    "src/runtime/runtime-lifecycle.js",
     "src/runtime/host-snapshot.js",
-    "scripts/prehistoric-rush-frame-authority-fixture.mjs"
+    "scripts/prehistoric-rush-runtime-lifecycle-fixture.mjs"
   ],
   "deferredUntilFixture": [
     "visual expansion",
@@ -194,10 +217,12 @@
     "branchCreated": false,
     "pullRequestCreated": false,
     "rootPackageJsonFound": false,
-    "npmValidation": "not run",
+    "npmValidation": "unavailable",
     "browserSmoke": "not run",
-    "domFreeFrameAuthorityFixture": "not available",
-    "restartTransactionFixture": "not available",
+    "runtimeAdmissionFixture": "not available",
+    "singleFrameFixture": "not available",
+    "restartFixture": "not available",
+    "disposeRemountFixture": "not available",
     "targetBranch": "main"
   }
 }
