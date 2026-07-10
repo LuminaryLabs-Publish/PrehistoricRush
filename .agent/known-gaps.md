@@ -1,86 +1,87 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T14-59-00-04-00`
+**Updated:** `2026-07-10T16-28-47-04-00`
 
-## Source and event gaps
+## Frame authority gaps
 
 ```txt
-no FrameId / SourceFrameId module
-no RunnerSourceState module
-no RunnerStepDelta module
-no RunnerMovedEvent module
-no InputResultRow module
-no MovementResultRow module
-runtime-terrain-v6 does not emit runner.moved
-live raptor pose bypasses dino-pose-domain-kit
-eventBus history exists but is not fed by the live runner frame loop
-movement has no accepted/rejected/no-change result row
-keyboard inputs have no stable reason row
-jump/contact/pickup/scene transitions have no reason codes
-best-distance localStorage write has no proof row
+tick scheduler is created but never started
+domainHost.tick is never driven by the live route
+primary runtime uses an independent requestAnimationFrame loop
+secondary presentation pass uses another independent requestAnimationFrame loop
+no single sourceFrameId shared by simulation and presentation
+no render commit owner
+no one-render-per-source-frame invariant
+no phase ordering contract
+no dropped/duplicate render decision row
 ```
 
-## Frame correlation gaps
+## Domain consumption gaps
 
 ```txt
-no shared frameId between input, movement, pose, camera, HUD, render, and host snapshot
-no sourceFrameId on secondary presentation render
-no sourceRevision on generated rows
-no monotonic journal sequence for runner rows
-no correlationId linking frame loop rows to GameHost readback
-no fixture-readable last frame summary
+dino-pose-domain-kit waits for runner.moved but live runtime never emits it
+camera-domain-kit preset is duplicated as direct constants in applyCloseCamera
+hud-domain-kit render service is bypassed by direct innerHTML composition
+tick-scheduler snapshot remains dormant
+event-bus history records setup events but not live runner frames
+domain snapshots do not prove runtime consumption
 ```
 
-## Presentation gaps
+## Lifecycle gaps
 
 ```txt
-src/game.js applies readable stride directly to the rig
-src/game.js applies close camera directly to the camera
-src/game.js rewrites HUD DOM directly
-src/game.js submits a second renderer frame
-runtime-terrain-v6 also applies raptor pose, camera, HUD, and render directly
-no DinoPoseFrame record
-no CameraFrameRequest record
-no HudFrameRequest record
-no RenderReadback record
-no PresentationFrameRecord
-no PresentationJournalSnapshot
+Start changes scene only
+Retry changes scene only
+Run Again changes scene only
+runner position, distance, jump, speed, pickups, collected set, collision state, and best-session state are not reset
+run-over cause is not retained
+win cause is not retained
+no SceneTransitionResult
+no RestartTransaction
+no restart id or source frame
+terminal conditions can immediately re-trigger after button activation
+README advertises menu return paths that are not implemented by the live runtime
 ```
 
-## Host readback gaps
+## Source contract gaps
 
 ```txt
-PrehistoricRushHost.getState() has no presentation object
-no latest presentation frame
-no recent presentation frames
-no event counts
-no input result rows
-no movement result rows
-no contact result rows
-no pickup result rows
-no scene dispatch result rows
-no best-distance result rows
-no render readback
-no fixture contract metadata
+README describes a manifest-driven multi-scene loader
+live runtime does not import game-scenes.json
+live runtime does not import scene JSON manifests
+live runtime does not import runner-tuning.json
+live runtime hardcodes tuning and scene transitions
+README says A/D move left/right while runtime uses free yaw steering
+README says retry/menu lifecycle exists while runtime has no real reset or menu return
+game-scenes.json declares transitions not consumed by runtime
+NexusEngine CDN declared by manifest is not the live boot authority
+```
+
+## Host/readback gaps
+
+```txt
+PrehistoricRushHost exposes the mutable app object
+getState returns app.state by reference
+runner.collected is a Set and not a detached JSON-safe row
+no frame authority state
+no primary/secondary phase rows
+no render commit row
+no scene transition result
+no restart result
+no runtime source fingerprint
+no manifest-consumption summary
+no fixture metadata
 ```
 
 ## Render gaps
 
 ```txt
-baseline runtime render has no render-readback row
-secondary presentation render has no render-readback row
-no stable frame id shared between movement, pose, camera, HUD, and render
-no serialized instanced count summary per frame
-```
-
-## Gameplay proof gaps
-
-```txt
-start transition is direct scene mutation
-contact resolution is not represented as ContactResultSnapshot
-pickup collection is not represented as PickupResultSnapshot
-win/run-over scene changes are direct scene mutation
-best distance localStorage update has no proof row
+primary loop renders once
+secondary presentation loop renders again
+camera and pose can be overwritten between the two commits
+HUD can be rewritten twice per display refresh
+renderer statistics are not captured per commit
+no proof that two RAF callbacks correspond to the same simulation frame
 ```
 
 ## Validation gaps
@@ -88,25 +89,27 @@ best distance localStorage update has no proof row
 ```txt
 no root package.json found
 no npm run check
-no DOM-free frame-correlation fixture
+no DOM-free frame-authority fixture
+no restart lifecycle fixture
 no browser smoke in this pass
 no GitHub Pages smoke in this pass
 ```
 
-## Do not solve these first
+## Do not solve first
 
 ```txt
 visual expansion
 terrain rewrite
-movement tuning
-renderer extraction
+movement retune
+new dinosaur mesh
 new pickups
-new obstacle set
+new obstacle families
+renderer extraction
 ProtoKit promotion
 ```
 
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Single Frame Authority + Restart Transaction Fixture Gate
 ```
