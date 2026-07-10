@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-09T19-29-23-04-00`
+**Updated:** `2026-07-09T23-58-41-04-00`
 
 ## Source and event gaps
 
@@ -8,10 +8,12 @@
 no RunnerSourceState module
 no RunnerStepDelta module
 no RunnerMovedEvent module
+no MovementResultRow module
 runtime-terrain-v6 does not emit runner.moved
 live raptor pose bypasses dino-pose-domain-kit
 movement has no accepted/rejected/result row
 jump/contact/pickup/scene transitions have no reason codes
+best-distance localStorage write has no proof row
 ```
 
 ## Presentation gaps
@@ -24,6 +26,7 @@ src/game.js submits a second renderer frame
 no DinoPoseFrame record
 no CameraFrameRequest record
 no HudFrameRequest record
+no RenderReadback record
 no PresentationFrameRecord
 no PresentationJournalSnapshot
 ```
@@ -35,6 +38,7 @@ PrehistoricRushHost.getState() has no presentation object
 no latest presentation frame
 no recent presentation frames
 no event counts
+no movement result rows
 no render readback
 no fixture contract metadata
 ```
@@ -52,7 +56,7 @@ no serialized instanced count summary per frame
 
 ```txt
 contact resolution is not represented as ContactResultSnapshot
-pickup collection is not represented as result rows
+pickup collection is not represented as PickupResultSnapshot
 win/run-over scene changes are direct scene mutation
 best distance localStorage update has no proof row
 ```
