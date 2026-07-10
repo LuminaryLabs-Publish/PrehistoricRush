@@ -1,15 +1,15 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T04-50-40-04-00",
-  "currentLedge": "PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T04-50-40-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T04-50-40-04-00.md",
+  "updated": "2026-07-10T06-21-03-04-00",
+  "currentLedge": "PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T06-21-03-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T06-21-03-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T04-50-40-04-00-runner-event-host-readback-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T04-50-40-04-00-presentation-render-event-readback-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T04-50-40-04-00-runner-moved-event-loop.md",
-    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T04-50-40-04-00-host-event-journal-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T04-50-40-04-00-dom-free-runner-event-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T06-21-03-04-00-runner-event-host-fixture-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T06-21-03-04-00-presentation-render-host-readback-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T06-21-03-04-00-runner-event-proof-loop.md",
+    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T06-21-03-04-00-runner-event-journal-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T06-21-03-04-00-dom-free-runner-event-fixture-gate.md"
   },
   "currentInteractionLoop": [
     "index.html",
@@ -86,27 +86,27 @@
     {
       "id": "tick-scheduler-kit",
       "path": "src/domain-runtime/tick-scheduler.js",
-      "services": ["start", "stop", "snapshot"]
+      "services": ["start", "stop", "host.tick bridge", "scheduler snapshot"]
     },
     {
       "id": "dino-form-domain-kit",
       "path": "src/domains/dino/dino-form-domain-kit.js",
-      "services": ["descriptor", "snapshot"]
+      "services": ["raptor proportions", "silhouette descriptor", "feature-set descriptor", "snapshot"]
     },
     {
       "id": "dino-pose-domain-kit",
       "path": "src/domains/dino/dino-pose-domain-kit.js",
-      "services": ["runner.moved consumer", "dino.pose.changed emitter", "getDescriptor", "snapshot"]
+      "services": ["runner.moved consumer", "dino.pose.changed emitter", "pose update", "getDescriptor", "snapshot"]
     },
     {
       "id": "dino-material-domain-kit",
       "path": "src/domains/dino/dino-material-domain-kit.js",
-      "services": ["descriptor", "snapshot"]
+      "services": ["palette descriptor", "style descriptor", "snapshot"]
     },
     {
       "id": "dino-domain-bundle-kit",
       "path": "src/domains/dino/index.js",
-      "services": ["dino form/pose/material bundle"]
+      "services": ["dino form/pose/material exports", "bundle helper"]
     },
     {
       "id": "camera-domain-kit",
@@ -116,7 +116,7 @@
     {
       "id": "hud-domain-kit",
       "path": "src/domains/hud/hud-domain-kit.js",
-      "services": ["progress", "render", "getDescriptor", "snapshot"]
+      "services": ["target distance", "progress", "HUD model render", "getDescriptor", "snapshot"]
     }
   ],
   "liveExternalKits": [
