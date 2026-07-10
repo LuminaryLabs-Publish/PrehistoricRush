@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T06-21-03-04-00`
+**Last aligned:** `2026-07-10T07-50-29-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,24 +9,25 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T06-21-03-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T06-21-03-04-00.md
+.agent/trackers/2026-07-10T07-50-29-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T07-50-29-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T06-21-03-04-00-runner-event-host-fixture-dsk-map.md
-.agent/render-audit/2026-07-10T06-21-03-04-00-presentation-render-host-readback-gap.md
-.agent/gameplay-audit/2026-07-10T06-21-03-04-00-runner-event-proof-loop.md
-.agent/presentation-authority-audit/2026-07-10T06-21-03-04-00-runner-event-journal-contract.md
-.agent/deploy-audit/2026-07-10T06-21-03-04-00-dom-free-runner-event-fixture-gate.md
+.agent/architecture-audit/2026-07-10T07-50-29-04-00-runner-event-journal-readback-dsk-map.md
+.agent/render-audit/2026-07-10T07-50-29-04-00-presentation-render-frame-readback-gap.md
+.agent/gameplay-audit/2026-07-10T07-50-29-04-00-runner-event-journal-proof-loop.md
+.agent/interaction-audit/2026-07-10T07-50-29-04-00-keyboard-input-result-reason-map.md
+.agent/presentation-authority-audit/2026-07-10T07-50-29-04-00-presentation-journal-host-contract.md
+.agent/deploy-audit/2026-07-10T07-50-29-04-00-dom-free-runner-journal-fixture-gate.md
 ```
 
 ## What this repo is
@@ -61,9 +62,9 @@ index.html
 
 Do not start with visual expansion, terrain rewrite, movement retune, renderer extraction, new pickups, or ProtoKit promotion.
 
-The blocker is runner event and host presentation proof.
+The blocker is runner event journal and host presentation proof.
 
-`dino-pose-domain-kit` already listens for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` records. The host also lacks a presentation journal, render readback rows, and fixture-readable frame records.
+`dino-pose-domain-kit` already listens for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` records. The host also lacks a presentation journal, render readback rows, input result rows, and fixture-readable frame records.
 
 ## Next safe work
 
@@ -75,6 +76,7 @@ src/presentation/runner-source-state.js
 src/presentation/runner-step-delta.js
 src/presentation/runner-moved-event.js
 src/presentation/movement-result-row.js
+src/presentation/input-result-row.js
 src/presentation/dino-pose-frame.js
 src/presentation/camera-frame-request.js
 src/presentation/hud-frame-request.js
