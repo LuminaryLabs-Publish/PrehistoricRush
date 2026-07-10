@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T07-50-29-04-00`
+**Updated:** `2026-07-10T09-18-53-04-00`
 
 ## Source and event gaps
 
@@ -97,5 +97,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Host Readback Ledger Refresh + DOM-Free Presentation Gate
 ```
