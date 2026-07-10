@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T09-18-53-04-00`
+**Last aligned:** `2026-07-10T10-38-55-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,25 +9,25 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Readback Ledger Refresh + DOM-Free Presentation Gate
+PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T09-18-53-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T09-18-53-04-00.md
+.agent/trackers/2026-07-10T10-38-55-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T10-38-55-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T09-18-53-04-00-runner-event-host-readback-ledger-dsk-map.md
-.agent/render-audit/2026-07-10T09-18-53-04-00-presentation-render-host-readback-gap.md
-.agent/gameplay-audit/2026-07-10T09-18-53-04-00-runner-event-journal-proof-loop.md
-.agent/interaction-audit/2026-07-10T09-18-53-04-00-keyboard-input-result-reason-map.md
-.agent/presentation-authority-audit/2026-07-10T09-18-53-04-00-presentation-journal-host-contract.md
-.agent/deploy-audit/2026-07-10T09-18-53-04-00-dom-free-runner-event-fixture-gate.md
+.agent/architecture-audit/2026-07-10T10-38-55-04-00-presentation-proof-ledger-dsk-map.md
+.agent/render-audit/2026-07-10T10-38-55-04-00-presentation-render-readback-ledger-gap.md
+.agent/gameplay-audit/2026-07-10T10-38-55-04-00-runner-event-result-ledger-loop.md
+.agent/interaction-audit/2026-07-10T10-38-55-04-00-keyboard-input-result-ledger-map.md
+.agent/presentation-authority-audit/2026-07-10T10-38-55-04-00-host-presentation-proof-contract.md
+.agent/deploy-audit/2026-07-10T10-38-55-04-00-dom-free-presentation-fixture-gate.md
 ```
 
 ## What this repo is
@@ -62,9 +62,9 @@ index.html
 
 Do not start with visual expansion, terrain rewrite, movement retune, renderer extraction, new pickups, or ProtoKit promotion.
 
-The blocker is runner event and host presentation readback.
+The blocker is presentation proof.
 
-`dino-pose-domain-kit` already listens for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` records. The host also lacks a presentation journal, render readback rows, input result rows, movement result rows, and fixture-readable frame records.
+`dino-pose-domain-kit` already listens for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` records. The host also lacks a presentation journal, render readback rows, input result rows, movement result rows, contact/pickup/scene/best-distance rows, and fixture-readable frame records.
 
 ## Next safe work
 
