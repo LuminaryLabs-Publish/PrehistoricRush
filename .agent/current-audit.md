@@ -1,6 +1,6 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T04-50-40-04-00`
+**Updated:** `2026-07-10T06-21-03-04-00`
 
 ## Summary
 
@@ -34,7 +34,7 @@ src/game.js
 runtime-terrain-v6
   -> load Three.js / Rapier / rapier-physics-domain-kit
   -> create shell and Start button
-  -> create terrain chunks, raptor rig, rocks, trees, shards, camera, renderer
+  -> create terrain chunks, raptor rig, rocks, shards, trees, camera, renderer
   -> mutate input flags on keydown/keyup
   -> mutate runner state, terrain, colliders, pickups, score, scene, HUD, and renderer per frame
   -> expose PrehistoricRushHost.getState()
@@ -91,11 +91,11 @@ central-ledger-sync
 
 `dino-pose-domain-kit` already listens for `runner.moved` and emits `dino.pose.changed`.
 
-The live runner does not emit `runner.moved`; it computes and applies raptor animation directly.
+The live runner does not emit `runner.moved`; it computes and applies movement, raptor animation, camera, HUD, scene, and render state directly.
 
 ## Main gap
 
-The route needs runner event and host readback proof, not visual expansion.
+The route needs runner event and host presentation readback proof, not visual expansion.
 
 Missing proof layer:
 
@@ -147,5 +147,5 @@ presentation.fixtureContract
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
 ```
