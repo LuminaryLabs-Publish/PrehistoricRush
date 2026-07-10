@@ -1,49 +1,65 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T16-28-47-04-00`
+**Updated:** `2026-07-10T18-01-03-04-00`
 
 ## This pass
 
 ```txt
 runtime source changed: no
 agent docs changed: yes
-central ledger changed: yes
+central ledger changed: pending until central sync
 branch created: no
 pull request created: no
 target branch: main
 ```
 
+## Repository comparison performed
+
+```txt
+accessible LuminaryLabs-Publish repositories: 10
+eligible non-Cavalry repositories: 9
+all eligible repos in central ledger: yes
+all eligible repos with root .agent evidence: yes
+selected repo: PrehistoricRush
+selection basis: oldest eligible central update, 2026-07-10T16-28-47-04-00
+TheCavalryOfRome: excluded
+```
+
 ## Readback performed
 
 ```txt
-listed the complete accessible LuminaryLabs-Publish repository inventory
-compared all eligible central repo ledgers
-confirmed all nine non-Cavalry repos are tracked and have root .agent evidence
-confirmed PrehistoricRush as the oldest eligible fallback at selection time
-read README.md
-read index.html
-read game-scenes.json
-read src/runtime.mjs
-read src/game.js
-read src/runtime-terrain-v6.mjs
-read event-bus, domain-host, and tick-scheduler kits
-read dino pose, camera, HUD, and dino bundle kits
-read current root .agent state
+README.md
+index.html
+game-scenes.json
+runner-tuning.json
+src/runtime.mjs
+src/game.js
+src/runtime-terrain-v6.mjs
+src/domain-runtime/event-bus.js
+src/domain-runtime/domain-host.js
+src/domain-runtime/tick-scheduler.js
+current root .agent state
+central repo ledger entries and current recency
+latest repository commits
 ```
 
 ## Static findings confirmed
 
 ```txt
+Three.js source: jsDelivr three@0.179.1
+Rapier source: jsDelivr rapier3d-compat@0.15.0
+physics kit source: LuminaryLabs-Agents/NexusRealtime-ProtoKits@main
+load() catches import errors and returns null
+Three.js is passed directly into setup after admission suppression
+Rapier/physics failure can degrade to fallback with no typed source result
 scheduler.start is not called by src/game.js
-runtime-terrain-v6 owns an independent primary RAF
-startPresentationPass owns an independent secondary RAF
+primary runtime and secondary presentation own separate RAF loops
 both loops mutate presentation and call renderer.render
-dino-pose-domain-kit subscribes to runner.moved
-live runtime does not emit runner.moved
-start/retry/run-again only change app.scene
-game-scenes.json is not imported by the live route
-README lifecycle/control claims drift from live behavior
-PrehistoricRushHost exposes mutable live app/state objects
+Start / Retry / Run Again only change app.scene
+resize / keydown / keyup listeners have no removal owner
+renderer, geometry, material, physics, and RAF disposal is absent
+PrehistoricRushHost exposes mutable app/state objects
+scene and tuning manifests are not consumed by the live route
 ```
 
 ## Runtime validation
@@ -52,18 +68,20 @@ PrehistoricRushHost exposes mutable live app/state objects
 local checkout: no
 root package.json found: no
 npm install: not run
-npm run check: not run
-npm test: not run
+npm run check: unavailable
+npm test: unavailable
 browser smoke: not run
 GitHub Pages smoke: not run
-DOM-free frame-authority fixture: not available
+runtime dependency admission fixture: not available
+single-frame fixture: not available
 restart transaction fixture: not available
+mount/dispose/remount fixture: not available
 ```
 
 ## Next validation target
 
 ```txt
-node scripts/prehistoric-rush-frame-authority-fixture.mjs
+node scripts/prehistoric-rush-runtime-lifecycle-fixture.mjs
 ```
 
-The fixture should prove one source frame, one accepted render commit, shared phase correlation, detached host readback, and real Retry / Run Again resets.
+The fixture must prove immutable dependency admission, explicit fallback reasons, one frame/render owner, real session restart, idempotent disposal, bounded remount ownership, and detached JSON-safe host observations.
