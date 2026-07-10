@@ -1,16 +1,18 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-09T19-29-23-04-00`
+**Updated:** `2026-07-09T23-58-41-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Host Fixture Refresh + DOM-Free Event Bridge Gate
+PrehistoricRush Movement Event Journal + Presentation Fixture Gate
 ```
 
 ## Why this comes next
 
-The project already has a useful DSK wrapper, an event bus, a domain host, and a `dino-pose-domain-kit` that consumes `runner.moved`. The live runtime does not emit that event yet, and the host state does not expose presentation proof.
+The project already has a useful DSK wrapper, an event bus, a domain host, and a `dino-pose-domain-kit` that consumes `runner.moved`.
+
+The live runtime does not emit `runner.moved` yet, does not retain movement result rows, and does not expose presentation proof through `PrehistoricRushHost.getState()`.
 
 ## Implementation order
 
@@ -21,10 +23,12 @@ src/presentation/presentation-events.js
 src/presentation/runner-source-state.js
 src/presentation/runner-step-delta.js
 src/presentation/runner-moved-event.js
+src/presentation/movement-result-row.js
 src/presentation/dino-pose-frame.js
 src/presentation/camera-frame-request.js
 src/presentation/hud-frame-request.js
 src/presentation/contact-result-snapshot.js
+src/presentation/pickup-result-snapshot.js
 src/presentation/scene-dispatch-result.js
 src/presentation/render-readback.js
 src/presentation/presentation-frame-record.js
@@ -41,7 +45,11 @@ scripts/prehistoric-rush-presentation-frame-fixture.mjs
 3. Wire runtime movement to source records without changing game feel.
 
 ```txt
-runtime input/state -> RunnerSourceState -> RunnerStepDelta -> RunnerMovedEvent -> eventBus.emit("runner.moved")
+runtime current state
+  -> RunnerSourceState
+  -> RunnerStepDelta
+  -> MovementResultRow
+  -> eventBus.emit("runner.moved", RunnerMovedEvent)
 ```
 
 4. Add additive host readback.
@@ -71,6 +79,7 @@ grounded recovery
 rock/tree contact to run-over
 shard pickup
 win threshold
+best distance write
 legacy host shape preserved
 ```
 
