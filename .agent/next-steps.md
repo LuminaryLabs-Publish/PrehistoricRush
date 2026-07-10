@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T02-51-39-04-00`
+**Updated:** `2026-07-10T04-50-40-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
 ```
 
 ## Why this comes next
@@ -40,7 +40,7 @@ src/presentation/host-presentation-snapshot.js
 2. Add the DOM-free fixture.
 
 ```txt
-scripts/prehistoric-rush-presentation-frame-fixture.mjs
+scripts/prehistoric-rush-runner-event-fixture.mjs
 ```
 
 3. Wire runtime movement to source records without changing game feel.
@@ -82,6 +82,7 @@ shard pickup
 win threshold
 best distance write
 legacy host shape preserved
+presentation pass does not erase source frame ids
 ```
 
 ## Stop conditions
