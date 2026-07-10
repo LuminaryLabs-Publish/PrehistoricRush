@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T01-31-29-04-00`
+**Updated:** `2026-07-10T02-51-39-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
+PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
 ```
 
 ## Why this comes next
