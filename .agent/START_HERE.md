@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T18-01-03-04-00`
+**Last aligned:** `2026-07-10T19-30-36-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,35 +9,38 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Runtime Dependency Admission + Single-Owner Session Lifecycle Fixture Gate
+PrehistoricRush Instance Pool Capacity Authority
++ Deterministic Population Fixture Gate
 ```
 
 ## Selection
 
-The complete accessible `LuminaryLabs-Publish` installation contains ten repositories. All nine eligible non-Cavalry repositories are tracked and have root `.agent` state. `TheCavalryOfRome` remains excluded. `PrehistoricRush` was selected as the oldest eligible central-ledger entry at `2026-07-10T16-28-47-04-00`.
+The accessible `LuminaryLabs-Publish` inventory contains ten repositories. All nine eligible non-Cavalry repositories are tracked and have root `.agent` state. `TheCavalryOfRome` remains excluded.
+
+`PrehistoricRush` was selected because its central and root audit state still described the earlier split-runtime composition, while recent runtime commit `a94082b1c4805f75a494cf41db0c93b53d19fbd4` introduced a new single-file giant-forest, layered-grass, route-field, surface-resistance, and procedural-skinned-dino route. The runtime cutover was therefore materially newer than the documentation.
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T18-01-03-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T18-01-03-04-00.md
+.agent/trackers/2026-07-10T19-30-36-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T19-30-36-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T18-01-03-04-00-runtime-admission-lifecycle-dsk-map.md
-.agent/render-audit/2026-07-10T18-01-03-04-00-render-resource-lifetime-observation-gap.md
-.agent/gameplay-audit/2026-07-10T18-01-03-04-00-session-start-retry-run-again-transaction-loop.md
-.agent/interaction-audit/2026-07-10T18-01-03-04-00-input-listener-command-lifetime-map.md
-.agent/external-kit-audit/2026-07-10T18-01-03-04-00-cdn-module-admission-provenance-contract.md
-.agent/lifecycle-audit/2026-07-10T18-01-03-04-00-mount-dispose-remount-ownership-contract.md
-.agent/deploy-audit/2026-07-10T18-01-03-04-00-runtime-admission-lifecycle-fixture-gate.md
+.agent/architecture-audit/2026-07-10T19-30-36-04-00-instance-pool-capacity-authority-dsk-map.md
+.agent/render-audit/2026-07-10T19-30-36-04-00-instanced-render-capacity-commit-gap.md
+.agent/gameplay-audit/2026-07-10T19-30-36-04-00-population-stream-restart-loop.md
+.agent/interaction-audit/2026-07-10T19-30-36-04-00-input-population-generation-map.md
+.agent/forest-system-audit/2026-07-10T19-30-36-04-00-tree-root-pool-capacity-contract.md
+.agent/grass-system-audit/2026-07-10T19-30-36-04-00-layer-capacity-ratchet-gap.md
+.agent/deploy-audit/2026-07-10T19-30-36-04-00-population-capacity-fixture-gate.md
 ```
 
-## What this repo is
+## What this repo is now
 
-`PrehistoricRush` is a static browser infinite runner with a repo-local DSK composition layer around a live Three.js/Rapier terrain runner. It provides free-yaw raptor movement, jump and boost input, deterministic terrain placement, instanced obstacles and pickups, best-distance persistence, and a GitHub Pages route.
+`PrehistoricRush` is a static browser 3D infinite-runner route. `src/runtime.mjs` imports `src/game.js`, which directly composes route, surface, forest, grass, wind, procedural-dino, Three.js, Rapier, and external physics services. One RAF owns simulation, presentation, and rendering.
 
 ## Current interaction loop
 
@@ -45,53 +48,62 @@ The complete accessible `LuminaryLabs-Publish` installation contains ten reposit
 index.html
   -> src/runtime.mjs
   -> src/game.js
-     -> event bus / domain host / dormant tick scheduler
-     -> install dino form, pose, material, camera, and HUD kits
-     -> import live runtime
-  -> runtime-terrain-v6 loads Three.js, Rapier, and physics ProtoKit from CDNs
-     -> import errors are converted to null
-     -> Three.js is still required immediately by setup
-     -> Rapier or ProtoKit failure silently degrades to fallback contact logic
-  -> shell, terrain, raptor, input listeners, physics, renderer, and host are created
-  -> Start changes scene to game
-  -> primary RAF mutates simulation, scene, presentation, HUD, and render
-  -> secondary RAF rewrites pose, camera, HUD, and render
-  -> Retry / Run Again only change scene to game
-  -> mutable PrehistoricRushHost readback
+  -> construct active domain kits
+  -> load Three.js, Rapier, and external physics kit
+  -> create scene, terrain window, instance pools, skinned raptor, and input
+  -> populate trees, roots, grass, rocks, shards, colliders, and pickups
+  -> Start Rush enters game with a partial reset
+  -> one RAF advances movement, terrain streaming, population, contacts, pickups, scene, pose, camera, wind, HUD, and render
+  -> PrehistoricRushHost exposes live runtime objects and aggregate state
 ```
+
+## Active repo-local DSKs
+
+```txt
+route-field-domain-kit
+surface-traversal-domain-kit
+forest-archetype-domain-kit
+grass-patch-domain-kit
+grass-wind-domain-kit
+procedural-dino-body-domain-kit
+```
+
+The earlier event-bus, domain-host, scheduler, dino form/pose/material, camera, and HUD kits remain in the repo but are not imported by the current route.
 
 ## Main finding
 
-The existing single-frame and restart gap is now joined by a runtime admission and lifetime gap:
+The new population renderer conflates immutable allocation capacity with mutable active draw count.
 
 ```txt
-Three.js and Rapier are semver-pinned CDN modules
-rapier-physics-domain-kit is loaded from legacy NexusRealtime-ProtoKits@main
-same repo commit can therefore resolve different physics-kit source
-load() suppresses module errors and returns null
-Three.js failure becomes a later setup exception instead of a typed admission result
-Rapier/ProtoKit failure becomes an unclassified fallback
-no source URL, resolved revision, capability, fallback reason, or fingerprint reaches GameHost
-resize/keyboard listeners, both RAF loops, renderer resources, physics resources, and event subscriptions have no dispose owner
-remount or re-import can duplicate work and leak browser/GPU state
+roots allocate 400 instances
+current 7 x 7 window can request up to 1,372 roots
+root writes have no capacity guard
+
+grass mesh.count starts as capacity
+populate() overwrites it with active count
+next populate() uses that active count as its admission limit
+sparse windows can permanently restrict later dense windows
+
+tree pools have no explicit overflow result
+host readback has no requested/admitted/rejected pool rows or generation ID
 ```
 
 ## Next safe work
 
-Preserve the current look and controls while establishing:
+Preserve the current visual cutover while adding:
 
 ```txt
-RuntimeDependencyRequest / RuntimeDependencyResult
-pinned immutable physics-kit source
-explicit required / optional / fallback policy
-single source-frame owner
-SessionStartResult / RestartTransaction
-mount, dispose, and remount lifecycle
-listener, RAF, renderer, geometry, material, physics, and subscription ownership
-JSON-safe host admission/lifecycle snapshot
-DOM-free admission and lifecycle fixture
+immutable pool capacity
+mutable active count
+typed population request and admission results
+stable generation IDs
+bounded matrix writes
+deterministic overflow policy
+render/collider and shard/pickup parity rows
+detached pool observations
+DOM-free dense/sparse/repeated population fixture
 ```
 
 ## Current validation state
 
-Documentation only. Runtime source, dependencies, routes, and deployment did not change. No branch or pull request was created. The repo has no root `package.json`, and no runtime-admission or lifecycle fixture exists to run.
+Documentation only. Runtime source, dependencies, routes, and deployment did not change. No branch or pull request was created. The repo has no root `package.json`, and no population-capacity fixture exists to run.
