@@ -1,90 +1,95 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T18-01-03-04-00`
+**Updated:** `2026-07-10T19-30-36-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runtime Dependency Admission + Single-Owner Session Lifecycle Fixture Gate
+PrehistoricRush Instance Pool Capacity Authority
++ Deterministic Population Fixture Gate
 ```
 
 ## Goal
 
-Make external runtime selection, frame ownership, session start/restart, and teardown deterministic and observable without changing the current visual target, movement feel, terrain generation, or content.
+Make forest, grass, rock, shard, collider, and pickup population bounded, deterministic, correlated, and observable without changing the current visual target or movement feel.
 
 ## Plan ledger
 
-- [ ] Replace the mutable `NexusRealtime-ProtoKits@main` physics-kit URL with an immutable repository/commit source.
-- [ ] Add a runtime dependency registry for Three.js, Rapier, and the physics kit.
-- [ ] Classify each dependency as required, optional, or fallback-capable.
-- [ ] Return typed `RuntimeDependencyResult` rows with requested source, admitted source, version/revision, capabilities, status, and reason.
-- [ ] Fail boot immediately and clearly when required Three.js admission fails.
-- [ ] Make Rapier/physics fallback an explicit policy result rather than a silent null path.
-- [ ] Add one runtime source/provenance fingerprint to host readback.
-- [ ] Select one source-frame owner and drive `domainHost.tick()` once per frame.
-- [ ] Convert the secondary presentation RAF into a phase consumer and accept one render commit per frame.
-- [ ] Emit `runner.moved` from the authoritative movement phase.
-- [ ] Consume dino pose, camera, and HUD domain services instead of duplicating them.
-- [ ] Add `SessionStartResult`, `SceneTransitionResult`, and `RestartTransaction`.
-- [ ] Recreate session state for Retry / Run Again while preserving best distance.
-- [ ] Add a runtime lifecycle owner with `mount`, `start`, `stop`, `dispose`, and `snapshot`.
-- [ ] Retain and remove resize/keyboard listener handles.
-- [ ] Cancel both RAF chains during disposal.
-- [ ] Dispose renderer, geometries, materials, instanced meshes, and physics resources.
-- [ ] Collect event-bus/domain teardown callbacks.
-- [ ] Expose detached JSON-safe dependency, frame, session, and lifecycle observations.
-- [ ] Add DOM-free admission, frame, restart, and dispose/remount fixtures.
-- [ ] Add a root validation command only after fixtures exist.
+- [ ] Add immutable `capacity` to every trunk, crown, root, grass, rock, and shard pool wrapper.
+- [ ] Add mutable `activeCount` separate from renderer allocation capacity.
+- [ ] Stop reading `InstancedMesh.count` as a capacity source.
+- [ ] Build deterministic population request rows before any matrix write.
+- [ ] Preflight every request against its target pool capacity.
+- [ ] Return typed `admitted`, `truncated`, `rejected`, and `overflow` rows.
+- [ ] Bound every `setMatrixAt` index to `index < capacity`.
+- [ ] Bound final `mesh.count` to admitted count and capacity.
+- [ ] Add stable `windowKey` and `generationId` values.
+- [ ] Define stale-slot behavior when active count decreases.
+- [ ] Correlate admitted tree render rows with collider rows.
+- [ ] Correlate admitted shard render rows with pickup rows.
+- [ ] Expose detached pool and generation observations through `PrehistoricRushHost.getState()`.
+- [ ] Add a DOM-free dense/sparse/repeated population fixture.
+- [ ] Add a browser smoke after the DOM-free fixture passes.
 
-## Existing owners to update first
+## Existing owner to update first
 
 ```txt
-src/runtime-terrain-v6.mjs
-  module loading, runtime setup, input, simulation, presentation, renderer, physics, host
-
 src/game.js
-  composition, presentation pass, scheduler/domain integration, composition lifecycle
-
-src/domain-runtime/tick-scheduler.js
-  cancellable RAF ownership and lifecycle snapshot
-
-src/domain-runtime/domain-host.js
-  optional dispose fan-out
-
-src/domain-runtime/event-bus.js
-  listener/history reset and composition disposal
+  createForestRenderer()
+  populate()
+  terrain-window rebuild path
+  collider and pickup replacement
+  PrehistoricRushHost.getState()
 ```
 
-## New shared capability only where justified
+## Existing DSKs to preserve
 
 ```txt
-src/runtime/runtime-dependency-registry.js
-src/runtime/runtime-dependency-result.js
-src/runtime/runtime-source-provenance.js
-src/runtime/frame-authority.js
-src/runtime/render-commit.js
-src/runtime/session-transaction.js
-src/runtime/runtime-lifecycle.js
-src/runtime/host-snapshot.js
+route-field-domain-kit
+surface-traversal-domain-kit
+forest-archetype-domain-kit
+grass-patch-domain-kit
+grass-wind-domain-kit
+procedural-dino-body-domain-kit
+```
+
+## New capability only where justified
+
+```txt
+src/domains/population/instance-pool-descriptor-kit.js
+src/domains/population/population-request-kit.js
+src/domains/population/population-admission-kit.js
+src/domains/population/population-result-kit.js
+src/domains/population/population-observation-kit.js
+scripts/prehistoric-rush-population-capacity-fixture.mjs
 ```
 
 ## Required fixture assertions
 
 ```txt
-same source request resolves the same immutable module revision
-required Three.js failure returns boot_rejected before setup
-Rapier failure returns explicit fallback_admitted with reason
-host snapshot reports requested/admitted sources and capabilities
-one sourceFrameId drives one domain tick and one accepted render commit
-Retry / Run Again create new session IDs and reset transient state
-best distance survives restart
-mount registers bounded listener/RAF/resource ownership
-first dispose cancels loops and releases resources once
-second dispose is idempotent
-remount creates one listener set, one frame owner, and one renderer
+root request above 400 never writes above index 399
+root activeCount never exceeds 400
+single-archetype tree concentration produces typed overflow
+sparse grass generation does not reduce immutable capacity
+sparse -> dense grass can grow back to original capacity
+same seed/window produces identical request and admission rows
+tree render count equals tree collider count
+shard render count equals pickup count
+repeated generation clears or overwrites stale active slots deterministically
 host snapshot is detached and JSON-safe
+```
+
+## Follow-on work, not first
+
+After population capacity proof passes, return to:
+
+```txt
+full restart transaction
+immutable external dependency admission
+mount/dispose/remount lifecycle
+manifest/source-contract reconciliation
 ```
 
 ## Stop conditions
 
-Do not begin visual expansion, terrain replacement, movement retuning, new content, renderer extraction, or ProtoKit promotion until admission, frame, restart, and lifecycle fixtures pass.
+Do not begin visual expansion, new tree art, more grass layers, new obstacle families, higher population density, renderer replacement, or ProtoKit promotion until the population-capacity fixture passes.
