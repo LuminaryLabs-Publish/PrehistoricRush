@@ -1,10 +1,10 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T13-30-15-04-00`
+**Updated:** `2026-07-10T14-59-00-04-00`
 
 ## Summary
 
-`PrehistoricRush` is playable and has a useful repo-local DSK wrapper, but the live runner still bypasses source-owned event/result rows and host presentation readback.
+`PrehistoricRush` is playable and has a useful repo-local DSK wrapper, but the live runner still bypasses source-owned frame/result rows and host presentation readback.
 
 `src/game.js` installs the event bus, domain host, scheduler, dino, camera, and HUD kits. It also runs a second presentation pass that directly changes stride, camera, HUD, and render submission.
 
@@ -79,6 +79,7 @@ presentation-hud-consumer
 presentation-raptor-stride-consumer
 secondary-render-submission
 host-state-projection
+frame-id-source-next
 runner-source-event-ledger-next
 runner-event-proof-next
 input-result-journal-next
@@ -110,10 +111,12 @@ rapier-physics-domain-kit: Rapier world bridge, kinematic actor, contact snapsho
 
 ## Main finding
 
-The route should not be visually expanded next. The safe ledge is a runner source event readback ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
+The route should not be visually expanded next. The safe ledge is a runner frame-correlation source ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
+
+The key gap is not just that `runner.moved` is missing. The stronger gap is that there is no shared frame identity proving which input state produced which movement row, which pose/camera/HUD requests, which render submission, and which host snapshot.
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
