@@ -1,10 +1,11 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T13-30-15-04-00`
+**Updated:** `2026-07-10T14-59-00-04-00`
 
 ## Source and event gaps
 
 ```txt
+no FrameId / SourceFrameId module
 no RunnerSourceState module
 no RunnerStepDelta module
 no RunnerMovedEvent module
@@ -17,6 +18,17 @@ movement has no accepted/rejected/no-change result row
 keyboard inputs have no stable reason row
 jump/contact/pickup/scene transitions have no reason codes
 best-distance localStorage write has no proof row
+```
+
+## Frame correlation gaps
+
+```txt
+no shared frameId between input, movement, pose, camera, HUD, render, and host snapshot
+no sourceFrameId on secondary presentation render
+no sourceRevision on generated rows
+no monotonic journal sequence for runner rows
+no correlationId linking frame loop rows to GameHost readback
+no fixture-readable last frame summary
 ```
 
 ## Presentation gaps
@@ -33,7 +45,6 @@ no HudFrameRequest record
 no RenderReadback record
 no PresentationFrameRecord
 no PresentationJournalSnapshot
-no shared source frame id between movement, pose, camera, HUD, and render
 ```
 
 ## Host readback gaps
@@ -77,7 +88,7 @@ best distance localStorage update has no proof row
 ```txt
 no root package.json found
 no npm run check
-no DOM-free runner source event fixture
+no DOM-free frame-correlation fixture
 no browser smoke in this pass
 no GitHub Pages smoke in this pass
 ```
@@ -97,5 +108,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
