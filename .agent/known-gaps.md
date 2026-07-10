@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T06-21-03-04-00`
+**Updated:** `2026-07-10T07-50-29-04-00`
 
 ## Source and event gaps
 
@@ -8,11 +8,13 @@
 no RunnerSourceState module
 no RunnerStepDelta module
 no RunnerMovedEvent module
+no InputResultRow module
 no MovementResultRow module
 runtime-terrain-v6 does not emit runner.moved
 live raptor pose bypasses dino-pose-domain-kit
 eventBus history exists but is not fed by the live runner frame loop
 movement has no accepted/rejected/no-change result row
+keyboard inputs have no stable reason row
 jump/contact/pickup/scene transitions have no reason codes
 best-distance localStorage write has no proof row
 ```
@@ -41,6 +43,7 @@ PrehistoricRushHost.getState() has no presentation object
 no latest presentation frame
 no recent presentation frames
 no event counts
+no input result rows
 no movement result rows
 no contact result rows
 no pickup result rows
@@ -94,5 +97,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
 ```
