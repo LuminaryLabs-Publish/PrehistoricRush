@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T12-10-27-04-00`
+**Updated:** `2026-07-10T13-30-15-04-00`
 
 ## Source and event gaps
 
@@ -77,7 +77,7 @@ best distance localStorage update has no proof row
 ```txt
 no root package.json found
 no npm run check
-no DOM-free runner presentation fixture
+no DOM-free runner source event fixture
 no browser smoke in this pass
 no GitHub Pages smoke in this pass
 ```
@@ -97,5 +97,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
 ```
