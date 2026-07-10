@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T10-38-55-04-00`
+**Updated:** `2026-07-10T12-10-27-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate
+PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
 
 ## Why this comes next
@@ -16,7 +16,7 @@ The live runtime does not emit `runner.moved` yet, does not retain input or move
 
 ## Implementation order
 
-1. Add pure presentation source modules.
+1. Add pure runner/presentation source modules.
 
 ```txt
 src/presentation/presentation-events.js
@@ -41,7 +41,7 @@ src/presentation/host-presentation-snapshot.js
 2. Add the DOM-free fixture.
 
 ```txt
-scripts/prehistoric-rush-runner-event-fixture.mjs
+scripts/prehistoric-rush-runner-presentation-fixture.mjs
 ```
 
 3. Wire runtime movement to source records without changing game feel.
