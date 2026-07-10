@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-09T23-58-41-04-00`
+**Updated:** `2026-07-10T01-31-29-04-00`
 
 ## This pass
 
@@ -28,7 +28,9 @@ DOM-free presentation fixture: not run
 
 ## Why validation did not run
 
-This was a documentation and ledger pass. The next proof fixture is planned but does not exist yet.
+This was a documentation and ledger pass.
+
+The next proof fixture is planned but does not exist yet.
 
 The repo currently needs these before a meaningful local validation command exists:
 
@@ -50,4 +52,10 @@ If a package script is added later, use:
 
 ```txt
 npm run check
+```
+
+## Current ledge
+
+```txt
+PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
 ```
