@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T06-21-03-04-00`
+**Updated:** `2026-07-10T07-50-29-04-00`
 
 ## This pass
 
@@ -57,5 +57,5 @@ npm run check
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
 ```
