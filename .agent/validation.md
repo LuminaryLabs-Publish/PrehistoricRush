@@ -1,13 +1,13 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T04-50-40-04-00`
+**Updated:** `2026-07-10T06-21-03-04-00`
 
 ## This pass
 
 ```txt
 runtime source changed: no
 agent docs changed: yes
-central ledger changed: yes
+central ledger changed: pending central sync
 branch created: no
 pull request created: no
 pushed to main: yes
@@ -57,5 +57,5 @@ npm run check
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
 ```
