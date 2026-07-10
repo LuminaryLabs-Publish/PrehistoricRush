@@ -1,106 +1,87 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T18-01-03-04-00`
+**Updated:** `2026-07-10T19-30-36-04-00`
 
-## Runtime dependency admission gaps
+## Instance-pool capacity gaps
 
 ```txt
-rapier-physics-domain-kit resolves from mutable NexusRealtime-ProtoKits@main
-no immutable commit pin for the external physics kit
-no RuntimeDependencyRequest or RuntimeDependencyResult
-no required / optional / fallback classification
-load() suppresses import errors and returns null
-no resolved module version, commit, checksum, or capability fingerprint
-no distinction between network failure, export mismatch, init failure, or unsupported browser
-Three.js failure is discovered later by setup instead of rejected at admission
-Rapier/ProtoKit failure silently selects fallback collision behavior
-GameHost cannot report why a dependency was accepted, degraded, or rejected
+no immutable capacity field in pool wrappers
+active draw count and allocation capacity are conflated
+root pool allocates 400 but can receive up to 1,372 requests before route rejection
+root matrix writes have no explicit index guard
+root draw count can be assigned above allocation capacity
+tree trunk/crown writes have no typed capacity preflight
+per-archetype tree concentration has no overflow policy
+rock and shard writes have no shared admission result
 ```
 
-## Frame authority gaps
+## Grass population gaps
 
 ```txt
-tick scheduler is created but never started
-domainHost.tick is never driven by the live route
-primary runtime owns an independent RAF
-secondary presentation owns another independent RAF
-no sourceFrameId shared by simulation, presentation, and render
-no render commit owner
-no one-render-per-source-frame invariant
-no phase ordering contract
-no duplicate/dropped render decision row
+grass mesh.count begins as allocation capacity
+grass mesh.count is overwritten with active count after population
+next generation uses prior active count as the admission limit
+sparse population can ratchet future capacity downward
+no requested/admitted/rejected count by layer
+no stable grass generation ID
+no stale-slot policy
 ```
 
-## Session lifecycle gaps
+## Population correlation gaps
 
 ```txt
-Start changes scene only
-Retry changes scene only
-Run Again changes scene only
-no SessionStartResult
-no SceneTransitionResult
-no RestartTransaction
-no sessionId, restartId, or terminal cause
-position, distance, speed, jump, collected pickups, contacts, and time are not reset
-terminal conditions can immediately re-trigger
-best-distance persistence is mixed into mutable runner state
+no PopulationGenerationResult
+no windowKey plus generationId contract
+no stable source row for every tree/root/grass/rock/shard candidate
+visible tree rows and collider rows are not proven to share admission
+visible shard rows and pickup rows are not proven to share admission
+population replacement has no commit or rollback result
+host readback has no pool counts or overflow reasons
 ```
 
-## Mount/dispose gaps
+## Restart gaps
 
 ```txt
-resize listener has no retained removal handle
-keydown listener has no retained removal handle
-keyup listener has no retained removal handle
-primary RAF has no cancellation owner
-secondary RAF has no cancellation owner
-event-bus subscriptions are not collected by a composition disposer
-domain host has no dispose fan-out
-tick scheduler stop does not cancel an already scheduled RAF handle
-WebGLRenderer is never disposed
-terrain, raptor, instanced geometry, and materials are never disposed
-physics world/actor/collider resources have no teardown path
-PrehistoricRushHost has no disposed state
-remount/re-import can duplicate listeners, loops, DOM, and GPU work
+Start / Retry / Run Again reset x, z, distance, routeIndex, and yaw only
+speed is not reset
+jumpY and vertical velocity are not reset
+grounded state is not explicitly reset
+time and turn are not reset
+surface smoothing state is not reset
+shard count and collected IDs are not reset
+population generation identity does not exist
+old generation invalidation cannot be proven
 ```
 
-## Domain consumption gaps
+## Runtime dependency and lifecycle gaps
 
 ```txt
-dino-pose-domain-kit waits for runner.moved but live runtime never emits it
-camera-domain-kit preset is duplicated by direct camera code
-hud-domain-kit projection is bypassed by direct innerHTML
-tick-scheduler snapshot remains dormant
-event-bus history records setup events but not gameplay frames
-domain snapshots prove installation, not live consumption
+external physics kit still resolves from mutable NexusRealtime-ProtoKits@main
+load() still suppresses import errors to null
+no typed dependency admission rows
+listeners and RAF have no shared dispose owner
+renderer, geometry, material, and physics resources have no dispose transaction
 ```
 
-## Source contract gaps
+## Domain consumption and inventory gaps
 
 ```txt
-README describes a manifest-driven multi-scene loader
-live runtime imports no scene or tuning manifest
-game-scenes.json declares transitions the runtime does not consume
-runner-tuning.json differs from hardcoded live constants
-game-scenes.json points at NexusEngine@main while the live route does not load it
-live runtime points at legacy NexusRealtime-ProtoKits@main
-no authoritative source manifest distinguishes consumed, ignored, and fallback sources
+active route directly imports six new domain kits
+earlier event-bus, domain-host, scheduler, dino form/pose/material, camera, and HUD kits remain present but inactive
+no authoritative kit manifest distinguishes active from retained legacy kits
+README still describes NexusEngine/manifests more strongly than the current direct game.js route supports
 ```
 
 ## Host/readback gaps
 
 ```txt
-PrehistoricRushHost exposes mutable app
-getState returns runner state by reference
-runner.collected is a Set, not a detached JSON-safe row
-no dependency admission rows
-no source provenance fingerprint
-no degraded-mode reason
-no source-frame or render-commit rows
-no scene transition or restart result
-no mount/dispose state
-no resource counts before and after dispose
-no fixture metadata
+PrehistoricRushHost.app exposes mutable live objects
+getState has no dependency admission rows
+getState has no population generation rows
+getState has no immutable capacity or active count per pool
+getState has no requested/admitted/rejected/overflow counts
+getState has no renderer/collider or shard/pickup parity rows
+getState has no restart result or lifecycle state
 ```
 
 ## Validation gaps
@@ -108,10 +89,10 @@ no fixture metadata
 ```txt
 no root package.json
 no npm run check
-no DOM-free dependency-admission fixture
-no single-frame fixture
-no restart lifecycle fixture
-no mount/dispose/remount fixture
+no DOM-free population-capacity fixture
+no dense/sparse/repeated population fixture
+no tree/collider parity fixture
+no shard/pickup parity fixture
 no browser smoke in this pass
 no Pages smoke in this pass
 ```
@@ -119,18 +100,20 @@ no Pages smoke in this pass
 ## Do not solve first
 
 ```txt
-visual expansion
-terrain rewrite
-movement retune
+new tree art
+more tree density
+more grass layers
 new dinosaur mesh
-new pickups
-new obstacle families
-renderer extraction
+new pickup families
+shader rewrite
+renderer replacement
+movement retune
 ProtoKit promotion
 ```
 
 ## Current ledge
 
 ```txt
-PrehistoricRush Runtime Dependency Admission + Single-Owner Session Lifecycle Fixture Gate
+PrehistoricRush Instance Pool Capacity Authority
++ Deterministic Population Fixture Gate
 ```
