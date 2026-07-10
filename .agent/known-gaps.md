@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T02-51-39-04-00`
+**Updated:** `2026-07-10T04-50-40-04-00`
 
 ## Source and event gaps
 
@@ -31,6 +31,7 @@ no HudFrameRequest record
 no RenderReadback record
 no PresentationFrameRecord
 no PresentationJournalSnapshot
+no shared source frame id between the two render submissions
 ```
 
 ## Host readback gaps
@@ -72,7 +73,7 @@ best distance localStorage update has no proof row
 ```txt
 no root package.json found
 no npm run check
-no DOM-free presentation fixture
+no DOM-free runner event fixture
 no browser smoke in this pass
 no GitHub Pages smoke in this pass
 ```
@@ -92,5 +93,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
 ```
