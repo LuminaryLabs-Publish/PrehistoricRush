@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-09T23-58-41-04-00`
+**Updated:** `2026-07-10T01-31-29-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Movement Event Journal + Presentation Fixture Gate
+PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
 ```
 
 ## Why this comes next
@@ -30,6 +30,7 @@ src/presentation/hud-frame-request.js
 src/presentation/contact-result-snapshot.js
 src/presentation/pickup-result-snapshot.js
 src/presentation/scene-dispatch-result.js
+src/presentation/best-distance-result.js
 src/presentation/render-readback.js
 src/presentation/presentation-frame-record.js
 src/presentation/presentation-journal.js
