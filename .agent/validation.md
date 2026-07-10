@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T13-30-15-04-00`
+**Updated:** `2026-07-10T14-59-00-04-00`
 
 ## This pass
 
@@ -13,6 +13,22 @@ pull request created: no
 pushed to main: yes
 ```
 
+## Readback performed
+
+```txt
+checked current public LuminaryLabs-Publish repo page
+checked accessible private LuminaryLabs-Publish/AetherVale repo metadata
+compared central repo ledgers for eligible non-Cavalry repos
+confirmed PrehistoricRush as oldest eligible fallback
+read root .agent docs
+read index.html
+read src/runtime.mjs
+read src/game.js
+read src/runtime-terrain-v6.mjs
+read domain runtime kits
+read dino/camera/HUD domain kits
+```
+
 ## Local validation
 
 ```txt
@@ -23,7 +39,7 @@ npm run check: not run
 npm test: not run
 browser smoke: not run
 GitHub Pages smoke: not run
-DOM-free runner source event fixture: not run
+DOM-free frame-correlation fixture: not run
 ```
 
 ## Why validation did not run
@@ -36,16 +52,16 @@ The repo currently needs these before a meaningful local validation command exis
 
 ```txt
 src/presentation/* source modules
-scripts/prehistoric-rush-runner-source-event-fixture.mjs
+scripts/prehistoric-rush-frame-correlation-fixture.mjs
 root package.json or equivalent validation script
 ```
 
 ## Next validation target
 
-After implementing the runner source event readback ledger, validate with:
+After implementing the runner frame-correlation source ledger, validate with:
 
 ```txt
-node scripts/prehistoric-rush-runner-source-event-fixture.mjs
+node scripts/prehistoric-rush-frame-correlation-fixture.mjs
 ```
 
 If a package script is added later, use:
@@ -57,5 +73,5 @@ npm run check
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
 ```
