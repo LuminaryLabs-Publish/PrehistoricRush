@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T04-50-40-04-00`
+**Updated:** `2026-07-10T06-21-03-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
 ```
 
 ## Why this comes next
@@ -75,6 +75,7 @@ left turn
 right turn
 boost movement
 jump start
+jump rejected/no-op while airborne
 falling frame
 grounded recovery
 rock/tree contact to run-over
@@ -83,6 +84,7 @@ win threshold
 best distance write
 legacy host shape preserved
 presentation pass does not erase source frame ids
+render readback row shape
 ```
 
 ## Stop conditions
