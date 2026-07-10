@@ -1,11 +1,11 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T09-18-53-04-00`
+**Updated:** `2026-07-10T10-38-55-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Event Host Readback Ledger Refresh + DOM-Free Presentation Gate
+PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate
 ```
 
 ## Why this comes next
