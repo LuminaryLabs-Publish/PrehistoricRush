@@ -1,16 +1,16 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T10-38-55-04-00",
-  "currentLedge": "PrehistoricRush Presentation Proof Ledger Refresh + DOM-Free Runner Event Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T10-38-55-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T10-38-55-04-00.md",
+  "updated": "2026-07-10T12-10-27-04-00",
+  "currentLedge": "PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T12-10-27-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T12-10-27-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T10-38-55-04-00-presentation-proof-ledger-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T10-38-55-04-00-presentation-render-readback-ledger-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T10-38-55-04-00-runner-event-result-ledger-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-10T10-38-55-04-00-keyboard-input-result-ledger-map.md",
-    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T10-38-55-04-00-host-presentation-proof-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T10-38-55-04-00-dom-free-presentation-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T12-10-27-04-00-runner-presentation-source-ledger-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T12-10-27-04-00-presentation-render-source-ledger-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T12-10-27-04-00-runner-event-presentation-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-10T12-10-27-04-00-keyboard-input-result-ledger-map.md",
+    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T12-10-27-04-00-host-presentation-source-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T12-10-27-04-00-dom-free-runner-presentation-fixture-gate.md"
   },
   "currentInteractionLoop": [
     "index.html",
@@ -66,6 +66,7 @@
     "presentation-raptor-stride-consumer",
     "secondary-render-submission",
     "host-state-projection",
+    "runner-source-ledger-next",
     "runner-event-proof-next",
     "input-result-journal-next",
     "movement-result-journal-next",
@@ -79,58 +80,18 @@
     "central-ledger-sync"
   ],
   "implementedRepoLocalKits": [
-    {
-      "id": "event-bus-kit",
-      "path": "src/domain-runtime/event-bus.js",
-      "services": ["on", "emit", "snapshot", "recent event history"]
-    },
-    {
-      "id": "domain-host-kit",
-      "path": "src/domain-runtime/domain-host.js",
-      "services": ["install", "get", "tick", "snapshot"]
-    },
-    {
-      "id": "tick-scheduler-kit",
-      "path": "src/domain-runtime/tick-scheduler.js",
-      "services": ["start", "stop", "host.tick bridge", "scheduler snapshot"]
-    },
-    {
-      "id": "dino-form-domain-kit",
-      "path": "src/domains/dino/dino-form-domain-kit.js",
-      "services": ["raptor proportions", "silhouette descriptor", "feature-set descriptor", "snapshot"]
-    },
-    {
-      "id": "dino-pose-domain-kit",
-      "path": "src/domains/dino/dino-pose-domain-kit.js",
-      "services": ["runner.moved consumer", "dino.pose.changed emitter", "pose update", "getDescriptor", "snapshot"]
-    },
-    {
-      "id": "dino-material-domain-kit",
-      "path": "src/domains/dino/dino-material-domain-kit.js",
-      "services": ["palette descriptor", "style descriptor", "snapshot"]
-    },
-    {
-      "id": "dino-domain-bundle-kit",
-      "path": "src/domains/dino/index.js",
-      "services": ["dino form/pose/material exports", "bundle helper"]
-    },
-    {
-      "id": "camera-domain-kit",
-      "path": "src/domains/camera/camera-domain-kit.js",
-      "services": ["close third-person camera preset", "getDescriptor", "snapshot"]
-    },
-    {
-      "id": "hud-domain-kit",
-      "path": "src/domains/hud/hud-domain-kit.js",
-      "services": ["target distance", "progress", "HUD model render", "getDescriptor", "snapshot"]
-    }
+    {"id":"event-bus-kit","path":"src/domain-runtime/event-bus.js","services":["on","emit","snapshot","recent event history"]},
+    {"id":"domain-host-kit","path":"src/domain-runtime/domain-host.js","services":["install","get","tick","snapshot"]},
+    {"id":"tick-scheduler-kit","path":"src/domain-runtime/tick-scheduler.js","services":["start","stop","host.tick bridge","scheduler snapshot"]},
+    {"id":"dino-form-domain-kit","path":"src/domains/dino/dino-form-domain-kit.js","services":["raptor proportions","silhouette descriptor","feature-set descriptor","snapshot"]},
+    {"id":"dino-pose-domain-kit","path":"src/domains/dino/dino-pose-domain-kit.js","services":["runner.moved consumer","dino.pose.changed emitter","pose update","getDescriptor","snapshot"]},
+    {"id":"dino-material-domain-kit","path":"src/domains/dino/dino-material-domain-kit.js","services":["palette descriptor","style descriptor","snapshot"]},
+    {"id":"dino-domain-bundle-kit","path":"src/domains/dino/index.js","services":["dino form/pose/material exports","bundle helper"]},
+    {"id":"camera-domain-kit","path":"src/domains/camera/camera-domain-kit.js","services":["close third-person camera preset","getDescriptor","snapshot"]},
+    {"id":"hud-domain-kit","path":"src/domains/hud/hud-domain-kit.js","services":["target distance","progress","HUD model render","getDescriptor","snapshot"]}
   ],
   "liveExternalKits": [
-    {
-      "id": "rapier-physics-domain-kit",
-      "source": "LuminaryLabs-Agents/NexusRealtime-ProtoKits@main CDN",
-      "services": ["Rapier world bridge", "kinematic actor", "contact snapshot"]
-    }
+    {"id":"rapier-physics-domain-kit","source":"LuminaryLabs-Agents/NexusRealtime-ProtoKits@main CDN","services":["Rapier world bridge","kinematic actor","contact snapshot"]}
   ],
   "runtimeImpliedKits": [
     "prehistoric-static-shell-kit",
@@ -174,7 +135,7 @@
     "presentation-journal-kit",
     "host-presentation-snapshot-kit",
     "host-event-history-readback-kit",
-    "dom-free-runner-event-fixture-kit",
+    "dom-free-runner-presentation-fixture-kit",
     "package-validation-kit"
   ],
   "nextImplementationFiles": [
@@ -195,7 +156,7 @@
     "src/presentation/presentation-frame-record.js",
     "src/presentation/presentation-journal.js",
     "src/presentation/host-presentation-snapshot.js",
-    "scripts/prehistoric-rush-runner-event-fixture.mjs"
+    "scripts/prehistoric-rush-runner-presentation-fixture.mjs"
   ],
   "deferredUntilFixture": [
     "visual expansion",
@@ -212,7 +173,7 @@
     "rootPackageJsonFound": false,
     "npmValidation": "not run",
     "browserSmoke": "not run",
-    "domFreeRunnerEventFixture": "not run because proof files do not exist yet",
+    "domFreeRunnerPresentationFixture": "not run because proof files do not exist yet",
     "pushedToMain": true
   }
 }
