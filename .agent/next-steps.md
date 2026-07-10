@@ -1,18 +1,18 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T06-21-03-04-00`
+**Updated:** `2026-07-10T07-50-29-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Event Host Fixture Refresh + DOM-Free Presentation Gate
+PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate
 ```
 
 ## Why this comes next
 
 The project already has a useful DSK wrapper, an event bus, a domain host, and a `dino-pose-domain-kit` that consumes `runner.moved`.
 
-The live runtime does not emit `runner.moved` yet, does not retain movement result rows, and does not expose presentation proof through `PrehistoricRushHost.getState()`.
+The live runtime does not emit `runner.moved` yet, does not retain input or movement result rows, and does not expose presentation proof through `PrehistoricRushHost.getState()`.
 
 ## Implementation order
 
@@ -23,6 +23,7 @@ src/presentation/presentation-events.js
 src/presentation/runner-source-state.js
 src/presentation/runner-step-delta.js
 src/presentation/runner-moved-event.js
+src/presentation/input-result-row.js
 src/presentation/movement-result-row.js
 src/presentation/dino-pose-frame.js
 src/presentation/camera-frame-request.js
@@ -49,6 +50,7 @@ scripts/prehistoric-rush-runner-event-fixture.mjs
 runtime current state
   -> RunnerSourceState
   -> RunnerStepDelta
+  -> InputResultRow
   -> MovementResultRow
   -> eventBus.emit("runner.moved", RunnerMovedEvent)
 ```
