@@ -1,15 +1,15 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T01-31-29-04-00",
-  "currentLedge": "PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T01-31-29-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T01-31-29-04-00.md",
+  "updated": "2026-07-10T02-51-39-04-00",
+  "currentLedge": "PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T02-51-39-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T02-51-39-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T01-31-29-04-00-movement-event-readback-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T01-31-29-04-00-presentation-render-readback-catchup.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T01-31-29-04-00-runner-event-result-loop.md",
-    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T01-31-29-04-00-host-presentation-journal-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T01-31-29-04-00-dom-free-presentation-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T02-51-39-04-00-runner-moved-host-journal-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T02-51-39-04-00-presentation-render-journal-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T02-51-39-04-00-runner-moved-event-fixture-loop.md",
+    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T02-51-39-04-00-host-journal-readback-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T02-51-39-04-00-dom-free-runner-event-fixture-gate.md"
   },
   "currentInteractionLoop": [
     "index.html",
@@ -18,6 +18,7 @@
     "event bus / domain host / scheduler",
     "dino form / pose / material domains",
     "camera / HUD domains",
+    "dino-pose-domain-kit listens for runner.moved",
     "src/runtime-terrain-v6.mjs",
     "Three.js CDN",
     "Rapier CDN",
@@ -52,6 +53,7 @@
     "runner-turn-yaw",
     "runner-jump-gravity",
     "runner-terrain-stream",
+    "terrain-height-sampling",
     "runner-spawn-population",
     "runner-contact",
     "runner-pickup",
@@ -61,10 +63,11 @@
     "presentation-camera-consumer",
     "presentation-hud-consumer",
     "presentation-raptor-stride-consumer",
-    "render-submission",
+    "secondary-render-submission",
     "host-state-projection",
-    "movement-event-readback-next",
+    "runner-moved-event-proof-next",
     "presentation-journal-next",
+    "host-journal-readback-next",
     "dom-free-presentation-fixture-next",
     "central-ledger-sync"
   ],
@@ -72,7 +75,7 @@
     {
       "id": "event-bus-kit",
       "path": "src/domain-runtime/event-bus.js",
-      "services": ["on", "emit", "snapshot"]
+      "services": ["on", "emit", "snapshot", "recent event history"]
     },
     {
       "id": "domain-host-kit",
@@ -162,7 +165,9 @@
     "presentation-frame-record-kit",
     "presentation-journal-kit",
     "host-presentation-snapshot-kit",
-    "dom-free-presentation-fixture-kit"
+    "host-event-history-readback-kit",
+    "dom-free-presentation-fixture-kit",
+    "package-validation-kit"
   ],
   "nextImplementationFiles": [
     "src/presentation/presentation-events.js",
