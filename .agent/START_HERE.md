@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T14-59-00-04-00`
+**Last aligned:** `2026-07-10T16-28-47-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,32 +9,33 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Frame Correlation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Single Frame Authority + Restart Transaction Fixture Gate
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T14-59-00-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T14-59-00-04-00.md
+.agent/trackers/2026-07-10T16-28-47-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T16-28-47-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T14-59-00-04-00-runner-frame-correlation-source-dsk-map.md
-.agent/render-audit/2026-07-10T14-59-00-04-00-presentation-render-frame-correlation-gap.md
-.agent/gameplay-audit/2026-07-10T14-59-00-04-00-runner-event-frame-correlation-loop.md
-.agent/interaction-audit/2026-07-10T14-59-00-04-00-keyboard-input-frame-result-map.md
-.agent/presentation-authority-audit/2026-07-10T14-59-00-04-00-host-frame-correlation-contract.md
-.agent/deploy-audit/2026-07-10T14-59-00-04-00-dom-free-frame-correlation-fixture-gate.md
+.agent/architecture-audit/2026-07-10T16-28-47-04-00-runtime-frame-authority-dsk-map.md
+.agent/render-audit/2026-07-10T16-28-47-04-00-dual-raf-render-authority-gap.md
+.agent/gameplay-audit/2026-07-10T16-28-47-04-00-restart-scene-lifecycle-loop.md
+.agent/interaction-audit/2026-07-10T16-28-47-04-00-input-scene-command-authority-map.md
+.agent/frame-authority-audit/2026-07-10T16-28-47-04-00-scheduler-live-loop-presentation-pass-contract.md
+.agent/source-contract-audit/2026-07-10T16-28-47-04-00-manifest-readme-runtime-drift.md
+.agent/deploy-audit/2026-07-10T16-28-47-04-00-single-frame-restart-fixture-gate.md
 ```
 
 ## What this repo is
 
-`PrehistoricRush` is a static browser infinite runner with a repo-local event-bus/domain-host DSK wrapper around a live Three.js/Rapier terrain runner.
+`PrehistoricRush` is a static browser infinite runner with a repo-local DSK composition layer wrapped around a live Three.js/Rapier terrain runner.
 
-The route is playable, but the live runner still does not produce source-owned frame-correlated event/result rows for fixture readback.
+The route is playable, but runtime authority is split across two independent animation loops while the repo-local scheduler remains dormant.
 
 ## Current interaction loop
 
@@ -42,52 +43,52 @@ The route is playable, but the live runner still does not produce source-owned f
 index.html
   -> src/runtime.mjs
   -> src/game.js
-  -> createEventBus / createDomainHost / createTickScheduler
-  -> install dino form, dino pose, dino material, camera, and HUD domain kits
-  -> dino-pose-domain-kit subscribes to runner.moved and emits dino.pose.changed
-  -> emit composition.ready
-  -> import src/runtime-terrain-v6.mjs
-  -> load Three.js 0.179.1, Rapier 0.15.0, and rapier-physics-domain-kit from CDN
-  -> create shell, HUD panel, Start button, terrain chunks, raptor rig, rocks, shards, trees, camera, and renderer
-  -> Start button, Enter, or Space transitions menu to game
-  -> keydown/keyup mutate app.input flags
-  -> frame loop mutates speed, turn, yaw, jump, position, distance, terrain, contacts, pickups, best distance, scene, raptor pose, camera, HUD, and renderer
-  -> src/game.js presentation pass mutates readable stride, close camera, HUD DOM, and a second render submission
-  -> PrehistoricRushHost.getState() returns aggregate scene, runner, physics, terrain count, and renderer label
+     -> create event bus, domain host, and tick scheduler
+     -> install dino form, pose, material, camera, and HUD kits
+     -> scheduler is created but never started
+     -> emit composition.ready
+     -> import src/runtime-terrain-v6.mjs
+  -> runtime-terrain-v6
+     -> load Three.js, Rapier, and rapier-physics-domain-kit
+     -> create menu shell, terrain, runner, pickups, obstacles, camera, renderer
+     -> keyboard/button input mutates app.input or app.scene directly
+     -> primary requestAnimationFrame mutates gameplay, presentation, HUD, and renderer
+     -> expose PrehistoricRushHost with live mutable app/state references
+  -> src/game.js starts a second requestAnimationFrame
+     -> directly rewrites raptor stride, camera, HUD, and renderer
 ```
 
 ## Main finding
 
-Do not start next with visual expansion, terrain rewrite, movement retune, renderer extraction, new pickups, or ProtoKit promotion.
+The next blocker is not visual fidelity. It is frame and lifecycle authority.
 
-The blocker is frame correlation: the dino pose kit waits for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` rows, and neither the baseline render nor the secondary presentation pass keeps a shared `frameId` / `sourceFrameId` across input, movement, contact, pickup, scene, pose, camera, HUD, best-distance, and render output.
+```txt
+tick scheduler exists but never runs
+primary runtime loop owns simulation and first render
+secondary presentation loop owns overlapping pose/camera/HUD and second render
+no shared source frame or render commit
+Retry / Run Again only changes scene back to game
+runner state is not reset, so terminal conditions immediately re-trigger
+README and scene manifests describe a manifest-driven lifecycle that the live runtime does not consume
+```
 
 ## Next safe work
 
-Add a source-ledger/readback layer first:
+Create a single source frame transaction and a restart transaction before changing game feel:
 
 ```txt
-src/presentation/frame-id.js
-src/presentation/presentation-events.js
-src/presentation/runner-source-state.js
-src/presentation/runner-step-delta.js
-src/presentation/runner-moved-event.js
-src/presentation/input-result-row.js
-src/presentation/movement-result-row.js
-src/presentation/dino-pose-frame.js
-src/presentation/camera-frame-request.js
-src/presentation/hud-frame-request.js
-src/presentation/contact-result-snapshot.js
-src/presentation/pickup-result-snapshot.js
-src/presentation/scene-dispatch-result.js
-src/presentation/best-distance-result.js
-src/presentation/render-readback.js
-src/presentation/presentation-frame-record.js
-src/presentation/presentation-journal.js
-src/presentation/host-presentation-snapshot.js
-scripts/prehistoric-rush-frame-correlation-fixture.mjs
+src/runtime/frame-authority.js
+src/runtime/frame-transaction.js
+src/runtime/render-commit.js
+src/runtime/scene-transition-result.js
+src/runtime/restart-transaction.js
+src/runtime/runtime-source-manifest.js
+src/runtime/host-snapshot.js
+scripts/prehistoric-rush-frame-authority-fixture.mjs
 ```
+
+The migration should preserve current visuals and controls while proving one simulation step, one presentation projection, one render commit, and a real state reset for Retry / Run Again.
 
 ## Current validation state
 
-Docs only. Runtime source did not change. No branch or PR was created. No package validation or browser smoke was run because the DOM-free frame-correlation fixture and root package validation do not exist yet.
+Documentation only. Runtime source did not change. No branch or pull request was created. No package, browser, or DOM-free fixture validation was run because the single-frame authority fixture does not exist yet.
