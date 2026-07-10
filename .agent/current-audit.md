@@ -1,12 +1,12 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T02-51-39-04-00`
+**Updated:** `2026-07-10T04-50-40-04-00`
 
 ## Summary
 
-`PrehistoricRush` is playable and has a useful DSK wrapper, but the live runner still bypasses movement event proof.
+`PrehistoricRush` is playable and has a useful DSK wrapper, but the live runner still bypasses runner-event and host-readback proof.
 
-`src/game.js` installs the repo-local event bus, domain host, scheduler, dino, camera, and HUD kits.
+`src/game.js` installs the repo-local event bus, domain host, scheduler, dino, camera, and HUD kits. It also runs a second presentation pass.
 
 `src/runtime-terrain-v6.mjs` still owns the live runner, terrain, physics bridge, raptor rig, pickups, contacts, scene dispatch, HUD, renderer, and host projection.
 
@@ -79,10 +79,11 @@ presentation-hud-consumer
 presentation-raptor-stride-consumer
 secondary-render-submission
 host-state-projection
-runner-moved-event-proof-next
-presentation-journal-next
-host-journal-readback-next
-dom-free-presentation-fixture-next
+runner-event-proof-next
+movement-result-journal-next
+presentation-frame-journal-next
+host-readback-next
+dom-free-runner-fixture-next
 central-ledger-sync
 ```
 
@@ -94,7 +95,7 @@ The live runner does not emit `runner.moved`; it computes and applies raptor ani
 
 ## Main gap
 
-The route needs runner movement event proof, not visual expansion.
+The route needs runner event and host readback proof, not visual expansion.
 
 Missing proof layer:
 
@@ -135,6 +136,10 @@ presentation.latestFrame
 presentation.recentFrames
 presentation.eventCounts
 presentation.movementRows
+presentation.contactRows
+presentation.pickupRows
+presentation.sceneRows
+presentation.bestDistanceRows
 presentation.renderReadback
 presentation.fixtureContract
 ```
@@ -142,5 +147,5 @@ presentation.fixtureContract
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
+PrehistoricRush Runner Event Host Readback Refresh + DOM-Free Fixture Gate
 ```
