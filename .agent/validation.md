@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T18-01-03-04-00`
+**Updated:** `2026-07-10T19-30-36-04-00`
 
 ## This pass
 
@@ -22,7 +22,7 @@ eligible non-Cavalry repositories: 9
 all eligible repos in central ledger: yes
 all eligible repos with root .agent evidence: yes
 selected repo: PrehistoricRush
-selection basis: oldest eligible central update, 2026-07-10T16-28-47-04-00
+selection basis: recent giant-forest/skinned-dino runtime cutover post-dated the 2026-07-10T18-01-03-04-00 audit state
 TheCavalryOfRome: excluded
 ```
 
@@ -31,36 +31,36 @@ TheCavalryOfRome: excluded
 ```txt
 README.md
 index.html
-game-scenes.json
-runner-tuning.json
 src/runtime.mjs
 src/game.js
-src/runtime-terrain-v6.mjs
+src/domains/route/route-field-domain-kit.js
+src/domains/surface/surface-traversal-domain-kit.js
+src/domains/forest/forest-archetype-domain-kit.js
+src/domains/grass/grass-patch-domain-kit.js
+src/domains/grass/grass-wind-domain-kit.js
+src/domains/dino/procedural-dino-body-domain-kit.js
 src/domain-runtime/event-bus.js
-src/domain-runtime/domain-host.js
-src/domain-runtime/tick-scheduler.js
 current root .agent state
-central repo ledger entries and current recency
-latest repository commits
+central PrehistoricRush ledger
+recent PrehistoricRush commits
+current Publish repository inventory
 ```
 
 ## Static findings confirmed
 
 ```txt
-Three.js source: jsDelivr three@0.179.1
-Rapier source: jsDelivr rapier3d-compat@0.15.0
-physics kit source: LuminaryLabs-Agents/NexusRealtime-ProtoKits@main
-load() catches import errors and returns null
-Three.js is passed directly into setup after admission suppression
-Rapier/physics failure can degrade to fallback with no typed source result
-scheduler.start is not called by src/game.js
-primary runtime and secondary presentation own separate RAF loops
-both loops mutate presentation and call renderer.render
-Start / Retry / Run Again only change app.scene
-resize / keydown / keyup listeners have no removal owner
-renderer, geometry, material, physics, and RAF disposal is absent
-PrehistoricRushHost exposes mutable app/state objects
-scene and tuning manifests are not consumed by the live route
+current runtime route: index.html -> src/runtime.mjs -> src/game.js
+current src/runtime.mjs imports only ./game.js
+current route uses one RAF
+active repo-local kits: route, surface, forest, grass patch, grass wind, procedural dino body
+root InstancedMesh capacity: 400
+configured maximum root requests before route rejection: 7 x 49 x 4 = 1,372
+root writes have no explicit capacity guard
+grass admission checks layer.mesh.count
+grass population later overwrites layer.mesh.count with active count
+tree pools have no explicit typed overflow result
+host snapshot has no pool generation or capacity rows
+Start/Retry/Run Again perform only a partial reset
 ```
 
 ## Runtime validation
@@ -73,10 +73,9 @@ npm run check: unavailable
 npm test: unavailable
 browser smoke: not run
 GitHub Pages smoke: not run
-runtime dependency admission fixture: not available
-single-frame fixture: not available
-restart transaction fixture: not available
-mount/dispose/remount fixture: not available
+population capacity fixture: not available
+tree/collider parity fixture: not available
+shard/pickup parity fixture: not available
 ```
 
 ## Push validation
@@ -90,7 +89,7 @@ central internal change log pushed to main: yes
 ## Next validation target
 
 ```txt
-node scripts/prehistoric-rush-runtime-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-population-capacity-fixture.mjs
 ```
 
-The fixture must prove immutable dependency admission, explicit fallback reasons, one frame/render owner, real session restart, idempotent disposal, bounded remount ownership, and detached JSON-safe host observations.
+The fixture must prove immutable capacities, bounded matrix writes, deterministic overflow, grass sparse-to-dense recovery, generation IDs, render/gameplay parity, and detached JSON-safe pool observations.
