@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T01-31-29-04-00`
+**Updated:** `2026-07-10T02-51-39-04-00`
 
 ## Source and event gaps
 
@@ -14,6 +14,7 @@ live raptor pose bypasses dino-pose-domain-kit
 movement has no accepted/rejected/no-change result row
 jump/contact/pickup/scene transitions have no reason codes
 best-distance localStorage write has no proof row
+eventBus history exists but is not fed by the live runner frame loop
 ```
 
 ## Presentation gaps
@@ -23,6 +24,7 @@ src/game.js applies readable stride directly to the rig
 src/game.js applies close camera directly to the camera
 src/game.js rewrites HUD DOM directly
 src/game.js submits a second renderer frame
+runtime-terrain-v6 also applies raptor pose, camera, HUD, and render directly
 no DinoPoseFrame record
 no CameraFrameRequest record
 no HudFrameRequest record
@@ -90,5 +92,5 @@ ProtoKit promotion
 ## Current ledge
 
 ```txt
-PrehistoricRush Movement Event Readback Catch-up + Host Presentation Fixture Gate
+PrehistoricRush Runner Moved Event Host Journal Catch-up + DOM-Free Fixture Gate
 ```
