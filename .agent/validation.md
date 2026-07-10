@@ -7,7 +7,8 @@
 ```txt
 runtime source changed: no
 agent docs changed: yes
-central ledger changed: pending until central sync
+central ledger changed: yes
+central internal change log added: yes
 branch created: no
 pull request created: no
 target branch: main
@@ -76,6 +77,14 @@ runtime dependency admission fixture: not available
 single-frame fixture: not available
 restart transaction fixture: not available
 mount/dispose/remount fixture: not available
+```
+
+## Push validation
+
+```txt
+repo-local documentation pushed to main: yes
+central ledger updated on main: yes
+central internal change log pushed to main: yes
 ```
 
 ## Next validation target
