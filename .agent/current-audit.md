@@ -1,6 +1,6 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T12-10-27-04-00`
+**Updated:** `2026-07-10T13-30-15-04-00`
 
 ## Summary
 
@@ -79,7 +79,7 @@ presentation-hud-consumer
 presentation-raptor-stride-consumer
 secondary-render-submission
 host-state-projection
-runner-source-ledger-next
+runner-source-event-ledger-next
 runner-event-proof-next
 input-result-journal-next
 movement-result-journal-next
@@ -110,10 +110,10 @@ rapier-physics-domain-kit: Rapier world bridge, kinematic actor, contact snapsho
 
 ## Main finding
 
-The route should not be visually expanded next. The safe ledge is a runner presentation source ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
+The route should not be visually expanded next. The safe ledge is a runner source event readback ledger that proves input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, render, and host snapshot rows without changing game feel.
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
 ```
