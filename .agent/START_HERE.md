@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T12-10-27-04-00`
+**Last aligned:** `2026-07-10T13-30-15-04-00`
 
 **Repo:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,25 +9,25 @@
 ## Current ledge
 
 ```txt
-PrehistoricRush Runner Presentation Source Ledger Refresh + DOM-Free Host Fixture Gate
+PrehistoricRush Runner Source Event Readback Ledger Refresh + DOM-Free Host Fixture Gate
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-10T12-10-27-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T12-10-27-04-00.md
+.agent/trackers/2026-07-10T13-30-15-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T13-30-15-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T12-10-27-04-00-runner-presentation-source-ledger-dsk-map.md
-.agent/render-audit/2026-07-10T12-10-27-04-00-presentation-render-source-ledger-gap.md
-.agent/gameplay-audit/2026-07-10T12-10-27-04-00-runner-event-presentation-loop.md
-.agent/interaction-audit/2026-07-10T12-10-27-04-00-keyboard-input-result-ledger-map.md
-.agent/presentation-authority-audit/2026-07-10T12-10-27-04-00-host-presentation-source-contract.md
-.agent/deploy-audit/2026-07-10T12-10-27-04-00-dom-free-runner-presentation-fixture-gate.md
+.agent/architecture-audit/2026-07-10T13-30-15-04-00-runner-source-event-readback-dsk-map.md
+.agent/render-audit/2026-07-10T13-30-15-04-00-presentation-render-source-event-gap.md
+.agent/gameplay-audit/2026-07-10T13-30-15-04-00-runner-event-source-loop.md
+.agent/interaction-audit/2026-07-10T13-30-15-04-00-keyboard-input-source-result-map.md
+.agent/presentation-authority-audit/2026-07-10T13-30-15-04-00-host-source-event-readback-contract.md
+.agent/deploy-audit/2026-07-10T13-30-15-04-00-dom-free-source-event-fixture-gate.md
 ```
 
 ## What this repo is
@@ -60,7 +60,7 @@ index.html
 
 Do not start next with visual expansion, terrain rewrite, movement retune, renderer extraction, new pickups, or ProtoKit promotion.
 
-The blocker is runner presentation source proof: the dino pose kit waits for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` rows, and the host does not expose fixture-readable presentation/input/movement/contact/pickup/scene/best-distance/render rows.
+The blocker is runner source event readback: the dino pose kit waits for `runner.moved`, but the live runner never emits stable `RunnerMovedEvent` rows, and the host does not expose fixture-readable input, movement, contact, pickup, scene, best-distance, pose, camera, HUD, or render rows.
 
 ## Next safe work
 
@@ -84,9 +84,9 @@ src/presentation/render-readback.js
 src/presentation/presentation-frame-record.js
 src/presentation/presentation-journal.js
 src/presentation/host-presentation-snapshot.js
-scripts/prehistoric-rush-runner-presentation-fixture.mjs
+scripts/prehistoric-rush-runner-source-event-fixture.mjs
 ```
 
 ## Current validation state
 
-Docs only. Runtime source did not change. No branch or PR was created. No package validation or browser smoke was run because the DOM-free runner presentation fixture and root package validation do not exist yet.
+Docs only. Runtime source did not change. No branch or PR was created. No package validation or browser smoke was run because the DOM-free runner source event fixture and root package validation do not exist yet.
