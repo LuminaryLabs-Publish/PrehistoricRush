@@ -1,73 +1,90 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T16-28-47-04-00`
+**Updated:** `2026-07-10T18-01-03-04-00`
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Single Frame Authority + Restart Transaction Fixture Gate
+PrehistoricRush Runtime Dependency Admission + Single-Owner Session Lifecycle Fixture Gate
 ```
 
 ## Goal
 
-Make one runtime frame and one lifecycle transaction authoritative without changing the current visual target, movement feel, terrain generation, or content.
+Make external runtime selection, frame ownership, session start/restart, and teardown deterministic and observable without changing the current visual target, movement feel, terrain generation, or content.
 
 ## Plan ledger
 
-- [ ] Add a pure frame authority module with monotonic `sourceFrameId`.
-- [ ] Define ordered phases: input, simulation, contact/pickup, scene, pose, camera, HUD, render.
-- [ ] Select one driver: either the repo-local scheduler or a single live runtime RAF adapter.
-- [ ] Remove the second independent render commit by converting the presentation pass into a phase consumer.
+- [ ] Replace the mutable `NexusRealtime-ProtoKits@main` physics-kit URL with an immutable repository/commit source.
+- [ ] Add a runtime dependency registry for Three.js, Rapier, and the physics kit.
+- [ ] Classify each dependency as required, optional, or fallback-capable.
+- [ ] Return typed `RuntimeDependencyResult` rows with requested source, admitted source, version/revision, capabilities, status, and reason.
+- [ ] Fail boot immediately and clearly when required Three.js admission fails.
+- [ ] Make Rapier/physics fallback an explicit policy result rather than a silent null path.
+- [ ] Add one runtime source/provenance fingerprint to host readback.
+- [ ] Select one source-frame owner and drive `domainHost.tick()` once per frame.
+- [ ] Convert the secondary presentation RAF into a phase consumer and accept one render commit per frame.
 - [ ] Emit `runner.moved` from the authoritative movement phase.
-- [ ] Consume `dino-pose-domain-kit`, `camera-domain-kit`, and `hud-domain-kit` descriptors/services instead of duplicating values.
-- [ ] Add `RenderCommitResult` with accepted/skipped reason and source frame.
-- [ ] Add `SceneTransitionResult` for start, run-over, win, retry, and run-again.
-- [ ] Add `RestartTransaction` that recreates session state while preserving best distance.
-- [ ] Add a detached JSON-safe host snapshot.
-- [ ] Add runtime source/manifest consumption metadata.
-- [ ] Add a DOM-free fixture proving frame and restart invariants.
-- [ ] Add a root validation command only after the fixture exists.
+- [ ] Consume dino pose, camera, and HUD domain services instead of duplicating them.
+- [ ] Add `SessionStartResult`, `SceneTransitionResult`, and `RestartTransaction`.
+- [ ] Recreate session state for Retry / Run Again while preserving best distance.
+- [ ] Add a runtime lifecycle owner with `mount`, `start`, `stop`, `dispose`, and `snapshot`.
+- [ ] Retain and remove resize/keyboard listener handles.
+- [ ] Cancel both RAF chains during disposal.
+- [ ] Dispose renderer, geometries, materials, instanced meshes, and physics resources.
+- [ ] Collect event-bus/domain teardown callbacks.
+- [ ] Expose detached JSON-safe dependency, frame, session, and lifecycle observations.
+- [ ] Add DOM-free admission, frame, restart, and dispose/remount fixtures.
+- [ ] Add a root validation command only after fixtures exist.
 
-## Suggested files
+## Existing owners to update first
 
 ```txt
+src/runtime-terrain-v6.mjs
+  module loading, runtime setup, input, simulation, presentation, renderer, physics, host
+
+src/game.js
+  composition, presentation pass, scheduler/domain integration, composition lifecycle
+
+src/domain-runtime/tick-scheduler.js
+  cancellable RAF ownership and lifecycle snapshot
+
+src/domain-runtime/domain-host.js
+  optional dispose fan-out
+
+src/domain-runtime/event-bus.js
+  listener/history reset and composition disposal
+```
+
+## New shared capability only where justified
+
+```txt
+src/runtime/runtime-dependency-registry.js
+src/runtime/runtime-dependency-result.js
+src/runtime/runtime-source-provenance.js
 src/runtime/frame-authority.js
-src/runtime/frame-transaction.js
-src/runtime/frame-phases.js
 src/runtime/render-commit.js
-src/runtime/scene-transition-result.js
-src/runtime/restart-transaction.js
-src/runtime/runtime-source-manifest.js
+src/runtime/session-transaction.js
+src/runtime/runtime-lifecycle.js
 src/runtime/host-snapshot.js
-scripts/prehistoric-rush-frame-authority-fixture.mjs
 ```
 
-## Required frame fixture assertions
+## Required fixture assertions
 
 ```txt
-sourceFrameId increments once per simulation step
-domainHost.tick is called exactly once per source frame
-input snapshot is frozen for the frame
-movement emits one runner.moved event
-pose, camera, and HUD consume the same sourceFrameId
-exactly one render commit is accepted per sourceFrameId
-duplicate render request is skipped with a reason
+same source request resolves the same immutable module revision
+required Three.js failure returns boot_rejected before setup
+Rapier failure returns explicit fallback_admitted with reason
+host snapshot reports requested/admitted sources and capabilities
+one sourceFrameId drives one domain tick and one accepted render commit
+Retry / Run Again create new session IDs and reset transient state
+best distance survives restart
+mount registers bounded listener/RAF/resource ownership
+first dispose cancels loops and releases resources once
+second dispose is idempotent
+remount creates one listener set, one frame owner, and one renderer
 host snapshot is detached and JSON-safe
-```
-
-## Required lifecycle fixture assertions
-
-```txt
-menu start creates a fresh session
-run-over records a typed cause
-retry creates a new session id
-retry resets distance, position, velocity, jump, collected pickups, and contact state
-retry preserves best distance
-win records a typed cause
-run-again creates a new session id and resets distance below the win threshold
-menu transition follows the manifest contract or the manifest is explicitly deprecated
 ```
 
 ## Stop conditions
 
-Do not begin visual expansion, terrain replacement, movement retuning, new content, or kit promotion until the single-frame and restart fixtures pass.
+Do not begin visual expansion, terrain replacement, movement retuning, new content, renderer extraction, or ProtoKit promotion until admission, frame, restart, and lifecycle fixtures pass.
