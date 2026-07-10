@@ -1,16 +1,16 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T07-50-29-04-00",
-  "currentLedge": "PrehistoricRush Runner Event Journal Readback Catch-up + DOM-Free Presentation Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T07-50-29-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T07-50-29-04-00.md",
+  "updated": "2026-07-10T09-18-53-04-00",
+  "currentLedge": "PrehistoricRush Runner Event Host Readback Ledger Refresh + DOM-Free Presentation Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T09-18-53-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T09-18-53-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T07-50-29-04-00-runner-event-journal-readback-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T07-50-29-04-00-presentation-render-frame-readback-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T07-50-29-04-00-runner-event-journal-proof-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-10T07-50-29-04-00-keyboard-input-result-reason-map.md",
-    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T07-50-29-04-00-presentation-journal-host-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T07-50-29-04-00-dom-free-runner-journal-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T09-18-53-04-00-runner-event-host-readback-ledger-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T09-18-53-04-00-presentation-render-host-readback-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T09-18-53-04-00-runner-event-journal-proof-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-10T09-18-53-04-00-keyboard-input-result-reason-map.md",
+    "presentationAuthority": ".agent/presentation-authority-audit/2026-07-10T09-18-53-04-00-presentation-journal-host-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T09-18-53-04-00-dom-free-runner-event-fixture-gate.md"
   },
   "currentInteractionLoop": [
     "index.html",
