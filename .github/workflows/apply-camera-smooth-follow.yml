@@ -22,6 +22,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          from textwrap import dedent
 
           def replace_once(text, old, new, label):
               count = text.count(old)
@@ -47,56 +48,60 @@ jobs:
               '  const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 900);\n  const renderer =',
               '  const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 900);\n  const cameraTargets = { position: [0, 0, 0], lookPoint: [0, 0, 0] };\n  let cameraRunId = null;\n  const renderer =',
               "persistent camera targets")
-          helpers = '''  function setCameraTargets(state) {
-            const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
-            const backX = -Math.sin(state.yaw);
-            const backZ = -Math.cos(state.yaw);
-            cameraTargets.position[0] = state.x + backX * 6.6;
-            cameraTargets.position[1] = state.y + 2.35;
-            cameraTargets.position[2] = state.z + backZ * 6.6;
-            cameraTargets.lookPoint[0] = ahead.x;
-            cameraTargets.lookPoint[1] = sampleHeight(ahead.x, ahead.z) + 1.15;
-            cameraTargets.lookPoint[2] = ahead.z;
-          }
+          helpers = dedent('''
+            function setCameraTargets(state) {
+              const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
+              const backX = -Math.sin(state.yaw);
+              const backZ = -Math.cos(state.yaw);
+              cameraTargets.position[0] = state.x + backX * 6.6;
+              cameraTargets.position[1] = state.y + 2.35;
+              cameraTargets.position[2] = state.z + backZ * 6.6;
+              cameraTargets.lookPoint[0] = ahead.x;
+              cameraTargets.lookPoint[1] = sampleHeight(ahead.x, ahead.z) + 1.15;
+              cameraTargets.lookPoint[2] = ahead.z;
+            }
 
-          function applyCameraTransform(transform) {
-            camera.position.fromArray(transform.position);
-            camera.quaternion.fromArray(transform.quaternion);
-          }
+            function applyCameraTransform(transform) {
+              camera.position.fromArray(transform.position);
+              camera.quaternion.fromArray(transform.quaternion);
+            }
 
-          function resetCamera(state, reason = "run-reset") {
-            setCameraTargets(state);
-            cameraRunId = state.runId;
-            const transform = cameraFollow.reset({
-              position: cameraTargets.position,
-              lookPoint: cameraTargets.lookPoint,
-              reason
-            });
-            applyCameraTransform(transform);
-            return transform;
-          }
+            function resetCamera(state, reason = "run-reset") {
+              setCameraTargets(state);
+              cameraRunId = state.runId;
+              const transform = cameraFollow.reset({
+                position: cameraTargets.position,
+                lookPoint: cameraTargets.lookPoint,
+                reason
+              });
+              applyCameraTransform(transform);
+              return transform;
+            }
 
-'''
+          ''')
           game = replace_once(game,
               '  function render(state, dt) {',
               helpers + '  function render(state, dt) {',
               "camera helpers")
-          game = replace_once(game,
-              '''    const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
-              const backX = -Math.sin(state.yaw);
-              const backZ = -Math.cos(state.yaw);
-              camera.position.lerp(new THREE.Vector3(state.x + backX * 6.6, state.y + 2.35, state.z + backZ * 6.6), 1 - Math.exp(-8.5 * dt));
-              camera.lookAt(ahead.x, sampleHeight(ahead.x, ahead.z) + 1.15, ahead.z);''',
-              '''    setCameraTargets(state);
-              const cameraTransform = cameraRunId !== state.runId
-                ? resetCamera(state, "run-change")
-                : cameraFollow.update({
-                    targetPosition: cameraTargets.position,
-                    targetLookPoint: cameraTargets.lookPoint,
-                    deltaTime: Math.min(dt, 1 / 30)
-                  });
-              applyCameraTransform(cameraTransform);''',
-              "camera render")
+          old_camera = dedent('''
+                const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
+                const backX = -Math.sin(state.yaw);
+                const backZ = -Math.cos(state.yaw);
+                camera.position.lerp(new THREE.Vector3(state.x + backX * 6.6, state.y + 2.35, state.z + backZ * 6.6), 1 - Math.exp(-8.5 * dt));
+                camera.lookAt(ahead.x, sampleHeight(ahead.x, ahead.z) + 1.15, ahead.z);
+          ''').strip('\n')
+          new_camera = dedent('''
+                setCameraTargets(state);
+                const cameraTransform = cameraRunId !== state.runId
+                  ? resetCamera(state, "run-change")
+                  : cameraFollow.update({
+                      targetPosition: cameraTargets.position,
+                      targetLookPoint: cameraTargets.lookPoint,
+                      deltaTime: Math.min(dt, 1 / 30)
+                    });
+                applyCameraTransform(cameraTransform);
+          ''').strip('\n')
+          game = replace_once(game, old_camera, new_camera, "camera render")
           game = replace_once(game,
               '    sampleHeight,\n    activatePatch,',
               '    sampleHeight,\n    resetCamera,\n    activatePatch,',
@@ -121,9 +126,8 @@ jobs:
               '  const patchControllers = engine.n.seededWorldPatchController;\n  if (!game || !instanceBatches || !patchControllers) throw new Error("PrehistoricRush composition did not install.");',
               '  const patchControllers = engine.n.seededWorldPatchController;\n  const cameraFollows = engine.n.cameraSmoothFollow;\n  if (!game || !instanceBatches || !patchControllers || !cameraFollows) throw new Error("PrehistoricRush composition did not install.");',
               "camera service")
-          game = replace_once(game,
-              '  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches);',
-              '''  const cameraFollow = cameraFollows.create({
+          camera_create = dedent('''
+              const cameraFollow = cameraFollows.create({
                 id: "prehistoric-rush-player-camera",
                 positionSmoothTime: 0.22,
                 lookSmoothTime: 0.14,
@@ -133,7 +137,11 @@ jobs:
                 maximumDeltaTime: 1 / 30,
                 teleportThreshold: 24
               });
-              const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow);''',
+              const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow);
+          ''').strip('\n')
+          game = replace_once(game,
+              '  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches);',
+              camera_create,
               "create camera follow")
           game = replace_once(game,
               '  game.start();\n  updateStreaming(game.getState(), true);',
@@ -176,8 +184,8 @@ jobs:
               '    version: "0.5.0",',
               "game domain version")
           domain = replace_once(domain,
-              '        "instanced-render-batch-kit"\n      ],',
-              '        "instanced-render-batch-kit",\n        "camera-smooth-follow-kit"\n      ],',
+              '        "seeded-world-patch-controller-kit"\n      ],',
+              '        "seeded-world-patch-controller-kit",\n        "camera-smooth-follow-kit"\n      ],',
               "composition metadata")
           domain_path.write_text(domain)
           PY
