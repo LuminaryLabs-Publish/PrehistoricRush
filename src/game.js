@@ -2,7 +2,7 @@ import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehis
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 
 const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "5d3613b140ca33395f180acde014c167addf0ccc";
+const KITS_COMMIT = "ae7ebda62f7c264bbde49c939a62e1a04fd60784";
 const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
 const CDN = {
   nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
