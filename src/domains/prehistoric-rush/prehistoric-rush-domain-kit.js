@@ -26,7 +26,11 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     "defineResource",
     "defineEvent"
   ], "Pinned NexusEngine module");
-  requireFactories(NexusEngineKits, ["createSeedKit", "createProceduralCreatureBodyKit"], "Pinned NexusEngine-Kits module");
+  requireFactories(NexusEngineKits, [
+    "createSeedKit",
+    "createProceduralCreatureBodyKit",
+    "createInstancedRenderBatchKit"
+  ], "Pinned NexusEngine-Kits module");
 
   const {
     createCoreInputKit,
@@ -42,7 +46,11 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createCoreDiagnosticsKit,
     createCoreCompositionKit
   } = NexusEngine;
-  const { createSeedKit, createProceduralCreatureBodyKit } = NexusEngineKits;
+  const {
+    createSeedKit,
+    createProceduralCreatureBodyKit,
+    createInstancedRenderBatchKit
+  } = NexusEngineKits;
 
   return [
     createCoreInputKit({ actions: { jump: {}, boost: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
@@ -68,6 +76,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createCoreCompositionKit(),
     createSeedKit({ seed: config.seed ?? 238991 }),
     createProceduralCreatureBodyKit({ creatures: [PLAYER_RAPTOR_PRESET] }),
+    createInstancedRenderBatchKit(),
     createPrehistoricRushDomainKit(NexusEngine, config)
   ];
 }
@@ -174,7 +183,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.3.0",
+    version: "0.4.0",
     stability: "game",
     services: ["run", "route", "surface", "score", "outcome", "player-creature"],
     requires: ["n:procedural-creatures:body"],
@@ -265,7 +274,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "core-diagnostics",
         "core-composition",
         "seed-kit",
-        "procedural-creature-body-kit"
+        "procedural-creature-body-kit",
+        "instanced-render-batch-kit"
       ],
       nestedKits: ["drunk-route-generator"]
     }
