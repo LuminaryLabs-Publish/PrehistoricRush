@@ -1,119 +1,108 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T19-30-36-04-00`
+**Updated:** `2026-07-10T21-00-16-04-00`
 
-## Instance-pool capacity gaps
+## Instance-pool capacity
 
 ```txt
-no immutable capacity field in pool wrappers
-active draw count and allocation capacity are conflated
-root pool allocates 400 but can receive up to 1,372 requests before route rejection
-root matrix writes have no explicit index guard
-root draw count can be assigned above allocation capacity
-tree trunk/crown writes have no typed capacity preflight
-per-archetype tree concentration has no overflow policy
-rock and shard writes have no shared admission result
+root allocation is 400 while the configured window can request up to 1,372 roots
+tree and root writes have no explicit capacity preflight
+grass active draw count is reused as the next generation's admission limit
+no typed overflow or truncation result
+no shared population generation commit
+no render/collider or shard/pickup parity proof
 ```
 
-## Grass population gaps
+## Runtime source contract
 
 ```txt
-grass mesh.count begins as allocation capacity
-grass mesh.count is overwritten with active count after population
-next generation uses prior active count as the admission limit
-sparse population can ratchet future capacity downward
-no requested/admitted/rejected count by layer
-no stable grass generation ID
-no stale-slot policy
+src/game.js is the actual source of tuning and scene authority
+runner-tuning.json is deployed but not read
+game-scenes.json is deployed but not read
+kit-composition.json is deployed but not read
+kit-cutover-inventory.json is deployed but not read
+flock-generation.json is deployed but not read
+scenes/*.json are deployed but not read
+no canonical runtime source manifest
+no consumed-file ledger
+no requested/resolved source fingerprint
+no source-contract fixture
 ```
 
-## Population correlation gaps
+## Material declaration drift
 
 ```txt
-no PopulationGenerationResult
-no windowKey plus generationId contract
-no stable source row for every tree/root/grass/rock/shard candidate
-visible tree rows and collider rows are not proven to share admission
-visible shard rows and pickup rows are not proven to share admission
-population replacement has no commit or rollback result
-host readback has no pool counts or overflow reasons
+runtime speed values differ from runner-tuning.json
+runtime terrain chunk and segment values differ from runner-tuning.json
+runtime imports six local domain kits while kit-composition.json declares NexusEngine core kits
+runtime does not import NexusEngine while game-scenes.json and kit-composition.json declare NexusEngine @main
+runtime transitions scenes inline while game-scenes.json declares a transition table and scene descriptors
 ```
 
-## Restart gaps
+## Restart and outcome authority
 
 ```txt
-Start / Retry / Run Again reset x, z, distance, routeIndex, and yaw only
-speed is not reset
-jumpY and vertical velocity are not reset
-grounded state is not explicitly reset
-time and turn are not reset
-surface smoothing state is not reset
-shard count and collected IDs are not reset
-population generation identity does not exist
-old generation invalidation cannot be proven
+Start / Retry / Run Again reset only x, z, distance, routeIndex, and yaw
+speed, jump, grounded state, time, turn, surface smoothing, shards, and collected IDs persist
+best distance is read from localStorage but not written back
+travel distance is used as win progress rather than an explicit monotonic route-progress result
+no RunResult or RestartResult
 ```
 
-## Runtime dependency and lifecycle gaps
+## Population identity
 
 ```txt
-external physics kit still resolves from mutable NexusRealtime-ProtoKits@main
-load() still suppresses import errors to null
+shard IDs are chunk-based
+shard positions are derived from the player's current routeIndex
+repopulating the same chunk at a different routeIndex can move the same logical shard ID
+shard ownership is not proven to be world-space deterministic
+```
+
+## Rendering and lighting
+
+```txt
+directional-light shadow camera is fixed near the initial world origin
+no player-relative or camera-relative shadow-frustum update
+no shadow coverage observation
+HUD progress reflects travel distance, not explicit route completion
+```
+
+## Dependency and lifecycle
+
+```txt
+external physics kit resolves from mutable NexusRealtime-ProtoKits@main
+load() suppresses import failures to null
 no typed dependency admission rows
-listeners and RAF have no shared dispose owner
-renderer, geometry, material, and physics resources have no dispose transaction
+listeners and RAF have no dispose owner
+renderer, geometry, material, instance pools, and physics resources have no dispose transaction
 ```
 
-## Domain consumption and inventory gaps
+## Inventory and host readback
 
 ```txt
-active route directly imports six new domain kits
-earlier event-bus, domain-host, scheduler, dino form/pose/material, camera, and HUD kits remain present but inactive
-no authoritative kit manifest distinguishes active from retained legacy kits
-README still describes NexusEngine/manifests more strongly than the current direct game.js route supports
-```
-
-## Host/readback gaps
-
-```txt
+inactive legacy kits remain beside the active route
+no authoritative active-kit manifest
 PrehistoricRushHost.app exposes mutable live objects
-getState has no dependency admission rows
-getState has no population generation rows
-getState has no immutable capacity or active count per pool
-getState has no requested/admitted/rejected/overflow counts
-getState has no renderer/collider or shard/pickup parity rows
-getState has no restart result or lifecycle state
+getState has no population, source, lifecycle, restart, outcome, persistence, or shadow-coverage rows
 ```
 
-## Validation gaps
+## Validation
 
 ```txt
 no root package.json
 no npm run check
-no DOM-free population-capacity fixture
-no dense/sparse/repeated population fixture
-no tree/collider parity fixture
-no shard/pickup parity fixture
-no browser smoke in this pass
-no Pages smoke in this pass
+no population-capacity fixture
+no source-contract fixture
+no restart/outcome fixture
+no browser or Pages smoke in this documentation pass
 ```
 
-## Do not solve first
+## Priority
 
 ```txt
-new tree art
-more tree density
-more grass layers
-new dinosaur mesh
-new pickup families
-shader rewrite
-renderer replacement
-movement retune
-ProtoKit promotion
-```
-
-## Current ledge
-
-```txt
-PrehistoricRush Instance Pool Capacity Authority
-+ Deterministic Population Fixture Gate
+1. population-capacity fixture
+2. runtime source-contract fixture
+3. restart/outcome/persistence fixture
+4. dependency admission and lifecycle disposal
+5. lighting/shadow follow proof
 ```

@@ -1,95 +1,93 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T19-30-36-04-00`
+**Updated:** `2026-07-10T21-00-16-04-00`
 
-## Next safe ledge
+## Immediate safe ledge
 
 ```txt
 PrehistoricRush Instance Pool Capacity Authority
 + Deterministic Population Fixture Gate
 ```
 
+This remains first. Do not place another abstraction in front of the current `populate()` path until writes and active draw counts are bounded.
+
 ## Goal
 
-Make forest, grass, rock, shard, collider, and pickup population bounded, deterministic, correlated, and observable without changing the current visual target or movement feel.
+Make the runtime's population and deployed source contract deterministic, bounded, observable, and honest. A successful deployment must identify which files and revisions actually control the live route.
 
 ## Plan ledger
 
-- [ ] Add immutable `capacity` to every trunk, crown, root, grass, rock, and shard pool wrapper.
-- [ ] Add mutable `activeCount` separate from renderer allocation capacity.
-- [ ] Stop reading `InstancedMesh.count` as a capacity source.
-- [ ] Build deterministic population request rows before any matrix write.
-- [ ] Preflight every request against its target pool capacity.
-- [ ] Return typed `admitted`, `truncated`, `rejected`, and `overflow` rows.
-- [ ] Bound every `setMatrixAt` index to `index < capacity`.
-- [ ] Bound final `mesh.count` to admitted count and capacity.
-- [ ] Add stable `windowKey` and `generationId` values.
-- [ ] Define stale-slot behavior when active count decreases.
-- [ ] Correlate admitted tree render rows with collider rows.
-- [ ] Correlate admitted shard render rows with pickup rows.
-- [ ] Expose detached pool and generation observations through `PrehistoricRushHost.getState()`.
-- [ ] Add a DOM-free dense/sparse/repeated population fixture.
-- [ ] Add a browser smoke after the DOM-free fixture passes.
+### Phase 0: complete the current population gate
 
-## Existing owner to update first
+- [ ] Add immutable capacity to every instance-pool wrapper.
+- [ ] Separate active draw count from allocation capacity.
+- [ ] Preflight matrix writes.
+- [ ] Produce requested, admitted, truncated, rejected, and overflow rows.
+- [ ] Add `windowKey` and `generationId`.
+- [ ] Correlate tree render rows with collider rows.
+- [ ] Correlate shard render rows with pickup rows.
+- [ ] Add dense, sparse, and repeated-generation fixtures.
+
+### Phase 1: establish one runtime source contract
+
+- [ ] Decide whether existing root JSON files are runtime inputs or archival planning files.
+- [ ] Create one versioned `runtime-source-manifest.json`.
+- [ ] Record the exact entrypoint, active local kits, external modules, and configuration sources.
+- [ ] Add a schema/version field and deterministic fingerprint.
+- [ ] Reject duplicate authority for the same tuning or transition field.
+- [ ] If `runner-tuning.json` remains authoritative, load and validate it before constructing the route.
+- [ ] If tuning remains in JavaScript, stop deploying the JSON as an active configuration artifact.
+- [ ] If `game-scenes.json` remains authoritative, route scene changes through its transition table.
+- [ ] Otherwise label the scene files archival and remove them from the live artifact.
+- [ ] Reconcile `kit-composition.json` with the six active local domain kits.
+- [ ] Replace mutable `@main` dependency coordinates in the source manifest with immutable revisions.
+- [ ] Expose requested and resolved source rows through `PrehistoricRushHost.getState()`.
+
+### Phase 2: add source-contract validation
+
+- [ ] Add `scripts/prehistoric-rush-source-contract-fixture.mjs`.
+- [ ] Assert every deployed authoritative file is consumed.
+- [ ] Assert every consumed runtime file is declared.
+- [ ] Assert declared tuning equals resolved runtime tuning.
+- [ ] Assert declared scene transitions equal runtime transitions.
+- [ ] Assert declared active kit IDs equal imported active kit IDs.
+- [ ] Assert source fingerprint is stable for identical inputs.
+- [ ] Fail Pages staging when an authoritative-looking file is copied but unconsumed.
+- [ ] Add a browser smoke that reads the host source fingerprint.
+
+## Existing owners to update first
 
 ```txt
 src/game.js
-  createForestRenderer()
-  populate()
-  terrain-window rebuild path
-  collider and pickup replacement
-  PrehistoricRushHost.getState()
-```
-
-## Existing DSKs to preserve
-
-```txt
-route-field-domain-kit
-surface-traversal-domain-kit
-forest-archetype-domain-kit
-grass-patch-domain-kit
-grass-wind-domain-kit
-procedural-dino-body-domain-kit
+runner-tuning.json
+game-scenes.json
+kit-composition.json
+kit-cutover-inventory.json
+.github/workflows/deploy-pages.yml
+PrehistoricRushHost.getState()
 ```
 
 ## New capability only where justified
 
 ```txt
-src/domains/population/instance-pool-descriptor-kit.js
-src/domains/population/population-request-kit.js
-src/domains/population/population-admission-kit.js
-src/domains/population/population-result-kit.js
-src/domains/population/population-observation-kit.js
-scripts/prehistoric-rush-population-capacity-fixture.mjs
+src/domains/source/runtime-source-manifest-kit.js
+src/domains/source/source-contract-validator-kit.js
+src/domains/source/source-fingerprint-kit.js
+src/domains/source/source-observation-kit.js
+scripts/prehistoric-rush-source-contract-fixture.mjs
 ```
 
-## Required fixture assertions
+## Follow-on work
 
 ```txt
-root request above 400 never writes above index 399
-root activeCount never exceeds 400
-single-archetype tree concentration produces typed overflow
-sparse grass generation does not reduce immutable capacity
-sparse -> dense grass can grow back to original capacity
-same seed/window produces identical request and admission rows
-tree render count equals tree collider count
-shard render count equals pickup count
-repeated generation clears or overwrites stale active slots deterministically
-host snapshot is detached and JSON-safe
-```
-
-## Follow-on work, not first
-
-After population capacity proof passes, return to:
-
-```txt
-full restart transaction
+restart/result/persistence transaction
+route-progress and goal authority
+best-distance writeback
 immutable external dependency admission
 mount/dispose/remount lifecycle
-manifest/source-contract reconciliation
+camera-relative lighting and shadow frustum
 ```
 
 ## Stop conditions
 
-Do not begin visual expansion, new tree art, more grass layers, new obstacle families, higher population density, renderer replacement, or ProtoKit promotion until the population-capacity fixture passes.
+Do not add more visual content, new pickup families, new configuration files, another scene framework, or another kit inventory until the population and source-contract fixtures identify one runtime authority.

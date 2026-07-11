@@ -1,27 +1,29 @@
 {
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "updated": "2026-07-10T19-30-36-04-00",
+  "updated": "2026-07-10T21-00-16-04-00",
   "currentLedge": "PrehistoricRush Instance Pool Capacity Authority + Deterministic Population Fixture Gate",
-  "latestTracker": ".agent/trackers/2026-07-10T19-30-36-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T19-30-36-04-00.md",
+  "documentedFollowOn": "PrehistoricRush Runtime Source Contract Reconciliation + Deployed Artifact Fixture Gate",
+  "latestTracker": ".agent/trackers/2026-07-10T21-00-16-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-10T21-00-16-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-10T19-30-36-04-00-instance-pool-capacity-authority-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-10T19-30-36-04-00-instanced-render-capacity-commit-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-10T19-30-36-04-00-population-stream-restart-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-10T19-30-36-04-00-input-population-generation-map.md",
-    "forestSystem": ".agent/forest-system-audit/2026-07-10T19-30-36-04-00-tree-root-pool-capacity-contract.md",
-    "grassSystem": ".agent/grass-system-audit/2026-07-10T19-30-36-04-00-layer-capacity-ratchet-gap.md",
-    "deploy": ".agent/deploy-audit/2026-07-10T19-30-36-04-00-population-capacity-fixture-gate.md"
+    "architecture": ".agent/architecture-audit/2026-07-10T21-00-16-04-00-runtime-source-contract-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-10T21-00-16-04-00-deployed-render-source-authority-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-10T21-00-16-04-00-runtime-config-scene-authority-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-10T21-00-16-04-00-input-scene-config-bypass-map.md",
+    "sourceContract": ".agent/source-contract-audit/2026-07-10T21-00-16-04-00-deployed-manifest-runtime-consumption-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-10T21-00-16-04-00-artifact-source-contract-fixture-gate.md"
   },
   "interactionLoop": [
     "index.html",
     "src/runtime.mjs imports src/game.js",
     "construct route, surface, forest, grass, wind, and procedural-dino kits",
     "load Three.js, Rapier, and external physics kit",
-    "create scene, terrain window, instance pools, raptor, input, and physics",
+    "create shell, scene, terrain window, instance pools, raptor, input, and physics",
     "populate render, collider, and pickup rows",
     "Start Rush performs partial reset",
     "single RAF advances simulation, presentation, and render",
+    "run-over or win mutates inline scene state",
+    "Retry or Run Again performs another partial reset",
     "PrehistoricRushHost exposes live objects and aggregate snapshots"
   ],
   "domains": [
@@ -63,15 +65,23 @@
     "runner-boost",
     "runner-jump-gravity",
     "contact-resolution",
-    "score-and-goal",
+    "travel-distance-score",
+    "goal-resolution",
     "best-distance-storage",
     "camera-projection",
     "hud-projection",
     "render-submission",
+    "shadow-frustum",
     "instance-pool-capacity",
     "population-admission",
     "population-generation",
+    "runtime-source-authority",
+    "deployed-manifest-authority",
+    "scene-transition-authority",
+    "tuning-authority",
+    "kit-composition-authority",
     "host-state-projection",
+    "fixture-validation",
     "static-pages-deploy",
     "central-ledger-sync"
   ],
@@ -79,32 +89,64 @@
     {
       "id": "route-field-domain-kit",
       "path": "src/domains/route/route-field-domain-kit.js",
-      "services": ["deterministic control points", "Catmull-Rom sample rebuild", "nearest lookup", "region classification", "control-point extension", "snapshot"]
+      "services": [
+        "deterministic control points",
+        "Catmull-Rom sample rebuild",
+        "nearest lookup",
+        "region classification",
+        "control-point extension",
+        "snapshot"
+      ]
     },
     {
       "id": "surface-traversal-domain-kit",
       "path": "src/domains/surface/surface-traversal-domain-kit.js",
-      "services": ["region multipliers", "smoothed resistance update", "getState", "snapshot"]
+      "services": [
+        "region multipliers",
+        "smoothed resistance update",
+        "getState",
+        "snapshot"
+      ]
     },
     {
       "id": "forest-archetype-domain-kit",
       "path": "src/domains/forest/forest-archetype-domain-kit.js",
-      "services": ["five archetype descriptors", "indexed lookup", "snapshot"]
+      "services": [
+        "five archetype descriptors",
+        "indexed lookup",
+        "snapshot"
+      ]
     },
     {
       "id": "grass-patch-domain-kit",
       "path": "src/domains/grass/grass-patch-domain-kit.js",
-      "services": ["carpet/main/verge descriptors", "route-distance scale policy", "snapshot"]
+      "services": [
+        "carpet/main/verge descriptors",
+        "route-distance scale policy",
+        "snapshot"
+      ]
     },
     {
       "id": "grass-wind-domain-kit",
       "path": "src/domains/grass/grass-wind-domain-kit.js",
-      "services": ["gust update", "wind state", "snapshot"]
+      "services": [
+        "gust update",
+        "wind state",
+        "snapshot"
+      ]
     },
     {
       "id": "procedural-dino-body-domain-kit",
       "path": "src/domains/dino/procedural-dino-body-domain-kit.js",
-      "services": ["profile", "single skinned surface construction", "bone hierarchy", "skin indices and weights", "procedural pose", "descriptor", "snapshot"]
+      "services": [
+        "profile",
+        "single skinned surface construction",
+        "bone hierarchy",
+        "skin indices and weights",
+        "procedural pose",
+        "descriptor",
+        "snapshot"
+      ]
     }
   ],
   "inactiveRepoLocalKits": [
@@ -122,46 +164,130 @@
     {
       "id": "three-runtime-module",
       "source": "jsDelivr npm three@0.179.1",
-      "services": ["scene graph", "geometry", "materials", "instancing", "skinning", "camera", "lighting", "fog", "rendering"]
+      "services": [
+        "scene graph",
+        "geometry",
+        "materials",
+        "instancing",
+        "skinning",
+        "camera",
+        "lighting",
+        "fog",
+        "rendering"
+      ]
     },
     {
       "id": "rapier-runtime-module",
       "source": "jsDelivr npm @dimforge/rapier3d-compat@0.15.0",
-      "services": ["physics runtime initialization"]
+      "services": [
+        "physics runtime initialization"
+      ]
     },
     {
       "id": "rapier-physics-domain-kit",
       "source": "LuminaryLabs-Agents/NexusRealtime-ProtoKits@main CDN",
-      "services": ["world bridge", "configure", "kinematic actor", "fixed colliders", "actor transform", "step", "contacts"]
+      "services": [
+        "world bridge",
+        "configure",
+        "kinematic actor",
+        "fixed colliders",
+        "actor transform",
+        "step",
+        "contacts"
+      ]
     }
   ],
-  "instancePools": [
-    {"id": "tree-trunk-per-archetype", "capacity": 100, "poolCount": 5},
-    {"id": "tree-crown-per-archetype", "capacity": 100, "poolCount": 5},
-    {"id": "roots", "capacity": 400, "maximumConfiguredRequest": 1372},
-    {"id": "grass-carpet", "capacity": 3600},
-    {"id": "grass-main", "capacity": 2600},
-    {"id": "grass-verge", "capacity": 1300},
-    {"id": "rocks", "capacity": 320, "maximumConfiguredRequest": 98},
-    {"id": "shards", "capacity": 220, "maximumConfiguredRequest": 98}
+  "deployedDeclarativeFiles": [
+    {
+      "path": "runner-tuning.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "movement, camera, terrain, and stream tuning"
+    },
+    {
+      "path": "game-scenes.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "scene transitions, scene files, NexusEngine coordinate, core kits"
+    },
+    {
+      "path": "kit-composition.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "NexusEngine/ProtoKit composition and cutover"
+    },
+    {
+      "path": "kit-cutover-inventory.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "kit cutover inventory"
+    },
+    {
+      "path": "flock-generation.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "legacy generation configuration"
+    },
+    {
+      "path": "scenes/*.json",
+      "deployed": true,
+      "consumedByCurrentRoute": false,
+      "authorityClaim": "scene descriptors"
+    }
   ],
-  "nextImplementationFiles": [
-    "src/domains/population/instance-pool-descriptor-kit.js",
-    "src/domains/population/population-request-kit.js",
-    "src/domains/population/population-admission-kit.js",
-    "src/domains/population/population-result-kit.js",
-    "src/domains/population/population-observation-kit.js",
-    "scripts/prehistoric-rush-population-capacity-fixture.mjs"
+  "runtimeAuthority": {
+    "entrypoint": "src/game.js",
+    "tuning": "inline tuning constant",
+    "sceneState": "inline state.scene strings",
+    "composition": "six direct local domain imports plus external Three/Rapier/physics adapter imports"
+  },
+  "sourceContractMismatches": [
+    {
+      "field": "motion.base",
+      "runtime": 16,
+      "runnerTuning": 13.5
+    },
+    {
+      "field": "motion.max",
+      "runtime": 26,
+      "runnerTuning": 24
+    },
+    {
+      "field": "motion.boost",
+      "runtime": 31,
+      "runnerTuning": 29
+    },
+    {
+      "field": "terrain.chunkSize",
+      "runtime": 56,
+      "runnerTuning": 44
+    },
+    {
+      "field": "terrain.segments",
+      "runtime": 30,
+      "runnerTuning": 20
+    },
+    {
+      "field": "NexusEngine consumption",
+      "runtime": "none",
+      "manifest": "@main plus core kits"
+    },
+    {
+      "field": "scene authority",
+      "runtime": "inline",
+      "manifest": "game-scenes.json and scenes/*.json"
+    }
   ],
-  "deferredUntilFixture": [
-    "visual expansion",
-    "new tree art",
-    "more grass layers",
-    "higher population density",
-    "new obstacle families",
-    "renderer replacement",
-    "movement retune",
-    "ProtoKit promotion"
+  "implementationOrder": [
+    "instance pool capacity authority",
+    "deterministic population fixture",
+    "runtime source manifest",
+    "source contract validator and fingerprint",
+    "deployed artifact fixture",
+    "restart/result/persistence transaction",
+    "dependency admission",
+    "mount/dispose/remount lifecycle",
+    "camera-relative lighting and shadow ownership"
   ],
   "validation": {
     "runtimeSourceChanged": false,
@@ -171,6 +297,7 @@
     "npmValidation": "unavailable",
     "browserSmoke": "not run",
     "populationCapacityFixture": "not available",
+    "sourceContractFixture": "not available",
     "targetBranch": "main"
   }
 }
