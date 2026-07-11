@@ -1,30 +1,29 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T14-20-32-04-00`  
+**Last aligned:** `2026-07-11T14-31-27-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a saved character-profile layer, a deterministic route, streamed procedural world patches, a procedural skinned raptor, Rapier collision, Three.js rendering and GitHub Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with saved player profiles, a deterministic route, streamed procedural patches, a procedural skinned raptor, Rapier collision, Three.js presentation and GitHub Pages deployment.
 
-This audit identifies a fixed-collider retirement failure below the existing patch-activation boundary. The browser removes released patch colliders from its active visual/read model and submits only the current collider list to `rapier-physics-domain-kit`, but the pinned ProtoKit never removes fixed rigid bodies or collider instances that disappeared from the replacement list. Contact collection continues iterating those retained Rapier colliders, so an invisible tree from a released patch can still end a later run.
+The current audit identifies a committed-frame observation gap. The RAF callback mutates simulation, streaming, physics, gameplay, camera and render state sequentially, but no frame identity or immutable frame receipt proves that the visible canvas, HUD and `PrehistoricRushHost` describe the same state. A render or HUD failure can leave mutable runtime state ahead of the last fully presented frame.
 
 ## Plan ledger
 
-**Goal:** preserve route/profile work as P0 while making patch collider membership, retirement, contact provenance and run failure one acknowledged transaction shared by streaming, Rapier, gameplay, rendering and diagnostics.
+**Goal:** preserve route/profile, patch and collision authority work while adding one frame-coherent observation boundary across existing runtime owners.
 
-- [x] Compare the full accessible `LuminaryLabs-Publish` repository list with central ledgers.
-- [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Confirm all nine eligible repositories remain centrally tracked with root `.agent` state.
-- [x] Select only `LuminaryLabs-Publish/PrehistoricRush` as the oldest eligible documented repository.
-- [x] Trace patch generation, activation, release, collider rebuilding, Rapier replacement and contact collection.
-- [x] Trace product-side collision admission and run-failure mutation.
-- [x] Identify all domains, kits and offered services.
-- [x] Add timestamped architecture, render, gameplay, interaction, collision-authority and deploy audits.
-- [x] Refresh required root `.agent` documents.
-- [ ] Implement collider retirement and executable parity fixtures after route/profile authority.
-- [ ] Upstream the minimal removal/reset contract to the pinned Rapier ProtoKit rather than adding a second physics owner.
+- [x] Compare the full accessible Publish organization against the central ledger.
+- [x] Exclude `TheCavalryOfRome`.
+- [x] Select only `PrehistoricRush` under the oldest-central-ledger fallback.
+- [x] Reconcile the newer repo-local fixed-collider audit.
+- [x] Trace the complete RAF and public-host path.
+- [x] Identify all domains, kits and services.
+- [x] Add a timestamped frame-authority audit set.
+- [x] Refresh the required root `.agent` documents.
+- [ ] Implement the frame record and adapters after prerequisite authority work.
+- [ ] Add browser and Node frame-coherence fixtures.
 
 ## Selection result
 
@@ -33,108 +32,79 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 central ledger entries: 9/9
 root .agent state: 9/9
-
-oldest eligible central entry:
-  PrehistoricRush       2026-07-11T12-39-53-04-00
-
-next entries:
-  MyCozyIsland          2026-07-11T12-58-06-04-00
-  TheOpenAbove          2026-07-11T13-10-35-04-00
-  HorrorCorridor        2026-07-11T13-20-45-04-00
-  PhantomCommand        2026-07-11T13-28-37-04-00
-  ZombieOrchard         2026-07-11T13-41-23-04-00
-  TheUnmappedHouse      2026-07-11T13-49-30-04-00
-  AetherVale            2026-07-11T14-00-01-04-00
-  IntoTheMeadow         2026-07-11T14-08-51-04-00
-
 selected: LuminaryLabs-Publish/PrehistoricRush
 excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
-Only `LuminaryLabs-Publish/PrehistoricRush` is changed in the Publish organization during this pass.
+`PrehistoricRush` remained the oldest central-ledger entry. Its repo-local collider audit had already advanced beyond that central record, so this pass preserved the collider findings and added the next bounded audit.
 
 ## Current interaction loop
 
 ```txt
 page boot
   -> load pinned Nexus Engine, NexusEngine-Kits, ProtoKits, Three and Rapier
-  -> create game domain, actor, patch generator, Worker/executor and patch controller
-  -> generate/receive patch
-  -> adapter activates terrain, tree batches, grass, pickups and colliders
-  -> rebuildActiveContent creates the current visual/read collider list
-  -> physics.setFixedColliders(current list)
-  -> RAF advances engine, streaming and Rapier
-  -> Rapier collects actor/fixed intersections
-  -> product ORs Rapier contacts with a separate XZ overlap fallback
-  -> any admitted hit calls game.fail(tree-impact)
-  -> run-over scene and HUD render
+  -> create game domain, Rapier adapter, patch generator and controllers
+  -> create Three scene/resources and active-content adapter
+  -> start run, prime streaming and reset camera
+  -> attach browser callbacks, publish host and request RAF
 
-patch release
-  -> remove patch from activePatches
-  -> hide terrain and release tree batch cells
-  -> rebuild active grass, pickups and collider descriptors
-  -> call physics.setFixedColliders(smaller current list)
-  -> old Rapier fixed bodies/colliders are not removed
-  -> old invisible collider can still produce a fatal contact
+RAF
+  -> sample and clamp wall-clock delta
+  -> project held input
+  -> engine.tick mutates run state
+  -> update streaming and patch consumers
+  -> submit actor transform and step Rapier
+  -> admit collision failure and pickup collection
+  -> mutate creature, camera, lighting, grass and shard presentation
+  -> render Three scene
+  -> update HUD and button
+  -> request next RAF
+
+public readback
+  -> independently sample game, streaming, camera, composition and scene
 ```
 
-## Main source findings
+## Current frame gap
 
 ```txt
-patch generator collider:
-  id, x, y, z, radius, shape:"ball", tags:["hazard","tree"]
-
-browser active collider view:
-  rebuilt only from activePatches
-
-ProtoKit state collider map:
-  replaced with the current submitted set
-
-ProtoKit runtime fixed body/collider maps:
-  append/update only
-  removed IDs are not deleted
-  removed Rapier bodies/colliders are not removed from the world
-
-contact scan:
-  iterates runtime.fixedColliders, not only state.colliders
-
-product failure admission:
-  any Rapier contact for actor "dino" is fatal
-  OR any current-descriptor XZ overlap below jumpHeight 1.05 is fatal
-
-contact provenance:
-  no collider patch ID, activation revision, retirement revision,
-  contact source, contact sequence, shape revision or failure receipt
+runtimeSessionId: absent
+runSessionId: only product runId, not a host/session identity
+frameId: absent
+simulation receipt: absent
+stream-consumption receipt: absent
+collider-membership receipt: absent
+physics-step receipt: absent
+gameplay mutation receipts: absent
+presentation fingerprint: absent
+camera-consumption receipt: absent
+render result: absent
+HUD commit result: absent
+committed-frame record: absent
+frame-failure result: absent
+host frame correlation: absent
 ```
 
-The two collision paths can therefore disagree:
-
-```txt
-Rapier path:
-  can report a released/invisible collider retained in runtime maps
-
-fallback path:
-  checks only current view.colliders
-
-result:
-  a run can fail with no active visual tree or current fallback collider
-```
+The runtime mutates state before `renderer.render()` and HUD projection. If either fails, the public host can expose newer mutable state while the canvas or HUD remains on an older frame.
 
 ## Domains in use
 
 ```txt
-multi-page route hosting and player-profile persistence
-Nexus Engine composition and product run state
-procedural creature generation, skinning, poses and collision recommendation
+multi-page route hosting and profile persistence
+pinned module loading and dependency identity
+Nexus Engine core composition and scene routing
+product run state, input, movement, score and outcomes
+procedural creature descriptor, skeleton, skinning and pose
 deterministic route and terrain classification
-seeded patch generation, Worker execution, cache and activation
+seeded patch generation, Worker execution, cache and delivery
 terrain, tree, grass, pickup, collider and height consumers
-patch membership and collider projection
-Rapier actor, fixed-body, collider, step and contact state
-collision admission and terminal run failure
-browser input, RAF, camera and presentation
-Three scene, instances, materials, shadows and rendering
-public host/readback, validation and Pages deployment
+patch activation, release and collider membership
+Rapier actor, fixed collider, step and contact state
+collision, pickup and terminal outcome admission
+browser input, wall-clock delta and RAF scheduling
+camera target derivation and smooth-follow state
+Three scene, resources, shadows and rendering
+HUD, button and public diagnostics projection
+validation and GitHub Pages deployment
 ```
 
 ## Kits and services
@@ -143,7 +113,7 @@ public host/readback, validation and Pages deployment
 
 ```txt
 core-input-kit          actions, bindings and input state
-core-spatial-kit        transforms and spatial queries
+core-spatial-kit        transforms and spatial query contracts
 core-scene-kit          scene registry and transitions
 core-physics-kit        physics provider contract
 core-motion-kit         motion capability
@@ -164,115 +134,154 @@ seed-kit
 
 procedural-creature-body-kit
   normalized creature recipe, geometry, topology, skeleton, skinning,
-  collision recommendation, content hash, poses and snapshots
+  collision recommendation, bounds, poses, content hash and snapshots
 
 instanced-render-batch-kit
   cell replacement/release, flush, overflow, bounds, stats and snapshots
 
 seeded-world-patch-controller-kit
-  patch identity, desired membership, cache, queue, executor,
+  patch identity, focus, desired membership, cache, queue, executor,
   ready/release delivery, budgets, eviction and snapshots
 
 camera-smooth-follow-kit
-  damped position/look/quaternion, reset, teleport handling and snapshots
+  position/look/quaternion damping, reset, teleport handling,
+  delta clamping, transform access and snapshots
 ```
 
-### Product, external and host kits
+### Product, page, external and host kits
 
 ```txt
 prehistoric-rush-domain-kit
-  run lifecycle, input, route, surface, score, outcomes, events and snapshot
+  run lifecycle, input, route, surface, score, outcomes, events,
+  scene transitions, creature access and snapshots
 
-player-character schema/profile/menu/creator/game-page kits
-  profile normalization, persistence, editing, projection and page routing
+player-character-schema-kit
+  defaults, normalization, clamps, color validation and merge
+
+player-character-profile-store-kit
+  load, save, patch, reset, subscribe, storage/BroadcastChannel sync and close
+
+menu-page-kit
+  menu shell, profile projection and route links
+
+character-creator-page-kit
+  draft editing, controls, preview, debounced save, reset and remote projection
+
+game-page-entry-kit
+  browser runtime loading
 
 drunk-route-generator
-  samples, nearest query, progress, region classification and snapshot
+  route samples, nearest query, progress, classification and snapshot
 
 player-raptor-preset-kit
   creature recipe and capsule collision descriptor
 
 prehistoric-patch-generator
-  terrain, trees, grass, pickups, ball collider descriptors and bounds
+  terrain, trees, grass, pickups, colliders, bounds and transferables
 
 prehistoric-patch-worker
-  initialization, generation, errors and transferable delivery
+  initialization, generation, error protocol and transferable delivery
 
 rapier-physics-domain-kit
   Rapier world, kinematic actor, fixed colliders, transforms, step,
-  contact collection, snapshot and reset
+  contacts, snapshot and reset
 
-Three.js runtime and host adapters
-  scene graph, instancing, skinning, camera, lights, shadows, render,
-  active content projection, HUD and public readback
+Three.js and product adapters
+  scene graph, instancing, skinning, camera, lighting, fog, shadows,
+  active-content projection, rendering, HUD and host readback
 ```
 
-## Required authority boundary
+## Current authority boundary
 
 ```txt
-PrehistoricRush Fixed Collider Membership and Collision Admission Domain
-  patch-collider-identity-kit
-  collider-membership-revision-kit
-  fixed-collider-replacement-plan-kit
-  fixed-collider-retirement-kit
-  rapier-collider-removal-adapter-kit
-  collider-retirement-result-kit
-  collision-contact-observation-kit
-  collision-contact-admission-kit
-  collision-source-parity-kit
-  run-failure-transaction-kit
-  collision-journal-kit
-  collision-render-correlation-kit
-  stale-collider-fixture-kit
+PrehistoricRush Committed Frame Observation Domain
+  runtime-frame-id-kit
+  frame-input-snapshot-kit
+  simulation-step-receipt-kit
+  stream-consumption-receipt-kit
+  collider-membership-receipt-kit
+  physics-step-receipt-kit
+  gameplay-mutation-receipt-kit
+  presentation-state-kit
+  camera-consumption-receipt-kit
+  render-submit-result-kit
+  hud-commit-result-kit
+  committed-frame-record-kit
+  frame-failure-result-kit
+  frame-journal-kit
+  host-frame-read-model-kit
+  committed-frame-coherence-fixture-kit
 ```
 
-## Required transaction
+## Required frame sequence
 
 ```txt
-prepare active collider membership
-  -> diff previous and next collider IDs
-  -> validate patch ownership and shape descriptors
-  -> remove retired collider instances and fixed bodies from Rapier
-  -> create/update retained and added colliders
-  -> commit one colliderMembershipRevision
-  -> step physics under that revision
-  -> produce contact observations with collider and patch identity
-  -> admit only current hazard contacts
-  -> compare Rapier and fallback results or remove fallback authority
-  -> commit one run-failure result
-  -> correlate terminal frame and host observation
+allocate frame identity
+  -> snapshot admitted input
+  -> tick simulation and record receipt
+  -> update streaming and record membership receipts
+  -> step physics and record receipt
+  -> resolve collision, pickup and terminal results
+  -> derive immutable presentation state
+  -> update camera under the same frame identity
+  -> render and return typed result
+  -> update HUD and return typed result
+  -> publish one immutable committed-frame record
+  -> expose that record through detached host diagnostics
 ```
 
 ## Priority order
 
 ```txt
-P0 Multi-Page Route Admission + Player Profile Handoff Authority
-P1 Seeded Patch Activation Commit Authority
-P1a Fixed Collider Retirement + Collision Admission Authority
-P2 Visual Policy Graph Identity + Render-Frame Correlation
-P3 Run Session Reset + Shared Epoch Authority
-P4 Browser Runtime Session Lifecycle + Ordered Disposal
+P0   Multi-Page Route Admission + Player Profile Handoff Authority
+P1   Seeded Patch Activation/Release Commit Authority
+P1a  Fixed Collider Retirement + Collision Admission Authority
+P2   Committed Frame Observation + Host Read Model Authority
+P3   Run/Session/Stream/Collider Epoch Authority
+P4   Browser Runtime Lifecycle + Ordered Resource Disposal
 ```
 
-P1 and P1a must share the same patch activation/release revision. Do not solve stale colliders with an unrelated global collision list.
-
-## Read this pass first
+## Latest audit routes
 
 ```txt
-.agent/trackers/2026-07-11T14-20-32-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T14-20-32-04-00.md
-.agent/architecture-audit/2026-07-11T14-20-32-04-00-fixed-collider-retirement-dsk-map.md
-.agent/render-audit/2026-07-11T14-20-32-04-00-visual-collider-membership-parity-gap.md
-.agent/gameplay-audit/2026-07-11T14-20-32-04-00-released-patch-invisible-tree-failure-loop.md
-.agent/interaction-audit/2026-07-11T14-20-32-04-00-contact-to-run-failure-admission-map.md
-.agent/collision-authority-audit/2026-07-11T14-20-32-04-00-fixed-collider-membership-retirement-contract.md
-.agent/deploy-audit/2026-07-11T14-20-32-04-00-stale-collider-parity-fixture-gate.md
+tracker:
+  .agent/trackers/2026-07-11T14-31-27-04-00/project-breakdown.md
+
+turn ledger:
+  .agent/turn-ledger/2026-07-11T14-31-27-04-00.md
+
+architecture:
+  .agent/architecture-audit/2026-07-11T14-31-27-04-00-committed-frame-observation-dsk-map.md
+
+render:
+  .agent/render-audit/2026-07-11T14-31-27-04-00-state-render-hud-host-coherence-gap.md
+
+gameplay:
+  .agent/gameplay-audit/2026-07-11T14-31-27-04-00-frame-stage-mutation-loop.md
+
+interaction:
+  .agent/interaction-audit/2026-07-11T14-31-27-04-00-raf-host-observation-map.md
+
+frame authority:
+  .agent/frame-authority-audit/2026-07-11T14-31-27-04-00-committed-frame-record-contract.md
+
+deploy:
+  .agent/deploy-audit/2026-07-11T14-31-27-04-00-committed-frame-fixture-gate.md
 ```
 
-## Do not start next with
+## Validation boundary
 
-- a second browser collision authority beside Rapier
-- clearing only `state.colliders` while leaving Rapier bodies in the world
-- accepting every actor contact without current collider membership and hazard provenance
-- visual polish before route/profile P0
-- claiming patch release parity without an invisible-collider fixture
+```txt
+runtime source changed: no
+package scripts changed: no
+dependencies changed: no
+render output changed: no
+deployment changed: no
+branch created: no
+pull request created: no
+frame fixtures: unavailable
+browser smoke: not run
+Pages smoke: not run
+```
+
+Do not treat `PrehistoricRushHost.getState()` as frame-coherent proof until it returns a detached committed-frame record with correlated simulation, stream, physics, render and HUD receipts.
