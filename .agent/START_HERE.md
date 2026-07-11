@@ -1,54 +1,66 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T02-41-37-04-00`  
+**Last aligned:** `2026-07-11T02-48-17-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` now uses the official seeded world patch controller, deterministic product patch generation, optional Worker execution and stable tree instance batches. The next blocker is no longer patch scheduling; it is proving one atomic activation across terrain, vegetation, pickups, gameplay colliders, Rapier colliders and height sampling.
+`PrehistoricRush` now has deterministic cached patch streaming, but retry creates a new gameplay run without one coordinated reset across streaming, rendering, physics, input, camera and asynchronous Worker state. The next boundary must explicitly retain reusable world cache data while atomically resetting run-owned state and fencing stale deliveries.
 
 ## Plan ledger
 
-**Goal:** Preserve the new streaming architecture while adding a validated, observable and lifecycle-safe boundary between generated patch delivery and runtime consumption.
+**Goal:** Document and route the missing run-session authority without duplicating the official patch controller, discarding deterministic cache work or changing runtime behavior.
 
-- [x] Document the new controller, generator, Worker and batch integrations.
-- [x] Identify the interaction loop, domains, services and kits.
-- [x] Record render, gameplay, interaction, streaming and deployment gaps.
-- [ ] Add patch-content admission and validation.
-- [ ] Add Worker/session epochs and stale-result policy.
-- [ ] Add detached activation plans and atomic consumer commit.
-- [ ] Add controller/consumer parity snapshots.
-- [ ] Add reset/dispose ownership and fixtures.
+- [x] Compare all accessible Publish repositories with the central ledger.
+- [x] Exclude `TheCavalryOfRome`.
+- [x] Select only `PrehistoricRush`.
+- [x] Identify the active interaction loop, domains, services and kits.
+- [x] Separate retainable world state from resettable run state.
+- [x] Record the retry dynamic-content defect and epoch gap.
+- [x] Add timestamped architecture, render, gameplay, interaction, run-session and deploy audits.
+- [x] Refresh the required root `.agent` files.
+- [ ] Implement atomic patch admission/activation.
+- [ ] Implement run-session reset, stream epoch and lifecycle fixtures.
 
 ## Current implementation gate
+
+```txt
+PrehistoricRush Run Session Reset Authority
++ Retry / Stream Epoch Fixture Gate
+```
+
+## Required companion gate
 
 ```txt
 PrehistoricRush Seeded Patch Activation Authority
 + Worker / Render / Physics Parity Fixture Gate
 ```
 
+The patch activation boundary remains the prerequisite because a new run cannot prove reset parity while controller-active and consumer-active state can diverge.
+
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-11T02-41-37-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T02-41-37-04-00.md
+.agent/trackers/2026-07-11T02-48-17-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T02-48-17-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-11T02-41-37-04-00-seeded-patch-streaming-dsk-map.md
-.agent/render-audit/2026-07-11T02-41-37-04-00-patch-activation-render-parity-gap.md
-.agent/gameplay-audit/2026-07-11T02-41-37-04-00-run-stream-physics-loop.md
-.agent/interaction-audit/2026-07-11T02-41-37-04-00-focus-queue-activation-map.md
-.agent/world-streaming-audit/2026-07-11T02-41-37-04-00-worker-cache-consumer-transaction-contract.md
-.agent/deploy-audit/2026-07-11T02-41-37-04-00-patch-streaming-fixture-gate.md
+.agent/architecture-audit/2026-07-11T02-48-17-04-00-run-session-reset-dsk-map.md
+.agent/render-audit/2026-07-11T02-48-17-04-00-retry-render-state-reconciliation-gap.md
+.agent/gameplay-audit/2026-07-11T02-48-17-04-00-start-retry-world-state-loop.md
+.agent/interaction-audit/2026-07-11T02-48-17-04-00-start-command-session-admission-map.md
+.agent/run-session-audit/2026-07-11T02-48-17-04-00-run-world-cache-reset-contract.md
+.agent/deploy-audit/2026-07-11T02-48-17-04-00-retry-stream-epoch-fixture-gate.md
 ```
 
 Prior active audits:
 
 ```txt
+.agent/world-streaming-audit/2026-07-11T02-41-37-04-00-worker-cache-consumer-transaction-contract.md
 .agent/creature-system-audit/2026-07-11T00-39-25-04-00-body-preset-descriptor-adapter-contract.md
 .agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
 .agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
@@ -56,11 +68,24 @@ Prior active audits:
 
 ## Selection
 
-The accessible `LuminaryLabs-Publish` inventory contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are centrally tracked and have root `.agent` state.
+The accessible `LuminaryLabs-Publish` inventory contained ten repositories:
 
-`PrehistoricRush` was selected because its prior audit was the oldest eligible record and six newer runtime commits installed stable tree batches, the seeded patch controller, deterministic patch generation, Worker execution and cached budgeted streaming.
+```txt
+AetherVale          central 2026-07-11T02-10-13-04-00
+HorrorCorridor      central 2026-07-11T01-10-28-04-00
+IntoTheMeadow       central 2026-07-11T02-28-12-04-00
+MyCozyIsland        central 2026-07-11T02-02-59-04-00
+PhantomCommand      central 2026-07-11T01-20-51-04-00
+PrehistoricRush     central 2026-07-11T00-39-25-04-00
+TheOpenAbove        central 2026-07-11T00-49-45-04-00
+TheUnmappedHouse    central 2026-07-11T01-38-28-04-00
+ZombieOrchard       central 2026-07-11T01-31-15-04-00
+TheCavalryOfRome    excluded
+```
 
-Only `LuminaryLabs-Publish/PrehistoricRush` was changed.
+All nine eligible repositories were tracked and had root `.agent` state. `PrehistoricRush` was selected because it had the oldest central ledger record and its repo-local `2026-07-11T02-41-37-04-00` streamed-world audit had not yet been reconciled centrally.
+
+Only `LuminaryLabs-Publish/PrehistoricRush` was changed in the product organization.
 
 ## Product read
 
@@ -70,50 +95,95 @@ Only `LuminaryLabs-Publish/PrehistoricRush` was changed.
 
 ```txt
 pinned browser module graph
-  -> install 12 core kits
+  -> install 12 Nexus Engine core kits
   -> install seed, creature, instance-batch and seeded-patch-controller kits
   -> install prehistoric-rush-domain-kit 0.4.0
-  -> build deterministic product patch generator
+  -> create deterministic product patch generator
   -> initialize optional module Worker executor
   -> create controller with active/retain/prefetch/cache/budget policy
-  -> prime center patch
+  -> create Three and Rapier consumers
+  -> game.start creates a new run and primes streaming
   -> browser input and engine.tick advance run state
-  -> focus updates desired patch sets
-  -> controller releases, queues, generates and delivers ready patches
-  -> adapter activates at most one patch per frame
-  -> terrain, trees, grass, shards, colliders and height source update
+  -> controller focus, release, queue, generation and ready delivery update
+  -> terrain, trees, grass, shards, colliders and height consumers update
   -> Rapier, creature pose, camera, render, HUD and host update
   -> RAF repeats
+  -> retry can create another run while those owners remain live
 ```
 
 ## Current finding
 
-The new ownership split is correct:
+`game.start()` increments `runId` and replaces `RunState` and `InputState`, but it does not coordinate:
 
 ```txt
-seeded-world-patch-controller-kit owns identity, cache and scheduling
-prehistoric-patch-generator owns deterministic content
-Worker adapter owns optional execution
-instanced-render-batch-kit owns stable tree batch capacity and cell updates
-Three/Rapier adapters own runtime consumption
+patch controller active/cache/queue/inflight state
+Worker pending requests
+Three activePatches and consumer revisions
+visible grass and shard instances
+gameplay and Rapier collider projection
+actor/contact state
+browser input latches
+camera interpolation and render-local time
+first committed frame and host journals
 ```
 
-The controller marks a delivered patch active before the host proves that every consumer committed it. `activatePatch()` then mutates terrain, tree batches, grass, shards, gameplay colliders, Rapier colliders and height sampling in sequence with no preflight, rollback, typed result or shared revision. Controller snapshots can therefore lead render/physics truth.
+The concrete retry defect is:
 
-The Worker executor also has no retained teardown owner or stream-session epoch, `pump()` has no explicit inflight ceiling, and every activation/release still rebuilds all active grass, shards and colliders on the main thread.
+```txt
+collect a shard in an active patch
+  -> rebuildActiveContent hides the shard
+  -> fail without changing the active patch set
+  -> retry resets collectedShardIds
+  -> updateStreaming produces no activation or release
+  -> rebuildActiveContent is not called
+  -> the shard can remain visually absent in the new run
+```
+
+## Correct ownership split
+
+### Retain when identity matches
+
+```txt
+world seed and generator identity
+route samples
+validated immutable patch payload cache
+creature body descriptor
+safe static resource allocations
+```
+
+### Reset or reconcile per run
+
+```txt
+RunState and InputState
+pickup visibility and collected-state projection
+gameplay and Rapier collider/contact state
+browser input latches
+camera smoothing and frame-local presentation state
+activation, collision, pickup and frame evidence
+```
+
+### Fence by epoch
+
+```txt
+queued and inflight patch requests
+Worker pending promises
+ready patch deliveries
+activation and release acknowledgements
+```
 
 ## Safe implementation order
 
 ```txt
-1. Version and validate the patch-content contract.
-2. Add stream/Worker session identity and stale-result admission.
-3. Build a detached activation plan with capacity preflight.
-4. Commit terrain, tree, grass, shard, collider and height consumers atomically.
-5. Publish controller-active versus consumer-active parity.
-6. Add bounded generation/activation/lifecycle journals.
-7. Add idempotent Worker/controller/adapter disposal.
-8. Add Node fixtures, then browser and Pages streaming smoke.
-9. Continue the existing creature, composition and command authority work.
+1. Version and validate patch content.
+2. Make activation and release atomic across all consumers.
+3. Add runSessionId and streamEpoch authority.
+4. Define world-cache retention and run-owned reset decisions.
+5. Reconcile pickups, colliders, height, physics, input and camera before start commit.
+6. Quarantine stale Worker/controller results.
+7. Publish the first committed frame and bounded JSON-safe results.
+8. Add ordered idempotent stop/dispose/restart ownership.
+9. Gate Pages with deterministic Node and deployed browser fixtures.
+10. Continue creature, core-kit, command and committed-frame work.
 ```
 
-Do not duplicate the official patch controller or instance-batch kit, expand the active radius, add more population, or treat a controller-active ID as proof that the rendered and physical world is committed.
+Do not duplicate the official patch controller or instance-batch kit, clear deterministic caches as a substitute for reset authority, expand population or radius, or treat a changed `runId` as proof that the runtime entered a clean new session.
