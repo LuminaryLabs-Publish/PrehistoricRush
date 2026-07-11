@@ -2,7 +2,7 @@ import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehis
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 
 const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "9546a6fb25b4c6a7b65432df068701a4627ab20f";
+const KITS_COMMIT = "5d3613b140ca33395f180acde014c167addf0ccc";
 const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
 const CDN = {
   nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
@@ -10,6 +10,7 @@ const CDN = {
   creatureKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/procedural-creatures/procedural-creature-body-kit/index.js`,
   batchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/render-descriptors/instanced-render-batch-kit/index.js`,
   patchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/simulation/seeded-world-patch-controller-kit/index.js`,
+  cameraKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/camera-feedback/camera-smooth-follow-kit/index.js`,
   three: "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
   rapier: "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.15.0/rapier.es.js",
   rapierKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/index.js`
@@ -169,12 +170,14 @@ function grassMaterial(THREE, color) {
   });
 }
 
-function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
+function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow) {
   const route = game.route;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x15251b);
   scene.fog = new THREE.FogExp2(0x203326, 0.0125);
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 900);
+  const cameraTargets = { position: [0, 0, 0], lookPoint: [0, 0, 0] };
+  let cameraRunId = null;
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
@@ -428,6 +431,35 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
     }
   }
 
+  function setCameraTargets(state) {
+    const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
+    const backX = -Math.sin(state.yaw);
+    const backZ = -Math.cos(state.yaw);
+    cameraTargets.position[0] = state.x + backX * 6.6;
+    cameraTargets.position[1] = state.y + 2.35;
+    cameraTargets.position[2] = state.z + backZ * 6.6;
+    cameraTargets.lookPoint[0] = ahead.x;
+    cameraTargets.lookPoint[1] = sampleHeight(ahead.x, ahead.z) + 1.15;
+    cameraTargets.lookPoint[2] = ahead.z;
+  }
+
+  function applyCameraTransform(transform) {
+    camera.position.fromArray(transform.position);
+    camera.quaternion.fromArray(transform.quaternion);
+  }
+
+  function resetCamera(state, reason = "run-reset") {
+    setCameraTargets(state);
+    cameraRunId = state.runId;
+    const transform = cameraFollow.reset({
+      position: cameraTargets.position,
+      lookPoint: cameraTargets.lookPoint,
+      reason
+    });
+    applyCameraTransform(transform);
+    return transform;
+  }
+
   function render(state, dt) {
     view.time += dt;
     player.position.set(state.x, state.y + state.jumpHeight + 0.05, state.z);
@@ -439,11 +471,15 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
       jump: Math.min(1, state.jumpHeight / 2),
       resistance: 1 - state.surfaceMultiplier
     }));
-    const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
-    const backX = -Math.sin(state.yaw);
-    const backZ = -Math.cos(state.yaw);
-    camera.position.lerp(new THREE.Vector3(state.x + backX * 6.6, state.y + 2.35, state.z + backZ * 6.6), 1 - Math.exp(-8.5 * dt));
-    camera.lookAt(ahead.x, sampleHeight(ahead.x, ahead.z) + 1.15, ahead.z);
+    setCameraTargets(state);
+    const cameraTransform = cameraRunId !== state.runId
+      ? resetCamera(state, "run-change")
+      : cameraFollow.update({
+          targetPosition: cameraTargets.position,
+          targetLookPoint: cameraTargets.lookPoint,
+          deltaTime: Math.min(dt, 1 / 30)
+        });
+    applyCameraTransform(cameraTransform);
     sun.position.set(state.x - 25, state.y + 45, state.z - 20);
     sun.target.position.set(state.x, state.y, state.z);
     grass.forEach((layer) => {
@@ -463,6 +499,7 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
     playerDescriptor,
     view,
     sampleHeight,
+    resetCamera,
     activatePatch,
     releasePatches,
     refreshDynamicContent: rebuildActiveContent,
@@ -484,25 +521,27 @@ function createWorkerExecutor(PatchModule, generatorOptions) {
 
 async function main() {
   const ui = shell();
-  const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, THREE] = await Promise.all([
+  const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, CameraModule, THREE] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
     load(CDN.creatureKit),
     load(CDN.batchKit),
     load(CDN.patchKit),
+    load(CDN.cameraKit),
     load(CDN.three)
   ]);
-  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !THREE) {
+  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !CameraModule || !THREE) {
     throw new Error("Required pinned runtime module failed to load.");
   }
-  const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule };
+  const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule, ...CameraModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, { seed: cfg.seed, goalDistance: cfg.goal })
   });
   const game = engine.n.prehistoricRush;
   const instanceBatches = engine.n.instancedRenderBatch;
   const patchControllers = engine.n.seededWorldPatchController;
-  if (!game || !instanceBatches || !patchControllers) throw new Error("PrehistoricRush composition did not install.");
+  const cameraFollows = engine.n.cameraSmoothFollow;
+  if (!game || !instanceBatches || !patchControllers || !cameraFollows) throw new Error("PrehistoricRush composition did not install.");
 
   const playerBody = game.getPlayerBody();
   const physics = await createRapierAdapter(playerBody.collision);
@@ -529,7 +568,17 @@ async function main() {
     generator,
     executor: workerState.executor
   });
-  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches);
+  const cameraFollow = cameraFollows.create({
+    id: "prehistoric-rush-player-camera",
+    positionSmoothTime: 0.22,
+    lookSmoothTime: 0.14,
+    maximumPositionSpeed: 45,
+    maximumLookSpeed: 65,
+    rotationSharpness: 12,
+    maximumDeltaTime: 1 / 30,
+    teleportThreshold: 24
+  });
+  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow);
   const input = { left: false, right: false, boost: false };
 
   function updateStreaming(state, primeCenter = false) {
@@ -553,10 +602,12 @@ async function main() {
 
   game.start();
   updateStreaming(game.getState(), true);
+  adapter.resetCamera(game.getState(), "initial-run");
 
   const start = () => {
     game.start();
     updateStreaming(game.getState(), true);
+    adapter.resetCamera(game.getState(), "run-restart");
   };
   ui.button.onclick = () => game.getState().status === "game" ? game.setInput({ jump: true }) : start();
   addEventListener("keydown", (event) => {
@@ -620,14 +671,16 @@ async function main() {
     physics,
     adapter,
     patchController: controller,
+    cameraFollow,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
       patchStreaming: controller.getSnapshot(),
+      camera: cameraFollow.getSnapshot(),
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
-      renderer: "three-seeded-patch-streaming-v5"
+      renderer: "three-seeded-patch-streaming-smooth-camera-v6"
     })
   };
   requestAnimationFrame(loop);

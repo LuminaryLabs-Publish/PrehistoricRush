@@ -30,7 +30,8 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     "createSeedKit",
     "createProceduralCreatureBodyKit",
     "createInstancedRenderBatchKit",
-    "createSeededWorldPatchControllerKit"
+    "createSeededWorldPatchControllerKit",
+    "createCameraSmoothFollowKit"
   ], "Pinned NexusEngine-Kits module");
 
   const {
@@ -51,7 +52,8 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createSeedKit,
     createProceduralCreatureBodyKit,
     createInstancedRenderBatchKit,
-    createSeededWorldPatchControllerKit
+    createSeededWorldPatchControllerKit,
+    createCameraSmoothFollowKit
   } = NexusEngineKits;
 
   return [
@@ -80,6 +82,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createProceduralCreatureBodyKit({ creatures: [PLAYER_RAPTOR_PRESET] }),
     createInstancedRenderBatchKit(),
     createSeededWorldPatchControllerKit(),
+    createCameraSmoothFollowKit(),
     createPrehistoricRushDomainKit(NexusEngine, config)
   ];
 }
@@ -186,7 +189,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.4.0",
+    version: "0.5.0",
     stability: "game",
     services: ["run", "route", "surface", "score", "outcome", "player-creature"],
     requires: ["n:procedural-creatures:body", "world:seeded-patch-controller"],
@@ -280,7 +283,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "seed-kit",
         "procedural-creature-body-kit",
         "instanced-render-batch-kit",
-        "seeded-world-patch-controller-kit"
+        "seeded-world-patch-controller-kit",
+        "camera-smooth-follow-kit"
       ],
       nestedKits: ["drunk-route-generator"]
     }
