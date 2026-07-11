@@ -1,36 +1,36 @@
-# Current Audit: PrehistoricRush Visual Policy Identity Authority
+# Current Audit: PrehistoricRush Player Profile Handoff Authority
 
-**Updated:** `2026-07-11T08-48-04-04-00`
+**Updated:** `2026-07-11T10-58-10-04-00`
 
 ## Summary
 
-`PrehistoricRush` now consumes a newer NexusEngine-Kits graph and a coordinated local render-policy change. The active product pin joins the creature torso, neck and head into one continuous tube, while local source narrows and reshades grass cards, changes their palette, enables PCF soft shadows, sets directional-shadow bounds/bias and disables tree-crown shadow casting.
+`PrehistoricRush` now has a menu page runtime, a character-creator runtime, a shared player-character profile schema and a browser profile store. The current root route was changed from the game to the menu. The new architecture is not complete: `game.html` and `charactercreator.html` are absent, and `src/game.js` does not consume the saved profile.
 
-The visible result changed, but there is no single versioned manifest or fingerprint covering the module graph, exact creature geometry, grass shader/geometry/palette and shadow policy. The current creature `contentHash` is incomplete, and the renderer label is a manual string rather than proof of what a committed frame consumed.
+The product currently presents a customizable raptor feature whose navigation and gameplay handoff are not authoritative. The correct next boundary is a versioned page manifest plus an atomic player-profile commit and binding result shared by the creator, menu, procedural creature descriptor, Rapier collision and rendered frame.
 
 ## Plan ledger
 
-**Goal:** catalogue the complete current game and define one visual-policy identity that can be admitted, bound and acknowledged by rendered frames while keeping patch activation as P0.
+**Goal:** catalogue the complete current product and define one profile and route authority without losing the previously documented patch-streaming and visual-policy priorities.
 
-- [x] Reconcile all accessible Publish repositories with central tracking.
-- [x] Confirm all nine eligible repositories have root `.agent` state.
+- [x] Reconcile the accessible Publish inventory with the central ledger.
+- [x] Confirm all eligible repositories have root `.agent` state.
 - [x] Select only `LuminaryLabs-Publish/PrehistoricRush`.
-- [x] Inspect the latest product runtime commit and pinned upstream topology change.
-- [x] Inspect creature, grass, lighting, shadow, camera and frame consumers.
-- [x] Identify the interaction loop, domains, kits and services.
-- [x] Record source-graph, visual-policy, binding, observation and fixture gaps.
-- [x] Preserve the P0 patch activation transaction.
-- [ ] Implement canonical policy identity and executable proof after P0.
+- [x] Inspect the six new runtime commits that introduced the schema, store and page runtimes.
+- [x] Inspect current menu links and current 3D game boot.
+- [x] Identify all interaction loops, domains, kits and services.
+- [x] Record route, persistence, sync, draft, binding and frame gaps.
+- [x] Preserve patch activation and visual identity as downstream gates.
+- [ ] Implement route/profile fixtures after this documentation pass.
 
 ## Selection audit
 
 ```txt
 accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
-central ledger entries: 9/9
+central ledgers: 9/9
 root .agent state: 9/9
 selected: LuminaryLabs-Publish/PrehistoricRush
-selection rule: recent undocumented runtime change, also oldest eligible ledger
+reason: substantive multi-page/profile runtime changes postdate the previous audit
 excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
@@ -42,108 +42,149 @@ NexusEngine-Kits:      d6630367d557782d9ec965947aeb1c197d37ea15
 NexusEngine-ProtoKits: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
 Three.js:              0.179.1
 Rapier:                 0.15.0
-parent domain:          prehistoric-rush-domain-kit 0.5.0
-creature kit:           procedural-creature-body-kit 0.1.0
-camera kit:             camera-smooth-follow-kit 0.1.0
-renderer label:         three-seeded-patch-streaming-neck-shadow-grass-v7
+profile schema:         prehistoric-rush.character.v1
+storage key:            prehistoric-rush:character:v1
+broadcast channel:      prehistoric-rush:character
+parent game domain:     prehistoric-rush-domain-kit 0.5.0
 ```
 
-Relevant revisions:
+## Current interaction loops
+
+### Entry/menu loop
 
 ```txt
-upstream joined neck/head topology:
-  0cdd178dbc3b581b81e50a385ba5197781f855e1
-
-current product Kits pin:
-  d6630367d557782d9ec965947aeb1c197d37ea15
-
-product visual-policy change:
-  219a89ab202fcd1567d0b88812ae0cee606c5ffb
+index.html or menu.html
+  -> src/pages/menu.js
+  -> loadPlayerCharacterProfile()
+  -> render profile color, scale, tail and revision
+  -> subscribePlayerCharacterProfile()
+  -> Start Run -> ./game.html
+  -> Character Creator -> ./charactercreator.html
 ```
 
-## Interaction loop
+Both destination HTML files are absent on `main`.
+
+### Character creator loop
 
 ```txt
-browser route
-  -> resolve pinned module graph
-  -> install core, official, product and external kits
-  -> create run domain and procedural creature descriptor
-  -> bind Rapier actor
-  -> bind Three creature, terrain, trees, grass, pickups, lights and camera
-  -> start game, patch controller and camera
-  -> browser input
-  -> engine tick
-  -> patch controller update/pump
-  -> release and ready delivery
-  -> sequential consumer mutation
-  -> collision and pickup processing
-  -> creature pose
-  -> camera target and smooth transform
-  -> update grass wind and sun
-  -> Three shadowed render
-  -> HUD and host projection
+intended HTML host
+  -> src/pages/character-creator.js
+  -> load profile into draft
+  -> render numeric controls, colors, CSS silhouette and JSON
+  -> input mutates draft
+  -> clear prior timer
+  -> schedule 140 ms save
+  -> patchPlayerCharacterProfile(final patch)
+  -> localStorage setItem
+  -> BroadcastChannel message
+  -> local listeners
+  -> remote storage/broadcast event can replace draft
+```
+
+### Game loop
+
+```txt
+intended game.html
+  -> src/pages/game.js
+  -> src/game.js
+  -> resolve pinned runtime modules
+  -> install core and official kits
+  -> create prehistoric-rush-domain-kit
+  -> game.getPlayerBody() from static player-raptor-preset-kit
+  -> create Rapier actor and Three skinned creature
+  -> start run, patch streaming and smooth camera
+  -> input, tick, world activation, collision, pose and render
+  -> HUD and PrehistoricRushHost projection
   -> RAF
 ```
+
+The game loop never imports the profile schema or store.
 
 ## Domains in use
 
 ```txt
-runtime module graph and source admission
-Nexus Engine core input, spatial, scene, physics, motion, camera, animation,
-graphics, skybox, UI, diagnostics and composition
+browser route and page artifact hosting
+menu navigation and profile projection
+player-character schema versioning
+profile defaults, normalization, clamping and deep merge
+localStorage profile persistence
+profile revision and updated-time mutation
+BroadcastChannel synchronization
+storage-event synchronization
+creator draft state and debounce scheduling
+creator numeric and color controls
+creator CSS preview and JSON projection
+Nexus Engine module graph and core composition
 seed and deterministic random streams
-procedural creature recipe normalization and presets
-creature geometry positions, normals, colors and indices
-creature topology, connected components and surface orientation
-creature skeleton, skinning, attachments, collision and bounds
-creature descriptor identity, snapshot, load and reset
-creature pose descriptor generation
-Three BufferGeometry, material, skeleton and SkinnedMesh binding
-Rapier actor, collider, transform and contact binding
-instanced render batches and cell ownership
-seeded patch controller, cache, queue, executor and delivery
-product patch generation and Worker execution
-patch content admission and multi-consumer activation
-terrain, trees, grass, pickups, colliders and height consumers
+procedural creature recipe, geometry, topology, skeleton and skinning
+creature collision, bounds, pose and Three binding
+Rapier actor, collider, transform and contacts
+seeded patch controller, Worker and multi-consumer world activation
+terrain, trees, grass, pickups, colliders and height sampling
 run lifecycle, route, movement, jump, score and outcomes
-camera target policy and smooth-follow state
-grass geometry, alpha silhouette, palette and wind shader
-shadow map, shadow camera, bias and cast/receive policy
-Three render submission and frame state
-browser input, resize, blur, HUD and public host
-run, stream, camera, creature and resource lifecycle
-static Pages deployment and validation
+camera target and smooth follow
+lighting, shadows, grass wind and Three render submission
+HUD, public host, lifecycle, static deployment and validation
 ```
 
 ## Complete kit inventory and services
 
+### New source-backed product kits
+
+```txt
+player-character-schema-kit
+  PLAYER_CHARACTER_SCHEMA_VERSION
+  default profile creation
+  profile normalization
+  numeric clamping
+  color validation
+  nested profile merge
+
+player-character-profile-store-kit
+  load from localStorage
+  save normalized profile
+  monotonic-looking local revision increment
+  patch and reset
+  local listener subscription
+  storage-event synchronization
+  BroadcastChannel synchronization
+  channel/listener close
+
+menu-page-kit
+  menu shell
+  active-profile projection
+  profile subscription
+  game and creator navigation links
+
+character-creator-page-kit
+  draft profile ownership
+  slider and color controls
+  CSS silhouette preview
+  JSON projection
+  140 ms debounce
+  patch save
+  reset
+  remote profile projection
+
+game-page-entry-kit
+  one-line import of the existing 3D game runtime
+```
+
 ### Nexus Engine core kits
 
 ```txt
-core-input-kit
-  actions, bindings and input state
-core-spatial-kit
-  transforms and spatial query capability
-core-scene-kit
-  scene registry, transitions and scene descriptor
-core-physics-kit
-  physics provider contract
-core-motion-kit
-  motion capability
-core-camera-kit
-  camera capability
-core-animation-kit
-  animation capability
-core-graphics-kit
-  graphics and frame capability
-core-skybox-kit
-  clear-day sky descriptor
-core-ui-kit
-  UI capability and view projection
-core-diagnostics-kit
-  diagnostics and readback
-core-composition-kit
-  capability graph and composition metadata
+core-input-kit         actions, bindings and input state
+core-spatial-kit       transforms and spatial queries
+core-scene-kit         scene registry and transitions
+core-physics-kit       physics provider contract
+core-motion-kit        motion capability
+core-camera-kit        camera capability
+core-animation-kit     animation capability
+core-graphics-kit      graphics and frame capability
+core-skybox-kit        sky descriptor
+core-ui-kit            UI capability and projection
+core-diagnostics-kit   diagnostics and readback
+core-composition-kit   capability graph and composition metadata
 ```
 
 ### Official NexusEngine-Kits
@@ -153,75 +194,46 @@ seed-kit
   deterministic seed and random streams
 
 procedural-creature-body-kit 0.1.0
-  recipe normalization
-  geometry positions, normals, colors and indices
-  topology and connected-part count
-  skeleton and skinning
-  attachments, bounds and collision recommendation
-  pose descriptors
-  registry, content hash, snapshots, load and reset
+  recipe normalization, geometry, topology, skeleton, skinning,
+  attachments, collision recommendation, bounds, poses, registry,
+  content hash, snapshot, load and reset
 
 instanced-render-batch-kit
-  immutable capacity
-  cell replace/release
-  flush, overflow and bounds
-  statistics and snapshots
+  capacity, cell replace/release, flush, overflow, bounds and snapshots
 
 seeded-world-patch-controller-kit 0.1.0
-  patch/cache identity
-  focus, active, retain and prefetch sets
-  generation queue and executor handoff
-  ready/release delivery
-  budgets, eviction, statistics and snapshots
+  patch/cache identity, focus, active/retain/prefetch sets, queue,
+  executor handoff, ready/release delivery, budgets and eviction
 
 camera-smooth-follow-kit 0.1.0
-  controller registry
-  position and look SmoothDamp
-  quaternion damping
-  reset and teleport handling
-  delta-time clamp
-  transform access and snapshots
+  position/look damping, quaternion damping, reset, teleport handling,
+  delta clamp, transform access and snapshots
 ```
 
-### Product kits
+### Existing product, external and host kits
 
 ```txt
-prehistoric-rush-domain-kit 0.5.0
-  run/input resources, simulation, route, surface, score, outcomes,
-  creature access, events, scene transitions and snapshot
+prehistoric-rush-domain-kit
+  run lifecycle, input, route, surface, score, outcomes, creature access,
+  events, scene transitions and snapshot
 
 drunk-route-generator
-  deterministic route samples, nearest query, progress,
-  region classification and snapshot
+  deterministic samples, nearest query, progress, region and snapshot
 
 player-raptor-preset-kit
-  product creature recipe and collision configuration
+  static product creature recipe and collision configuration
 
-prehistoric-patch-generator
-  terrain arrays, tree descriptors, grass matrices, pickups,
-  colliders, bounds and transferables
+prehistoric-patch-generator / prehistoric-patch-worker
+  deterministic terrain, trees, grass, pickups, colliders, transferables,
+  Worker initialization, generation and error protocol
 
-prehistoric-patch-worker
-  initialization, generation, error protocol and transferable delivery
-```
+rapier-physics-domain-kit / rapier-runtime-module
+  world bridge, actor, fixed colliders, transforms, step and contacts
 
-### External modules and adapters
-
-```txt
-rapier-physics-domain-kit
-  Rapier bridge, kinematic actor, fixed colliders, transforms, step and contacts
-
-three-runtime-module 0.179.1
-  scene graph, geometry, instancing, skinning, camera, lighting, fog,
+three-runtime-module
+  scene graph, geometry, instancing, skinning, camera, lights, fog,
   shadows and rendering
 
-rapier-runtime-module 0.15.0
-  physics runtime
-```
-
-### Host-implied kits
-
-```txt
 module-worker-executor-adapter-kit
 terrain-slot-consumer-kit
 tree-instance-batch-consumer-kit
@@ -235,7 +247,6 @@ creature-geometry-binding-kit
 creature-skeleton-binding-kit
 creature-collision-binding-kit
 creature-pose-binding-kit
-creature-render-frame-correlation-kit
 prehistoric-camera-target-policy-kit
 three-camera-transform-consumer-kit
 camera-light-render-adapter-kit
@@ -250,122 +261,73 @@ browser-frame-loop-kit
 prehistoric-rush-host-readback-kit
 ```
 
-## Runtime visual changes now active
-
-### Creature topology
-
-```txt
-old:
-  torso/neck tube
-  separate head tube
-  topology.connectedParts = 7
-
-current:
-  torso/neck/head in one tube
-  same radial segment count across the join
-  topology.connectedParts = 6
-```
-
-The upstream smoke checks the indexed geometry has six connected components. The kit version remains `0.1.0`.
-
-### Grass
-
-```txt
-card X scale: 1.00 -> 0.62
-alpha silhouette: widened smoothstep range
-fragment color: flat -> vertical shade
-layer palettes: darker -> brighter green set
-```
-
-### Shadows
-
-```txt
-shadow map: default -> PCFSoftShadowMap
-directional shadow camera: explicit +/-80 bounds, near 1, far 180
-bias: -0.0004
-normalBias: 0.06
-tree crowns: castShadow true -> false
-tree crowns: receiveShadow remains true
-```
-
 ## Main findings
 
-### 1. Source graph identity is fragmented
+### 1. The root route no longer reaches the game
 
-Module pins exist as constants, but there is no immutable graph manifest with integrity, schema and a canonical fingerprint admitted before construction.
+`index.html` now loads `src/pages/menu.js`. Its two primary actions target `game.html` and `charactercreator.html`, but neither file exists on `main`. The existing game runtime remains present yet is no longer reachable through the published entry flow.
 
-### 2. Creature identity remains incomplete
+### 2. Saved profiles are not gameplay inputs
 
-The creature `contentHash` still covers normalized recipe plus topology summary rather than exact positions, normals, indices, skinning, skeleton, collision and attachments. The connected-part count changed, but exact geometry identity remains unproved.
+The creator states that the game reads the latest profile when a run starts. `src/game.js` does not import the store and continues to call `game.getPlayerBody()`, which is derived from `player-raptor-preset-kit` during domain construction.
 
-### 3. Local render policy has no schema
+### 3. Profile revision is not a cross-context authority
 
-Grass geometry, shader text, palette, shadow settings and caster flags are embedded in the host. No typed descriptor owns them, no version is assigned and no canonical hash is published.
+Each tab loads the previous value and calculates its own next revision. Concurrent writers can publish the same revision with different payloads. There is no compare-and-swap, writer identity, transaction ID, canonical profile fingerprint or conflict result.
 
-### 4. Renderer label is not proof
+### 4. Debounced edits can lose cross-group changes
 
-`three-seeded-patch-streaming-neck-shadow-grass-v7` is manually maintained. It can drift from source and does not identify exact module pins, shader code, colors, geometry parameters or shadow settings.
+The creator updates the in-memory draft for every input, but the surviving timer persists only its captured `patch`. Rapid edits in different groups can leave the preview showing both changes while storage receives only the final group patch.
 
-### 5. Consumer binding is result-free
+### 5. Persistence effects are untyped
 
-Creature, grass, light, shadow and camera construction return live objects rather than typed admission/binding results with accepted policy revisions.
+`localStorage.setItem()` can throw, but save has no typed accepted/rejected result, no rollback and no durable-vs-projected status. The UI displays `Saved revision ...` only after a synchronous return, but cannot distinguish authoritative commit, cross-tab conflict or later overwrite.
 
-### 6. Render frames are unacknowledged
+### 6. Synchronization and lifecycle are incomplete
 
-`renderer.render(scene, camera)` returns no product frame result. The host cannot prove which creature geometry, grass policy, shadow policy, camera transform or pose was consumed by a displayed frame.
+Menu and creator subscriptions are not released. The module-scoped BroadcastChannel remains open unless `closePlayerCharacterProfileStore()` is explicitly called, which neither page does. Storage and broadcast notifications can also duplicate one logical update.
 
-### 7. P0 streaming integrity remains unresolved
+### 7. Preview, physics and rendered frame do not share identity
 
-The controller marks patches active before terrain, tree, grass, pickup, collider and height consumers acknowledge a shared commit. This remains the first implementation priority.
+The creator preview is a CSS silhouette, not the procedural creature descriptor. The game, Rapier collision and Three frame expose no accepted profile revision or fingerprint, so profile appearance, collision and rendered evidence cannot be correlated.
+
+### 8. Previous runtime gates remain open
+
+Patch delivery still becomes controller-active before all world consumers acknowledge a shared commit. Visual-policy identity, run/session epochs and ordered disposal also remain unresolved.
 
 ## Required authority boundary
 
 ```txt
-PrehistoricRush Visual Policy Identity Domain
+PrehistoricRush Player Character Profile Authority Domain
+  route-manifest-kit
+  page-artifact-admission-kit
+  player-profile-schema-kit
+  player-profile-fingerprint-kit
+  profile-load-result-kit
+  profile-write-command-kit
+  profile-write-result-kit
+  profile-revision-authority-kit
+  profile-conflict-resolution-kit
+  creator-draft-transaction-kit
+  profile-cross-context-sync-kit
+  game-profile-admission-kit
+  profile-to-creature-descriptor-kit
+  profile-to-collision-binding-kit
+  profile-render-binding-result-kit
+  profile-frame-receipt-kit
+  profile-observation-kit
+  profile-lifecycle-kit
+  route-profile-fixture-kit
 ```
 
-Required records:
+## Priority order
 
 ```txt
-RuntimeModuleGraphManifest
-VisualPolicyDescriptor
-CreatureGeometryIdentity
-GrassRenderPolicy
-ShadowRenderPolicy
-RenderPolicyAdmissionResult
-RenderBindingResult
-RenderFrameReceipt
-VisualPolicyObservation
-```
-
-A frame receipt must correlate:
-
-```txt
-runSessionId
-streamEpoch
-frameId
-moduleGraphFingerprint
-visualPolicyFingerprint
-creatureDescriptorHash
-creatureGeometryHash
-creatureBindingRevision
-poseRevision
-grassPolicyHash
-shadowPolicyHash
-cameraRevision
-patchConsumerRevision
-```
-
-## Next safe ledges
-
-```txt
-P0:
-PrehistoricRush Seeded Patch Activation Commit Authority
-+ Multi-Consumer Prepare / Commit / Rollback Fixture Gate
-
-P1:
-PrehistoricRush Visual Policy Graph Identity Authority
-+ Neck / Grass / Shadow Render-Frame Fixture Gate
+P0 Multi-Page Route Admission + Player Profile Handoff Authority
+P1 Seeded Patch Activation Commit Authority
+P2 Visual Policy Graph Identity + Render-Frame Correlation
+P3 Run Session Reset + Shared Epoch Authority
+P4 Worker Quarantine + Ordered Runtime Disposal
 ```
 
 No runtime code was changed by this audit.
