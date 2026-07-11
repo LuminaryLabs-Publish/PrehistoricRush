@@ -3,87 +3,79 @@
 ## Last aligned
 
 ```txt
-2026-07-11T15-59-12-04-00
+2026-07-11T17-39-47-04-00
 ```
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with profile persistence, a procedural raptor, deterministic route generation, streamed terrain patches, Rapier collision, Three.js rendering, HUD projection and Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with profile persistence, procedural creature generation, deterministic route generation, streamed world patches, Rapier collision, Three.js rendering, HUD projection and Pages deployment.
 
-The current audit establishes the missing **run, stream, collider and frame epoch reset authority**. `game.start()` replaces only the run and input resources. The patch controller, Worker, active patch map, pickup projection, Rapier world, fixed colliders, browser input booleans, RAF and public host remain process-lifetime objects.
-
-A retry can therefore begin with state retained from the previous run. Most visibly, collected pickup projection is rebuilt only when patch membership changes. Retrying at the same location with the same active set can keep previously collected shards absent even though the new run has an empty collected-shard ledger.
+The current audit establishes the missing **world readiness and movement admission authority**. The RAF advances the run through `engine.tick(dt)` before `updateStreaming(state)` evaluates the already-moved actor position. When a required patch is absent, simulation and camera sampling silently use `fallbackHeight()`, while terrain, fixed colliders, pickups and render consumers arrive later.
 
 ## Plan ledger
 
-**Goal:** make Start, Retry and Run Again one atomic authority transfer that either commits a fresh run across gameplay, streaming, colliders, pickups, camera and frame observation or leaves the prior terminal run unchanged.
+**Goal:** make every admitted movement step consume one committed route-ahead world revision across height, terrain, collision, pickups, rendering and frame observation.
 
 - [x] Compare all ten accessible `LuminaryLabs-Publish` repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Confirm all nine eligible repositories have central ledger and root `.agent` state.
-- [x] Avoid `IntoTheMeadow` because same-window documentation commits were still landing.
-- [x] Select only `PrehistoricRush` as the oldest stable eligible repository.
-- [x] Trace `game.start()`, host `start()`, patch-controller reuse, Worker reuse, active-content projection, physics reuse, camera reset and RAF continuation.
-- [x] Identify the complete interaction loop, domains, kits and services.
-- [x] Define run/reset, stream, collider, Worker and frame epoch contracts.
+- [x] Detect same-window `IntoTheMeadow` documentation writes.
+- [x] Select only `PrehistoricRush` as the oldest stable fallback.
+- [x] Trace simulation, height sampling, streaming, physics, collision, rendering and HUD order.
+- [x] Identify the interaction loop, domains, kits and services.
+- [x] Define required-corridor, readiness, movement-admission and frame-proof contracts.
 - [x] Add timestamped architecture and system audits.
-- [x] Change documentation only.
-- [x] Push directly to `main` with no branch or pull request.
-- [ ] Implement the reset transaction and executable fixtures.
+- [x] Change documentation only and push directly to `main`.
+- [ ] Implement the authority and executable fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-11T15-59-12-04-00/project-breakdown.md
+.agent/trackers/2026-07-11T17-39-47-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-11T15-59-12-04-00-run-stream-epoch-reset-dsk-map.md
-.agent/render-audit/2026-07-11T15-59-12-04-00-retry-visible-state-membership-gap.md
-.agent/gameplay-audit/2026-07-11T15-59-12-04-00-retry-pickup-stream-state-loop.md
-.agent/interaction-audit/2026-07-11T15-59-12-04-00-start-retry-epoch-admission-map.md
-.agent/run-session-audit/2026-07-11T15-59-12-04-00-run-stream-collider-frame-epoch-contract.md
-.agent/deploy-audit/2026-07-11T15-59-12-04-00-retry-reset-epoch-fixture-gate.md
-.agent/turn-ledger/2026-07-11T15-59-12-04-00.md
+.agent/architecture-audit/2026-07-11T17-39-47-04-00-world-readiness-movement-admission-dsk-map.md
+.agent/render-audit/2026-07-11T17-39-47-04-00-fallback-height-visible-terrain-parity-gap.md
+.agent/gameplay-audit/2026-07-11T17-39-47-04-00-simulation-outruns-stream-loop.md
+.agent/interaction-audit/2026-07-11T17-39-47-04-00-movement-world-readiness-admission-map.md
+.agent/stream-readiness-audit/2026-07-11T17-39-47-04-00-required-corridor-commit-contract.md
+.agent/deploy-audit/2026-07-11T17-39-47-04-00-world-readiness-latency-fixture-gate.md
+.agent/turn-ledger/2026-07-11T17-39-47-04-00.md
 .agent/kit-registry.json
 ```
 
 ## Interaction loop
 
 ```txt
-terminal or menu state
-  -> Start / Retry / Run Again
-  -> game.start()
-     -> replace RunState
-     -> increment numeric runId
-     -> replace InputState
-     -> emit RunStarted
-     -> request scene transition
-  -> updateStreaming(newState, true)
-     -> reuse existing controller, queue, cache and Worker
-     -> consume any released/ready rows
-     -> rebuild consumers only if membership changed
-  -> reset camera against numeric runId
-  -> existing RAF continues
-  -> existing physics, colliders, patch maps, pickups and host remain
+browser input
+  -> game.setInput
+  -> engine.tick(dt)
+     -> movement and distance commit
+     -> sampleHeight uses active patch or fallbackHeight
+  -> updateStreaming(already-moved state)
+     -> focus, queue, generation and activation
+  -> Rapier step and fallback collision
+  -> pickup checks
+  -> camera and Three render
+  -> HUD and public host
 ```
 
 ## Main finding
 
 ```txt
-fresh gameplay state: yes
-fresh streaming session: no
-fresh Worker generation: no
-fresh active patch membership: no
-fresh pickup projection: conditional
-fresh Rapier world/actor/colliders: no
-fresh external keyboard state: no
-fresh RAF generation: no
-fresh host lease/read model: no
+movement admission result: absent
+required route-ahead corridor: absent
+patch readiness revision: absent
+height-source readiness: absent
+collision-source readiness: absent
+pickup readiness: absent
+render-consumer readiness: absent
+world/frame parity receipt: absent
 ```
 
-The camera alone has a local run-change check. It does not create a shared epoch for streaming, physics, collision, pickups, Worker results or frame receipts.
+A patch can become authoritative after the actor has already entered its area. This can change height, visible terrain, collision and pickup availability between frames without an explicit transition result.
 
 ## Domains in use
 
@@ -93,15 +85,14 @@ pinned module/dependency identity
 Nexus Engine composition and scene routing
 run lifecycle, input, route, movement, score and outcomes
 procedural creature generation, skinning and poses
-deterministic route and terrain classification
 patch generation, Worker execution, cache, queue and membership
 terrain, tree, grass, pickup, collider and height consumers
 Rapier actor, fixed colliders, step and contacts
 collision, pickup and terminal admission
 camera smoothing and run-change reset
 Three rendering, HUD projection and public host
-runtime/run/stream/collider/frame epoch authority: missing
-atomic reset and stale-work rejection: missing
+world readiness and movement admission: missing
+committed-frame, reset-epoch and lifecycle authority: missing
 validation and Pages deployment
 ```
 
@@ -114,38 +105,31 @@ validation and Pages deployment
 8 external or host adapter boundaries
 ```
 
-See `.agent/current-audit.md` and `.agent/kit-registry.json` for every kit and service.
+See `.agent/current-audit.md`, `.agent/kit-registry.json` and the timestamped tracker for every kit and offered service.
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-run-stream-epoch-authority-domain
+prehistoric-rush-world-readiness-movement-authority-domain
 ```
 
 It must coordinate:
 
 ```txt
-runtimeSessionId
-runSessionId and runEpoch
-streamEpoch
-colliderEpoch
-workerGeneration
-frameEpoch
-reset command/result
-input reset
-patch membership policy
-pickup reprojection
-physics replacement/reset
-camera acknowledgement
-stale callback/contact/frame rejection
-first committed frame acknowledgement
+required travel corridor
+patch content and membership revisions
+height, collision, pickup and render readiness
+movement admit/cap/defer result
+simulation and physics consumption
+committed visible frame acknowledgement
+stale Worker and consumer-result rejection
 ```
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Run / Stream / Collider / Frame Epoch Authority
-+ Atomic Retry Reset and First-Frame Parity Fixture Gate
+PrehistoricRush World Readiness + Movement Admission Authority
++ Delayed/Reordered Patch and Frame-Parity Fixture Gate
 ```
 
-This remains downstream of route/profile P0 and should reuse the patch, collision and committed-frame result contracts rather than create parallel owners.
+This extends the existing patch controller, consumer adapters, collision authority and committed-frame plan. It must not create a second streamer, movement loop or collision system.
