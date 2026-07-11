@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T21-00-16-04-00`
+**Last aligned:** `2026-07-10T22-42-00-04-00`
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,106 +9,81 @@
 ## Current implementation gate
 
 ```txt
-PrehistoricRush Instance Pool Capacity Authority
-+ Deterministic Population Fixture Gate
+PrehistoricRush Population Admission Transaction
++ Render/Collider/Pickup Parity Fixture Gate
 ```
 
-The population-capacity gate remains first because the active root pool can receive more writes than its allocation, and grass admission currently reuses the previous active draw count as the next capacity limit.
-
-## Newly documented follow-on
-
-```txt
-PrehistoricRush Runtime Source Contract Reconciliation
-+ Deployed Artifact Fixture Gate
-```
-
-The deployed repository currently presents several JSON files as configuration and composition authority, but the active route does not read them. The runtime source of truth is hardcoded inside `src/game.js`.
+The active `populate()` path mixes candidate generation, capacity checks, matrix writes, collider creation, pickup creation, draw-count publication, and physics replacement in one mutation pass. It has no atomic generation result or parity proof.
 
 ## Selection
 
-The accessible `LuminaryLabs-Publish` installation contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are tracked and have root `.agent` state, so the oldest documented-selection rule applied.
-
-`PrehistoricRush` was selected because its prior central and root audit timestamp, `2026-07-10T19-30-36-04-00`, was the oldest eligible timestamp.
-
-## Read first
+The accessible `LuminaryLabs-Publish` installation contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are tracked and have root `.agent` state.
 
 ```txt
-.agent/trackers/2026-07-10T21-00-16-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T21-00-16-04-00.md
-.agent/current-audit.md
-.agent/known-gaps.md
-.agent/next-steps.md
-.agent/validation.md
-.agent/kit-registry.json
-.agent/architecture-audit/2026-07-10T21-00-16-04-00-runtime-source-contract-dsk-map.md
-.agent/render-audit/2026-07-10T21-00-16-04-00-deployed-render-source-authority-gap.md
-.agent/gameplay-audit/2026-07-10T21-00-16-04-00-runtime-config-scene-authority-loop.md
-.agent/interaction-audit/2026-07-10T21-00-16-04-00-input-scene-config-bypass-map.md
-.agent/source-contract-audit/2026-07-10T21-00-16-04-00-deployed-manifest-runtime-consumption-contract.md
-.agent/deploy-audit/2026-07-10T21-00-16-04-00-artifact-source-contract-fixture-gate.md
+PrehistoricRush     selected / prior 2026-07-10T21-00-16-04-00
+AetherVale          tracked  / 2026-07-10T21-08-52-04-00
+IntoTheMeadow       tracked  / 2026-07-10T21-19-36-04-00
+TheOpenAbove        tracked  / 2026-07-10T21-31-01-04-00
+HorrorCorridor      tracked  / 2026-07-10T21-39-22-04-00
+PhantomCommand      tracked  / 2026-07-10T21-49-26-04-00
+ZombieOrchard       tracked  / 2026-07-10T22-11-24-04-00
+TheUnmappedHouse    tracked  / 2026-07-10T22-21-17-04-00
+MyCozyIsland        tracked  / 2026-07-10T22-29-21-04-00
+TheCavalryOfRome    excluded by rule
 ```
 
 ## Active interaction loop
 
 ```txt
-index.html
-  -> src/runtime.mjs
-  -> src/game.js
-  -> construct six repo-local domain kits
-  -> import Three.js, Rapier, and the external Rapier physics kit
-  -> create shell, terrain window, instance pools, raptor, input, physics, HUD, and camera
-  -> populate trees, roots, grass, rocks, shards, colliders, and pickups
-  -> Start Rush performs a partial state reset
-  -> one RAF advances simulation, presentation, and rendering
-  -> run-over or win changes the scene string
-  -> Retry / Run Again re-enter the game with another partial reset
-  -> PrehistoricRushHost exposes live objects and aggregate snapshots
+boot -> local domain kits + Three.js + Rapier + physics adapter
+mount -> terrain, instance pools, raptor, input, physics, HUD, camera
+populate -> candidate rows -> direct matrix writes -> colliders/pickups -> active counts
+run -> movement -> chunk transition -> repopulate -> contacts/pickups -> HUD/render
+restart -> partial state reset while the same population and RAF owners continue
+readback -> live mutable app objects plus aggregate domain snapshots
 ```
 
-## Active repo-local kits
+## Main population finding
 
 ```txt
-route-field-domain-kit
-surface-traversal-domain-kit
-forest-archetype-domain-kit
-grass-patch-domain-kit
-grass-wind-domain-kit
-procedural-dino-body-domain-kit
+window chunks: 7 x 7 = 49
+tree candidates: up to 343
+root candidates: up to 1,372
+root allocation: 400
+grass candidates: up to 3,430
 ```
 
-## Source-authority finding
+Tree and root writes have no capacity preflight. Grass increments its candidate counter before LOD admission, compares against the previous active draw count instead of immutable capacity, and later publishes the candidate count as the draw count. Collider and pickup rows are produced independently from render admission.
 
-The Pages workflow deploys `game-scenes.json`, `runner-tuning.json`, `flock-generation.json`, `kit-composition.json`, `kit-cutover-inventory.json`, and scene JSON files. The active browser route imports none of them.
-
-Examples:
+## Read first
 
 ```txt
-src/game.js base speed:             16
-runner-tuning.json base speed:      13.5
-
-src/game.js terrain chunk size:     56
-runner-tuning.json chunk size:      44
-
-src/game.js active composition:     six local domain kits + Three/Rapier/physics adapter
-kit-composition.json declaration:   NexusEngine core kit stack + ProtoKit cutover plan
-
-src/game.js scene authority:        inline state.scene strings
-game-scenes.json authority claim:   scene files, transition map, NexusEngine CDN/core kits
+.agent/current-audit.md
+.agent/next-steps.md
+.agent/known-gaps.md
+.agent/validation.md
+.agent/kit-registry.json
+.agent/trackers/2026-07-10T22-42-00-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T22-42-00-04-00.md
+.agent/architecture-audit/2026-07-10T22-42-00-04-00-population-admission-transaction-dsk-map.md
+.agent/render-audit/2026-07-10T22-42-00-04-00-instance-write-draw-count-parity-gap.md
+.agent/gameplay-audit/2026-07-10T22-42-00-04-00-population-collider-pickup-generation-loop.md
+.agent/interaction-audit/2026-07-10T22-42-00-04-00-chunk-transition-population-admission-map.md
+.agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
+.agent/deploy-audit/2026-07-10T22-42-00-04-00-population-parity-fixture-gate.md
 ```
-
-Changing the deployed JSON files can therefore appear valid while producing no runtime change.
 
 ## Safe order
 
 ```txt
-1. Finish population-capacity authority and its fixture.
-2. Choose one canonical runtime source contract.
-3. Either consume the deployed JSON files or explicitly mark them archival/non-runtime.
-4. Emit requested/resolved source fingerprints through PrehistoricRushHost.
-5. Gate Pages deployment on source-contract parity.
-6. Return to restart, persistence, dependency admission, and lifecycle disposal.
+1. Pure candidate generation.
+2. Immutable pool capacities.
+3. Typed admission and truncation.
+4. Detached matrix/collider/pickup plans.
+5. Atomic generation commit.
+6. Render/collider and shard/pickup parity proof.
+7. Host readback and deterministic fixtures.
+8. Runtime source-contract reconciliation.
 ```
 
-## Validation state
-
-Documentation only. Runtime source, dependencies, routes, and deployment behavior were not changed. No branch or pull request was created.
+Documentation only. Runtime source, dependencies, routes, rendering, physics, and deployment behavior were not changed.
