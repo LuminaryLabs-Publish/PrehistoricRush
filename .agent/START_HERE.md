@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T22-42-00-04-00`
+**Last aligned:** `2026-07-10T23-08-11-04-00`
 
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`
 
@@ -9,51 +9,63 @@
 ## Current implementation gate
 
 ```txt
-PrehistoricRush Population Admission Transaction
-+ Render/Collider/Pickup Parity Fixture Gate
+PrehistoricRush Core-Kit Consumption Authority
++ Kit-Graph / Thin-Adapter Fixture Gate
 ```
 
-The active `populate()` path mixes candidate generation, capacity checks, matrix writes, collider creation, pickup creation, draw-count publication, and physics replacement in one mutation pass. It has no atomic generation result or parity proof.
+The runtime was refactored after the prior audit. It now installs one `prehistoric-rush-domain-kit`, two nested specialized kits, and twelve Nexus Engine core kits, but the browser host still directly owns input capture, Rapier setup, terrain, population, camera, animation calls, rendering, HUD, frame scheduling, and diagnostics. Only scene transitions are visibly routed through a composed core service.
 
 ## Selection
 
-The accessible `LuminaryLabs-Publish` installation contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are tracked and have root `.agent` state.
+The accessible `LuminaryLabs-Publish` installation contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories have a central ledger and root `.agent` state.
+
+`PrehistoricRush` was selected before the oldest-document fallback because its runtime changed after its latest central audit:
 
 ```txt
-PrehistoricRush     selected / prior 2026-07-10T21-00-16-04-00
-AetherVale          tracked  / 2026-07-10T21-08-52-04-00
-IntoTheMeadow       tracked  / 2026-07-10T21-19-36-04-00
-TheOpenAbove        tracked  / 2026-07-10T21-31-01-04-00
-HorrorCorridor      tracked  / 2026-07-10T21-39-22-04-00
-PhantomCommand      tracked  / 2026-07-10T21-49-26-04-00
-ZombieOrchard       tracked  / 2026-07-10T22-11-24-04-00
-TheUnmappedHouse    tracked  / 2026-07-10T22-21-17-04-00
-MyCozyIsland        tracked  / 2026-07-10T22-29-21-04-00
-TheCavalryOfRome    excluded by rule
+central ledger last updated: 2026-07-10T22-42-00-04-00
+runtime refactor completed: 2026-07-10T23-02-57-04-00
+selection reason: current architecture and kit graph were undocumented
 ```
 
 ## Active interaction loop
 
 ```txt
-boot -> local domain kits + Three.js + Rapier + physics adapter
-mount -> terrain, instance pools, raptor, input, physics, HUD, camera
-populate -> candidate rows -> direct matrix writes -> colliders/pickups -> active counts
-run -> movement -> chunk transition -> repopulate -> contacts/pickups -> HUD/render
-restart -> partial state reset while the same population and RAF owners continue
-readback -> live mutable app objects plus aggregate domain snapshots
+index.html
+  -> src/runtime.mjs
+  -> src/game.js
+  -> import NexusEngine@main, Three.js, Rapier, and rapier-physics-domain-kit@main
+  -> createPrehistoricRushKitGraph()
+  -> install 12 core kits + prehistoric-rush-domain-kit
+  -> create inline browser/Rapier/Three adapter
+  -> start run and populate current 7 x 7 chunk window
+  -> browser input mutates local input state and calls game.setInput()
+  -> engine.tick(dt) advances the game-domain run system
+  -> adapter updates terrain/population/physics contacts/pickups
+  -> adapter projects dino pose, camera, HUD, and render frame
+  -> requestAnimationFrame schedules the next frame
+  -> PrehistoricRushHost exposes live engine/physics/adapter references and aggregate snapshots
 ```
 
-## Main population finding
+## Main finding
+
+The composition graph is declared, but service consumption is not authoritative or observable.
 
 ```txt
-window chunks: 7 x 7 = 49
-tree candidates: up to 343
-root candidates: up to 1,372
-root allocation: 400
-grass candidates: up to 3,430
+core-input        installed, browser listeners bypass it
+core-physics      installed, external Rapier bridge lives outside it
+core-motion       installed, run movement is custom domain mutation
+core-camera       installed, Three camera is updated inline
+core-animation    installed, dino pose is applied inline
+core-graphics     installed, Three renderer is called inline
+core-skybox       installed, no core skybox consumer is visible
+core-ui           installed, DOM/HUD are inline
+core-diagnostics  installed, host readback is custom and incomplete
+core-composition  installed, graph exists but consumption rows are absent
+core-scene        installed and directly used for transitions
+core-spatial      installed with no visible runtime consumer
 ```
 
-Tree and root writes have no capacity preflight. Grass increments its candidate counter before LOD admission, compares against the previous active draw count instead of immutable capacity, and later publishes the candidate count as the draw count. Collider and pickup rows are produced independently from render admission.
+The refactor also retained the streamed-population mutation path. Tree, grass, and shard pools use mutable `InstancedMesh.count` as the next population ceiling after overwriting it with the previous active count, so population capacity can shrink between windows.
 
 ## Read first
 
@@ -63,27 +75,27 @@ Tree and root writes have no capacity preflight. Grass increments its candidate 
 .agent/known-gaps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-10T22-42-00-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T22-42-00-04-00.md
-.agent/architecture-audit/2026-07-10T22-42-00-04-00-population-admission-transaction-dsk-map.md
-.agent/render-audit/2026-07-10T22-42-00-04-00-instance-write-draw-count-parity-gap.md
-.agent/gameplay-audit/2026-07-10T22-42-00-04-00-population-collider-pickup-generation-loop.md
-.agent/interaction-audit/2026-07-10T22-42-00-04-00-chunk-transition-population-admission-map.md
-.agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
-.agent/deploy-audit/2026-07-10T22-42-00-04-00-population-parity-fixture-gate.md
+.agent/trackers/2026-07-10T23-08-11-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-10T23-08-11-04-00.md
+.agent/architecture-audit/2026-07-10T23-08-11-04-00-core-kit-consumption-authority-dsk-map.md
+.agent/render-audit/2026-07-10T23-08-11-04-00-thin-render-adapter-consumption-gap.md
+.agent/gameplay-audit/2026-07-10T23-08-11-04-00-domain-run-adapter-contact-loop.md
+.agent/interaction-audit/2026-07-10T23-08-11-04-00-browser-input-core-action-bypass-map.md
+.agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
+.agent/deploy-audit/2026-07-10T23-08-11-04-00-kit-graph-adapter-fixture-gate.md
 ```
 
 ## Safe order
 
 ```txt
-1. Pure candidate generation.
-2. Immutable pool capacities.
-3. Typed admission and truncation.
-4. Detached matrix/collider/pickup plans.
-5. Atomic generation commit.
-6. Render/collider and shard/pickup parity proof.
-7. Host readback and deterministic fixtures.
-8. Runtime source-contract reconciliation.
+1. Freeze and expose a composition manifest.
+2. Record declared, installed, available, consumed, replaced, and unused status per kit.
+3. Route browser input and Rapier through explicit adapters with typed results.
+4. Remove unused core kits or make their service consumption real.
+5. Pin NexusEngine and ProtoKit source revisions.
+6. Add a DOM-free kit-graph fixture.
+7. Add a browser adapter-consumption smoke.
+8. Return to population admission using immutable allocation capacities.
 ```
 
-Documentation only. Runtime source, dependencies, routes, rendering, physics, and deployment behavior were not changed.
+Documentation only. This pass did not alter runtime source, dependencies, rendering, physics, routes, or deployment behavior.
