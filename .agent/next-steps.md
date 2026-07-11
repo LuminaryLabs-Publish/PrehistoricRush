@@ -1,118 +1,142 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T05-39-11-04-00`
+**Updated:** `2026-07-11T07-08-45-04-00`
 
 ## Summary
 
-Keep the existing shared smooth-follow implementation. Add product-side target provenance, typed update/reset results, Three transform-consumption proof and rendered-frame correlation. Do not let this camera work displace the P0 seeded patch activation transaction.
+Keep the shared procedural creature generator and the local Three/Rapier consumers. Extend the reusable descriptor identity so exact geometry payload and orientation are versioned, then add typed product binding and rendered-frame proof. Do not let this work displace P0 seeded patch activation authority.
 
 ## Plan ledger
 
-**Goal:** Make every camera frame traceable from authoritative run/terrain state through the shared controller to the exact Three.js transform and rendered frame.
+**Goal:** make every visible player-creature frame traceable from pinned source and normalized recipe through exact geometry, binding, pose and render acknowledgement.
 
 ### Phase 0: preserve ownership
 
-- [ ] Keep `camera-smooth-follow-kit` as the persistent smoothing-state authority.
-- [ ] Keep `prehistoric-rush-domain-kit` as run and route authority.
-- [ ] Keep the Three adapter as camera-object and render authority.
-- [ ] Update existing reusable kits before adding a new shared kit.
-- [ ] Do not reintroduce local `lerp()` plus immediate `lookAt()` logic.
+- [ ] Keep `procedural-creature-body-kit` as renderer-agnostic geometry authority.
+- [ ] Keep `player-raptor-preset-kit` as product recipe authority.
+- [ ] Keep `prehistoric-rush-domain-kit` as run and pose-state authority.
+- [ ] Keep Three and Rapier integration outside the shared body kit.
+- [ ] Update existing reusable kits before adding a second shared generator.
 
-### Phase 1: define the product target contract
+### Phase 1: version the descriptor contract
 
-- [ ] Create a JSON-safe `CameraTargetDescriptor`.
-- [ ] Include `runId`, simulation/frame sequence, route index and target policy version.
-- [ ] Include height-source/patch consumer revision when available.
-- [ ] Include target position, target look point, up vector and reset policy.
-- [ ] Add a deterministic target fingerprint.
-- [ ] Return typed invalid-target results for non-finite or missing route data.
+- [ ] Add `descriptorSchemaVersion` and `generatorVersion`.
+- [ ] Add source revision or source-manifest identity.
+- [ ] Declare coordinate system, front face, winding, normal space and skinning space.
+- [ ] Add explicit geometry-format migration/rejection policy.
+- [ ] Update snapshot schema and load admission.
 
-### Phase 2: admit reset and update operations
+### Phase 2: hash complete payload identity
 
-- [ ] Add monotonic camera command/target sequence.
-- [ ] Classify initial-run, run-restart, run-change, teleport and manual reset.
-- [ ] Reject stale run/session targets.
-- [ ] Record the exact delta time requested and clamped.
-- [ ] Return controller revision, reset flag/reason and transform fingerprint.
-- [ ] Preserve idempotent duplicate results.
+- [ ] Add canonical recipe hash.
+- [ ] Add positions, normals, colors and indices hashes.
+- [ ] Add skin indices/weights hash.
+- [ ] Add skeleton, attachment, material, collision and bounds hashes.
+- [ ] Add full descriptor hash over all semantic fields.
+- [ ] Ensure typed-array/container representation does not change canonical hashes.
+- [ ] Ensure changed index order changes geometry and full hashes.
 
-### Phase 3: prove Three transform consumption
+### Phase 3: validate geometry and orientation
 
-- [ ] Replace result-free `applyCameraTransform()` with a typed application result.
-- [ ] Validate finite normalized transform data before camera mutation.
-- [ ] Record controller revision and applied camera matrix/quaternion fingerprint.
-- [ ] Record projection revision after resize.
-- [ ] Reject stale transforms after camera/session disposal.
+- [ ] Validate array lengths and finite values.
+- [ ] Validate integer index range and triangle divisibility.
+- [ ] Report or reject degenerate triangles.
+- [ ] Validate supplied normal lengths.
+- [ ] Validate geometric triangle normals against supplied vertex normals.
+- [ ] Validate declared FrontSide/winding convention.
+- [ ] Validate skin indices and normalized weights.
+- [ ] Validate skeleton hierarchy and required bone IDs.
 
-### Phase 4: correlate the rendered frame
+### Phase 4: admit product consumers
 
-- [ ] Assign a committed render-frame ID.
-- [ ] Record target, controller and Three-application revisions consumed.
-- [ ] Record run ID and current patch/height revision.
-- [ ] Publish bounded camera consumption rows.
-- [ ] Expose detached JSON-safe observation only.
-- [ ] Remove mutable controller and adapter owners from public readback.
+- [ ] Add typed creature descriptor admission result.
+- [ ] Add typed Three geometry/skeleton/material binding result.
+- [ ] Add typed Rapier collision binding result.
+- [ ] Prepare both consumers before committing the active player binding.
+- [ ] Roll back prepared resources if either consumer fails.
+- [ ] Retain descriptor, geometry, skeleton and collision hashes in binding rows.
 
-### Phase 5: own lifecycle
+### Phase 5: prove pose and frame consumption
 
-- [ ] Retain the camera service and controller ID in a session owner.
-- [ ] Remove the controller on terminal disposal.
-- [ ] Fence updates by run/session epoch.
-- [ ] Cancel RAF and listeners before renderer/controller disposal.
-- [ ] Make stop/dispose idempotent.
-- [ ] Reject update/reset after disposal.
+- [ ] Add monotonic pose revision.
+- [ ] Make pose descriptor name descriptor and skeleton hashes.
+- [ ] Make `applyCreaturePose()` return accepted/rejected/stale results.
+- [ ] Reject missing required bones instead of silently skipping them.
+- [ ] Assign committed render-frame IDs.
+- [ ] Correlate frame, creature binding, geometry hash, pose revision and camera revision.
+- [ ] Publish bounded detached observation only.
 
-### Phase 6: fixture gates
+### Phase 6: own lifecycle
 
-- [ ] Prove deterministic convergence for a fixed target stream.
-- [ ] Prove equivalent results across representative frame-time partitions.
-- [ ] Prove delta-time clamping during frame stalls.
-- [ ] Prove initial/restart/run-change reset semantics.
-- [ ] Prove teleport-threshold reset.
-- [ ] Prove route-index and terrain-height discontinuities remain bounded.
-- [ ] Prove quaternion output remains finite and normalized.
-- [ ] Prove one rendered frame references one applied controller revision.
-- [ ] Prove disposed sessions cannot mutate the camera.
+- [ ] Fence descriptor, binding and pose operations by run/session epoch.
+- [ ] Dispose creature geometry, material, skeleton and mesh exactly once.
+- [ ] Reject pose/render operations after disposal.
+- [ ] Remove mutable adapter and service owners from public readback.
+- [ ] Integrate creature disposal with Worker, camera, physics, renderer and RAF shutdown.
+
+### Phase 7: fixture gates
+
+- [ ] Prove deterministic full descriptor hashes.
+- [ ] Prove index-order changes alter geometry identity.
+- [ ] Prove triangle normals agree with supplied normals.
+- [ ] Prove invalid indices, normals and skin data reject.
+- [ ] Prove snapshot/load exact geometry identity.
+- [ ] Prove Three attribute and index counts match the descriptor.
+- [ ] Prove material remains FrontSide during orientation validation.
+- [ ] Prove bind pose and animated poses render correctly.
+- [ ] Prove one frame references one binding and pose revision.
 - [ ] Add browser and Pages smoke.
 
 ## Preferred kit changes
 
-Update the existing `camera-smooth-follow-kit` only for reusable controller-result or validation behavior. Keep product policy local.
+Update the existing shared body kit for reusable identity and CPU proof. Keep product consumers local until their contracts stabilize.
 
 ```txt
-existing:
-  camera-smooth-follow-kit
-    reusable smoothing, reset, snapshot and controller registry
+existing shared kit:
+  procedural-creature-body-kit
+    schema/version metadata
+    full payload hashes
+    orientation declarations
+    deterministic geometry fixtures
 
-product-side:
-  prehistoric-camera-target-policy-kit
-  prehistoric-camera-target-provenance-kit
-  three-camera-transform-consumer-kit
-  camera-frame-correlation-kit
-  prehistoric-camera-observation-kit
-  prehistoric-camera-lifecycle-owner-kit
-  prehistoric-camera-fixture-kit
+product-side kits:
+  creature-descriptor-admission-kit
+  creature-surface-orientation-kit
+  creature-geometry-binding-kit
+  creature-skeleton-binding-kit
+  creature-collision-binding-kit
+  creature-pose-binding-kit
+  creature-render-frame-correlation-kit
+  creature-observation-kit
+  creature-resource-lifecycle-kit
+  creature-geometry-fixture-kit
 ```
 
 ## Required future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-camera-controller-fixture.mjs
-node scripts/prehistoric-rush-camera-target-fixture.mjs
-node scripts/prehistoric-rush-camera-frame-correlation-fixture.mjs
-node scripts/prehistoric-rush-camera-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-creature-descriptor-fixture.mjs
+node scripts/prehistoric-rush-creature-binding-fixture.mjs
+node scripts/prehistoric-rush-creature-frame-fixture.mjs
+node scripts/prehistoric-rush-creature-lifecycle-fixture.mjs
+```
+
+Shared kit fixture:
+
+```bash
+node scripts/procedural-creature-geometry-identity-fixture.mjs
 ```
 
 ## Overall order
 
 ```txt
 1. Patch-content admission and acknowledged patch activation/release.
-2. Camera target/transform/frame consumption proof.
-3. Run-session reset with stream and camera epochs.
-4. Worker stale-result quarantine.
-5. Full runtime lifecycle ownership.
+2. Creature geometry identity and winding/normal/binding/frame proof.
+3. Camera target/transform/frame consumption proof.
+4. Run-session reset with stream/camera/creature epochs.
+5. Worker stale-result quarantine and full runtime disposal.
 ```
 
 ## Do not do next
 
-Do not tune smoothing constants blindly, create a second camera controller, expose more mutable debug owners, or claim success from visual inspection without deterministic target/controller/frame fixtures.
+Do not use `DoubleSide`, regenerate geometry in the Three adapter, silently call `computeVertexNormals()` as a patch, weaken source pinning, or accept current `contentHash` as proof of exact geometry.
