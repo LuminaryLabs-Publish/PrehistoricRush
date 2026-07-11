@@ -1,146 +1,233 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T07-08-45-04-00`  
+**Last aligned:** `2026-07-11T08-48-04-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` is a browser 3D runner built from a pinned Nexus Engine graph, official procedural creature and streaming kits, Three.js and Rapier. The latest production change pins a corrected procedural-creature tube winding order. The raptor's visible geometry changed, but the shared kit still reports version `0.1.0` and its `contentHash` excludes geometry arrays, indices, normals and skin data.
+`PrehistoricRush` is a browser 3D runner composed from pinned Nexus Engine, NexusEngine-Kits, ProtoKits, Three.js and Rapier modules. The latest product runtime now pins `NexusEngine-Kits@d6630367d557782d9ec965947aeb1c197d37ea15`, which includes a continuous torso-neck-head tube, while the same product change alters grass-card geometry and shading, shadow-map policy, directional-shadow bounds and tree-crown shadow casting.
 
-The current documentation gate is exact creature geometry identity and render-consumption proof. Seeded patch activation remains the highest gameplay-integrity implementation priority.
+These visible changes are not represented by one authoritative visual-policy identity. The host exposes a manually maintained renderer label and an incomplete creature `contentHash`, so visually different module graphs and local render policies can report insufficient or misleading provenance.
 
 ## Plan ledger
 
-**Goal:** keep source, descriptor, renderer and runtime proof aligned so future creature fixes cannot change visible output without changing geometry identity and executable validation.
+**Goal:** make one visible frame traceable to the exact module graph, creature topology, grass policy and shadow policy that produced it, without displacing the P0 patch activation transaction.
 
-- [x] Compare the full accessible Publish inventory with the central ledger.
+- [x] Compare the complete accessible `LuminaryLabs-Publish` inventory with the central ledger.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm all nine eligible repositories have root `.agent` and central-ledger coverage.
-- [x] Select only `PrehistoricRush` because its production Kits pin changed after the prior audit.
-- [x] Inspect the upstream winding correction and current product consumer.
-- [x] Identify the interaction loop, domains, kits and services.
-- [x] Add the timestamped geometry identity audit set.
-- [x] Refresh required root `.agent` state.
-- [ ] Implement acknowledged patch activation as P0.
-- [ ] Extend creature descriptor identity and fixtures as P1.
-- [ ] Add camera target/transform/frame proof as P2.
+- [x] Confirm all nine eligible repositories remain centrally tracked with root `.agent` state.
+- [x] Select only `PrehistoricRush` because it is the oldest eligible ledger entry and received a newer undocumented runtime/render-policy change.
+- [x] Read the current product source and newly pinned NexusEngine-Kits topology change.
+- [x] Identify the interaction loop, domains, complete kit inventory and kit services.
+- [x] Trace creature, grass, shadow, camera and rendered-frame consumers.
+- [x] Add timestamped architecture, render, gameplay, interaction, visual-policy and deploy audits.
+- [x] Refresh every required root `.agent` document.
+- [x] Change no runtime source, package scripts, gameplay or deployment configuration.
+- [x] Push only to `main`; create no branch or pull request.
+- [ ] Implement executable visual-policy identity and frame-correlation fixtures after the P0 patch activation gate.
 
-## Latest documentation gate
-
-```txt
-PrehistoricRush Creature Geometry Identity Authority
-+ Winding / Normal / Skinned Render Fixture Gate
-```
-
-## Overall implementation priority
+## Selection result
 
 ```txt
-P0 Seeded Patch Activation Commit Authority
-P1 Creature Geometry Identity and Render Binding Proof
-P2 Camera Target / Transform / Render-Frame Consumption Proof
-P3 Run Session Reset + Stream / Camera Epoch Authority
-P4 Worker Stale-Result Quarantine and Ordered Runtime Disposal
+accessible Publish repositories: 10
+eligible non-Cavalry repositories: 9
+new or central-ledger-missing repositories: 0
+root-.agent-missing repositories: 0
+oldest central ledger: PrehistoricRush
+recent undocumented runtime change: PrehistoricRush
+selected: LuminaryLabs-Publish/PrehistoricRush
+excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
-## Read first
+Only `LuminaryLabs-Publish/PrehistoricRush` is changed in the Publish organization during this pass.
+
+## Current interaction loop
 
 ```txt
-.agent/trackers/2026-07-11T07-08-45-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T07-08-45-04-00.md
-.agent/current-audit.md
-.agent/known-gaps.md
-.agent/next-steps.md
-.agent/validation.md
-.agent/kit-registry.json
-.agent/architecture-audit/2026-07-11T07-08-45-04-00-creature-geometry-identity-dsk-map.md
-.agent/render-audit/2026-07-11T07-08-45-04-00-winding-normal-front-face-proof-gap.md
-.agent/gameplay-audit/2026-07-11T07-08-45-04-00-run-pose-skinned-render-loop.md
-.agent/interaction-audit/2026-07-11T07-08-45-04-00-creature-descriptor-admission-result-map.md
-.agent/creature-system-audit/2026-07-11T07-08-45-04-00-winding-content-hash-render-contract.md
-.agent/deploy-audit/2026-07-11T07-08-45-04-00-creature-geometry-fixture-gate.md
+index.html
+  -> src/runtime.mjs
+  -> src/game.js
+  -> resolve pinned Nexus Engine, Kits, ProtoKits, Three and Rapier modules
+  -> install 12 core kits and 5 official NexusEngine-Kits
+  -> create prehistoric-rush-domain-kit
+  -> create creature descriptor and Rapier actor
+  -> bind creature geometry/skeleton/material into Three
+  -> construct terrain slots, tree batches, grass, pickups, lights and camera
+  -> start run, patch controller and smooth camera
+  -> browser input
+  -> engine.tick(dt)
+  -> patch generation / delivery / release
+  -> sequential terrain, tree, grass, pickup, collider and height mutation
+  -> creature pose and camera transform
+  -> shadowed Three render
+  -> HUD and host snapshot
+  -> requestAnimationFrame
 ```
 
-Prior active camera audit:
+## Current module and visual policy
 
 ```txt
-.agent/camera-system-audit/2026-07-11T05-39-11-04-00-target-provenance-transform-consumption-contract.md
+NexusEngine:           e8252e51878a08eeef46f54b1aae9e8349a2442b
+NexusEngine-Kits:      d6630367d557782d9ec965947aeb1c197d37ea15
+NexusEngine-ProtoKits: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
+Three.js:              0.179.1
+Rapier:                 0.15.0
+creature kit version:  0.1.0
+renderer label:        three-seeded-patch-streaming-neck-shadow-grass-v7
 ```
 
-Prior active world-streaming audit:
-
-```txt
-.agent/world-streaming-audit/2026-07-11T05-02-00-04-00-controller-consumer-activation-contract.md
-```
-
-## Selection
-
-The accessible Publish inventory contains ten repositories. All nine eligible non-Cavalry repositories are already tracked and have root `.agent` state. `PrehistoricRush` was selected before the oldest documented fallback because commit `53f8e45ce8b55cf9b4d20048534b77393b8b56e6` changed its production `NexusEngine-Kits` pin after the previous audit.
-
-## Product read
-
-The player steers, boosts and jumps a procedural skinned raptor along a deterministic route. Seeded world patches stream terrain, trees, grass, pickups, colliders and height data around the run while Rapier handles actor contacts and a persistent smooth-follow controller drives the camera.
-
-## Active interaction loop
-
-```txt
-browser input
-  -> prehistoric-rush simulation updates run state
-  -> patch controller updates active world content
-  -> pose service derives a procedural creature pose
-  -> Three adapter applies pose to the bound skeleton
-  -> smooth camera controller updates camera transform
-  -> Three renders skinned raptor and streamed world
-  -> HUD and PrehistoricRushHost expose aggregate snapshots
-  -> RAF repeats
-```
-
-## Creature ownership split
-
-```txt
-player-raptor-preset-kit
-  owns product recipe values
-
-procedural-creature-body-kit
-  owns renderer-agnostic geometry, normals, indices, skeleton, skinning,
-  collision recommendation, pose descriptors and current hashes/snapshots
-
-prehistoric-rush-domain-kit
-  owns player selection, run state and pose-state inputs
-
-Three adapter
-  owns BufferGeometry, Material, Bone, Skeleton, SkinnedMesh,
-  pose projection and visible frame consumption
-
-Rapier adapter
-  owns collision actor binding and contact projection
-```
+The pinned Kits graph now contains the joined torso-neck-head tube and reports six connected procedural parts. The product route also narrows grass cards, changes their alpha/shade function and palette, uses PCF soft shadows, configures the directional shadow camera and disables tree-crown shadow casting.
 
 ## Main finding
 
-The corrected winding is loaded from `NexusEngine-Kits@ae7ebda62f7c264bbde49c939a62e1a04fd60784` and directly bound into a FrontSide Three material. However:
+The runtime has no canonical visual-policy manifest or frame receipt.
 
 ```txt
-kit version remains 0.1.0
-contentHash = hash(recipe + topology counts)
-geometry positions/normals/indices/skin data are excluded
-snapshot/load compares the incomplete contentHash
-host exposes only id + contentHash + topology counts
+upstream source pin
+  + creature exact geometry/topology
+  + local grass geometry
+  + grass shader source
+  + grass palette
+  + shadow-map type
+  + shadow camera bounds/bias
+  + object cast/receive policy
+  + camera transform
+  + pose revision
+  -> no canonical visualPolicyFingerprint
+  -> no typed render-policy admission
+  -> no binding result
+  -> no committed frame acknowledgement
 ```
 
-Old and corrected winding payloads can therefore appear identical to snapshots and product diagnostics even though culling, lighting and shadows change.
+`PrehistoricRushHost.getState()` exposes only the creature ID, incomplete `contentHash`, topology counts and a manually maintained renderer string. The creature hash still excludes exact geometry arrays. The renderer label does not prove the local shader, colors, shadow settings or exact module graph consumed by a frame.
 
-## Safe implementation order
+## Domains in use
 
 ```txt
-1. Keep procedural-creature-body-kit as renderer-agnostic generator authority.
-2. Add schema, source, front-face and full geometry identity fields.
-3. Hash complete geometry, skeleton, attachment, collision and material payloads.
-4. Add CPU winding/normal/index/skin fixtures in NexusEngine-Kits.
-5. Add typed product descriptor admission and Three/Rapier binding results.
-6. Correlate binding, pose and rendered-frame revisions.
-7. Expose bounded detached proof and own resource disposal.
-8. Add browser and deployed Pages render smoke.
+module graph and source admission
+core input, spatial, scene, physics, motion, camera, animation, graphics,
+skybox, UI, diagnostics and composition
+deterministic seed and random streams
+procedural creature recipe, geometry, topology, skeleton, skinning,
+attachments, collision, pose, snapshot and reset
+Three creature geometry/skeleton/material binding
+Rapier actor/collider/contact binding
+instanced render batches
+seeded world patch scheduling, generation, Worker delivery and cache
+terrain, trees, grass, pickups, colliders and height sampling
+run lifecycle, route, movement, jump, score and outcomes
+camera target policy and smooth follow
+lighting, shadow map, shadow camera and object caster policy
+grass geometry, alpha shader, palette and wind animation
+render submission, HUD, host diagnostics and static deployment
 ```
 
-Do not use `DoubleSide` to conceal orientation defects, recompute normals silently in the product adapter, duplicate the creature generator, or treat a source commit alone as proof of the exact descriptor consumed by a rendered frame.
+## Kits and services
+
+### Core Nexus Engine kits
+
+```txt
+core-input-kit         actions and bindings
+core-spatial-kit       transforms and spatial query capability
+core-scene-kit         scene registry and transitions
+core-physics-kit       physics provider contract
+core-motion-kit        motion capability
+core-camera-kit        camera capability
+core-animation-kit     animation capability
+core-graphics-kit      graphics/frame capability
+core-skybox-kit        sky descriptor
+core-ui-kit            UI projection capability
+core-diagnostics-kit   diagnostics/readback capability
+core-composition-kit   capability graph and composition metadata
+```
+
+### Official NexusEngine-Kits
+
+```txt
+seed-kit
+  deterministic seed and random streams
+
+procedural-creature-body-kit 0.1.0
+  recipe normalization, geometry, topology, skeleton, skinning,
+  attachments, collision recommendation, pose, snapshot/load/reset
+
+instanced-render-batch-kit
+  cell replace/release, capacity, bounds, overflow, flush and snapshots
+
+seeded-world-patch-controller-kit 0.1.0
+  focus, desired sets, queue, cache, executor handoff, ready/release
+  delivery, budgets, eviction, statistics and snapshots
+
+camera-smooth-follow-kit 0.1.0
+  position/look damping, quaternion damping, reset, teleport handling,
+  delta clamp, transform access and snapshots
+```
+
+### Product, external and host kits
+
+```txt
+prehistoric-rush-domain-kit
+drunk-route-generator
+player-raptor-preset-kit
+prehistoric-patch-generator
+prehistoric-patch-worker
+rapier-physics-domain-kit
+three-runtime-module
+rapier-runtime-module
+module-worker-executor-adapter-kit
+terrain-slot-consumer-kit
+tree-instance-batch-consumer-kit
+grass-patch-consumer-kit
+shard-pickup-consumer-kit
+patch-collider-consumer-kit
+patch-height-sampler-kit
+three-procedural-creature-adapter-kit
+creature-descriptor-admission-kit
+creature-geometry-binding-kit
+creature-skeleton-binding-kit
+creature-collision-binding-kit
+creature-pose-binding-kit
+creature-render-frame-correlation-kit
+prehistoric-camera-target-policy-kit
+three-camera-transform-consumer-kit
+camera-light-render-adapter-kit
+patch-streaming-hud-kit
+browser-frame-loop-kit
+prehistoric-rush-host-readback-kit
+```
+
+## Priority order
+
+```txt
+P0 Seeded Patch Activation Commit Authority
+P1 Visual Policy Graph Identity and Render-Frame Correlation
+   - creature exact geometry/topology identity
+   - grass geometry/shader/palette identity
+   - shadow map/frustum/caster identity
+P2 Camera Target / Transform / Frame Consumption Proof
+P3 Run Session Reset + Stream / Camera / Creature Epoch Authority
+P4 Worker Stale-Result Quarantine and Ordered Runtime Disposal
+```
+
+## Read this pass first
+
+```txt
+.agent/trackers/2026-07-11T08-48-04-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T08-48-04-04-00.md
+.agent/architecture-audit/2026-07-11T08-48-04-04-00-visual-policy-identity-dsk-map.md
+.agent/render-audit/2026-07-11T08-48-04-04-00-neck-grass-shadow-frame-provenance-gap.md
+.agent/gameplay-audit/2026-07-11T08-48-04-04-00-run-pose-shadow-grass-frame-loop.md
+.agent/interaction-audit/2026-07-11T08-48-04-04-00-render-policy-admission-result-map.md
+.agent/visual-policy-audit/2026-07-11T08-48-04-04-00-module-graph-shadow-grass-contract.md
+.agent/deploy-audit/2026-07-11T08-48-04-04-00-visual-policy-fingerprint-fixture-gate.md
+```
+
+## Do not start next with
+
+- replacing the shared creature generator with a product-local duplicate
+- using `DoubleSide` or disabling all shadows to conceal topology defects
+- treating the renderer label as a canonical fingerprint
+- adding more visual systems before the current policy can be identified
+- wiring more patch consumers before P0 activation acknowledgement exists
+- claiming visual correctness without CPU and browser frame fixtures
