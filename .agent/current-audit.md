@@ -1,27 +1,26 @@
-# Current Audit: PrehistoricRush Run / Stream Epoch Reset Authority
+# Current Audit: PrehistoricRush World Readiness and Movement Admission
 
-**Updated:** `2026-07-11T15-59-12-04-00`
+**Updated:** `2026-07-11T17-39-47-04-00`
 
 ## Summary
 
-`game.start()` creates a fresh product `RunState`, but the browser host does not create a fresh runtime run. The seeded patch controller, Worker executor, active patch map, terrain slots, tree batches, grass instances, pickup projection, Rapier world, actor, fixed colliders, RAF and public host are created once in `main()` and reused across every Start, Retry and Run Again.
+`PrehistoricRush` advances gameplay before it proves that the route-ahead world required by that movement is generated and committed across all consumers. `engine.tick(dt)` mutates position, distance and height first. `updateStreaming(state)` then follows the already-moved actor, pumps generation and activates at most one ready patch.
 
-The reset boundary is therefore partial. Numeric `runId` changes in the game domain and the camera resets when it observes that number, but no shared run, stream, collider, Worker or frame epoch fences old work or proves that every consumer adopted the new run.
+When an active patch is missing, `sampleHeight()` silently returns `fallbackHeight()`. The missing patch also means its fixed colliders, pickups, terrain, trees and grass are not authoritative yet. A later activation can therefore change visible terrain, camera look height, collision and pickup availability underneath an already-running actor.
 
 ## Plan ledger
 
-**Goal:** define one atomic reset transaction that transfers authority from a terminal or menu run to a fresh run while explicitly preserving reusable immutable cache data and retiring all run-scoped mutable projections.
+**Goal:** define one bounded required-corridor and movement-admission transaction tied to a committed world revision.
 
-- [x] Compare the full Publish inventory against central tracking.
+- [x] Compare Publish inventory against central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Avoid active same-window work in `IntoTheMeadow`.
-- [x] Select only `PrehistoricRush` as the oldest stable eligible repository.
-- [x] Trace domain `start()`, browser `start()`, input, controller, Worker, consumers, physics, camera, RAF and host ownership.
-- [x] Identify the interaction loop, domains, kits and services.
-- [x] Identify a concrete retry pickup-projection failure.
-- [x] Define epoch, reset, retirement, stale-work and first-frame contracts.
+- [x] Detect active same-window `IntoTheMeadow` work.
+- [x] Select only `PrehistoricRush` as the oldest stable fallback.
+- [x] Trace simulation, height, streaming, physics, collision and render order.
+- [x] Identify the interaction loop, domains, complete kit inventory and services.
+- [x] Define required-corridor, readiness, policy, commit and observation contracts.
 - [x] Add required root `.agent` outputs.
-- [ ] Implement and validate the transaction.
+- [ ] Implement and validate the authority.
 
 ## Repository selection
 
@@ -30,7 +29,7 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 new or central-ledger-missing repositories: 0
 root-.agent-missing repositories: 0
-IntoTheMeadow: active same-window documentation commits
+IntoTheMeadow: active same-window WebGL recovery documentation
 selected stable repository: PrehistoricRush
 excluded repository: TheCavalryOfRome
 ```
@@ -42,77 +41,75 @@ Only `LuminaryLabs-Publish/PrehistoricRush` is changed in the Publish organizati
 ```txt
 module boot
   -> load pinned Nexus Engine, Kits, ProtoKits, Three and Rapier
-  -> create one engine and product domain graph
-  -> create one Rapier world and dino actor
-  -> create one patch generator, Worker executor and patch controller
-  -> create one Three adapter and active consumer graph
-  -> create one camera-follow instance
-  -> start initial run and prime streaming
+  -> create engine, run domain, route and creature body
+  -> create Rapier runtime and actor
+  -> create patch generator, Worker executor and controller
+  -> create active-content and Three adapters
+  -> generate center patch synchronously
+  -> queue surrounding desired patches
   -> install listeners, host and RAF
 
-Start / Retry / Run Again
-  -> game.start()
-     -> initialRunState()
-     -> runId = previous runId + 1
-     -> status = game
-     -> replace RunState and InputState
-     -> emit RunStarted
-     -> transition to game
-  -> updateStreaming(state, true)
-     -> reuse existing controller/cache/queue/Worker
-     -> release or activate only changed membership
-  -> resetCamera(state)
-  -> existing RAF continues
+RAF
+  -> sample/clamp wall-clock delta
+  -> project browser booleans into game input
+  -> engine.tick(dt)
+     -> update yaw, speed, jump and surface multiplier
+     -> move x/z and increase distance
+     -> sample y from active patch or fallbackHeight
+     -> evaluate win
+  -> updateStreaming(already-moved state)
+     -> set focus from new position
+     -> update desired/retain/prefetch membership
+     -> release delivered patch IDs
+     -> optionally generate center synchronously
+     -> pump Worker or fallback generation
+     -> activate at most one ready patch
+  -> set actor transform and step Rapier
+  -> inspect Rapier contacts and descriptor fallback overlap
+  -> collect projected pickup
+  -> update creature pose, camera, lights and animation uniforms
+  -> render Three scene
+  -> update HUD and action button
+  -> request next RAF
 ```
 
-## Concrete reset gap
-
-`rebuildActiveContent(state)` is the only path that reconstructs pickup projection from `state.collectedShardIds`. It runs when a patch activates, releases, or a shard is collected.
-
-On retry:
+## Concrete readiness gap
 
 ```txt
-new RunState.collectedShardIds = []
-active patch membership unchanged
-controller emits no new activation or release
-rebuildActiveContent() is not called
-view.pickups and shard instances remain filtered by the previous run
+actor moves into patch P
+  -> P is not in activePatches
+  -> sampleHeight uses fallbackHeight
+  -> P terrain is not visible
+  -> P fixed colliders are absent from Rapier
+  -> P pickups are absent from view.pickups
+  -> P grass/trees are absent from render batches
+
+later Worker result for P
+  -> P activates
+  -> generated terrain replaces fallback height authority
+  -> colliders and pickups become live
+  -> visible terrain and camera target can change
 ```
 
-A new run can therefore start without pickups that its own state says are uncollected.
-
-## Additional retained state
-
-```txt
-external input booleans
-controller desired/active/cache/queue state
-in-flight Worker requests and responses
-activePatches and terrainByPatch maps
-tree batch cell membership
-grass/shard instance buffers
-view.colliders and view.pickups
-Rapier world, actor, fixed bodies and colliders
-camera-follow instance history until local reset
-RAF callback generation
-public host object and raw owner references
-```
+No typed result marks this as an admitted degraded mode, deferred movement or failed readiness transition.
 
 ## Missing identities and results
 
 ```txt
-runtimeSessionId
-runSessionId distinct from mutable numeric runId
-runEpoch
-streamEpoch
-colliderEpoch
-workerGeneration
-frameEpoch
-ResetRunCommand
-ResetRunPlan
-ResetRunResult
-consumer retirement acknowledgements
-stale Worker/contact/frame rejection
-first committed new-run frame acknowledgement
+requiredCorridorId
+requiredCorridorFingerprint
+patchReadinessRevision
+heightSourceRevision
+collisionSourceRevision
+pickupConsumerRevision
+renderConsumerRevision
+WorldReadinessPlan
+WorldReadinessResult
+MovementAdmissionResult
+readiness-frontier distance
+movement cap/defer policy
+world-readiness journal
+world/frame parity acknowledgement
 ```
 
 ## Domains in use
@@ -132,8 +129,10 @@ collision and terminal-outcome admission
 camera reset and smooth follow
 Three scene/resources/rendering
 HUD, buttons and public diagnostics
+world-readiness and movement admission: missing
+committed-frame and host authority: missing
 run/stream/collider/frame epoch authority: missing
-atomic reset and stale-work rejection: missing
+runtime lifecycle and disposal: missing
 fixtures and Pages deployment
 ```
 
@@ -143,7 +142,7 @@ fixtures and Pages deployment
 
 ```txt
 core-input-kit
-  actions, bindings, input state
+  actions, bindings and input state
 
 core-spatial-kit
   transforms and spatial query contract
@@ -233,7 +232,7 @@ prehistoric-patch-generator
   terrain, trees, grass, pickups, colliders, bounds and transferables
 
 prehistoric-patch-worker
-  initialization, generation, request/error protocol and transferable delivery
+  initialization, generation, error protocol and transferable delivery
 ```
 
 ### External and host adapter boundaries
@@ -269,59 +268,50 @@ creature/camera/render host adapters
 ## Required authority domain
 
 ```txt
-prehistoric-rush-run-stream-epoch-authority-domain
-  -> runtime-session-id-kit
-  -> run-session-id-kit
-  -> run-epoch-kit
-  -> stream-epoch-kit
-  -> collider-epoch-kit
-  -> worker-generation-kit
-  -> frame-epoch-kit
-  -> run-reset-command-kit
-  -> run-reset-admission-kit
-  -> run-reset-plan-kit
-  -> input-reset-kit
-  -> patch-membership-reset-kit
-  -> pickup-projection-reset-kit
-  -> physics-reset-or-replacement-kit
-  -> camera-reset-ack-kit
-  -> stale-work-rejection-kit
-  -> run-reset-commit-kit
-  -> run-reset-result-kit
-  -> run-reset-journal-kit
-  -> retry-reset-parity-fixture-kit
+prehistoric-rush-world-readiness-movement-authority-domain
+  -> required-travel-corridor-kit
+  -> patch-readiness-revision-kit
+  -> height-source-readiness-kit
+  -> collision-source-readiness-kit
+  -> render-source-readiness-kit
+  -> pickup-source-readiness-kit
+  -> world-readiness-plan-kit
+  -> world-readiness-result-kit
+  -> movement-admission-kit
+  -> movement-defer-policy-kit
+  -> movement-speed-cap-policy-kit
+  -> world-readiness-commit-kit
+  -> world-readiness-journal-kit
+  -> world-readiness-observation-kit
+  -> stream-latency-fixture-kit
+  -> world-readiness-frame-parity-fixture-kit
 ```
 
 ## Required transaction
 
 ```txt
-Start/Retry command
-  -> validate runtime, predecessor run and lifecycle
-  -> freeze frame, stream, physics and interaction admission
-  -> allocate new run/stream/collider/worker/frame epochs
-  -> retire or quarantine predecessor claims and callbacks
-  -> preserve immutable patch cache only by declared policy
-  -> reproject active patch consumers for the new run
-  -> exact-replace fixed colliders
-  -> reset actor, gameplay input, external input and pickup projection
-  -> reset camera and frame read model
-  -> atomically publish new run authority
-  -> resume RAF
-  -> acknowledge first committed new-run frame
+frame/input identity
+  -> predict bounded movement corridor
+  -> resolve required patch IDs
+  -> request/prepare missing patches through existing controller authority
+  -> collect height, terrain, collider, pickup and render receipts
+  -> classify readiness
+  -> admit full movement, cap speed, defer movement or fail
+  -> apply simulation against accepted world revision
+  -> step physics against matching collider revision
+  -> render matching terrain/object revision
+  -> commit frame carrying readiness evidence
 ```
 
 ## Acceptance conditions
 
 ```txt
-retry always restores every uncollected pickup
-held prior-run input does not leak unless explicitly admitted
-old Worker responses reject without mutation
-old contacts and frame receipts reject
-controller and consumer membership share streamEpoch
-Rapier membership shares colliderEpoch
-camera, canvas, HUD and host acknowledge the same run/frame epoch
-reset failure preserves the prior terminal state
-duplicate retry command is idempotent
+movement never silently consumes fallback height
+required corridor terrain and collision are committed before entry
+pickup availability matches admitted patch revision
+late Worker delivery cannot retroactively redefine a committed frame
+stream lag creates deterministic cap/defer behavior
+Rapier, fallback collision, terrain, camera, HUD and host cite one world revision
 ```
 
 ## Priority placement
@@ -330,6 +320,7 @@ duplicate retry command is idempotent
 P0   route artifact and profile handoff
 P1   patch activation/release transaction
 P1a  exact collider retirement and collision admission
+P1b  world readiness and movement admission
 P2   committed-frame observation and host read model
 P3   run/stream/collider/worker/frame epoch reset authority
 P4   startup rollback, resource ownership and disposal
