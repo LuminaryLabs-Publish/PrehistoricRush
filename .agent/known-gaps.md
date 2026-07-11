@@ -1,181 +1,139 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T08-48-04-04-00`
+**Updated:** `2026-07-11T10-58-10-04-00`
 
 ## Summary
 
-The runtime now contains a joined creature neck/head topology and a coordinated grass/shadow policy change, but it has no canonical visual-policy identity or frame receipt. Patch activation remains P0 because controller-active state still does not prove all render, physics and gameplay consumers committed.
+The published entry route now presents a menu and character customization feature, but the menu targets missing HTML artifacts and the game ignores the saved profile. Route integrity and profile handoff are now P0; patch activation, visual identity and lifecycle remain open behind it.
 
 ## Plan ledger
 
-**Goal:** keep streaming, module-graph, creature, grass, shadow, camera and lifecycle risks explicit before more visual work.
+**Goal:** keep every route, profile, storage, synchronization, descriptor, collision, render and lifecycle risk explicit before adding more customization.
 
-- [x] Record the current module pins and product runtime revision.
-- [x] Record the joined creature topology and changed connected-part count.
-- [x] Record grass geometry, shader and palette changes.
-- [x] Record shadow-map, camera and caster changes.
-- [x] Preserve patch activation as P0.
-- [x] Rank the implementation and fixture order.
-- [ ] Close gaps with typed descriptors, canonical hashes, results and frame receipts.
+- [x] Record missing page artifacts.
+- [x] Record the creator-to-game consumption gap.
+- [x] Record debounce, revision, storage and synchronization gaps.
+- [x] Preserve previous patch, visual and lifecycle gaps.
+- [ ] Close gaps with typed commands/results, canonical identity and fixtures.
 
-## Patch activation gaps
+## Route gaps
 
 ```txt
-- controller marks ready delivery active before consumer commit
+- index.html now loads the menu instead of the game
+- menu Start Run points to ./game.html, which is absent
+- menu Character Creator points to ./charactercreator.html, which is absent
+- src/pages/game.js exists without an HTML host
+- src/pages/character-creator.js exists without an HTML host
+- no page manifest or route admission result exists
+- no source/deployed route fixture exists
+```
+
+## Profile consumption gaps
+
+```txt
+- src/game.js does not import the profile store
+- game construction still uses player-raptor-preset-kit
+- creator claim that the game reads the latest profile is not true in source
+- no profile admission before domain construction
+- no profile-to-creature descriptor result
+- no profile-to-collision binding result
+- no fallback/rejection policy for incompatible profiles
+```
+
+## Persistence and revision gaps
+
+```txt
+- localStorage setItem has no typed success/failure result
+- no transaction ID or writer identity
+- concurrent tabs can emit the same revision with different payloads
+- revision is not paired with a canonical profile fingerprint
+- no compare-and-swap or conflict result
+- no recovery journal
+- updatedAt uses local wall-clock time without authority
+```
+
+## Creator draft gaps
+
+```txt
+- draft projection can advance before durable commit
+- debounce timer persists only its captured final patch
+- rapid edits across different groups can lose earlier unsaved changes
+- no dirty/saving/committed/conflicted state machine
+- storage failure has no rollback or user-facing error result
+- remote updates can replace an active local draft without rebase policy
+```
+
+## Synchronization and lifecycle gaps
+
+```txt
+- storage and BroadcastChannel can report one logical update twice
+- no event transaction ID or deduplication
+- menu subscription is never released
+- creator subscription is never released
+- BroadcastChannel close is not called by page runtimes
+- pending save timer is not terminally flushed or cancelled on page exit
+- no profile epoch rejects stale callbacks
+```
+
+## Preview, collision and render gaps
+
+```txt
+- creator preview is CSS, not the procedural creature descriptor
+- preview does not validate topology, skinning or collision
+- game player descriptor does not name profile revision/fingerprint
+- Rapier actor does not name profile revision/fingerprint
+- pose and camera revisions remain absent
+- renderer emits no product frame receipt
+- host readback cannot prove which profile produced a visible frame
+```
+
+## Existing patch-streaming gaps
+
+```txt
+- controller marks ready patches active before consumer commit
 - release evidence clears before retirement acknowledgement
 - terrain, trees, grass, pickups, colliders and height mutate sequentially
-- no detached prepare plan
-- no shared consumer revision
-- no rollback result
-- no activation/release acknowledgement
-- controller-active does not prove render/physics/gameplay readiness
+- no detached prepare plan, shared revision, rollback or acknowledgement
 ```
 
-## Module graph gaps
+## Existing visual and lifecycle gaps
 
 ```txt
-- source pins are independent constants rather than one admitted manifest
-- no graph schema version
-- no canonical graph serialization
-- no graph fingerprint
-- upstream integrity and product source revision are not combined
-- host readback does not expose one graph identity
-- no stale or unexpected dependency admission policy
-```
-
-## Creature topology and identity gaps
-
-```txt
-- kit version remains 0.1.0 after winding and neck-topology changes
-- topology connectedParts changed from 7 to 6
-- connected-part count is not exact geometry identity
-- contentHash excludes positions, normals, colors and indices
-- contentHash excludes skin data, skeleton, attachments and collision
-- descriptor has no source revision or integrity identity
-- coordinate/front-face/winding/normal/skinning spaces are undeclared
-- snapshot/load cannot prove exact joined-neck geometry
-- no product binding or frame receipt names exact geometry
-```
-
-## Grass policy gaps
-
-```txt
-- card-width scale is a host literal
-- card geometry has no descriptor version
-- fragment shader source has no canonical identity
-- alpha silhouette constants have no descriptor
-- palette values have no descriptor
-- wind shader and runtime uniform policy are not versioned
-- no typed grass binding result
-- no grass resource revision or disposal result
-```
-
-## Shadow policy gaps
-
-```txt
-- shadow-map type is a host literal
-- shadow camera bounds/near/far are host literals
-- bias and normalBias are host literals
-- tree crown cast/receive flags are host literals
-- player, trunk, terrain and pickup policies are not summarized together
-- no typed shadow binding result
-- no shadow policy hash or revision
-- no frame acknowledgement names the active shadow policy
-```
-
-## Renderer identity gaps
-
-```txt
-- renderer label is manually maintained
-- label does not canonically identify module pins
-- label does not identify shader source
-- label does not identify grass colors or geometry parameters
-- label does not identify shadow settings or caster flags
-- label can drift from source
-- no visualPolicyFingerprint exists
-```
-
-## Consumer and frame gaps
-
-```txt
-- creature descriptor admission result is absent
-- creature geometry/skeleton/collision binding results are absent
-- grass geometry/material binding result is absent
-- shadow map/light/caster binding result is absent
-- pose application silently skips missing bones
-- pose has no monotonic revision
-- camera transform application is result-free
-- renderer.render has no product frame receipt
-- host readback omits binding and committed-frame evidence
-```
-
-## Camera gaps
-
-```txt
-- target arrays are mutable
-- target source provenance is absent
-- reset/update results are untyped
-- camera revision is absent
-- frame does not acknowledge camera transform
-- public camera owner remains mutable
-```
-
-## Run session and lifecycle gaps
-
-```txt
-- no runSessionId distinct from runId
-- no shared stream/camera/creature/visual-policy/resource epoch
-- Worker stale-result quarantine is absent
-- retry lacks ordered consumer and resource reconciliation
-- RAF ID is not retained
-- listeners are anonymous/unowned
-- Worker is not terminated
-- Three resources are not fully disposed
-- Rapier world has no terminal disposal
+- module graph and visual policy lack canonical fingerprints
+- creature exact geometry hash is incomplete
+- grass and shadow policies remain host literals
+- runSessionId and shared epochs are absent
+- RAF ID and listener leases are not retained
+- Worker and Three/Rapier resources lack ordered terminal disposal
 - public host exposure has no release lease
 ```
 
 ## Missing proof matrix
 
 ```txt
-patch claim / prepare / commit / rollback / acknowledge
-controller-consumer exact-ID parity
-module graph canonical fingerprint
-joined neck/head six-component topology
-exact creature geometry hash
-grass geometry/shader/palette hash sensitivity
-shadow map/camera/caster hash sensitivity
-typed binding result parity
-pose/camera/frame revision correlation
-browser visible neck continuity
-browser grass silhouette
-browser shadow acne and caster policy
-restart and stale-epoch rejection
-ordered disposal and zero residual resources
-```
-
-## Deployment blockers
-
-```txt
-P0 patch activation is not transactional
-visual-policy identity is absent
-manual renderer label is treated as the only aggregate marker
-joined-neck exact geometry is not proven in the product
-grass/shadow policies are not descriptor-backed
-committed frames do not name accepted revisions
-fixtures are absent from an executable product gate
-browser and Pages visual smoke are absent
+source and deployed page-manifest integrity
+menu-to-creator and menu-to-game navigation
+full draft persistence across rapid cross-group edits
+storage failure result and recovery
+concurrent-tab conflict ordering
+profile fingerprint sensitivity
+profile-to-creature recipe parity
+profile-to-collision parity
+creator preview/game descriptor parity
+profile/frame receipt correlation
+patch controller/consumer parity
+restart, stale callback rejection and ordered disposal
 ```
 
 ## Priority
 
 ```txt
-1. acknowledged multi-consumer patch activation/release
-2. visual-policy graph identity
-3. creature/grass/shadow binding and frame correlation
-4. camera target/transform/frame proof
-5. run-session and shared epoch reset
-6. Worker quarantine and ordered disposal
+1. route artifact integrity and page admission
+2. profile commit, conflict and cross-context synchronization
+3. game profile consumption and creature/collision binding
+4. creator preview and rendered-frame parity
+5. patch activation transaction
+6. visual-policy identity and lifecycle ownership
 ```
 
 ## Do not do next
@@ -183,9 +141,8 @@ browser and Pages visual smoke are absent
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
+- do not add more profile controls before route/profile P0
 - do not duplicate procedural-creature-body-kit
-- do not use DoubleSide to hide topology defects
-- do not disable shadows globally to avoid policy ownership
-- do not treat renderer label or topology counts as exact visual identity
-- do not claim visual correctness without CPU and browser fixtures
+- do not treat revision alone as profile identity
+- do not claim customization reaches gameplay without executable proof
 ```
