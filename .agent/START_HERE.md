@@ -1,62 +1,70 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T05-39-11-04-00`  
+**Last aligned:** `2026-07-11T07-08-45-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` now uses the pinned `camera-smooth-follow-kit` for persistent SmoothDamp position, look-target smoothing and quaternion rotation damping. The integration removes the previous immediate `lookAt()` snap, but target generation, controller updates, Three.js application and rendered-frame proof are still spread across the browser host without one typed consumption result.
+`PrehistoricRush` is a browser 3D runner built from a pinned Nexus Engine graph, official procedural creature and streaming kits, Three.js and Rapier. The latest production change pins a corrected procedural-creature tube winding order. The raptor's visible geometry changed, but the shared kit still reports version `0.1.0` and its `contentHash` excludes geometry arrays, indices, normals and skin data.
 
-The previously documented seeded patch activation transaction remains the highest gameplay-integrity priority. This audit records the newer camera runtime change so the repository ledger matches the actual module graph and renderer path.
+The current documentation gate is exact creature geometry identity and render-consumption proof. Seeded patch activation remains the highest gameplay-integrity implementation priority.
 
 ## Plan ledger
 
-**Goal:** Preserve the shared smooth-follow kit while making the product camera target policy, reset/update admission, transform application, frame correlation, observation and lifecycle explicit.
+**Goal:** keep source, descriptor, renderer and runtime proof aligned so future creature fixes cannot change visible output without changing geometry identity and executable validation.
 
-- [x] Compare the full accessible `LuminaryLabs-Publish` inventory with the central ledger.
+- [x] Compare the full accessible Publish inventory with the central ledger.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm the nine eligible repositories are centrally tracked and have root `.agent` state.
-- [x] Select only `PrehistoricRush` because camera runtime commits landed after its prior audit.
-- [x] Re-read the pinned camera kit and active Three.js consumer.
+- [x] Confirm all nine eligible repositories have root `.agent` and central-ledger coverage.
+- [x] Select only `PrehistoricRush` because its production Kits pin changed after the prior audit.
+- [x] Inspect the upstream winding correction and current product consumer.
 - [x] Identify the interaction loop, domains, kits and services.
-- [x] Record camera target, reset, update, render and lifecycle gaps.
-- [x] Add timestamped architecture, render, gameplay, interaction, camera-system and deploy audits.
-- [x] Refresh required root `.agent` files.
-- [ ] Keep patch-content admission and acknowledged multi-consumer activation/release as P0 implementation work.
-- [ ] Add camera target/transform/frame fixtures before further camera behavior changes.
+- [x] Add the timestamped geometry identity audit set.
+- [x] Refresh required root `.agent` state.
+- [ ] Implement acknowledged patch activation as P0.
+- [ ] Extend creature descriptor identity and fixtures as P1.
+- [ ] Add camera target/transform/frame proof as P2.
 
 ## Latest documentation gate
 
 ```txt
-PrehistoricRush Smooth Camera Consumption Authority
-+ Target / Transform / Render-Frame Fixture Gate
+PrehistoricRush Creature Geometry Identity Authority
++ Winding / Normal / Skinned Render Fixture Gate
 ```
 
 ## Overall implementation priority
 
 ```txt
 P0 Seeded Patch Activation Commit Authority
-P1 Camera Target / Transform Consumption Proof
-P2 Run Session Reset + Stream/Camera Epoch Authority
+P1 Creature Geometry Identity and Render Binding Proof
+P2 Camera Target / Transform / Render-Frame Consumption Proof
+P3 Run Session Reset + Stream / Camera Epoch Authority
+P4 Worker Stale-Result Quarantine and Ordered Runtime Disposal
 ```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-11T05-39-11-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T05-39-11-04-00.md
+.agent/trackers/2026-07-11T07-08-45-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T07-08-45-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-11T05-39-11-04-00-smooth-camera-consumption-dsk-map.md
-.agent/render-audit/2026-07-11T05-39-11-04-00-camera-transform-frame-correlation-gap.md
-.agent/gameplay-audit/2026-07-11T05-39-11-04-00-run-route-height-camera-loop.md
-.agent/interaction-audit/2026-07-11T05-39-11-04-00-camera-reset-update-admission-map.md
+.agent/architecture-audit/2026-07-11T07-08-45-04-00-creature-geometry-identity-dsk-map.md
+.agent/render-audit/2026-07-11T07-08-45-04-00-winding-normal-front-face-proof-gap.md
+.agent/gameplay-audit/2026-07-11T07-08-45-04-00-run-pose-skinned-render-loop.md
+.agent/interaction-audit/2026-07-11T07-08-45-04-00-creature-descriptor-admission-result-map.md
+.agent/creature-system-audit/2026-07-11T07-08-45-04-00-winding-content-hash-render-contract.md
+.agent/deploy-audit/2026-07-11T07-08-45-04-00-creature-geometry-fixture-gate.md
+```
+
+Prior active camera audit:
+
+```txt
 .agent/camera-system-audit/2026-07-11T05-39-11-04-00-target-provenance-transform-consumption-contract.md
-.agent/deploy-audit/2026-07-11T05-39-11-04-00-smooth-camera-fixture-gate.md
 ```
 
 Prior active world-streaming audit:
@@ -67,69 +75,72 @@ Prior active world-streaming audit:
 
 ## Selection
 
-The accessible Publish inventory contains ten repositories. All nine eligible non-Cavalry repositories are centrally tracked. `PrehistoricRush` was selected because the runtime added the official smooth-follow camera kit and changed the renderer path after the prior `05-02-00` documentation audit.
+The accessible Publish inventory contains ten repositories. All nine eligible non-Cavalry repositories are already tracked and have root `.agent` state. `PrehistoricRush` was selected before the oldest documented fallback because commit `53f8e45ce8b55cf9b4d20048534b77393b8b56e6` changed its production `NexusEngine-Kits` pin after the previous audit.
 
 ## Product read
 
-`PrehistoricRush` is a browser 3D runner. The player steers, boosts and jumps along a deterministic route while procedural terrain, vegetation, pickups and collision stream around a skinned raptor.
+The player steers, boosts and jumps a procedural skinned raptor along a deterministic route. Seeded world patches stream terrain, trees, grass, pickups, colliders and height data around the run while Rapier handles actor contacts and a persistent smooth-follow controller drives the camera.
 
 ## Active interaction loop
 
 ```txt
 browser input
-  -> prehistoric-rush simulation updates position, yaw, route index and run ID
-  -> seeded patch streaming changes active terrain and height sources
-  -> product camera target policy derives follow position and route-ahead look point
-  -> camera-smooth-follow controller resets or updates persistent state
-  -> Three adapter applies controller position and quaternion
-  -> renderer consumes the live camera
+  -> prehistoric-rush simulation updates run state
+  -> patch controller updates active world content
+  -> pose service derives a procedural creature pose
+  -> Three adapter applies pose to the bound skeleton
+  -> smooth camera controller updates camera transform
+  -> Three renders skinned raptor and streamed world
   -> HUD and PrehistoricRushHost expose aggregate snapshots
   -> RAF repeats
 ```
 
-## Camera ownership split
+## Creature ownership split
 
 ```txt
-camera-smooth-follow-kit
-  owns persistent damped position, look point, velocities, quaternion,
-  reset behavior, snapshots and controller registry
+player-raptor-preset-kit
+  owns product recipe values
 
-PrehistoricRush target policy
-  owns chase offset, route-ahead sample, terrain-aware look height,
-  run-change reset reasons and product tuning
+procedural-creature-body-kit
+  owns renderer-agnostic geometry, normals, indices, skeleton, skinning,
+  collision recommendation, pose descriptors and current hashes/snapshots
+
+prehistoric-rush-domain-kit
+  owns player selection, run state and pose-state inputs
 
 Three adapter
-  owns PerspectiveCamera, projection, transform application and rendering
+  owns BufferGeometry, Material, Bone, Skeleton, SkinnedMesh,
+  pose projection and visible frame consumption
 
-browser host
-  owns controller creation, run lifecycle calls, observation and eventual disposal
+Rapier adapter
+  owns collision actor binding and contact projection
 ```
 
 ## Main finding
 
-The smoothing algorithm is correctly centralized in a renderer-agnostic shared kit, but the product has no single immutable row proving:
+The corrected winding is loaded from `NexusEngine-Kits@ae7ebda62f7c264bbde49c939a62e1a04fd60784` and directly bound into a FrontSide Three material. However:
 
 ```txt
-runId + simulation frame + routeIndex + height-source revision
-  -> target position + target look point
-  -> camera controller revision/reset reason
-  -> applied Three camera transform
-  -> rendered frame acknowledgement
+kit version remains 0.1.0
+contentHash = hash(recipe + topology counts)
+geometry positions/normals/indices/skin data are excluded
+snapshot/load compares the incomplete contentHash
+host exposes only id + contentHash + topology counts
 ```
 
-The target is recomputed from mutable run and patch state, `applyCameraTransform()` returns no result, and the host exposes mutable `cameraFollow` and `adapter` owners. There is also no teardown path that removes the controller or releases renderer/listener/RAF ownership.
+Old and corrected winding payloads can therefore appear identical to snapshots and product diagnostics even though culling, lighting and shadows change.
 
 ## Safe implementation order
 
 ```txt
-1. Keep camera-smooth-follow-kit as the smoothing-state authority.
-2. Add a JSON-safe product CameraTargetDescriptor with run and source provenance.
-3. Add typed reset/update admission and result rows.
-4. Return an immutable Three camera-application result.
-5. Correlate target revision, controller revision and rendered frame.
-6. Expose detached bounded observation instead of mutable owners.
-7. Add controller removal and session teardown ownership.
-8. Add deterministic Node fixtures and browser/Pages camera smoke.
+1. Keep procedural-creature-body-kit as renderer-agnostic generator authority.
+2. Add schema, source, front-face and full geometry identity fields.
+3. Hash complete geometry, skeleton, attachment, collision and material payloads.
+4. Add CPU winding/normal/index/skin fixtures in NexusEngine-Kits.
+5. Add typed product descriptor admission and Three/Rapier binding results.
+6. Correlate binding, pose and rendered-frame revisions.
+7. Expose bounded detached proof and own resource disposal.
+8. Add browser and deployed Pages render smoke.
 ```
 
-Do not replace the shared kit with local lerp/lookAt logic, add a second camera state machine, or treat a controller snapshot as proof that a particular rendered frame consumed it.
+Do not use `DoubleSide` to conceal orientation defects, recompute normals silently in the product adapter, duplicate the creature generator, or treat a source commit alone as proof of the exact descriptor consumed by a rendered frame.
