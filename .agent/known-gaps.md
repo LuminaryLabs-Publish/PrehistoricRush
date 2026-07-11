@@ -1,121 +1,131 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-10T23-08-11-04-00`
+**Updated:** `2026-07-11T00-39-25-04-00`
+
+## Module graph and source admission
+
+```txt
+- NexusEngine, NexusEngine-Kits and ProtoKits are pinned to immutable commits
+- Three and Rapier are pinned to package versions
+- index.html import-map data and src/game.js CDN constants are separate authorities
+- no generated/shared module graph manifest exists
+- no requested/resolved source-admission result exists
+- no module graph fingerprint is exposed
+- dynamic import failures become null plus console warnings before a later aggregate failure
+- no deployed Pages fixture proves the resolved module graph
+```
+
+## Creature preset and descriptor
+
+```txt
+- product preset has no explicit schema version or published fingerprint
+- descriptor validation is delegated to downstream constructors
+- index bounds are not preflighted
+- attribute length parity is not preflighted
+- finite geometry and pose values are not preflighted
+- bone parent validity and cycle freedom are not preflighted
+- skin indices and skin-weight sums are not preflighted
+- attachment bone references are not preflighted
+- collision scaling/parity is not represented by a result row
+- no typed descriptor admission result exists
+```
+
+## Three render binding
+
+```txt
+- createCreatureMesh and applyCreaturePose are private host functions, not named kit APIs
+- descriptor preparation immediately allocates live Three resources
+- no detached prepare/atomic commit boundary exists
+- no render-binding identity/result exists
+- applyCreaturePose silently skips unknown bone IDs
+- pose application returns no matched/missing/rejected result
+- no pose sequence ties run state to the rendered frame
+- geometry, material, skeleton and mesh have no explicit lifecycle owner
+- no reverse rollback or idempotent creature dispose exists
+```
+
+## Rapier collision binding
+
+```txt
+- Rapier runs in a separate mini engine/world shim outside the main game engine
+- actor registration returns no retained collision-binding result
+- no row proves Rapier used the active creature ID and descriptor content hash
+- no row proves exact radius, half-height and center-Y parity
+- physics steps and contacts are not correlated to run/frame/pose revisions
+- manual collider checks and Rapier contacts are separate unclassified failure paths
+```
 
 ## Composition authority
 
 ```txt
-- twelve Nexus Engine core kits are declared by the graph
+- twelve Nexus Engine core kits remain declared
 - no declared/installed/available/consumed/replaced/unused ledger exists
-- only core-scene is visibly called by the game domain
-- core-input is bypassed by browser listeners and game.setInput()
-- core-physics is bypassed by an external Rapier bridge
-- core-motion is bypassed by custom RunState mutation
-- core-camera is bypassed by inline Three camera updates
-- core-animation is bypassed by direct dinoBody.applyPose()
-- core-graphics is bypassed by direct renderer.render()
-- core-skybox has no visible runtime consumer
-- core-ui is bypassed by direct DOM mutation
-- core-diagnostics is bypassed by a custom global host
-- core-spatial has no visible runtime consumer
-- core-composition does not expose a service-consumption proof
-```
-
-## Domain ownership
-
-```txt
-- one parent game domain exists, but createAdapter() remains a broad runtime owner
-- terrain, trees, grass, shards, camera, light, animation projection and rendering remain inline
-- browser input, resize, blur, HUD, restart, contact handling and RAF remain inline
-- the procedural dino nested kit is an alias to a file outside the parent domain folder
-- removed route/surface/forest/grass/wind domains were partly replaced by inline host logic
-- no explicit adapter interfaces or typed adapter results exist
-```
-
-## Dependency and source admission
-
-```txt
-- NexusEngine resolves from mutable @main
-- rapier-physics-domain-kit resolves from mutable NexusRealtime-ProtoKits@main
-- dependency load failures are converted to null plus console warnings
-- no requested/resolved revision ledger exists
-- no engine/core-kit API compatibility preflight exists
-- no source fingerprint appears in host or frame readback
-- no deployed artifact fixture proves which engine commit was consumed
-```
-
-## Scene and command results
-
-```txt
-- game-domain transition requests do not retain or expose transition results
-- start() returns mutable RunState instead of a typed StartResult
-- fail() returns mutable state and silently no-ops outside game status
-- collectShard() returns only a boolean
-- win is produced inside the simulation system without a typed outcome result row
-- no ordered run command/event/transition journal exists
-- the menu scene is configured but boot immediately starts a run
+- core-scene is visibly consumed
+- core-input, physics, motion, camera, animation, graphics, skybox, UI, diagnostics and spatial remain bypassed or unproven
+- seed-kit and procedural-creature-body-kit are now real consumed dependencies but have no consumption rows
+- no composition fingerprint reconciles core and external kits
 ```
 
 ## Population capacity and commit
 
 ```txt
-- tree allocation capacity is not stored separately from InstancedMesh.count
-- tree admission uses the previous active draw count as the next ceiling
-- grass allocation capacity is not stored separately from InstancedMesh.count
-- grass admission uses the previous active draw count as the next ceiling
-- shard allocation capacity is not stored separately from InstancedMesh.count
-- shard admission uses the previous active draw count as the next ceiling
-- candidate generation mutates live matrices, collider rows, pickup rows and physics state inline
-- no detached population plan, generationId, atomic commit, rollback or fingerprint exists
-- no requested/admitted/rejected/truncated counts exist
+- tree allocation capacity is not stored separately from active InstancedMesh.count
+- grass allocation capacity is not stored separately from active InstancedMesh.count
+- shard allocation capacity is not stored separately from active InstancedMesh.count
+- the next population pass can inherit the previous lower active count as its ceiling
+- candidate generation mutates matrices, collider rows, pickup rows and physics state inline
+- no detached population plan, generation ID, validation, rollback or fingerprint exists
 ```
 
-## Input, physics and frame ownership
+## Commands, lifecycle and frames
 
 ```txt
-- local browser input state and game-domain InputState are separate authorities
-- core-input action/binding configuration is not the active event path
-- external physics actor state is not part of the game-domain snapshot
-- physics step and contact results are not correlated to engine tick revision
-- fail and collect operations occur after engine.tick but before render without a frame transaction
-- requestAnimationFrame id is not retained
-- listeners, renderer, materials, geometries, instance pools, physics and global host have no dispose transaction
+- browser input has no command ID or typed result
+- start/fail/collect/win have incomplete result contracts
+- scene transition results are not retained
+- no ordered run command/event/transition journal exists
+- RAF ID and listener ownership are not retained
+- renderer, creature, population, physics and global host have no coordinated dispose/remount transaction
+- no committed frame ties run state, pose, collision, render and HUD together
 ```
 
 ## Observation gaps
 
 ```txt
-- PrehistoricRushHost exposes mutable live engine, physics and adapter objects
-- getState() does not guarantee JSON safety for composition and scene values
-- no kit-graph revision or source revision is exposed
-- no per-core-kit service consumption rows are exposed
-- no adapter ownership rows are exposed
-- no command, transition, event, physics, population or frame journals are exposed
-- no committed frame id ties game state, physics, render and HUD together
+- PrehistoricRushHost exposes mutable engine, physics and adapter references
+- body readback includes only ID, content hash and topology
+- kit/source version, preset/recipe fingerprint and descriptor validation are absent
+- skeleton/skin/attachment validation rows are absent
+- render binding, pose consumption and collision binding rows are absent
+- resource ownership and disposal state are absent
+- host composition/scene fields are not guaranteed JSON-safe
+- journals are absent
 ```
 
 ## Validation gaps
 
 ```txt
 - no root package.json or unified repository validation command
-- no DOM-free kit-graph installation fixture
-- no service-consumption fixture
-- no source-revision fixture
-- no browser adapter smoke
-- no immutable-capacity fixture
-- no lifecycle/disposal fixture
-- no Pages runtime source proof
+- no module-graph fixture
+- no descriptor/hash/snapshot fixture
+- no malformed geometry/skeleton/skinning fixture
+- no Three binding or pose fixture
+- no collision parity fixture
+- no creature lifecycle fixture
+- no core-kit consumption fixture
+- no immutable population-capacity fixture
+- no browser or Pages source-proof smoke
 ```
 
 ## Priority
 
 ```txt
-1. core-kit consumption authority and kit-graph fixture
-2. immutable source/dependency admission
-3. thin browser/physics/render adapter contracts
-4. immutable population capacities and atomic commit
-5. typed run commands, transitions and event journal
-6. lifecycle/disposal and committed-frame readback
+1. pinned module graph and procedural creature descriptor-adapter proof
+2. core-kit consumption reconciliation
+3. creature/browser adapter lifecycle and JSON-safe observation
+4. immutable population capacities and atomic generation commit
+5. typed run commands and transition/event journal
+6. committed-frame authority
 ```
 
 ## Do not do next
@@ -123,10 +133,10 @@
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
-- do not count an installed core kit as consumed without evidence
-- do not add more core kits to hide an unused-service problem
-- do not add more inline systems to createAdapter()
-- do not use InstancedMesh.count as allocation capacity
-- do not add more population before deterministic admission exists
-- do not depend on mutable @main sources without revision proof
+- do not reintroduce a local procedural creature generator
+- do not move product raptor configuration into the shared kit
+- do not move Three or Rapier object ownership into the renderer-agnostic body kit
+- do not treat pinned URLs alone as module-graph proof
+- do not treat an animated mesh as descriptor, collision or lifecycle proof
+- do not add creature variants or more population before deterministic gates exist
 ```
