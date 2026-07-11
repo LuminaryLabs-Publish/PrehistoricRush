@@ -1,28 +1,28 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T14-20-32-04-00`
+**Updated:** `2026-07-11T14-31-27-04-00`
 
 ## Summary
 
-Route/profile authority remains P0. This pass adds a source-confirmed P1a gap: patch release removes collider descriptors from the current browser view, but the pinned Rapier ProtoKit does not remove fixed bodies or collider instances omitted from later `setFixedColliders()` calls. Invisible retired trees can remain fatal.
+Route/profile authority remains P0. Patch activation/release and fixed-collider retirement remain the next runtime prerequisites. This pass adds the P2 committed-frame gap: the browser mutates simulation, streaming, physics, gameplay, camera and presentation without one frame identity or immutable record shared by the canvas, HUD and public host.
 
 ## Plan ledger
 
-**Goal:** keep route, profile, patch, collider, physics, gameplay, render and lifecycle risks explicit before implementation.
+**Goal:** keep route, profile, patch, collision, frame, epoch and lifecycle risks explicit before implementation.
 
-- [x] Preserve route/profile, patch activation, visual identity, reset and lifecycle gaps.
-- [x] Record fixed-collider membership divergence.
-- [x] Record stale Rapier body/collider retention.
-- [x] Record contact provenance and dual-authority gaps.
-- [x] Record required fixture matrix.
-- [ ] Close the collider gap through the existing patch/physics boundaries.
+- [x] Preserve route/profile gaps.
+- [x] Preserve patch activation and collider retirement gaps.
+- [x] Record frame-stage and public-host coherence gaps.
+- [x] Record missing render/HUD failure results.
+- [x] Record the required fixture matrix.
+- [ ] Close gaps through existing domain owners rather than parallel systems.
 
 ## Route and profile gaps
 
 ```txt
 - game.html and charactercreator.html are absent
-- game does not consume the saved profile
-- profile writes lack transaction/fingerprint/conflict authority
+- game does not consume the saved profile as its creature source
+- profile writes lack transaction, fingerprint and conflict authority
 - creator, creature, collision and frame do not share one profile identity
 ```
 
@@ -32,68 +32,90 @@ Route/profile authority remains P0. This pass adds a source-confirmed P1a gap: p
 - controller ready/release evidence precedes consumer acknowledgement
 - terrain, trees, grass, pickups, colliders and height mutate sequentially
 - no detached activation/release plan, rollback or shared consumer revision
-- no patchReleaseResult proves every consumer retired the patch
-- controller-active and consumer-active parity is not executable-proofed
+- no release result proves every consumer retired the patch
+- controller-active and consumer-active parity is not fixture-proven
 ```
 
-## Fixed collider retirement gaps
+## Fixed collider and collision gaps
 
 ```txt
-- setFixedColliders behaves as add/update, not authoritative replacement
-- state.colliders can omit an ID still present in runtime.fixedBodies
-- state.colliders can omit an ID still present in runtime.fixedColliders
-- removed Rapier bodies/colliders are never removed from the world
-- no removeFixedCollider or replaceFixedColliders service exists
-- no retirement result reports added, retained, updated and removed IDs
-- patch release does not wait for physics retirement acknowledgement
+- setFixedColliders is add/update rather than authoritative replacement
+- live Rapier maps retain removed IDs
+- removed bodies/colliders are not removed from the world
+- contact observations lack patch, membership, source and edge identity
+- product admits any dino contact as fatal
+- Rapier and XZ fallback are divergent collision authorities
+- patch release does not wait for physics retirement
 ```
 
-## Collision admission gaps
+## Committed frame gaps
 
 ```txt
-- collectContacts iterates runtime.fixedColliders rather than current state membership
-- a Rapier intersection can be emitted for an ID absent from state.colliders
-- product accepts any contact whose actorId is dino
-- contact lacks patch ID, tags, membership revision and source revision
-- no contact-enter/contact-stay/contact-exit distinction exists
-- no duplicate-contact or one-failure-per-run result exists
+- no runtime frame ID exists
+- no simulation-step receipt exists
+- no stream or collider revision is correlated to rendering
+- no physics-step receipt is correlated to gameplay or rendering
+- collision, pickup and terminal mutations have no ordered frame receipts
+- no immutable presentation-state fingerprint exists
+- camera update has no consumed-frame receipt
+- renderer.render returns no product-level result
+- HUD/button writes return no commit result
+- no last-committed-frame pointer exists
+- no failed-frame result exists
 ```
 
-## Shape and source parity gaps
+## Public host gaps
 
 ```txt
-- visual trunk is tall geometry
-- Rapier tree collider is a ground-centered ball
-- fallback is XZ radius plus jumpHeight threshold
-- fallback ignores collider Y and trunk height
-- Rapier can see stale colliders while fallback sees current descriptors only
-- no parity result explains which source caused the failure
+- host exposes mutable engine, physics, adapter, controller and camera owners
+- getState independently samples game, streaming and camera state
+- host can observe a state that was never presented as one frame
+- no runtimeSessionId, runSessionId or committedFrameId is exposed
+- no host lease or revocation result exists
+- readback is not a detached immutable frame record
+```
+
+## Failure-path gaps
+
+```txt
+render failure:
+  simulation and other owners may already be advanced
+  previous canvas remains visible
+  HUD is not updated
+  no next RAF is scheduled
+  host remains published
+
+HUD failure:
+  canvas may advance while HUD remains stale
+  no commit/failure record identifies the split
 ```
 
 ## Run/session and lifecycle gaps
 
 ```txt
-- retry has no shared runtime/run/stream/collider epoch
-- old contacts and fixed colliders have no reset acknowledgement
-- RAF/listeners/Worker/executor/Three/Rapier owners remain unbounded
-- public host exposes mutable owners and cannot be revoked
-- no ordered idempotent stop/dispose result exists
+- retry has no shared runtime/run/stream/collider/frame epoch family
+- stale Worker responses, contacts and frame receipts are not fenced
+- RAF, listeners, Worker, executor, Three and Rapier owners remain unbounded
+- no startup rollback or ordered idempotent disposal result exists
+- public host cannot be revoked before resource disposal
 ```
 
 ## Missing proof matrix
 
 ```txt
-page manifest and profile handoff
-patch prepare/commit/release parity
+page manifest and profile handoff fixture
+patch activation/release parity fixture
 fixed collider exact-replacement fixture
-removed Rapier body/collider count fixture
-released-patch invisible-tree fixture
-current membership contact-admission fixture
-Rapier/fallback shape and result parity fixture
-duplicate contact to single failure fixture
-retry collider epoch fixture
-terminal collision frame correlation fixture
-runtime disposal and host revocation fixtures
+released-patch collision fixture
+contact admission and collision-source parity fixtures
+committed frame record fixture
+render failure fixture
+HUD failure fixture
+host interleaved-read fixture
+frame journal JSON/bounds fixture
+retry stale-frame receipt fixture
+runtime lifecycle/disposal fixture
+Pages frame-coherence smoke
 ```
 
 ## Priority
@@ -102,8 +124,8 @@ runtime disposal and host revocation fixtures
 1. route artifact integrity and profile handoff
 2. patch activation/release transaction
 2a. fixed collider retirement and collision admission
-3. visual identity and committed frame
-4. run/session/stream/collider epoch
+3. committed frame observation and host read model
+4. shared runtime/run/stream/collider/frame epochs
 5. runtime lifecycle, disposal and host revocation
 ```
 
@@ -112,8 +134,8 @@ runtime disposal and host revocation fixtures
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
-- do not add a second standalone collision world
-- do not clear only serialized collider state
-- do not accept all actor contacts as fatal
-- do not claim patch release parity without removing Rapier resources
+- do not add a second runtime, physics, render or diagnostics owner
+- do not treat mutable host aggregation as frame evidence
+- do not publish a frame before render and HUD both succeed
+- do not claim frame coherence without failure and interleaving fixtures
 ```
