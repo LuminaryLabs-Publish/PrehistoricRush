@@ -2,7 +2,7 @@ import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehis
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 
 const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "ae7ebda62f7c264bbde49c939a62e1a04fd60784";
+const KITS_COMMIT = "d6630367d557782d9ec965947aeb1c197d37ea15";
 const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
 const CDN = {
   nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
@@ -145,6 +145,7 @@ function grassGeometry(THREE, planes) {
   for (let index = 0; index < planes; index += 1) {
     const geometry = new THREE.PlaneGeometry(1, 1, 1, 3);
     geometry.translate(0, 0.5, 0);
+    geometry.scale(0.62, 1, 1);
     geometry.rotateY(Math.PI * index / planes);
     for (let vertex = 0; vertex < geometry.attributes.position.count; vertex += 1) {
       positions.push(geometry.attributes.position.getX(vertex), geometry.attributes.position.getY(vertex), geometry.attributes.position.getZ(vertex));
@@ -166,7 +167,7 @@ function grassMaterial(THREE, color) {
     alphaTest: 0.34,
     uniforms: { time: { value: 0 }, wind: { value: 0.2 }, color: { value: new THREE.Color(color) } },
     vertexShader: `uniform float time;uniform float wind;varying vec2 vUv;void main(){vUv=uv;vec3 p=position;float t=clamp(p.y,0.,1.);vec4 w=instanceMatrix*vec4(p,1.);p.x+=sin(time*1.45+w.x*.15+w.z*.11)*wind*t*t;p.z+=cos(time*1.1+w.z*.13)*wind*.35*t;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(p,1.);}`,
-    fragmentShader: `uniform vec3 color;varying vec2 vUv;void main(){float a=(1.-smoothstep(.38,.5,abs(vUv.x-.5)))*smoothstep(0.,.18,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));if(a<.34)discard;gl_FragColor=vec4(color,1.);}`
+    fragmentShader: `uniform vec3 color;varying vec2 vUv;void main(){float a=(1.-smoothstep(.16,.47,abs(vUv.x-.5)))*smoothstep(0.,.18,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));if(a<.34)discard;float shade=mix(.82,1.18,smoothstep(0.,1.,vUv.y));gl_FragColor=vec4(color*shade,1.);}`
   });
 }
 
@@ -182,6 +183,7 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFol
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   ui.host.append(renderer.domElement);
@@ -190,6 +192,15 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFol
   const sun = new THREE.DirectionalLight(0xffe6b2, 2.2);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -80;
+  sun.shadow.camera.right = 80;
+  sun.shadow.camera.top = 80;
+  sun.shadow.camera.bottom = -80;
+  sun.shadow.camera.near = 1;
+  sun.shadow.camera.far = 180;
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.06;
+  sun.shadow.camera.updateProjectionMatrix();
   scene.add(sun, sun.target);
 
   function baseTerrainGeometry() {
@@ -240,7 +251,8 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFol
     trunk.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     crown.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     trunk.castShadow = trunk.receiveShadow = true;
-    crown.castShadow = crown.receiveShadow = true;
+    crown.castShadow = false;
+    crown.receiveShadow = true;
     scene.add(trunk, crown);
     return {
       typeIndex,
@@ -252,9 +264,9 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFol
   });
 
   const grass = [
-    { capacity: 3600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x254f24), 3600) },
-    { capacity: 2600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x356d2e), 2600) },
-    { capacity: 1300, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4c8238), 1300) }
+    { capacity: 3600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x3f7a37), 3600) },
+    { capacity: 2600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4f9340), 2600) },
+    { capacity: 1300, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x69a94d), 1300) }
   ];
   grass.forEach(({ mesh }) => {
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -680,7 +692,7 @@ async function main() {
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
-      renderer: "three-seeded-patch-streaming-smooth-camera-v6"
+      renderer: "three-seeded-patch-streaming-neck-shadow-grass-v7"
     })
   };
   requestAnimationFrame(loop);
