@@ -1,231 +1,218 @@
-# Current Audit: PrehistoricRush Fixed Collider Retirement and Collision Admission
+# Current Audit: PrehistoricRush Committed Frame Observation Authority
 
-**Updated:** `2026-07-11T14-20-32-04-00`
+**Updated:** `2026-07-11T14-31-27-04-00`
 
 ## Summary
 
-The streamed world removes released patch colliders from `view.colliders`, but the pinned `rapier-physics-domain-kit` treats `setFixedColliders()` as add-or-update rather than authoritative replacement. Its serializable state is replaced, while its live `fixedBodies` and `fixedColliders` maps and Rapier world retain removed IDs.
+The runtime owns a functioning simulation/render loop, but it does not own a committed frame. `src/game.js` mutates game state, patch membership, Rapier state, gameplay outcomes, camera state and Three presentation before separately writing the HUD. `PrehistoricRushHost.getState()` then samples mutable game, controller and camera owners independently.
 
-`collectContacts()` iterates the retained runtime collider map. A tree from a released patch can therefore remain collision-active after its terrain and tree instances disappear. The product then treats any Rapier contact involving the dino as fatal, without verifying current patch membership, hazard tags, collider revision or contact provenance.
+The current public readback cannot prove which simulation state, stream membership, physics step, camera transform, canvas submission and HUD projection belong together. A render or HUD failure can leave runtime state ahead of the last visible frame without a typed failure result.
 
 ## Plan ledger
 
-**Goal:** define one collider membership revision and one collision admission result shared by patch release, Rapier runtime state, visual presence, gameplay failure and diagnostics.
+**Goal:** define one immutable frame receipt shared by simulation, streaming, physics, gameplay, camera, rendering, HUD and diagnostics.
 
-- [x] Verify active patch collider reconstruction.
-- [x] Verify patch release behavior.
-- [x] Verify pinned ProtoKit fixed-collider replacement behavior.
-- [x] Verify live Rapier maps are not pruned.
-- [x] Verify contact collection iterates retained runtime colliders.
-- [x] Verify product failure admission accepts every Rapier dino contact.
-- [x] Compare the Rapier and descriptor-overlap collision paths.
-- [x] Catalog domains, kits and services.
-- [ ] Implement removal and authoritative replacement.
-- [ ] Add stale-collider, parity and terminal-frame fixtures.
+- [x] Trace the full RAF stage order.
+- [x] Trace game-domain simulation and snapshots.
+- [x] Trace patch and physics consumption.
+- [x] Trace render and HUD commit points.
+- [x] Trace public host aggregation.
+- [x] Identify all domains, kits and services.
+- [x] Define the frame authority DSK map.
+- [ ] Implement frame IDs and typed stage receipts.
+- [ ] Replace live host aggregation with a detached committed-frame read model.
+- [ ] Add pure and browser frame-coherence fixtures.
 
-## Source path
-
-```txt
-prehistoric patch generation
-  -> patch.colliders
-
-adapter active content
-  -> view.colliders = colliders from activePatches only
-  -> physics.setFixedColliders(view.colliders)
-
-ProtoKit setFixedColliders
-  -> normalize each submitted collider
-  -> applyFixed creates or moves current IDs
-  -> replace state.colliders with current normalized object
-  -> does not remove runtime fixedBodies/fixedColliders absent from the list
-
-ProtoKit collectContacts
-  -> iterate runtime.fixedColliders
-  -> Rapier intersectionPair can succeed for an ID absent from state.colliders
-  -> emit contact actorId/colliderId
-
-product collision admission
-  -> any dino Rapier contact OR current XZ fallback overlap
-  -> game.fail({ kind:"tree-impact" })
-```
-
-## Exact stale-collider sequence
+## Current RAF path
 
 ```txt
-1. Patch A is active and contributes tree-A collider.
-2. setFixedColliders([...tree-A...]) creates a fixed body and collider.
-3. Player moves far enough for Patch A to release.
-4. adapter removes Patch A from activePatches and hides/releases its render objects.
-5. rebuildActiveContent omits tree-A and submits a smaller list.
-6. ProtoKit replaces state.colliders, but tree-A remains in runtime.fixedBodies,
-   runtime.fixedColliders and the Rapier world.
-7. collectContacts still tests tree-A with intersectionPair.
-8. Product accepts the contact without checking current membership.
-9. The run enters run-over at an invisible retired tree.
+input projection
+  -> engine.tick(dt)
+  -> game state mutation
+  -> updateStreaming(state)
+  -> patch release/generation/activation
+  -> actor transform submission
+  -> physics.step(dt)
+  -> collision failure admission
+  -> pickup collection admission
+  -> final game state read
+  -> creature/camera/light/grass/shard presentation mutation
+  -> renderer.render(scene, camera)
+  -> HUD HTML and button mutation
+  -> request next RAF
 ```
 
-## Shape and parity gap
-
-Generated trees are visually tall trunks:
+## Frame-coherence gap
 
 ```txt
-height: 14 to 68
-radius: approximately 1.25 to 3.4
+simulation tick identity: absent
+stream revision consumed by frame: absent
+collider membership revision consumed by physics: absent
+physics step receipt: absent
+ordered gameplay result receipts: absent
+presentation fingerprint: absent
+camera transform receipt: absent
+render result: absent
+HUD commit result: absent
+committed frame pointer: absent
+failed frame result: absent
 ```
 
-The collision descriptor is:
+`renderer.render()` returns no product receipt. If it throws, simulation and other mutable owners have already advanced. The next RAF is not scheduled, but the global host remains available and can expose the newer mutable state.
+
+The HUD writes after rendering. A HUD failure can therefore leave the canvas on a new frame and status/button content on an older frame.
+
+## Public host gap
+
+Current host readback aggregates:
 
 ```txt
-shape: ball
-center: ground sample
-radius: trunk radius * 1.3
+game.snapshot()
+patchController.getSnapshot()
+cameraFollow.getSnapshot()
+engine.gameComposer
+core scene host descriptor
+player body identity
+static renderer label
 ```
 
-The fallback path is different again:
+It does not expose:
 
 ```txt
-horizontal circle overlap only
-jumpHeight < 1.05
-no collider Y/height test
+runtimeSessionId
+runSessionId
+frameId
+last committed frame
+last failed frame
+render result
+HUD result
+presentation fingerprint
+physics receipt
 ```
 
-Current rendering, Rapier and fallback therefore do not share one shape, membership revision or result.
+Because the owners are sampled independently, readback can describe a state that was never presented as one frame.
 
 ## Domains in use
 
 ```txt
-patch identity and desired membership
-patch activation and release
-tree render instance membership
-active collider descriptor projection
-Rapier fixed body/collider runtime
-collision contact collection
-fallback overlap detection
-hazard admission
-run failure and scene transition
-terminal render and HUD projection
-host diagnostics and deployment proof
+page routes and player-profile persistence
+pinned dependency loading and module identity
+Nexus Engine composition and scene routing
+run simulation, input, movement, score and outcomes
+procedural creature generation, skinning and poses
+deterministic route and terrain classification
+patch generation, Worker/executor, cache and controller
+patch activation/release and active consumer membership
+terrain, tree, grass, pickup, collider and height projection
+Rapier actor, collider, step and contact state
+collision, pickup and terminal outcome admission
+browser input, delta sampling and RAF scheduling
+camera smooth-follow and transform projection
+Three scene/resources, lighting, shadows and rendering
+HUD/button projection and public diagnostics
+validation and Pages deployment
 ```
 
 ## Complete kit inventory and services
 
-### Core and official kits
+### Core kits
 
 ```txt
-12 Nexus Engine core kits
-  input, spatial, scene, physics, motion, camera, animation,
-  graphics, skybox, UI, diagnostics and composition
-
-seed-kit
-  deterministic seeds and random streams
-
-procedural-creature-body-kit
-  creature geometry/skeleton/skin/collision/pose/content identity
-
-instanced-render-batch-kit
-  tree cell replace/release, flush, bounds and stats
-
-seeded-world-patch-controller-kit
-  patch desired sets, cache, ready/release queues and budgets
-
-camera-smooth-follow-kit
-  camera target damping, reset and snapshot
+core-input-kit: actions, bindings, input state
+core-spatial-kit: transforms and spatial queries
+core-scene-kit: scene registry, transitions and host descriptor
+core-physics-kit: physics provider contract
+core-motion-kit: motion capability
+core-camera-kit: camera capability
+core-animation-kit: animation capability
+core-graphics-kit: graphics/frame capability
+core-skybox-kit: sky descriptor
+core-ui-kit: UI capability/projection
+core-diagnostics-kit: diagnostics/readback
+core-composition-kit: composition metadata/capability graph
 ```
 
-### Product and host kits
+### Official kits
 
 ```txt
-prehistoric-rush-domain-kit
-  run input, movement, route, score, outcomes and events
-
-prehistoric-patch-generator
-  tree render descriptors and tree hazard collider descriptors
-
-prehistoric-patch-worker
-  asynchronous patch generation protocol
-
-rapier-physics-domain-kit
-  actor registration, fixed-collider submission, step, contacts, snapshot and reset
-
-Three adapter
-  active patch membership, tree rendering, collider projection and terminal render
-
-collision fallback adapter
-  current-descriptor XZ overlap
-
-run failure adapter
-  contact/overlap to game.fail
+seed-kit: deterministic seeds and random streams
+procedural-creature-body-kit: geometry, topology, skeleton, skinning,
+  collision recommendation, bounds, poses, content hash and snapshots
+instanced-render-batch-kit: capacity, replace/release, flush, overflow,
+  bounds, statistics and snapshots
+seeded-world-patch-controller-kit: identity, focus, desired sets, cache,
+  queue, executor, ready/release delivery, budgets, eviction and snapshots
+camera-smooth-follow-kit: position/look/quaternion damping, reset,
+  teleport handling, delta clamp, transform access and snapshots
 ```
 
-## Findings
+### Product/page/external/host kits
 
-### 1. Replacement is not replacement
-
-`setFixedColliders()` returns a state containing only the submitted collider set, but live Rapier maps retain all previously created IDs.
-
-### 2. Released collider resources are not retired
-
-No `removeFixedCollider`, `removeFixedBody`, `replaceFixedColliders`, retirement result or removed-ID count exists.
-
-### 3. Contact collection uses a different membership source
-
-The state snapshot says an old collider is gone, while `collectContacts()` still iterates the runtime map containing it.
-
-### 4. Gameplay admits contacts without provenance
-
-The product checks only `contact.actorId === "dino"`. It does not require current membership, hazard tags, patch identity, collider revision or a newly-entered contact edge.
-
-### 5. Two collision authorities diverge
-
-Rapier can report a stale invisible collider. The fallback can only report current descriptors and uses a different vertical/shape rule.
-
-### 6. Patch release has no collision acknowledgement
-
-The patch controller and renderer can consider release complete before physics confirms retired bodies and colliders are removed.
+```txt
+prehistoric-rush-domain-kit: run lifecycle, input, route, surface,
+  score, outcomes, events, transitions, creature access and snapshot
+player-character-schema-kit: defaults, normalization, clamps, color validation and merge
+player-character-profile-store-kit: load, save, patch, reset, subscribe,
+  storage sync, BroadcastChannel sync and close
+menu-page-kit: menu shell, profile projection and route links
+character-creator-page-kit: draft edit, controls, preview, debounce save,
+  reset and remote projection
+game-page-entry-kit: runtime loading
+drunk-route-generator: samples, nearest query, progress, classification and snapshot
+player-raptor-preset-kit: creature recipe and capsule collision descriptor
+prehistoric-patch-generator: terrain, trees, grass, pickups, colliders,
+  bounds and transferables
+prehistoric-patch-worker: initialization, generation, errors and transferables
+rapier-physics-domain-kit: world bridge, kinematic actor, fixed colliders,
+  transforms, step, contacts, snapshot and reset
+Three.js/product adapters: scene graph, geometry, materials, instancing,
+  skinning, camera, lighting, fog, shadows, render, HUD and host projection
+```
 
 ## Required authority boundary
 
 ```txt
-PrehistoricRush Fixed Collider Membership and Collision Admission Domain
-  patch-collider-identity-kit
-  collider-membership-revision-kit
-  fixed-collider-replacement-plan-kit
-  fixed-collider-retirement-kit
-  rapier-collider-removal-adapter-kit
-  collider-retirement-result-kit
-  collision-contact-observation-kit
-  collision-contact-admission-kit
-  collision-source-parity-kit
-  run-failure-transaction-kit
-  collision-journal-kit
-  collision-render-correlation-kit
-  stale-collider-fixture-kit
+PrehistoricRush Committed Frame Observation Domain
+  runtime-frame-id-kit
+  frame-input-snapshot-kit
+  simulation-step-receipt-kit
+  stream-consumption-receipt-kit
+  collider-membership-receipt-kit
+  physics-step-receipt-kit
+  gameplay-mutation-receipt-kit
+  presentation-state-kit
+  camera-consumption-receipt-kit
+  render-submit-result-kit
+  hud-commit-result-kit
+  committed-frame-record-kit
+  frame-failure-result-kit
+  frame-journal-kit
+  host-frame-read-model-kit
+  committed-frame-coherence-fixture-kit
 ```
 
 ## Acceptance conditions
 
 ```txt
-submitted fixed collider set becomes the exact live Rapier set
-removed IDs no longer exist in runtime maps or Rapier world
-patch release waits for collider retirement acknowledgement
-contact includes collider ID, patch ID, membership revision and source
-only current hazard contacts can fail a run
-one contact produces at most one terminal failure transaction
-Rapier and visual active memberships match
-fallback is removed or proven equivalent under the same descriptors
-released invisible colliders cannot fail the current run
-terminal frame references the admitted collision result
+one RAF candidate has one frameId and terminal result
+all stage receipts share runtime, run and frame identity
+render and HUD success are required before frame publication
+failed frame does not advance committed-frame pointer
+host reads only a detached immutable committed record
+host cannot mix current game, stream, camera or physics snapshots
+records are bounded and JSON-safe
+retry cannot accept predecessor-run receipts
 ```
 
 ## Priority placement
 
 ```txt
 P0 route/profile handoff
-P1 patch activation commit
-P1a fixed collider retirement and collision admission
-P2 render-frame identity
-P3 run/session reset
-P4 runtime lifecycle/disposal
+P1 patch activation/release
+P1a collider retirement/collision admission
+P2 committed frame observation/host read model
+P3 shared run/session/stream/collider epochs
+P4 lifecycle/disposal
 ```
 
 No runtime source was changed by this audit.
