@@ -1,131 +1,156 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T00-39-25-04-00`
+**Updated:** `2026-07-11T02-41-37-04-00`
 
-## Module graph and source admission
+## Plan ledger
 
-```txt
-- NexusEngine, NexusEngine-Kits and ProtoKits are pinned to immutable commits
-- Three and Rapier are pinned to package versions
-- index.html import-map data and src/game.js CDN constants are separate authorities
-- no generated/shared module graph manifest exists
-- no requested/resolved source-admission result exists
-- no module graph fingerprint is exposed
-- dynamic import failures become null plus console warnings before a later aggregate failure
-- no deployed Pages fixture proves the resolved module graph
-```
+**Goal:** Keep unresolved streamed-world, creature, composition, command and lifecycle risks explicit so new visual or population work does not bypass the required authority gates.
 
-## Creature preset and descriptor
+- [x] Record controller/generator/Worker gaps.
+- [x] Record activation and consumer parity gaps.
+- [x] Record gameplay readiness gaps.
+- [x] Retain prior creature/composition/command/lifecycle gaps.
+- [x] Rank the current implementation order.
+
+## Patch content and admission
 
 ```txt
-- product preset has no explicit schema version or published fingerprint
-- descriptor validation is delegated to downstream constructors
-- index bounds are not preflighted
-- attribute length parity is not preflighted
-- finite geometry and pose values are not preflighted
-- bone parent validity and cycle freedom are not preflighted
-- skin indices and skin-weight sums are not preflighted
-- attachment bone references are not preflighted
-- collision scaling/parity is not represented by a result row
-- no typed descriptor admission result exists
+- patch payload has no explicit product schema version
+- no typed generated-patch admission result exists
+- terrain array lengths and finite values are trusted by consumers
+- tree, grass, pickup and collider ID uniqueness is not preflighted
+- matrix lengths and finite values are not preflighted
+- patch bounds are not validated against content
+- controller request/cache identity is not revalidated against returned payload
+- no patch-content fingerprint is retained in consumer state
 ```
 
-## Three render binding
+## Controller and Worker execution
 
 ```txt
-- createCreatureMesh and applyCreaturePose are private host functions, not named kit APIs
-- descriptor preparation immediately allocates live Three resources
-- no detached prepare/atomic commit boundary exists
-- no render-binding identity/result exists
-- applyCreaturePose silently skips unknown bone IDs
-- pose application returns no matched/missing/rejected result
-- no pose sequence ties run state to the rendered frame
-- geometry, material, skeleton and mesh have no explicit lifecycle owner
-- no reverse rollback or idempotent creature dispose exists
+- generationBudget limits starts per pump call, not explicit concurrent inflight work
+- pump is called every RAF and can grow pending Worker requests
+- Worker ready acknowledgement is not awaited or exposed
+- no streamSessionId/controllerEpoch/workerEpoch exists
+- late results after restart/reset/remount have no explicit admission policy
+- controller reset does not cancel message-executor pending requests
+- executor dispose exists upstream but is not retained or invoked by the host
+- Worker pending count and lifecycle state are not exposed
+- no post-dispose request rejection path exists at host level
 ```
 
-## Rapier collision binding
+## Activation transaction
 
 ```txt
-- Rapier runs in a separate mini engine/world shim outside the main game engine
-- actor registration returns no retained collision-binding result
-- no row proves Rapier used the active creature ID and descriptor content hash
-- no row proves exact radius, half-height and center-Y parity
-- physics steps and contacts are not correlated to run/frame/pose revisions
-- manual collider checks and Rapier contacts are separate unclassified failure paths
+- takeReadyPatches marks controller records active before consumer commit
+- adapter.activatePatch returns no result
+- activePatches mutates before terrain upload
+- terrain, trees, grass, shards and colliders commit sequentially
+- no detached activation plan exists
+- no capacity preflight covers every consumer
+- no activation fingerprint or revision exists
+- no rollback or repair result exists
+- no acknowledgement reconciles controller-active and consumer-active sets
+- release is also a sequential live mutation with no result or rollback
 ```
 
-## Composition authority
+## Render and population
 
 ```txt
-- twelve Nexus Engine core kits remain declared
-- no declared/installed/available/consumed/replaced/unused ledger exists
-- core-scene is visibly consumed
-- core-input, physics, motion, camera, animation, graphics, skybox, UI, diagnostics and spatial remain bypassed or unproven
-- seed-kit and procedural-creature-body-kit are now real consumed dependencies but have no consumption rows
-- no composition fingerprint reconciles core and external kits
+- one patch activation rebuilds all active grass and shard matrices
+- one patch activation resubmits the entire fixed-collider set
+- terrain bounding volumes recompute on the main thread
+- every tree type batch flushes on each patch activation/release
+- grass layer overflow truncates without rejected IDs or typed result
+- terrain-slot exhaustion falls back to reusing slot zero instead of rejecting
+- no frame ID records first render of an activation
+- no render-consumption fingerprint proves exact active content
+- GPU/resource disposal remains absent
 ```
 
-## Population capacity and commit
+## Gameplay readiness
 
 ```txt
-- tree allocation capacity is not stored separately from active InstancedMesh.count
-- grass allocation capacity is not stored separately from active InstancedMesh.count
-- shard allocation capacity is not stored separately from active InstancedMesh.count
-- the next population pass can inherit the previous lower active count as its ceiling
-- candidate generation mutates matrices, collider rows, pickup rows and physics state inline
-- no detached population plan, generation ID, validation, rollback or fingerprint exists
+- height sampling switches between fallback math and active patch arrays
+- fallback and generated height equivalence is assumed, not proven
+- source transitions have no delta/continuity result
+- desired but inactive patches have no active hazards or pickups
+- no current/forward safety-ring readiness contract exists
+- no explicit slow/hold/fallback policy exists when readiness is insufficient
+- Rapier contacts and manual distance checks remain separate unclassified failure paths
+- collision results do not retain patch/collider/activation identity
+- pickup render/gameplay/collection/removal parity is not journaled
 ```
 
-## Commands, lifecycle and frames
+## Observation
 
 ```txt
-- browser input has no command ID or typed result
-- start/fail/collect/win have incomplete result contracts
-- scene transition results are not retained
-- no ordered run command/event/transition journal exists
-- RAF ID and listener ownership are not retained
-- renderer, creature, population, physics and global host have no coordinated dispose/remount transaction
-- no committed frame ties run state, pose, collision, render and HUD together
+- host exposes mutable engine, physics, adapter and controller references
+- controller snapshot reports controller-active IDs only
+- consumer-active patch IDs are absent
+- per-consumer admitted/rejected counts are absent
+- activation/release results are absent
+- Worker ready/pending/lifecycle state is absent
+- height-source state is absent
+- collider parity and physics revision are absent
+- no bounded stream lifecycle journal exists
+- host composition and scene fields are not guaranteed clone-safe
 ```
 
-## Observation gaps
-
-```txt
-- PrehistoricRushHost exposes mutable engine, physics and adapter references
-- body readback includes only ID, content hash and topology
-- kit/source version, preset/recipe fingerprint and descriptor validation are absent
-- skeleton/skin/attachment validation rows are absent
-- render binding, pose consumption and collision binding rows are absent
-- resource ownership and disposal state are absent
-- host composition/scene fields are not guaranteed JSON-safe
-- journals are absent
-```
-
-## Validation gaps
+## Validation
 
 ```txt
 - no root package.json or unified repository validation command
 - no module-graph fixture
-- no descriptor/hash/snapshot fixture
-- no malformed geometry/skeleton/skinning fixture
-- no Three binding or pose fixture
-- no collision parity fixture
-- no creature lifecycle fixture
-- no core-kit consumption fixture
-- no immutable population-capacity fixture
-- no browser or Pages source-proof smoke
+- no patch generator determinism/edge fixture
+- no controller integration fixture in the product repo
+- no Worker protocol/stale-result fixture
+- no patch-content rejection fixture
+- no activation rollback fixture
+- no controller/consumer parity fixture
+- no height continuity fixture
+- no stream lifecycle/disposal fixture
+- no browser or Pages streaming smoke
+```
+
+## Prior active gaps
+
+### Creature consumption
+
+```txt
+- module graph and preset fingerprints remain absent
+- creature descriptor preflight remains absent
+- Three render binding, pose and Rapier collision results remain absent
+- creature resource lifecycle remains absent
+```
+
+### Composition
+
+```txt
+- twelve core kits remain installed
+- no declared/installed/available/consumed/replaced/unused ledger exists
+- several core capabilities remain bypassed or unproven
+```
+
+### Commands and frames
+
+```txt
+- browser input has no command IDs or typed results
+- run start/fail/collect/win and scene transitions lack ordered result journals
+- no committed frame ties run, stream, pose, physics, render and HUD state together
+- RAF/listener/renderer/physics/global-host teardown remains unowned
 ```
 
 ## Priority
 
 ```txt
-1. pinned module graph and procedural creature descriptor-adapter proof
-2. core-kit consumption reconciliation
-3. creature/browser adapter lifecycle and JSON-safe observation
-4. immutable population capacities and atomic generation commit
-5. typed run commands and transition/event journal
-6. committed-frame authority
+1. patch-content admission and atomic activation transaction
+2. Worker/session identity, inflight ceiling and disposal
+3. gameplay stream readiness and height/hazard/pickup fidelity
+4. controller/consumer parity journal and JSON-safe observation
+5. creature descriptor/render/physics consumption proof
+6. core-kit consumption reconciliation
+7. typed commands, transitions and committed frames
 ```
 
 ## Do not do next
@@ -133,10 +158,10 @@
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
+- do not duplicate seeded-world-patch-controller-kit
+- do not duplicate instanced-render-batch-kit
+- do not increase active radius or population before activation cost and parity are proven
+- do not treat Worker generation as elimination of main-thread activation work
+- do not treat controller-active IDs as render/physics proof
 - do not reintroduce a local procedural creature generator
-- do not move product raptor configuration into the shared kit
-- do not move Three or Rapier object ownership into the renderer-agnostic body kit
-- do not treat pinned URLs alone as module-graph proof
-- do not treat an animated mesh as descriptor, collision or lifecycle proof
-- do not add creature variants or more population before deterministic gates exist
 ```
