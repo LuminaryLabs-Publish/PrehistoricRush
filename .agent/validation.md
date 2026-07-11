@@ -92,8 +92,9 @@ gameplay audit: yes
 interaction audit: yes
 creature-system audit: yes
 deploy audit: yes
-central ledger sync required: yes
-central internal change-log required: yes
+repo-local documentation pushed to main: yes
+central ledger synchronized on main: yes
+central internal change-log added on main: yes
 ```
 
 ## Runtime validation not performed
