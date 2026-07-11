@@ -1,123 +1,139 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T00-39-25-04-00`
+**Updated:** `2026-07-11T02-41-37-04-00`
 
-## Goal
+## Summary
 
-Make the official procedural creature migration deterministic, observable and lifecycle-safe without moving product raptor configuration into the shared kit or recreating a local generator.
-
-## Immediate safe ledge
-
-```txt
-PrehistoricRush Procedural Creature Consumption Authority
-+ Pinned Module Graph / Descriptor-Adapter Fixture Gate
-```
+Preserve the official seeded patch controller, stable instance-batch kit and deterministic generator. Implement the missing product boundary that validates generated content, coordinates Worker/session lifecycle and commits all render, gameplay, height and physics consumers under one activation revision.
 
 ## Plan ledger
 
-### Phase 0: one immutable module graph
+**Goal:** Make patch streaming atomic, bounded, gameplay-safe and observable while keeping existing domain ownership intact.
 
-- [ ] Add a versioned `prehistoric-rush-module-graph-manifest`.
-- [ ] Generate browser import-map and runtime CDN URLs from the same source data.
-- [ ] Record requested and resolved NexusEngine, NexusEngine-Kits, ProtoKits, Three and Rapier identities.
-- [ ] Reject mismatched engine resolution before installing the official kit.
-- [ ] Compute and expose a stable module-graph fingerprint.
+### Phase 0: preserve ownership
 
-### Phase 1: preserve and fingerprint product configuration
+- [ ] Keep patch identity, cache, desired sets, priority, ready delivery and eviction in `seeded-world-patch-controller-kit`.
+- [ ] Keep tree cell capacity/replacement/release in `instanced-render-batch-kit`.
+- [ ] Keep terrain/vegetation/pickup/collider content in the product patch generator.
+- [ ] Keep Three and Rapier object ownership in product adapters.
+- [ ] Do not create duplicate controller, cache, prefetch or batch kits.
 
-- [ ] Keep `PLAYER_RAPTOR_PRESET` in PrehistoricRush.
-- [ ] Give the preset an explicit schema version.
-- [ ] Compute a stable preset/recipe fingerprint.
-- [ ] Record normalization defaults and any repair decisions.
-- [ ] Ensure one preset produces one deterministic descriptor content hash.
+### Phase 1: version and validate patch content
 
-### Phase 2: validate creature descriptors
+- [ ] Add a product `patchSchemaVersion` and generator-content version.
+- [ ] Validate patch ID, coordinates, cache key and generator version.
+- [ ] Validate terrain array types, exact lengths and finite values.
+- [ ] Validate tree/grass matrices and stable unique IDs.
+- [ ] Validate pickup/collider IDs, dimensions and patch bounds.
+- [ ] Compute a stable patch-content fingerprint.
+- [ ] Return typed accepted/rejected generation-admission results.
 
-- [ ] Validate index ranges and all attribute lengths.
-- [ ] Validate finite positions, normals, colors, skin indices and skin weights.
-- [ ] Validate unique bone IDs, parent references, acyclic hierarchy and root identity.
-- [ ] Validate skin indices against bone count.
-- [ ] Validate attachment bone references.
-- [ ] Validate positive collision dimensions and expected scale application.
-- [ ] Return a typed accepted/rejected descriptor-admission result before allocating renderer or physics resources.
+### Phase 2: own Worker and stream sessions
 
-### Phase 3: name and isolate the Three adapter
+- [ ] Create a `streamSessionId` for boot/remount lifecycle.
+- [ ] Retain Worker ready state and wait for initialization acknowledgement.
+- [ ] Carry session/worker epoch through generation requests and results.
+- [ ] Define when a late result may enter cache and when it must not activate.
+- [ ] Add an explicit maximum inflight request count.
+- [ ] Retain the message executor and its `dispose()` operation.
+- [ ] Make reset/dispose terminal and idempotent.
+- [ ] Reject post-dispose generation and activation requests.
 
-- [ ] Extract `createCreatureMesh()` and `applyCreaturePose()` into `three-procedural-creature-adapter-kit`.
-- [ ] Add `prepare`, `commit`, `updatePose`, `getSnapshot` and `dispose` operations.
-- [ ] Build resources detached from the scene until descriptor validation passes.
-- [ ] Return a render-binding result with creature ID, content hash, topology and resource IDs.
-- [ ] Return pose-consumption rows with run/frame sequence and matched/missing bones.
-- [ ] Reject content-hash mismatch and post-dispose updates.
+### Phase 3: build detached activation plans
 
-### Phase 4: prove physics parity
+- [ ] Claim a ready patch without treating it as consumer-active.
+- [ ] Reserve a terrain slot before any live mutation.
+- [ ] Preflight tree batch capacities and IDs.
+- [ ] Preflight grass layer and shard capacities with admitted/rejected IDs.
+- [ ] Build gameplay and Rapier collider plans from the same patch set.
+- [ ] Build a height-source transition plan.
+- [ ] Compute one immutable activation-plan fingerprint.
+- [ ] Reject the plan before mutation if any required invariant fails.
 
-- [ ] Register the Rapier actor through a typed collision-binding operation.
-- [ ] Retain creature ID, descriptor content hash and exact collision dimensions.
-- [ ] Correlate actor transform and physics-step results with run/frame sequence.
-- [ ] Classify Rapier contacts and manual distance checks as separate explicit outcome sources.
-- [ ] Prove renderer and physics consumers reference one admitted descriptor.
+### Phase 4: commit every consumer atomically
 
-### Phase 5: own resources and public evidence
+- [ ] Commit terrain attributes, transform, visibility and bounds.
+- [ ] Commit tree cell replacements and batch flushes.
+- [ ] Commit grass and shard matrices/counts/bounds.
+- [ ] Commit gameplay collider and pickup rows.
+- [ ] Commit Rapier fixed colliders.
+- [ ] Commit patch height-source state.
+- [ ] Publish one activation result with per-consumer rows.
+- [ ] Update consumer-active patch IDs only after success.
+- [ ] Roll back or repair all consumers on failure.
+- [ ] Add an equivalent typed release transaction.
 
-- [ ] Track geometry, attributes, material, bones, skeleton, mesh, scene membership and actor ownership.
-- [ ] Add reverse-order rollback for prepare/commit failures.
-- [ ] Make creature disposal terminal and idempotent.
-- [ ] Remove live creature owners from public host readback.
-- [ ] Expose JSON-safe module graph, descriptor, render binding, pose, collision and lifecycle rows.
-- [ ] Bound all journals.
+### Phase 5: make gameplay readiness explicit
 
-### Phase 6: fixture gates
+- [ ] Publish player patch and forward safety-ring readiness.
+- [ ] Distinguish generated, controller-ready and consumer-active states.
+- [ ] Record fallback versus committed-patch height source.
+- [ ] Record fallback-to-patch height delta and continuity decision.
+- [ ] Define deterministic slow/hold/fallback behavior when required patches are not collider-complete.
+- [ ] Correlate collision and pickup outcomes with patch and activation IDs.
 
-- [ ] Add a DOM-free module-graph fixture.
-- [ ] Add deterministic preset/descriptor/hash and snapshot-roundtrip fixtures.
-- [ ] Add malformed geometry, skeleton, skinning and collision rejection fixtures.
-- [ ] Add a Three adapter fixture using fake or isolated resource accounting.
-- [ ] Add pose matching/missing-bone fixtures.
-- [ ] Add Rapier collision parity fixture.
-- [ ] Add prepare-failure and idempotent-disposal fixtures.
-- [ ] Add deployed browser smoke for module revisions, binding, pose and collision.
+### Phase 6: observe and prove parity
+
+- [ ] Publish controller-active and consumer-active sets separately.
+- [ ] Publish per-consumer counts, capacities, rejected IDs and revisions.
+- [ ] Publish Worker ready/pending/error/lifecycle state.
+- [ ] Add a bounded stream lifecycle journal.
+- [ ] Add one patch-streaming parity fingerprint.
+- [ ] Remove or demote live mutable owners from public host readback.
+- [ ] Ensure all public snapshots are structured-clone safe.
+
+### Phase 7: fixture gates
+
+- [ ] Add deterministic generator and neighboring-edge fixtures.
+- [ ] Add invalid payload rejection fixtures.
+- [ ] Add controller focus/prefetch/retain/cache/eviction fixtures.
+- [ ] Add Worker ready, out-of-order, late-result and disposal fixtures.
+- [ ] Add activation success, capacity rejection and rollback fixtures.
+- [ ] Add controller/render/gameplay/Rapier parity fixtures.
+- [ ] Add height continuity and stream-readiness fixtures.
+- [ ] Add restart/remount/dispose lifecycle fixtures.
+- [ ] Add browser smoke across repeated patch boundaries.
 
 ## Candidate kits
 
 ```txt
-runtime-module-graph-manifest-kit
-module-source-admission-result-kit
-module-graph-fingerprint-kit
-player-raptor-preset-kit
-procedural-creature-descriptor-validation-kit
-three-procedural-creature-adapter-kit
-creature-render-binding-result-kit
-creature-pose-consumption-row-kit
-creature-collision-consumption-row-kit
-creature-resource-lifecycle-kit
-creature-host-observation-kit
-procedural-creature-fixture-kit
+prehistoric-patch-content-contract-kit
+patch-worker-session-kit
+patch-generation-admission-result-kit
+patch-activation-plan-kit
+patch-consumer-transaction-kit
+patch-height-source-transition-kit
+patch-consumer-parity-kit
+patch-streaming-lifecycle-journal-kit
+patch-streaming-host-observation-kit
+patch-streaming-fixture-kit
 ```
 
-Update the existing parent domain and host adapters first. Add a new kit only for a coherent reusable responsibility that has no current owner.
+Use existing parent domains and adapters first. Promote a new kit only when the responsibility is coherent, reusable and not already owned upstream.
 
 ## Required future fixture commands
 
 ```bash
 node scripts/prehistoric-rush-module-graph-fixture.mjs
-node scripts/prehistoric-rush-creature-descriptor-fixture.mjs
-node scripts/prehistoric-rush-creature-render-binding-fixture.mjs
-node scripts/prehistoric-rush-creature-pose-fixture.mjs
-node scripts/prehistoric-rush-creature-collision-fixture.mjs
-node scripts/prehistoric-rush-creature-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-patch-generator-fixture.mjs
+node scripts/prehistoric-rush-patch-controller-fixture.mjs
+node scripts/prehistoric-rush-patch-worker-fixture.mjs
+node scripts/prehistoric-rush-patch-activation-fixture.mjs
+node scripts/prehistoric-rush-patch-parity-fixture.mjs
+node scripts/prehistoric-rush-stream-readiness-fixture.mjs
+node scripts/prehistoric-rush-stream-lifecycle-fixture.mjs
 ```
 
 ## Follow-on order
 
 ```txt
-1. Reconcile all core kits as consumed, replaced or removed.
-2. Add browser/runtime lifecycle and committed-frame authority.
-3. Restore immutable tree/grass/shard capacities and atomic population commit.
-4. Add typed run commands, transition results and event journal.
-5. Only then expand creature archetypes, animation fidelity or visuals.
+1. procedural creature descriptor/render/physics consumption authority
+2. core-kit declared/installed/consumed/replaced reconciliation
+3. typed run commands, transitions and outcome journal
+4. committed-frame and browser-host lifecycle authority
+5. visual fidelity and larger world content only after proof gates
 ```
 
 ## Do not do next
 
-Do not recreate the local body generator, move the player preset into NexusEngine-Kits, put Three/Rapier ownership inside the renderer-agnostic body kit, add new creatures, or treat a visible animated mesh as proof of successful descriptor consumption.
+Do not increase the active radius, generation budget or population density; add more tree/grass/shard types; replace the official controller; or claim the Worker removed all frame hitch risk before activation cost, parity and lifecycle are executable and observable.
