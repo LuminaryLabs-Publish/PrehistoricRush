@@ -1,156 +1,143 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T02-41-37-04-00`
+**Updated:** `2026-07-11T02-48-17-04-00`
 
 ## Plan ledger
 
-**Goal:** Keep unresolved streamed-world, creature, composition, command and lifecycle risks explicit so new visual or population work does not bypass the required authority gates.
+**Goal:** Keep streamed-world activation, run-session reset, asynchronous admission, render/physics parity and lifecycle risks explicit before content or visual expansion.
 
-- [x] Record controller/generator/Worker gaps.
-- [x] Record activation and consumer parity gaps.
-- [x] Record gameplay readiness gaps.
-- [x] Retain prior creature/composition/command/lifecycle gaps.
-- [x] Rank the current implementation order.
+- [x] Retain the seeded-patch admission and activation gaps.
+- [x] Add run/world ownership and retry gaps.
+- [x] Add stream epoch and stale-result gaps.
+- [x] Add dynamic-content and first-frame parity gaps.
+- [x] Retain creature, composition, command and lifecycle gaps.
+- [x] Rank the implementation order.
 
-## Patch content and admission
+## Patch content and activation
 
 ```txt
 - patch payload has no explicit product schema version
-- no typed generated-patch admission result exists
-- terrain array lengths and finite values are trusted by consumers
-- tree, grass, pickup and collider ID uniqueness is not preflighted
-- matrix lengths and finite values are not preflighted
-- patch bounds are not validated against content
-- controller request/cache identity is not revalidated against returned payload
-- no patch-content fingerprint is retained in consumer state
+- terrain arrays, matrices, IDs and bounds are trusted without typed admission
+- controller-active is committed before consumer-active
+- terrain, trees, grass, shards, gameplay colliders, Rapier colliders and height commit sequentially
+- no detached plan, shared revision, rollback or acknowledgement exists
+- release is also a live partial mutation
+```
+
+## Run-session reset
+
+```txt
+- game.start resets RunState and InputState only
+- no runSessionId distinct from runId exists
+- no typed start/reset transaction exists
+- no retained/reset/rebuilt policy exists per owner
+- activePatches, terrain slots and tree cells have no run-session reconciliation result
+- grass/shard visibility may remain stale when retry causes no activation or release
+- gameplay and Rapier collider projections have no reset acknowledgement
+- actor/contact state has no explicit retry reset
+- camera interpolation, render time and shard rotation continue across runs
+- first committed frame of a new run is not identified
 ```
 
 ## Controller and Worker execution
 
 ```txt
-- generationBudget limits starts per pump call, not explicit concurrent inflight work
-- pump is called every RAF and can grow pending Worker requests
-- Worker ready acknowledgement is not awaited or exposed
-- no streamSessionId/controllerEpoch/workerEpoch exists
-- late results after restart/reset/remount have no explicit admission policy
-- controller reset does not cancel message-executor pending requests
-- executor dispose exists upstream but is not retained or invoked by the host
-- Worker pending count and lifecycle state are not exposed
-- no post-dispose request rejection path exists at host level
+- generationBudget limits starts per pump call, not total concurrent inflight work
+- Worker readiness is not awaited or exposed
+- no streamEpoch/controllerEpoch/workerEpoch exists
+- pending results cannot prove admission to the current run
+- controller reset does not cancel executor pending requests
+- executor dispose exists upstream but is not retained or invoked
+- no stale-result quarantine journal exists
+- post-dispose request rejection is absent
 ```
 
-## Activation transaction
+## World-cache ownership
 
 ```txt
-- takeReadyPatches marks controller records active before consumer commit
-- adapter.activatePatch returns no result
-- activePatches mutates before terrain upload
-- terrain, trees, grass, shards and colliders commit sequentially
-- no detached activation plan exists
-- no capacity preflight covers every consumer
-- no activation fingerprint or revision exists
-- no rollback or repair result exists
-- no acknowledgement reconciles controller-active and consumer-active sets
-- release is also a sequential live mutation with no result or rollback
+- deterministic patch cache and run-owned dynamic state are not classified separately
+- no explicit policy decides cache retention across retry
+- no cache-retention fingerprint or result exists
+- clearing cache would be wasteful, while retaining consumer state is unsafe
+- active terrain/tree reuse versus re-commit behavior is undeclared
 ```
 
 ## Render and population
 
 ```txt
 - one patch activation rebuilds all active grass and shard matrices
-- one patch activation resubmits the entire fixed-collider set
+- one activation resubmits the entire fixed-collider set
 - terrain bounding volumes recompute on the main thread
-- every tree type batch flushes on each patch activation/release
-- grass layer overflow truncates without rejected IDs or typed result
-- terrain-slot exhaustion falls back to reusing slot zero instead of rejecting
-- no frame ID records first render of an activation
-- no render-consumption fingerprint proves exact active content
+- every tree batch flushes on activation/release
+- grass overflow truncates without rejected IDs
+- terrain-slot exhaustion reuses slot zero
+- no render frame carries run session, stream epoch or activation revision
 - GPU/resource disposal remains absent
 ```
 
 ## Gameplay readiness
 
 ```txt
-- height sampling switches between fallback math and active patch arrays
-- fallback and generated height equivalence is assumed, not proven
-- source transitions have no delta/continuity result
+- fallback and patch height sources have no continuity result
 - desired but inactive patches have no active hazards or pickups
-- no current/forward safety-ring readiness contract exists
-- no explicit slow/hold/fallback policy exists when readiness is insufficient
-- Rapier contacts and manual distance checks remain separate unclassified failure paths
-- collision results do not retain patch/collider/activation identity
-- pickup render/gameplay/collection/removal parity is not journaled
+- no forward safety-ring readiness policy exists
+- Rapier and manual collision checks are separate unclassified outcome sources
+- collision rows do not retain patch/collider/session identity
+- pickup render/gameplay/collection/reset parity is not journaled
+```
+
+## Input, commands and frames
+
+```txt
+- Enter, Space and button starts call game.start directly
+- start/retry has no command ID, rejection reason or transaction result
+- key listeners and RAF have no session owner or removal ledger
+- no committed frame ties run, stream, pose, physics, render and HUD state
+- duplicate or stale start requests have no admission policy
 ```
 
 ## Observation
 
 ```txt
 - host exposes mutable engine, physics, adapter and controller references
-- controller snapshot reports controller-active IDs only
-- consumer-active patch IDs are absent
-- per-consumer admitted/rejected counts are absent
-- activation/release results are absent
-- Worker ready/pending/lifecycle state is absent
-- height-source state is absent
-- collider parity and physics revision are absent
-- no bounded stream lifecycle journal exists
-- host composition and scene fields are not guaranteed clone-safe
+- host reports controller-active IDs but not consumer-active/run-admitted IDs
+- runSessionId, streamEpoch and reset decisions are absent
+- stale Worker results and dynamic-content rebuild outcomes are absent
+- first post-reset render/physics parity is absent
+- no bounded run/stream lifecycle journal exists
 ```
 
 ## Validation
 
 ```txt
-- no root package.json or unified repository validation command
-- no module-graph fixture
-- no patch generator determinism/edge fixture
-- no controller integration fixture in the product repo
-- no Worker protocol/stale-result fixture
-- no patch-content rejection fixture
-- no activation rollback fixture
-- no controller/consumer parity fixture
-- no height continuity fixture
-- no stream lifecycle/disposal fixture
+- no root package.json or unified validation command
+- no patch admission/activation fixture
+- no retry reset fixture
+- no stream epoch/stale result fixture
+- no pickup/collider/height first-frame parity fixture
+- no lifecycle/disposal fixture
 - no browser or Pages streaming smoke
 ```
 
 ## Prior active gaps
 
-### Creature consumption
-
 ```txt
-- module graph and preset fingerprints remain absent
-- creature descriptor preflight remains absent
-- Three render binding, pose and Rapier collision results remain absent
-- creature resource lifecycle remains absent
-```
-
-### Composition
-
-```txt
-- twelve core kits remain installed
-- no declared/installed/available/consumed/replaced/unused ledger exists
-- several core capabilities remain bypassed or unproven
-```
-
-### Commands and frames
-
-```txt
-- browser input has no command IDs or typed results
-- run start/fail/collect/win and scene transitions lack ordered result journals
-- no committed frame ties run, stream, pose, physics, render and HUD state together
-- RAF/listener/renderer/physics/global-host teardown remains unowned
+- creature descriptor, render binding, pose and collision proof remain absent
+- twelve core kits have no consumed/replaced/unused ledger
+- typed run commands and transition-result journal remain absent
+- module graph fingerprint remains absent
 ```
 
 ## Priority
 
 ```txt
-1. patch-content admission and atomic activation transaction
-2. Worker/session identity, inflight ceiling and disposal
-3. gameplay stream readiness and height/hazard/pickup fidelity
-4. controller/consumer parity journal and JSON-safe observation
-5. creature descriptor/render/physics consumption proof
-6. core-kit consumption reconciliation
-7. typed commands, transitions and committed frames
+1. patch-content admission and atomic activation
+2. run-session reset and world-cache retention policy
+3. Worker/stream epoch, inflight ceiling and stale-result quarantine
+4. dynamic pickup/collider/height/render reconciliation
+5. controller/consumer/run-session parity and lifecycle observation
+6. creature and core-kit consumption proof
+7. typed commands and committed frames
 ```
 
 ## Do not do next
@@ -160,8 +147,7 @@
 - do not create a branch
 - do not duplicate seeded-world-patch-controller-kit
 - do not duplicate instanced-render-batch-kit
-- do not increase active radius or population before activation cost and parity are proven
-- do not treat Worker generation as elimination of main-thread activation work
-- do not treat controller-active IDs as render/physics proof
-- do not reintroduce a local procedural creature generator
+- do not increase active radius or population
+- do not clear deterministic caches merely to hide reset defects
+- do not treat a changed runId as a completed reset
 ```
