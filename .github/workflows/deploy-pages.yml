@@ -27,7 +27,7 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/src _site/scenes
-          cp index.html _site/index.html
+          cp index.html menu.html charactercreator.html game.html _site/
           cp .nojekyll _site/.nojekyll
           cp game-scenes.json _site/game-scenes.json
           cp runner-tuning.json _site/runner-tuning.json
