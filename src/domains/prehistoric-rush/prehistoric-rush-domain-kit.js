@@ -1,9 +1,33 @@
 import { createDrunkRouteGenerator } from "./kits/drunk-route-generator.js";
-import { createProceduralDinoBodyKit } from "./kits/procedural-dino-body.js";
+import { PLAYER_RAPTOR_ID, PLAYER_RAPTOR_PRESET } from "../../presets/player-raptor.js";
 
 const DEFAULT_SURFACE_MULTIPLIERS = Object.freeze({ path: 1, edge: 0.88, verge: 0.68, forest: 0.42 });
 
-export function createPrehistoricRushKitGraph(NexusEngine, config = {}) {
+function requireFactories(source, names, label) {
+  const missing = names.filter((name) => typeof source?.[name] !== "function");
+  if (missing.length) throw new TypeError(`${label} is missing required factories: ${missing.join(", ")}`);
+}
+
+export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, config = {}) {
+  requireFactories(NexusEngine, [
+    "createCoreInputKit",
+    "createCoreSpatialKit",
+    "createCoreSceneKit",
+    "createCorePhysicsKit",
+    "createCoreMotionKit",
+    "createCoreCameraKit",
+    "createCoreAnimationKit",
+    "createCoreGraphicsKit",
+    "createCoreSkyboxKit",
+    "createCoreUIKit",
+    "createCoreDiagnosticsKit",
+    "createCoreCompositionKit",
+    "defineDomainServiceKit",
+    "defineResource",
+    "defineEvent"
+  ], "Pinned NexusEngine module");
+  requireFactories(NexusEngineKits, ["createSeedKit", "createProceduralCreatureBodyKit"], "Pinned NexusEngine-Kits module");
+
   const {
     createCoreInputKit,
     createCoreSpatialKit,
@@ -18,6 +42,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, config = {}) {
     createCoreDiagnosticsKit,
     createCoreCompositionKit
   } = NexusEngine;
+  const { createSeedKit, createProceduralCreatureBodyKit } = NexusEngineKits;
 
   return [
     createCoreInputKit({ actions: { jump: {}, boost: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
@@ -26,10 +51,10 @@ export function createPrehistoricRushKitGraph(NexusEngine, config = {}) {
       allowDirectTransitions: true,
       initialSceneId: "menu",
       scenes: [
-        { id: "menu", kind: "web", exits: { start: { id: "start", to: "game", enabled: true } } },
-        { id: "game", kind: "web", exits: { fail: { id: "fail", to: "run-over", enabled: true }, win: { id: "win", to: "win", enabled: true } } },
-        { id: "run-over", kind: "web", exits: { retry: { id: "retry", to: "game", enabled: true } } },
-        { id: "win", kind: "web", exits: { retry: { id: "retry", to: "game", enabled: true } } }
+        { id: "menu", kind: "web-three-scene", exits: { start: { id: "start", to: "game", enabled: true } } },
+        { id: "game", kind: "web-three-scene", exits: { fail: { id: "fail", to: "run-over", enabled: true }, win: { id: "win", to: "win", enabled: true } } },
+        { id: "run-over", kind: "web-three-scene", exits: { retry: { id: "retry", to: "game", enabled: true } } },
+        { id: "win", kind: "web-three-scene", exits: { retry: { id: "retry", to: "game", enabled: true } } }
       ]
     }),
     createCorePhysicsKit(),
@@ -37,10 +62,12 @@ export function createPrehistoricRushKitGraph(NexusEngine, config = {}) {
     createCoreCameraKit(),
     createCoreAnimationKit(),
     createCoreGraphicsKit(),
-    createCoreSkyboxKit(),
+    createCoreSkyboxKit({ presetId: "clear-day" }),
     createCoreUIKit(),
     createCoreDiagnosticsKit(),
     createCoreCompositionKit(),
+    createSeedKit({ seed: config.seed ?? 238991 }),
+    createProceduralCreatureBodyKit({ creatures: [PLAYER_RAPTOR_PRESET] }),
     createPrehistoricRushDomainKit(NexusEngine, config)
   ];
 }
@@ -54,7 +81,6 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     pathHalfWidth: config.pathHalfWidth ?? 3.1,
     vergeWidth: config.vergeWidth ?? 3.2
   });
-  const dinoBody = createProceduralDinoBodyKit({ id: "prehistoric-rush-raptor", bodyScale: config.bodyScale ?? 0.82 });
   const multipliers = { ...DEFAULT_SURFACE_MULTIPLIERS, ...(config.surfaceMultipliers ?? {}) };
   const goalDistance = Number(config.goalDistance ?? 3600);
   const baseSpeed = Number(config.baseSpeed ?? 16);
@@ -102,10 +128,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   }
 
   function transition(toSceneId, transitionId, payload = {}) {
-    const scene = engineRef?.coreScene;
-    if (scene?.requestTransition) {
-      scene.requestTransition({ transitionId, toSceneId, direct: true, payload });
-    }
+    engineRef?.coreScene?.requestTransition?.({ transitionId, toSceneId, direct: true, payload });
   }
 
   function system(world) {
@@ -151,9 +174,10 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.2.0",
+    version: "0.3.0",
     stability: "game",
-    services: ["run", "route", "surface", "score", "outcome"],
+    services: ["run", "route", "surface", "score", "outcome", "player-creature"],
+    requires: ["n:procedural-creatures:body"],
     resources,
     events,
     systems: [{ phase: "simulate", name: "PrehistoricRushRunSystem", system }],
@@ -163,11 +187,12 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     },
     createApi({ engine, world }) {
       engineRef = engine;
+      const creatureBody = engine.n.proceduralCreatureBody;
+      if (!creatureBody?.has?.(PLAYER_RAPTOR_ID)) creatureBody?.create?.(PLAYER_RAPTOR_PRESET);
       const getState = () => world.getResource(resources.RunState);
       const getInput = () => world.getResource(resources.InputState);
       return {
         route,
-        dinoBody,
         config: {
           goalDistance,
           baseSpeed,
@@ -178,6 +203,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           jumpImpulse,
           surfaceMultipliers: { ...multipliers }
         },
+        getPlayerBody: () => creatureBody.get(PLAYER_RAPTOR_ID),
+        createPlayerPose: (state = {}) => creatureBody.createPose(PLAYER_RAPTOR_ID, state),
         setHeightSampler(nextSampler) {
           if (typeof nextSampler !== "function") throw new TypeError("setHeightSampler expects a function.");
           heightSampler = nextSampler;
@@ -194,7 +221,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           world.setResource(resources.InputState, { steer: 0, boost: false, jump: false });
           world.emit(events.RunStarted, { runId: next.runId });
           transition("game", `run:${next.runId}:start`);
-          return next;
+          return { ...next, collectedShardIds: [] };
         },
         fail(collision = {}) {
           const state = getState();
@@ -218,7 +245,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         snapshot: () => ({
           run: { ...getState(), collectedShardIds: [...getState().collectedShardIds] },
           route: route.snapshot(),
-          dinoBody: dinoBody.snapshot()
+          playerCreature: creatureBody.getSnapshot()
         })
       };
     },
@@ -236,9 +263,11 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "core-skybox",
         "core-ui",
         "core-diagnostics",
-        "core-composition"
+        "core-composition",
+        "seed-kit",
+        "procedural-creature-body-kit"
       ],
-      nestedKits: ["drunk-route-generator", "procedural-dino-body"]
+      nestedKits: ["drunk-route-generator"]
     }
   });
 }
