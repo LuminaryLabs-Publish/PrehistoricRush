@@ -1,123 +1,132 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T02-48-17-04-00`
+**Updated:** `2026-07-11T05-02-00-04-00`
 
 ## Goal
 
-Add one authoritative start/retry transaction that resets run-owned state, explicitly retains or clears world-owned state, fences asynchronous deliveries and proves the first committed frame of the new run.
+Add one acknowledged patch activation and release transaction so controller state, render state, gameplay state, physics state and height sampling advance or retire together under one revision.
 
 ## Immediate safe ledge
 
 ```txt
-PrehistoricRush Run Session Reset Authority
-+ Retry / Stream Epoch Fixture Gate
+PrehistoricRush Seeded Patch Activation Commit Authority
++ Multi-Consumer Prepare / Commit / Rollback Fixture Gate
 ```
 
 ## Plan ledger
 
-### Phase 0: preserve the existing P0 patch boundary
+### Phase 0: preserve current ownership
 
-- [ ] Add a versioned patch-content contract and admission result.
-- [ ] Add detached patch activation/release plans.
-- [ ] Preflight terrain, tree, grass, shard, collider and height consumers.
-- [ ] Commit or roll back all consumers together.
-- [ ] Reconcile controller-active and consumer-active sets.
+- [ ] Keep `seeded-world-patch-controller-kit` as patch identity, cache and scheduling authority.
+- [ ] Keep `instanced-render-batch-kit` as tree-cell capacity and flush authority.
+- [ ] Keep `prehistoric-patch-generator` as deterministic content authority.
+- [ ] Update existing kits before adding new reusable kits.
+- [ ] Do not increase active radius or population while authority is unresolved.
 
-### Phase 1: define run and stream identity
+### Phase 1: version and admit patch content
 
-- [ ] Add a monotonic `runSessionId` separate from the existing numeric `runId`.
-- [ ] Add a `streamEpoch` for controller/Worker delivery admission.
-- [ ] Define the relationship among world seed, generator version, controller ID, stream epoch and run session.
-- [ ] Include both identities in start, activation, collision, pickup, render and host evidence.
-- [ ] Reject or quarantine stale dynamic deliveries.
+- [ ] Add a product patch schema version and content hash.
+- [ ] Validate patch ID, cache key, coordinates and generator identity.
+- [ ] Validate terrain array lengths and numeric values.
+- [ ] Validate tree descriptors and matrices.
+- [ ] Validate grass layers, shard IDs, collider IDs and bounds.
+- [ ] Return a typed admission result without mutating consumers.
 
-### Phase 2: declare retention policy
+### Phase 2: replace mutation-first delivery
 
-- [ ] Classify patch payload/cache records as immutable world-owned data.
-- [ ] Classify pickup visibility, active colliders, contacts, input, camera and frame journals as run-owned data.
-- [ ] Decide whether active terrain/tree bindings are retained or re-committed on retry.
-- [ ] Return a typed retained/reset/rebuilt/rejected decision for every owner.
-- [ ] Never clear the deterministic cache merely to simulate a reset.
+- [ ] Add non-mutating ready and release candidate reads.
+- [ ] Add idempotent activation and release claims.
+- [ ] Preserve claim evidence until acknowledged.
+- [ ] Reject duplicate claims by returning the prior result.
+- [ ] Add stale controller/stream epoch rejection.
+- [ ] Keep legacy delivery APIs only for migration compatibility.
 
-### Phase 3: build the start/reset transaction
+### Phase 3: prepare every consumer
 
-- [ ] Prepare the next run state without publishing it.
-- [ ] Clear browser input latches and pending jump intent.
-- [ ] Reconcile active pickups from the new empty collected-ID set.
-- [ ] Rebuild gameplay and Rapier collider projections for the admitted active patch set.
-- [ ] Reset actor/contact state.
-- [ ] Reset camera interpolation and frame-local presentation state.
-- [ ] Commit the new run only after required consumers acknowledge.
-- [ ] Roll back to the prior terminal state if preparation fails.
+- [ ] Preflight terrain-slot availability and target slot identity.
+- [ ] Preflight tree trunk and crown batch capacity.
+- [ ] Preflight grass-layer capacities and deterministic rejected IDs.
+- [ ] Preflight shard capacity and deterministic rejected IDs.
+- [ ] Build gameplay and Rapier collider replacement plans.
+- [ ] Build the candidate height-source revision.
+- [ ] Return one detached `PatchActivationPlan` or `PatchReleasePlan`.
 
-### Phase 4: own Worker and lifecycle state
+### Phase 4: commit or roll back
 
-- [ ] Retain the message executor and Worker as named session resources.
-- [ ] Add an explicit inflight ceiling.
-- [ ] Tag requests/results with stream epoch.
-- [ ] Cancel, reject or quarantine pending results on restart/dispose.
-- [ ] Add ordered idempotent `stop`, `dispose` and `restart` operations.
-- [ ] Reject post-dispose input, generation, activation and render calls.
+- [ ] Commit consumers in a deterministic order.
+- [ ] Publish one `consumerRevision` only after all required consumers succeed.
+- [ ] Acknowledge controller active only after consumer commit.
+- [ ] Acknowledge release only after consumer retirement succeeds.
+- [ ] Roll back to the prior committed world on recoverable failure.
+- [ ] Enter a visible terminal fault state when rollback cannot be proven.
 
-### Phase 5: publish evidence
+### Phase 5: publish parity and readiness
 
-- [ ] Add typed `run-start-result` and `run-reset-result` rows.
-- [ ] Record cache retention and dynamic-content reconciliation decisions.
-- [ ] Record stale Worker/controller result outcomes.
-- [ ] Publish first committed frame with run session, stream epoch, patch revision and physics revision.
-- [ ] Remove live engine, adapter, controller and physics owners from public readback.
-- [ ] Bound every journal.
+- [ ] Publish controller desired, claimed, acknowledged-active and release-candidate IDs.
+- [ ] Publish consumer prepared, committed and gameplay-ready IDs.
+- [ ] Report exact missing and extra IDs, not only counts.
+- [ ] Record first render and first physics acknowledgement for each commit.
+- [ ] Add a bounded activation/release journal.
+- [ ] Remove live mutable owners from public readback.
 
 ### Phase 6: fixture gates
 
-- [ ] Retry after collecting a shard without leaving the current active patch set.
-- [ ] Retry after collision while Worker requests are pending.
-- [ ] Retry after moving far enough to release patches.
-- [ ] Retry repeatedly and prove stable cache size and no duplicate RAF/listeners.
-- [ ] Deliver a stale Worker result after a new stream epoch and prove quarantine.
-- [ ] Prove first-frame pickup, collider, height and render parity.
-- [ ] Prove stop/dispose/restart idempotency.
-- [ ] Add deployed browser and Pages smoke.
+- [ ] Reject malformed terrain before mutation.
+- [ ] Reject malformed tree, grass, shard and collider payloads before mutation.
+- [ ] Prove deterministic capacity and rejected-ID results.
+- [ ] Inject failure at each consumer commit step and prove rollback or terminal fault.
+- [ ] Prove duplicate claims do not repeat side effects.
+- [ ] Prove release claims remain retriable until acknowledgement.
+- [ ] Prove controller-active and consumer-active digests match after movement.
+- [ ] Prove stale claims cannot commit after an epoch change.
+- [ ] Add browser and Pages streaming smoke.
 
 ## Candidate kits
 
 ```txt
-run-session-authority-kit
-run-start-reset-transaction-kit
-world-cache-retention-policy-kit
-stream-epoch-admission-kit
-dynamic-content-reconciliation-kit
-physics-contact-reset-kit
-camera-frame-reset-kit
-stale-worker-result-quarantine-kit
-run-session-observation-kit
-retry-stream-epoch-fixture-kit
+patch-content-schema-kit
+patch-content-admission-kit
+patch-consumer-capability-kit
+patch-activation-plan-kit
+patch-release-plan-kit
+terrain-slot-preflight-kit
+tree-batch-preflight-kit
+dynamic-instance-preflight-kit
+patch-collider-preflight-kit
+patch-height-preflight-kit
+patch-consumer-commit-kit
+patch-consumer-rollback-kit
+patch-controller-acknowledgement-kit
+patch-consumer-revision-kit
+patch-activation-result-kit
+patch-release-result-kit
+patch-parity-observation-kit
+patch-activation-journal-kit
+patch-activation-fixture-kit
 ```
-
-Update `prehistoric-rush-domain-kit` and the existing host adapters first. Add a new reusable kit only where no current domain owns the responsibility.
 
 ## Required future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-patch-activation-fixture.mjs
-node scripts/prehistoric-rush-retry-reset-fixture.mjs
-node scripts/prehistoric-rush-stream-epoch-fixture.mjs
-node scripts/prehistoric-rush-dynamic-content-reconciliation-fixture.mjs
-node scripts/prehistoric-rush-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-patch-content-admission-fixture.mjs
+node scripts/prehistoric-rush-patch-activation-commit-fixture.mjs
+node scripts/prehistoric-rush-patch-release-commit-fixture.mjs
+node scripts/prehistoric-rush-patch-parity-fixture.mjs
+node scripts/prehistoric-rush-patch-failure-rollback-fixture.mjs
 ```
 
 ## Follow-on order
 
 ```txt
-1. Patch-content admission and atomic activation.
-2. Run-session reset and world-cache retention.
-3. Worker/stream epoch and stale-result policy.
-4. Stream readiness for height, hazards and pickups.
-5. JSON-safe committed-frame observation.
-6. Creature and core-kit consumption authority.
-7. Typed run commands and transition results.
+1. Patch-content admission and acknowledged activation/release.
+2. Controller/consumer parity and gameplay-ready observation.
+3. Run-session reset and world-cache retention.
+4. Worker/stream epochs and stale-result quarantine.
+5. Dynamic pickup/collider/height reconciliation.
+6. Lifecycle ownership and committed frames.
+7. Creature and core-kit consumption authority.
 ```
 
 ## Do not do next
 
-Do not add trees, grass, shards, creatures or route radius; do not clear all caches as a substitute for a reset contract; do not duplicate the official controller; and do not treat `game.start()` or a changed `runId` as proof that every consumer reset.
+Do not add more content, increase streaming radius, duplicate the official controller, clear caches to hide defects, or treat controller-active state as proof that the rendered and physical world committed.
