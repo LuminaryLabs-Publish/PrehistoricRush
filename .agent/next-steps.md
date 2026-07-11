@@ -1,125 +1,150 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T10-58-10-04-00`
+**Updated:** `2026-07-11T12-39-53-04-00`
 
 ## Summary
 
-Restore valid page routes first, then make the saved player profile the only admitted source for the game creature, collision and frame evidence. Keep patch activation, visual identity and lifecycle work behind that user-facing handoff gate.
+Complete route/profile authority first. Then make patch activation transactional, establish run/stream epochs, and finally place RAF, listeners, Worker, executor, Rapier, Three resources and the public host behind one browser runtime-session owner.
 
 ## Plan ledger
 
-**Goal:** turn menu, creator and game into one route-safe, conflict-aware and observable player-character transaction.
+**Goal:** reach a route-safe, profile-bound and lifecycle-bounded product without creating parallel session, Worker or renderer ownership systems.
 
-### Phase 0: page route integrity
+- [ ] Complete the P0 route/profile handoff work.
+- [ ] Add acknowledged patch activation before changing lifecycle behavior.
+- [ ] Establish one session/run/stream epoch family.
+- [ ] Add startup rollback and reverse cleanup registration.
+- [ ] Add explicit stop/dispose with idempotent results.
+- [ ] Add executable lifecycle and stale-result fixtures.
 
-- [ ] Add a versioned page manifest for `index.html`, `menu.html`, `charactercreator.html` and `game.html`.
-- [ ] Create the missing `charactercreator.html` host for `src/pages/character-creator.js`.
-- [ ] Create the missing `game.html` host for `src/pages/game.js`.
-- [ ] Validate every menu/navigation target against the deployed artifact.
-- [ ] Keep `index.html` as an explicit menu alias or redirect with a tested contract.
-- [ ] Add a browser route smoke that opens every page and rejects 404s.
+## Phase 0: page route and profile authority
 
-### Phase 1: authoritative profile identity
+- [ ] Add valid `game.html` and `charactercreator.html` hosts.
+- [ ] Add a versioned page manifest and source/deployed route checks.
+- [ ] Make one committed profile fingerprint the game creature source.
+- [ ] Bind that fingerprint to procedural body, Rapier collision and frame evidence.
+- [ ] Add conflict-safe profile writes and complete creator draft commits.
 
-- [ ] Define a canonical `PlayerCharacterProfile` schema descriptor.
-- [ ] Canonically serialize and fingerprint the complete normalized profile.
-- [ ] Add writer/session identity and a monotonic commit sequence.
-- [ ] Replace local next-revision guessing with compare-and-swap or explicit conflict results.
-- [ ] Add typed load, save, patch, reset and conflict results.
-- [ ] Record durable revision, fingerprint, writer and commit time together.
+## Phase 1: patch activation authority
 
-### Phase 2: creator draft transaction
+- [ ] Validate generated patch content before delivery.
+- [ ] Prepare terrain, tree, grass, shard, collider and height changes off to the side.
+- [ ] Commit all consumers under one patch activation revision.
+- [ ] Return typed activation/release results.
+- [ ] Keep controller-active and consumer-active sets in parity.
 
-- [ ] Keep one complete draft snapshot per debounce window.
-- [ ] Persist the full normalized candidate, not only the final captured group patch.
-- [ ] Distinguish dirty, saving, committed, conflicted and failed states.
-- [ ] Roll back or rebase after storage conflict/failure.
-- [ ] Coalesce storage and BroadcastChannel delivery by transaction ID.
-- [ ] Release timer, storage listener and BroadcastChannel leases on page exit.
+## Phase 2: run and stream epochs
 
-### Phase 3: game profile admission
+- [ ] Allocate `runtimeSessionId` once per host session.
+- [ ] Allocate `runSessionId` for every accepted start/retry.
+- [ ] Allocate `streamEpoch` with each run transaction.
+- [ ] Mark Worker requests with session/run/stream identity.
+- [ ] Reject stale responses before controller/cache/consumer mutation.
+- [ ] Reset input, camera, physics actor/contacts and dynamic pickup state atomically.
 
-- [ ] Load the committed profile before constructing `prehistoric-rush-domain-kit`.
-- [ ] Convert profile data into the official procedural creature recipe.
-- [ ] Validate the result through `procedural-creature-body-kit`.
-- [ ] Bind one accepted profile fingerprint to creature descriptor and collision.
-- [ ] Reject malformed or incompatible profiles with a typed fallback result.
-- [ ] Expose the accepted profile revision/fingerprint through `PrehistoricRushHost`.
+## Phase 3: startup transaction
 
-### Phase 4: preview and frame parity
+- [ ] Replace ad hoc `main()` acquisition with a typed startup command/result.
+- [ ] Create a cleanup stack before the first resource allocation.
+- [ ] Register reverse cleanup immediately after each successful acquisition.
+- [ ] Do not publish `RUNNING` or `PrehistoricRushHost` until required resources are ready.
+- [ ] On failure, execute reverse rollback and return a bounded failure result.
 
-- [ ] Replace or supplement the CSS silhouette with the actual procedural descriptor preview.
-- [ ] Use the same profile-to-descriptor adapter in creator and game.
-- [ ] Correlate profile revision, creature descriptor hash, collision revision and frame ID.
-- [ ] Prove creator preview and game frame consume the same committed profile.
+## Phase 4: callback and scheduling ownership
 
-### Phase 5: preserve existing runtime gates
+- [ ] Retain the RAF request ID and generation fence.
+- [ ] Stop scheduling new frames before disposal begins.
+- [ ] Replace anonymous global callbacks with listener leases.
+- [ ] Reject input and retry commands outside admitted lifecycle states.
+- [ ] Handle `pagehide` and explicit stop through the same disposal transaction.
 
-- [ ] Implement acknowledged patch prepare/commit/rollback after route/profile P0.
-- [ ] Add module graph and visual-policy fingerprints.
-- [ ] Add run/session, stream, profile, camera and resource epochs.
-- [ ] Retain RAF/listener/Worker/resource ownership and ordered disposal.
+## Phase 5: Worker and patch executor quarantine
+
+- [ ] Retain executor disposal and Worker termination operations.
+- [ ] Add cancel/shutdown protocol or hard termination policy.
+- [ ] Retire queued/inflight requests by epoch before termination.
+- [ ] Ignore late message callbacks after disposal.
+- [ ] Prove fallback synchronous generation follows the same lifecycle contract.
+
+## Phase 6: Three and Rapier resource ownership
+
+- [ ] Add adapter-owned disposal for creature, terrain, tree, grass and shard resources.
+- [ ] Dispose geometries, materials, shader materials, skeleton resources and renderer.
+- [ ] Remove the renderer canvas from the host.
+- [ ] Add Rapier actor, collider and world disposal/reset results.
+- [ ] Ensure disposal order prevents rendering or physics after owner release.
+
+## Phase 7: host revocation and observation
+
+- [ ] Replace raw mutable owner exposure with a detached read model.
+- [ ] Add host lease/session identity.
+- [ ] Revoke command capability before resource disposal.
+- [ ] Return lifecycle phase, session/run/stream epochs and resource counts.
+- [ ] Keep lifecycle journals bounded and JSON-safe.
 
 ## Candidate kits
 
 ```txt
-route-manifest-kit
-page-artifact-admission-kit
-player-profile-schema-kit
-player-profile-fingerprint-kit
-profile-load-result-kit
-profile-write-command-kit
-profile-write-result-kit
-profile-revision-authority-kit
-profile-conflict-resolution-kit
-creator-draft-transaction-kit
-profile-cross-context-sync-kit
-game-profile-admission-kit
-profile-to-creature-descriptor-kit
-profile-to-collision-binding-kit
-profile-render-binding-result-kit
-profile-frame-receipt-kit
-profile-observation-kit
-profile-lifecycle-kit
-route-profile-fixture-kit
+runtime-session-id-kit
+runtime-lifecycle-state-kit
+runtime-startup-command-kit
+runtime-startup-transaction-kit
+runtime-cleanup-stack-kit
+animation-frame-lease-kit
+listener-lease-kit
+worker-resource-owner-kit
+patch-executor-quarantine-kit
+stream-epoch-fence-kit
+three-resource-owner-kit
+rapier-resource-owner-kit
+public-host-lease-kit
+ordered-runtime-dispose-kit
+startup-rollback-kit
+lifecycle-result-kit
+lifecycle-journal-kit
+lifecycle-observation-kit
+runtime-lifecycle-fixture-kit
 ```
 
 ## Acceptance conditions
 
 ```txt
-all menu links resolve in source and deployed Pages
-creator and game hosts load without 404 or module errors
-rapid cross-group edits persist one complete candidate snapshot
-concurrent tabs produce ordered commits or explicit conflict results
-game creature recipe equals the committed profile
-Rapier collision names the same accepted profile fingerprint
-creator preview and game frame name the same descriptor revision
-host readback is detached, bounded and JSON-safe
-old page/session callbacks cannot overwrite a newer profile epoch
+one admitted startup creates one live runtime session
+partial startup failure leaves no Worker, RAF, listener, canvas or global host
+retry creates a new run/stream epoch without duplicating host resources
+old Worker results cannot activate patches in the new epoch
+stop prevents additional engine, physics, streaming or render ticks
+all listeners and global leases are removed
+Worker/executor, Three and Rapier resources are released in order
+dispose is idempotent and returns the same terminal result
+post-dispose commands are rejected
+host observation is detached, bounded and JSON-safe
 ```
 
 ## Future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-page-manifest-fixture.mjs
-node scripts/prehistoric-rush-profile-store-fixture.mjs
-node scripts/prehistoric-rush-profile-conflict-fixture.mjs
-node scripts/prehistoric-rush-profile-game-binding-fixture.mjs
-node scripts/prehistoric-rush-profile-frame-receipt-fixture.mjs
-node scripts/prehistoric-rush-patch-activation-fixture.mjs
+node scripts/prehistoric-rush-lifecycle-startup-fixture.mjs
+node scripts/prehistoric-rush-startup-rollback-fixture.mjs
+node scripts/prehistoric-rush-retry-epoch-fixture.mjs
+node scripts/prehistoric-rush-worker-stale-result-fixture.mjs
+node scripts/prehistoric-rush-resource-disposal-fixture.mjs
+node scripts/prehistoric-rush-host-revocation-fixture.mjs
+node scripts/prehistoric-rush-browser-lifecycle-smoke.mjs
 ```
 
 ## Overall order
 
 ```txt
-1. Route manifest and page artifact integrity.
-2. Durable profile identity and typed storage results.
-3. Complete creator draft commit and conflict handling.
-4. Game profile admission and creature/collision binding.
-5. Preview/frame parity.
-6. Patch activation, visual identity and lifecycle gates.
+1. Route manifest and profile handoff.
+2. Atomic patch activation.
+3. Run/session/stream epoch authority.
+4. Startup transaction and rollback.
+5. RAF/listener/Worker/resource ownership.
+6. Ordered idempotent disposal and host revocation.
+7. Node and browser lifecycle fixtures.
 ```
 
 ## Do not do next
 
-Do not add more character sliders, create another creature generator, hide missing routes with untested redirects, or treat the local revision integer as sufficient profile authority.
+Do not add another runtime loop, add page-specific disposal systems, rely on browser destruction as cleanup, or terminate the Worker without fencing executor callbacks and patch delivery.
