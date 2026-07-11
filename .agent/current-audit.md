@@ -1,24 +1,24 @@
-# Current Audit: PrehistoricRush World Readiness and Movement Admission
+# Current Audit: PrehistoricRush Stream Cadence and Time Budget
 
-**Updated:** `2026-07-11T17-39-47-04-00`
+**Updated:** `2026-07-11T19-09-25-04-00`
 
 ## Summary
 
-`PrehistoricRush` advances gameplay before it proves that the route-ahead world required by that movement is generated and committed across all consumers. `engine.tick(dt)` mutates position, distance and height first. `updateStreaming(state)` then follows the already-moved actor, pumps generation and activates at most one ready patch.
+`PrehistoricRush` advances movement from elapsed seconds but advances streaming work from frame counts. Each RAF calls `controller.pump()` with a fixed maximum and calls `takeReadyPatches()` with a fixed activation maximum. The same route speed therefore receives different generation and activation throughput at different display refresh rates.
 
-When an active patch is missing, `sampleHeight()` silently returns `fallbackHeight()`. The missing patch also means its fixed colliders, pickups, terrain, trees and grass are not authoritative yet. A later activation can therefore change visible terrain, camera look height, collision and pickup availability underneath an already-running actor.
+The source also clamps simulation delta to `0.05` seconds. Below 20 rendered frames per second, gameplay time slows relative to wall time while stream pump and activation still run once per rendered frame. Hidden-tab and throttled-frame behavior has no explicit suspension, catch-up or backlog-age contract.
 
 ## Plan ledger
 
-**Goal:** define one bounded required-corridor and movement-admission transaction tied to a committed world revision.
+**Goal:** define one clock, visibility and time-budget authority for simulation, patch generation, activation, physics, rendering and observation.
 
 - [x] Compare Publish inventory against central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Detect active same-window `IntoTheMeadow` work.
+- [x] Detect current documentation writes in nominal-oldest `IntoTheMeadow` and recent `AetherVale` work.
 - [x] Select only `PrehistoricRush` as the oldest stable fallback.
-- [x] Trace simulation, height, streaming, physics, collision and render order.
+- [x] Trace RAF delta, engine tick, stream pump, activation, Worker completion, physics and render order.
 - [x] Identify the interaction loop, domains, complete kit inventory and services.
-- [x] Define required-corridor, readiness, policy, commit and observation contracts.
+- [x] Define time-budget, suspension, backlog, cadence-result and parity-fixture contracts.
 - [x] Add required root `.agent` outputs.
 - [ ] Implement and validate the authority.
 
@@ -29,7 +29,8 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 new or central-ledger-missing repositories: 0
 root-.agent-missing repositories: 0
-IntoTheMeadow: active same-window WebGL recovery documentation
+IntoTheMeadow: same-window fatal-runtime recovery documentation
+AetherVale: recent safe-entry progression documentation
 selected stable repository: PrehistoricRush
 excluded repository: TheCavalryOfRome
 ```
@@ -50,66 +51,53 @@ module boot
   -> install listeners, host and RAF
 
 RAF
-  -> sample/clamp wall-clock delta
+  -> sample wall-clock delta
+  -> clamp dt to 0.05 seconds
   -> project browser booleans into game input
   -> engine.tick(dt)
-     -> update yaw, speed, jump and surface multiplier
-     -> move x/z and increase distance
-     -> sample y from active patch or fallbackHeight
-     -> evaluate win
-  -> updateStreaming(already-moved state)
-     -> set focus from new position
-     -> update desired/retain/prefetch membership
+  -> updateStreaming(state)
+     -> update focus and desired membership
      -> release delivered patch IDs
-     -> optionally generate center synchronously
-     -> pump Worker or fallback generation
-     -> activate at most one ready patch
-  -> set actor transform and step Rapier
-  -> inspect Rapier contacts and descriptor fallback overlap
-  -> collect projected pickup
-  -> update creature pose, camera, lights and animation uniforms
-  -> render Three scene
-  -> update HUD and action button
+     -> start up to 2 Worker requests or 1 fallback request
+     -> activate at most 1 ready patch
+  -> set actor transform and step Rapier with dt
+  -> inspect collision and pickups
+  -> update camera and animation
+  -> render Three scene and HUD
   -> request next RAF
 ```
 
-## Concrete readiness gap
+## Concrete cadence defect
 
 ```txt
-actor moves into patch P
-  -> P is not in activePatches
-  -> sampleHeight uses fallbackHeight
-  -> P terrain is not visible
-  -> P fixed colliders are absent from Rapier
-  -> P pickups are absent from view.pickups
-  -> P grass/trees are absent from render batches
-
-later Worker result for P
-  -> P activates
-  -> generated terrain replaces fallback height authority
-  -> colliders and pickups become live
-  -> visible terrain and camera target can change
+refresh rate   activation budget/second   Worker-start budget/second   fallback-start budget/second
+30 Hz          30                         60                           30
+60 Hz          60                         120                          60
+120 Hz         120                        240                          120
 ```
 
-No typed result marks this as an admitted degraded mode, deferred movement or failed readiness transition.
+These are maximum admission rates before Worker latency and queue availability are considered. Player movement remains expressed in meters per second. The stream-work-to-distance ratio is therefore refresh-rate dependent.
+
+At less than 20 Hz, `dt` remains capped at `0.05`. Simulation advances at less than real time, but generation and activation continue once per rendered frame. On a hidden or heavily throttled tab, asynchronous Worker results can accumulate in controller state while activation remains limited to one patch on each later RAF.
 
 ## Missing identities and results
 
 ```txt
-requiredCorridorId
-requiredCorridorFingerprint
-patchReadinessRevision
-heightSourceRevision
-collisionSourceRevision
-pickupConsumerRevision
-renderConsumerRevision
-WorldReadinessPlan
-WorldReadinessResult
-MovementAdmissionResult
-readiness-frontier distance
-movement cap/defer policy
-world-readiness journal
-world/frame parity acknowledgement
+runtimeClockRevision
+visibilityRevision
+cadenceRevision
+frameSampleId
+simulationStepResult
+streamWorkBudget
+streamWorkSpent
+activationTimeBudget
+backlogOldestAge
+suspensionResult
+resumePlan
+cadenceAdmissionResult
+streamCadenceCommitResult
+firstVisibleCadenceFrameReceipt
+cadence journal
 ```
 
 ## Domains in use
@@ -119,19 +107,19 @@ route/page/profile authority
 module graph identity and pinned CDN loading
 Nexus Engine kit composition
 run simulation and scene transitions
+runtime clock, RAF and browser visibility
 route, surface and terrain height
 procedural creature body and animation
 seeded patch generation and Worker execution
-patch scheduling, cache and membership
+patch scheduling, cache, membership and frame-count budgets
 terrain, tree, grass, pickup, collider and height projection
-Rapier actor, fixed-collider and contact runtime
+Rapier actor, fixed-collider and variable-step contact runtime
 collision and terminal-outcome admission
 camera reset and smooth follow
 Three scene/resources/rendering
 HUD, buttons and public diagnostics
-world-readiness and movement admission: missing
-committed-frame and host authority: missing
-run/stream/collider/frame epoch authority: missing
+stream cadence and time-budget authority: missing
+world-readiness, committed-frame and reset-epoch authority: missing
 runtime lifecycle and disposal: missing
 fixtures and Pages deployment
 ```
@@ -143,37 +131,26 @@ fixtures and Pages deployment
 ```txt
 core-input-kit
   actions, bindings and input state
-
 core-spatial-kit
   transforms and spatial query contract
-
 core-scene-kit
   scene registry, transitions and host descriptor
-
 core-physics-kit
   physics-provider capability
-
 core-motion-kit
   motion capability
-
 core-camera-kit
   camera capability
-
 core-animation-kit
   animation capability
-
 core-graphics-kit
   graphics and frame capability
-
 core-skybox-kit
   sky descriptor
-
 core-ui-kit
   UI capability and projection
-
 core-diagnostics-kit
   diagnostics and readback
-
 core-composition-kit
   composition metadata and capability graph
 ```
@@ -183,18 +160,14 @@ core-composition-kit
 ```txt
 seed-kit
   deterministic seed and random streams
-
 procedural-creature-body-kit
   recipe normalization, geometry, topology, skeleton, skinning,
   collision recommendation, content hash, poses and snapshots
-
 instanced-render-batch-kit
   cell replace/release, flush, overflow, bounds, statistics and snapshots
-
 seeded-world-patch-controller-kit
   patch identity, focus, desired membership, cache, queue, executor,
-  ready/release delivery, budgets, eviction and snapshots
-
+  ready/release delivery, per-call budgets, eviction, reset and snapshots
 camera-smooth-follow-kit
   position/look/quaternion damping, reset, teleport handling and snapshots
 ```
@@ -205,32 +178,23 @@ camera-smooth-follow-kit
 prehistoric-rush-domain-kit
   run lifecycle, input, route, surface, score, outcomes, events,
   scene transitions, player creature and snapshot
-
 player-character-schema-kit
   defaults, normalization, clamps, color validation and merge
-
 player-character-profile-store-kit
   load, save, patch, reset, subscription, storage sync,
   BroadcastChannel sync and close
-
 menu-page-kit
   menu shell, profile projection and route links
-
 character-creator-page-kit
   draft editing, controls, preview, debounce save, reset and remote projection
-
 game-page-entry-kit
   3D runtime loading
-
 drunk-route-generator
   samples, nearest query, progress, region classification and snapshot
-
 player-raptor-preset-kit
   creature recipe and capsule collision descriptor
-
 prehistoric-patch-generator
   terrain, trees, grass, pickups, colliders, bounds and transferables
-
 prehistoric-patch-worker
   initialization, generation, error protocol and transferable delivery
 ```
@@ -240,27 +204,20 @@ prehistoric-patch-worker
 ```txt
 rapier-physics-domain-kit
   Rapier world bridge, kinematic actor, fixed colliders, transforms,
-  step, contacts, snapshot and reset
-
+  variable timestep, contacts, snapshot and reset
 Three runtime module
   scene graph, geometry, materials, instancing, skinning, camera,
   lighting, fog, shadows and rendering
-
 Rapier runtime module
   rigid bodies, colliders, queries and world stepping
-
 message Worker executor adapter
   request correlation and asynchronous generation
-
 active-content consumer adapter
   patch render membership, pickup/collider projection and height sampling
-
 collision fallback adapter
   descriptor XZ overlap and jump-height gate
-
 run failure adapter
   contact/overlap to terminal game failure
-
 creature/camera/render host adapters
   creature binding, pose, camera, light, shadows, HUD and host readback
 ```
@@ -268,50 +225,53 @@ creature/camera/render host adapters
 ## Required authority domain
 
 ```txt
-prehistoric-rush-world-readiness-movement-authority-domain
-  -> required-travel-corridor-kit
-  -> patch-readiness-revision-kit
-  -> height-source-readiness-kit
-  -> collision-source-readiness-kit
-  -> render-source-readiness-kit
-  -> pickup-source-readiness-kit
-  -> world-readiness-plan-kit
-  -> world-readiness-result-kit
-  -> movement-admission-kit
-  -> movement-defer-policy-kit
-  -> movement-speed-cap-policy-kit
-  -> world-readiness-commit-kit
-  -> world-readiness-journal-kit
-  -> world-readiness-observation-kit
-  -> stream-latency-fixture-kit
-  -> world-readiness-frame-parity-fixture-kit
+prehistoric-rush-stream-cadence-time-budget-authority-domain
+  -> runtime-clock-state-kit
+  -> frame-sample-kit
+  -> browser-visibility-state-kit
+  -> cadence-revision-kit
+  -> simulation-step-policy-kit
+  -> stream-work-time-budget-kit
+  -> generation-start-budget-kit
+  -> activation-time-budget-kit
+  -> stream-backlog-age-kit
+  -> stream-starvation-policy-kit
+  -> suspension-admission-kit
+  -> resume-catchup-plan-kit
+  -> cadence-admission-result-kit
+  -> stream-cadence-commit-kit
+  -> cadence-observation-kit
+  -> cadence-journal-kit
+  -> cadence-parity-fixture-kit
+  -> throttled-frame-fixture-kit
+  -> hidden-tab-resume-fixture-kit
 ```
 
 ## Required transaction
 
 ```txt
-frame/input identity
-  -> predict bounded movement corridor
-  -> resolve required patch IDs
-  -> request/prepare missing patches through existing controller authority
-  -> collect height, terrain, collider, pickup and render receipts
-  -> classify readiness
-  -> admit full movement, cap speed, defer movement or fail
-  -> apply simulation against accepted world revision
-  -> step physics against matching collider revision
-  -> render matching terrain/object revision
-  -> commit frame carrying readiness evidence
+wall-clock and visibility observation
+  -> normalize frame sample
+  -> classify active, throttled, hidden or resumed state
+  -> derive bounded simulation-step policy
+  -> derive elapsed-time stream-work budget
+  -> admit generation starts by remaining budget and backlog age
+  -> admit ready activation by remaining budget and fairness policy
+  -> advance simulation and physics against the admitted clock revision
+  -> render world carrying cadence and world revisions
+  -> publish first-visible-frame cadence receipt
 ```
 
 ## Acceptance conditions
 
 ```txt
-movement never silently consumes fallback height
-required corridor terrain and collision are committed before entry
-pickup availability matches admitted patch revision
-late Worker delivery cannot retroactively redefine a committed frame
-stream lag creates deterministic cap/defer behavior
-Rapier, fallback collision, terrain, camera, HUD and host cite one world revision
+30, 60 and 120 Hz fixtures produce equivalent route progress and patch readiness over equal wall time
+stream starts and activation are bounded by elapsed time, not raw RAF count
+low-refresh clients receive a declared degradation policy instead of silent throughput loss
+hidden tabs do not accumulate unbounded stale work
+resume uses a bounded catch-up plan and rejects obsolete results
+simulation, Rapier, camera and render cite the same clock/cadence revision
+HUD and host expose actual backlog age, budget spent and cadence state
 ```
 
 ## Priority placement
@@ -320,7 +280,8 @@ Rapier, fallback collision, terrain, camera, HUD and host cite one world revisio
 P0   route artifact and profile handoff
 P1   patch activation/release transaction
 P1a  exact collider retirement and collision admission
-P1b  world readiness and movement admission
+P1b  stream cadence and time-budget authority
+P1c  world readiness and movement admission
 P2   committed-frame observation and host read model
 P3   run/stream/collider/worker/frame epoch reset authority
 P4   startup rollback, resource ownership and disposal
