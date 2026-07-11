@@ -1,10 +1,10 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T02-48-17-04-00`
+**Updated:** `2026-07-11T05-02-00-04-00`
 
 ## Scope
 
-Documentation-only audit of the current start/retry path, run resource reset, seeded patch controller retention, Worker delivery, Three dynamic content, Rapier state, frame ownership and Pages validation boundary.
+Documentation-only audit of seeded patch ready/release delivery, patch-content admission, terrain and instance consumers, gameplay and Rapier colliders, height sampling, controller/consumer parity and the required deployment fixture boundary.
 
 ## Verified by source inspection
 
@@ -22,48 +22,61 @@ root package.json: absent
 Pages workflow deploys static root on main push
 ```
 
-## Start/reset facts verified
+## Controller semantics verified
 
 ```txt
-game.start increments runId: yes
-game.start replaces RunState: yes
-game.start replaces InputState: yes
-game.start resets collectedShardIds: yes
-game.start resets patch controller: no
-game.start resets Worker executor/pending work: no
-game.start resets adapter activePatches: no
-game.start forces dynamic-content rebuild: no
-game.start resets Rapier actor/contact state: no explicit service
-game.start resets camera/render time: no
-typed start/reset result: absent
-runSessionId: absent
-streamEpoch: absent
+takeReadyPatches removes ready queue entry: yes
+takeReadyPatches adds patch ID to active set before return: yes
+takeReadyPatches sets record status active before host work: yes
+ready delivery has claim/acknowledgement API: no
+takeReleasedPatchIds clears released set before host work: yes
+release delivery has claim/acknowledgement API: no
+controller snapshot exposes active IDs: yes
+controller snapshot exposes consumer-active IDs: no
 ```
 
-## Dynamic-content facts verified
+## Host consumer order verified
 
 ```txt
-rebuildActiveContent called on patch activation: yes
-rebuildActiveContent called on patch release when changed: yes
-rebuildActiveContent called on successful shard collection: yes
-rebuildActiveContent called unconditionally on start/retry: no
-new run may keep same desired active set: yes
-old collected shard can remain visually absent without rebuild: possible by current control flow
-fixed colliders replaced during rebuild: yes
-height sampler closes over activePatches: yes
+activePatches mutates first: yes
+terrain slot and buffer writes: yes
+terrain bounds recomputed: yes
+tree cells replaced and all tree batches flushed: yes
+grass layers rebuilt: yes
+shard instances rebuilt: yes
+gameplay colliders replaced: yes
+Rapier fixed colliders replaced: yes
+height sampler reads activePatches: yes
+typed activation result: absent
+typed release result: absent
+shared consumer revision: absent
+rollback: absent
 ```
 
-## Worker/controller facts verified
+## Capacity facts verified
 
 ```txt
-controller supports reset: yes
-controller reset cancels actual Worker promises: no
-message executor supports dispose: yes
-host retains executor separately: no
-host terminates Worker: no
-request/result session epoch: absent
-explicit total inflight ceiling: absent
-controller-active/consumer-active acknowledgement: absent
+terrain slots: active-radius-derived fixed pool
+terrain fallback when no free slot: slot zero
+tree batch capacity: 256 per trunk/crown batch
+tree overflow result: warning after flush
+grass capacities: 3600 / 2600 / 1300
+shard capacity: 240
+grass rejected IDs returned: no
+shard rejected IDs returned: no
+capacity preflight before mutation: no
+```
+
+## Gameplay readiness facts verified
+
+```txt
+controller-active implies render-ready by typed proof: no
+controller-active implies physics-ready by typed proof: no
+controller-active implies gameplay-ready by typed proof: no
+forward safety-ring readiness policy: absent
+collision outcomes carry patch activation revision: no
+pickup outcomes carry patch activation revision: no
+height/render/physics parity observation: absent
 ```
 
 ## Documentation output
@@ -76,7 +89,7 @@ architecture audit: yes
 render audit: yes
 gameplay audit: yes
 interaction audit: yes
-run-session audit: yes
+world-streaming audit: yes
 deploy audit: yes
 central ledger sync required: yes
 central internal change-log required: yes
@@ -93,10 +106,11 @@ physics changed: no
 deployment workflow changed: no
 branch created: no
 pull request created: no
-retry reset fixture: absent / not run
-stream epoch fixture: absent / not run
-dynamic-content parity fixture: absent / not run
-lifecycle fixture: absent / not run
+patch-content admission fixture: absent / not run
+patch activation commit fixture: absent / not run
+patch release commit fixture: absent / not run
+rollback fixture: absent / not run
+controller/consumer parity fixture: absent / not run
 browser smoke: not run
 Pages smoke: not run
 target branch: main
@@ -105,24 +119,25 @@ target branch: main
 ## Required future proof
 
 ```txt
-- a new run gets a unique runSessionId
-- one start/reset transaction returns per-owner retained/reset/rebuilt decisions
-- deterministic patch cache retention is explicit and fingerprinted
-- dynamic pickups, colliders and height state reconcile immediately
-- stale Worker/controller deliveries are rejected or quarantined
-- actor/contact, input, camera and frame state reset before commit
-- first post-reset frame carries run session, stream epoch and consumer revisions
-- repeated retry creates no duplicate RAF, listeners, Workers or resources
-- stop/dispose/restart is terminal, ordered and idempotent
-- public host readback is bounded, JSON-safe and contains no live owners
+- malformed patch content rejects before consumer mutation
+- capacity decisions are deterministic and return rejected IDs
+- activation prepares all required consumers before commit
+- failed commit rolls back or enters a visible terminal fault
+- controller active acknowledgement follows consumer commit
+- controller release acknowledgement follows consumer retirement
+- duplicate claims do not repeat side effects
+- stale claims cannot commit after an epoch change
+- controller-active and consumer-active sets and digests match
+- every committed patch receives render and physics acknowledgement
+- public host readback is bounded, detached and JSON-safe
 ```
 
 ## Required fixture commands after implementation
 
 ```bash
-node scripts/prehistoric-rush-patch-activation-fixture.mjs
-node scripts/prehistoric-rush-retry-reset-fixture.mjs
-node scripts/prehistoric-rush-stream-epoch-fixture.mjs
-node scripts/prehistoric-rush-dynamic-content-reconciliation-fixture.mjs
-node scripts/prehistoric-rush-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-patch-content-admission-fixture.mjs
+node scripts/prehistoric-rush-patch-activation-commit-fixture.mjs
+node scripts/prehistoric-rush-patch-release-commit-fixture.mjs
+node scripts/prehistoric-rush-patch-parity-fixture.mjs
+node scripts/prehistoric-rush-patch-failure-rollback-fixture.mjs
 ```
