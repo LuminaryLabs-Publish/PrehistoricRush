@@ -1,76 +1,82 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T23-08-11-04-00`
+**Updated:** `2026-07-11T00-39-25-04-00`
 
 ## Scope
 
-Documentation-only audit of the post-refactor Nexus Engine kit graph, host-adapter ownership, dependency source contract and remaining population-capacity defects.
+Documentation-only audit of the newly landed official procedural creature migration, pinned runtime module graph, product raptor preset, renderer binding, pose consumption, Rapier collision binding and remaining architecture gaps.
 
 ## Verified by source inspection
 
 ```txt
 active route: index.html -> src/runtime.mjs -> src/game.js
-parent game domain: prehistoric-rush-domain-kit 0.2.0
-nested specialized kits: 2
+NexusEngine commit: e8252e51878a08eeef46f54b1aae9e8349a2442b
+NexusEngine-Kits commit: b107be495e272b67316a8f9e17b85ffd7bbeff64
+NexusEngine-ProtoKits commit: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
+Three.js version: 0.179.1
+Rapier version: 0.15.0
+browser import map for bare nexusengine: present
+parent game domain: prehistoric-rush-domain-kit 0.3.0
 Nexus Engine core kits declared: 12
-external runtime modules: NexusEngine@main, Three.js 0.179.1, Rapier 0.15.0, Rapier ProtoKit@main
-removed superseded repo-local domains: route, surface, forest, grass patch, grass wind
-retained procedural dino implementation: yes
-browser host adapter remains broad: yes
+official NexusEngine-Kits installed: seed-kit, procedural-creature-body-kit
+nested local kit: drunk-route-generator
+local duplicate procedural dinosaur generator: removed
+product-owned player raptor preset: present
 ```
 
-## Composition facts verified
+## Creature ownership verified
 
 ```txt
-core-scene direct runtime use: yes
-core-input direct runtime use: no visible use
-core-spatial direct runtime use: no visible use
-core-physics direct runtime use: no visible use
-core-motion direct runtime use: no visible use
-core-camera direct runtime use: no visible use
-core-animation direct runtime use: no visible use
-core-graphics direct runtime use: no visible use
-core-skybox direct runtime use: no visible use
-core-ui direct runtime use: no visible use
-core-diagnostics direct runtime use: no visible use
-core-composition readback: engine.gameComposer reference only
-per-kit consumption ledger: absent
+product preset owns configuration: yes
+official kit owns descriptor generation: yes
+official kit is renderer agnostic: yes
+official kit services: recipe, topology, skeleton, skinning, attachments, collision, pose
+deterministic descriptor content hash: present
+snapshot/load hash verification: present
+game domain requires n:procedural-creatures:body: yes
+game domain exposes body and pose queries: yes
+Three adapter consumes body descriptor: yes
+Rapier adapter consumes collision descriptor: yes
+```
+
+## Three adapter facts verified
+
+```txt
+geometry indices consumed: yes
+position/normal/color attributes consumed: yes
+skinIndex/skinWeight attributes consumed: yes
+Bone hierarchy constructed: yes
+Skeleton and SkinnedMesh constructed: yes
+material created from descriptor: yes
+pose transforms applied by bone ID: yes
+unknown pose bone handling: silently ignored
+explicit descriptor preflight: absent
+typed render binding result: absent
+pose consumption result: absent
+creature resource dispose: absent
+```
+
+## Collision facts verified
+
+```txt
+actor id: dino
+shape/radius/halfHeight source: player body collision descriptor
+centerY used in actor transform projection: yes
+binding result with creature/hash parity: absent
+physics step correlated to frame ID: absent
+manual and Rapier collision-source classification: absent
+```
+
+## Composition and population facts retained
+
+```txt
+core-scene directly consumed: yes
+per-core-kit consumption ledger: absent
 composition fingerprint: absent
-```
-
-## Host ownership verified
-
-```txt
-browser input listeners: src/game.js
-local input authority: src/game.js input object
-run input forwarding: game.setInput()
-Rapier initialization and world shim: src/game.js rapierAdapter()
-terrain mesh and height sampling: src/game.js createAdapter()
-tree/grass/shard population: src/game.js createAdapter().populate()
-physics contact and pickup forwarding: src/game.js frame loop
-camera/light/dino pose/render: src/game.js adapter.render()
-HUD projection: src/game.js frame loop
-RAF scheduling: src/game.js frame loop
-public host installation: src/game.js
-```
-
-## Population facts verified after refactor
-
-```txt
-window dimensions: 7 x 7
-window chunks: 49
-trees per chunk: 7
-maximum tree candidates: 343
-tree archetype pools: 5
-allocated entries per trunk/crown pool: 160
-grass candidates maximum: 3430
-grass allocations: 3600 / 2600 / 1300
-shard candidates maximum: 98
-shard allocation: 240
-immutable capacity fields: absent
-next-pass tree ceiling source: previous trunk.count
-next-pass grass ceiling source: previous grass mesh.count
-next-pass shard ceiling source: previous shards.count
+population window: 7 x 7 / 49 chunks
+tree active count reused as capacity: yes
+grass active count reused as capacity: yes
+shard active count reused as capacity: yes
 atomic population plan/commit: absent
 ```
 
@@ -84,10 +90,10 @@ architecture audit: yes
 render audit: yes
 gameplay audit: yes
 interaction audit: yes
-composition-authority audit: yes
+creature-system audit: yes
 deploy audit: yes
 central ledger sync required: yes
-central change-log entry required: yes
+central internal change-log required: yes
 ```
 
 ## Runtime validation not performed
@@ -103,11 +109,12 @@ deployment workflow changed: no
 branch created: no
 pull request created: no
 root package.json found: no
-kit-graph fixture: absent / not run
-core-consumption fixture: absent / not run
-source-admission fixture: absent / not run
-adapter-contract fixture: absent / not run
-population-capacity fixture: absent / not run
+module-graph fixture: absent / not run
+creature descriptor fixture: absent / not run
+render binding fixture: absent / not run
+pose fixture: absent / not run
+collision parity fixture: absent / not run
+creature lifecycle fixture: absent / not run
 browser smoke: not run
 Pages smoke: not run
 target branch: main
@@ -116,23 +123,27 @@ target branch: main
 ## Required future proof
 
 ```txt
-- every declared core kit has a stable consumption classification
-- required core services fail startup when unavailable
-- replaced core services name their authoritative adapter owner
-- resolved NexusEngine and ProtoKit revisions are immutable and observable
-- game, physics, render and UI adapters return typed results
+- import map and runtime CDN constants derive from one immutable module graph
+- requested and resolved sources produce a stable graph fingerprint
+- the product preset produces one deterministic recipe and descriptor hash
+- geometry, skeleton, skinning, attachments and collision validate before allocation
+- Three preparation/commit/update/dispose return typed results
+- pose consumption records matched and missing bones with run/frame correlation
+- Rapier collision binding retains the same creature ID and content hash
+- render and physics collision dimensions reconcile exactly
+- prepare failures leak no retained resources
+- dispose is idempotent and post-dispose updates reject
 - public host readback is JSON-safe and excludes live mutable owners
-- InstancedMesh allocation capacity never derives from active draw count
-- repeated population of identical windows produces identical plans and fingerprints
-- stop/dispose/remount leaves no duplicate RAF, listeners, GPU or physics owners
+- prior core-kit consumption and population-capacity fixtures also pass
 ```
 
 ## Required fixture commands after implementation
 
 ```bash
-node scripts/prehistoric-rush-kit-graph-fixture.mjs
-node scripts/prehistoric-rush-core-consumption-fixture.mjs
-node scripts/prehistoric-rush-source-admission-fixture.mjs
-node scripts/prehistoric-rush-adapter-contract-fixture.mjs
-node scripts/prehistoric-rush-population-capacity-fixture.mjs
+node scripts/prehistoric-rush-module-graph-fixture.mjs
+node scripts/prehistoric-rush-creature-descriptor-fixture.mjs
+node scripts/prehistoric-rush-creature-render-binding-fixture.mjs
+node scripts/prehistoric-rush-creature-pose-fixture.mjs
+node scripts/prehistoric-rush-creature-collision-fixture.mjs
+node scripts/prehistoric-rush-creature-lifecycle-fixture.mjs
 ```
