@@ -1,18 +1,19 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T15-59-12-04-00`
+**Updated:** `2026-07-11T17-39-47-04-00`
 
 ## Summary
 
-Complete route/profile authority first, then transactional patch and collider ownership, then committed-frame observation. Build the run/reset epoch transaction on those typed results so retry can transfer one coherent world rather than resetting only `RunState`.
+Complete route/profile, patch activation and collider authority first. Then add world-readiness and movement admission so gameplay cannot outrun the patch consumers required by its next movement step. Committed-frame, reset-epoch and lifecycle work should consume that result rather than invent parallel world identities.
 
 ## Plan ledger
 
-**Goal:** produce a route-safe, profile-bound, patch-consistent, collision-provable, frame-coherent and atomically restartable game without adding parallel owners.
+**Goal:** produce a route-safe, patch-consistent, collision-provable, stream-ready, frame-coherent and atomically restartable game.
 
 - [ ] Complete P0 route/page/profile authority.
 - [ ] Complete P1 patch activation and release transactions.
 - [ ] Complete P1a exact collider retirement and collision admission.
+- [ ] Implement P1b world readiness and movement admission.
 - [ ] Complete P2 committed-frame observation and detached host readback.
 - [ ] Implement P3 run/stream/collider/Worker/frame epoch reset authority.
 - [ ] Complete P4 startup rollback, resource ownership and disposal.
@@ -24,118 +25,112 @@ Complete route/profile authority first, then transactional patch and collider ow
 1. Route Manifest + Profile Handoff Authority
 2. Patch Activation / Release Commit Authority
 3. Exact Collider Replacement + Collision Admission
-4. Committed Frame Observation + Host Read Model
-5. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
-6. Runtime Lifecycle + Ordered Disposal
+4. World Readiness + Movement Admission Authority
+5. Committed Frame Observation + Host Read Model
+6. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
+7. Runtime Lifecycle + Ordered Disposal
 ```
 
-## P3 implementation sequence
+## P1b implementation sequence
 
-### 1. Introduce authority identities
-
-```txt
-runtimeSessionId
-runSessionId
-runEpoch
-streamEpoch
-colliderEpoch
-workerGeneration
-frameEpoch
-```
-
-Do not infer these identities from route names, numeric `runId`, patch IDs or RAF counters.
-
-### 2. Replace direct `start()` with a command
+### 1. Define the required corridor
 
 ```txt
-ResetRunCommand {
-  commandId
-  expectedRuntimeSessionId
-  expectedPredecessorRunSessionId
-  reason: start | retry | run-again
+RequiredCorridor {
+  runSessionId
+  streamEpoch
+  origin
+  predictedEnd
+  routeIndexRange
+  patchIds
+  safetyHorizonSeconds
+  fingerprint
 }
 ```
 
-Return a typed accepted, rejected, duplicate or failed result.
+Keep this smaller and stricter than desired, retained or prefetched membership.
 
-### 3. Build a non-mutating plan
+### 2. Add readiness receipts
 
-The plan must state:
-
-```txt
-new identities
-cache preservation policy
-active patch reprojection policy
-Worker quarantine policy
-collider replacement policy
-actor reset
-game and browser input reset
-pickup reprojection
-camera reset
-frame/read-model reset
-rollback steps
-```
-
-### 4. Quarantine old asynchronous work
-
-- [ ] Reject Worker responses whose generation or stream epoch is stale.
-- [ ] Reject ready/release claims from the predecessor stream.
-- [ ] Reject contacts from a predecessor collider epoch.
-- [ ] Reject frame receipts from a predecessor frame epoch.
-- [ ] Revoke old host mutation capabilities.
-
-### 5. Rebuild run-scoped projections
-
-Even when active patch IDs remain unchanged:
-
-- [ ] Recompute `view.pickups` from the new collected-shard ledger.
-- [ ] Recompute shard instance buffers.
-- [ ] Recompute collider descriptors and exact Rapier membership.
-- [ ] Rebind height, terrain and tree membership to the new stream epoch.
-- [ ] Clear external keyboard booleans.
-- [ ] Reset actor and camera.
-- [ ] Clear terminal collision and frame observations.
-
-### 6. Commit atomically
+Each required patch must report:
 
 ```txt
-prepare every consumer
-  -> validate every receipt
-  -> commit one authority transfer
-  -> publish one ResetRunResult
-  -> resume frame admission
-  -> commit first visible new-run frame
+patch content identity
+controller membership revision
+terrain consumer revision
+height source revision
+collider descriptor revision
+Rapier membership revision
+pickup consumer revision
+render consumer revision
 ```
 
-If any required consumer fails, preserve the prior terminal run and dispose staged work.
+### 3. Classify readiness
+
+```txt
+READY
+DEGRADED_DECLARED
+SPEED_CAPPED
+DEFERRED
+FAILED
+```
+
+Silent fallback-height consumption is not an accepted state.
+
+### 4. Move admission before simulation mutation
+
+```txt
+input snapshot
+  -> corridor prediction
+  -> readiness evaluation
+  -> movement policy
+  -> engine simulation application
+  -> physics step
+  -> render and HUD
+  -> committed frame record
+```
+
+### 5. Preserve deterministic runner feel
+
+- [ ] Use a bounded look-ahead horizon.
+- [ ] Cap speed before the readiness frontier rather than freezing too late.
+- [ ] Keep steering/jump input responsive while forward motion is deferred by policy.
+- [ ] Surface detached readiness state in HUD diagnostics.
+- [ ] Resume full speed only after consumer commit acknowledgement.
+
+### 6. Reject stale and partial evidence
+
+- [ ] Reject Worker results from another stream epoch.
+- [ ] Reject partial patch activation as movement-ready.
+- [ ] Reject collider or render receipts for another patch revision.
+- [ ] Reject frame commit when world readiness changed during submission.
 
 ## Required fixtures
 
 ```bash
-node scripts/prehistoric-rush-retry-pickup-reset-fixture.mjs
-node scripts/prehistoric-rush-stale-worker-epoch-fixture.mjs
-node scripts/prehistoric-rush-stale-contact-epoch-fixture.mjs
-node scripts/prehistoric-rush-input-reset-fixture.mjs
-node scripts/prehistoric-rush-reset-rollback-fixture.mjs
-node scripts/prehistoric-rush-reset-idempotency-fixture.mjs
-node scripts/prehistoric-rush-first-frame-run-epoch-fixture.mjs
-node scripts/prehistoric-rush-browser-retry-parity-smoke.mjs
-node scripts/prehistoric-rush-pages-retry-parity-smoke.mjs
+node scripts/prehistoric-rush-required-corridor-fixture.mjs
+node scripts/prehistoric-rush-delayed-patch-movement-fixture.mjs
+node scripts/prehistoric-rush-reordered-patch-delivery-fixture.mjs
+node scripts/prehistoric-rush-partial-consumer-readiness-fixture.mjs
+node scripts/prehistoric-rush-fallback-height-policy-fixture.mjs
+node scripts/prehistoric-rush-readiness-speed-cap-fixture.mjs
+node scripts/prehistoric-rush-readiness-rollback-fixture.mjs
+node scripts/prehistoric-rush-world-frame-parity-fixture.mjs
+node scripts/prehistoric-rush-browser-stream-latency-smoke.mjs
+node scripts/prehistoric-rush-pages-stream-latency-smoke.mjs
 ```
 
 ## Acceptance conditions
 
 ```txt
-new run has a new runSessionId and epoch family
-same deterministic world cache may be reused without reusing mutable membership
-all pickups are reprojected from new run state
-all external and engine input starts neutral
-old Worker/contact/frame evidence is rejected
-Rapier and render membership cite the same new epochs
-canvas, HUD and host cite the first committed new-run frame
-failed reset does not partially replace the terminal run
+movement never enters an uncommitted required patch
+fallback height is either removed from movement authority or explicitly classified
+terrain, collision, pickups and rendering share the admitted patch revision
+stream lag results in deterministic cap/defer behavior
+no late patch can introduce an invisible-before-visible obstacle contradiction
+HUD and host report the same readiness revision as the visible frame
 ```
 
 ## Do not do next
 
-Do not solve retry by recreating a second engine loop beside the existing one. Do not treat camera `runId` reset as shared run authority. Do not clear immutable patch cache unless policy requires it; rebind mutable consumers instead.
+Do not add a second streamer, movement loop, height generator or collision system. Do not equate controller desired membership with readiness. Do not make all retained or prefetched patches blocking requirements; only the bounded required corridor gates movement.
