@@ -1,24 +1,26 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-11T05-39-11-04-00`
+**Updated:** `2026-07-11T07-08-45-04-00`
 
 ## Summary
 
-The runtime now installs `camera-smooth-follow-kit` `0.1.0` from pinned `NexusEngine-Kits@5d3613b140ca33395f180acde014c167addf0ccc`, creates one persistent player-camera controller, resets it on initial run/restart/run change, updates it every render frame and applies its position/quaternion to the Three.js camera. This closes the previous immediate rotation-snap defect, but target provenance, transform consumption, frame acknowledgement, public observation and lifecycle ownership remain implicit.
+The runtime now pins `NexusEngine-Kits@ae7ebda62f7c264bbde49c939a62e1a04fd60784`, which includes the corrected procedural creature tube triangle winding. The product directly binds the descriptor's indices and supplied normals into Three.js with a default FrontSide material, so this source change affects visible culling, lighting and shadows.
+
+The descriptor identity contract does not identify that change. `procedural-creature-body-kit` still reports version `0.1.0`, and `contentHash` hashes only normalized recipe plus topology counts. Geometry arrays, index order, normals, colors, skin data, skeleton transforms, attachments and collision payload are excluded.
 
 ## Plan ledger
 
-**Goal:** Fully catalogue the current game and isolate the missing camera consumption boundary without displacing the higher-priority patch activation transaction.
+**Goal:** catalogue the complete current game while isolating the missing creature geometry identity and render-consumption boundary without displacing the P0 patch activation transaction.
 
-- [x] Reconcile Publish inventory and central tracking.
-- [x] Inspect the current `src/game.js` camera path.
-- [x] Inspect `prehistoric-rush-domain-kit` `0.5.0`.
-- [x] Inspect pinned `camera-smooth-follow-kit` `0.1.0`.
+- [x] Reconcile the accessible Publish inventory and central tracking.
+- [x] Inspect the current product source pin.
+- [x] Inspect the upstream winding correction.
+- [x] Inspect creature descriptor generation, hashing and snapshots.
+- [x] Inspect Three and Rapier consumer paths.
 - [x] Identify interaction loop, domains, kits and services.
-- [x] Record deterministic target/update/application gaps.
-- [x] Record observation, lifecycle and fixture gaps.
-- [ ] Implement camera consumption proof after patch activation P0.
-- [ ] Execute Node, browser and Pages validation.
+- [x] Record geometry, orientation, binding, frame and lifecycle gaps.
+- [ ] Implement reusable geometry identity and fixtures after P0 patch activation work.
+- [ ] Execute Node, browser and Pages validation after implementation.
 
 ## Selection audit
 
@@ -40,14 +42,18 @@ index.html -> src/runtime.mjs -> src/game.js
   -> install 12 core kits
   -> install seed, creature, instance-batch, patch-controller and smooth-camera kits
   -> install prehistoric-rush-domain-kit 0.5.0
-  -> create patch generator, Worker executor, patch controller and camera controller
-  -> start run, prime streaming and reset camera
-  -> browser input + engine.tick update run state
+  -> create the player body descriptor from player-raptor-preset-kit
+  -> register its collision recommendation with Rapier
+  -> bind positions, normals, colors, indices, skin indices and skin weights into Three
+  -> create Bone/Skeleton/SkinnedMesh with FrontSide MeshStandardMaterial
+  -> start run, prime patch streaming and reset camera
+  -> browser input + engine.tick advance run state
   -> patch streaming updates active terrain/height consumers
-  -> setCameraTargets derives chase position and route-ahead look point
-  -> cameraFollow.reset on run change, otherwise cameraFollow.update
-  -> apply position/quaternion to Three PerspectiveCamera
-  -> render world, update HUD and expose snapshots
+  -> createPlayerPose derives per-frame bone transforms
+  -> applyCreaturePose mutates live bones and updates skeleton
+  -> smooth-follow controller updates the Three camera
+  -> renderer renders the skinned raptor and world
+  -> HUD and PrehistoricRushHost expose aggregate snapshots
   -> requestAnimationFrame repeats
 ```
 
@@ -58,7 +64,16 @@ runtime module graph and source admission
 Nexus Engine core input, spatial, scene, physics, motion, camera, animation,
 graphics, skybox, UI, diagnostics and composition
 seed and deterministic random streams
-procedural creature body, skeleton, skinning, collision and pose
+procedural creature recipe normalization and presets
+creature geometry positions, normals, colors and triangle indices
+creature topology, surface orientation and front-face convention
+creature skeleton, skin indices, skin weights and attachments
+creature collision recommendation and bounds
+creature descriptor identity, snapshots, load and reset
+creature pose descriptor generation
+Three BufferGeometry, material, bone, skeleton and SkinnedMesh binding
+pose-to-bone projection and skinned render consumption
+Rapier collision actor binding and contacts
 instanced render-batch capacity and cell ownership
 seeded patch identity, cache, scheduling, generation, delivery and release
 product patch generation and Worker execution
@@ -66,11 +81,10 @@ patch-content admission and multi-consumer activation authority
 terrain, vegetation, pickup, collider and height consumers
 run lifecycle, route, surface, movement, jump, score and outcomes
 camera target policy and route-ahead composition
-persistent camera SmoothDamp position and look-target state
-camera quaternion damping and reset semantics
-Three camera transform application and frame rendering
+persistent smooth-follow position, look and quaternion state
+Three camera transform application and rendering
 browser input, resize, blur, RAF, HUD and host observation
-run/stream/camera session lifecycle
+run, stream, camera and runtime lifecycle
 static Pages deployment and validation
 ```
 
@@ -80,7 +94,7 @@ static Pages deployment and validation
 
 ```txt
 core-input-kit         actions and bindings
-core-spatial-kit       transform/query capability
+core-spatial-kit       spatial transform/query capability
 core-scene-kit         scene registry and transitions
 core-physics-kit       physics provider contract
 core-motion-kit        motion capability
@@ -100,22 +114,21 @@ seed-kit
   deterministic seed and random streams
 
 procedural-creature-body-kit 0.1.0
-  body recipes, geometry, topology, skeleton, skinning, attachments,
-  collision, poses, content hashes and snapshots
+  recipe normalization, geometry, topology, skeleton, skinning, attachments,
+  collision recommendation, pose descriptors, record registry, hashes,
+  snapshots, load validation and reset
 
 instanced-render-batch-kit
   immutable capacity, cell replace/release, flush, bounds, overflow,
-  stats and snapshots
+  statistics and snapshots
 
 seeded-world-patch-controller-kit 0.1.0
   patch/cache identity, focus, active/retain/prefetch sets, generation queue,
-  executor handoff, ready/release delivery, budgets, eviction, stats,
-  snapshot/load and reset
+  executor handoff, ready/release delivery, budgets, eviction and snapshots
 
 camera-smooth-follow-kit 0.1.0
-  controller registry, position SmoothDamp, look-target SmoothDamp,
-  quaternion rotation damping, reset, teleport reset, delta-time clamp,
-  transform access, snapshot/load and service reset
+  controller registry, position/look SmoothDamp, quaternion damping, reset,
+  teleport reset, delta-time clamp, transform access and snapshot/load/reset
 ```
 
 ### Product and local kits
@@ -130,7 +143,7 @@ drunk-route-generator
   region classification and snapshot
 
 player-raptor-preset-kit
-  product creature configuration
+  product creature recipe and collision configuration
 
 prehistoric-patch-generator
   terrain arrays, tree descriptors, grass matrices, pickups,
@@ -154,6 +167,11 @@ shard-pickup-consumer-kit
 patch-collider-consumer-kit
 patch-height-sampler-kit
 three-procedural-creature-adapter-kit
+creature-descriptor-admission-kit
+creature-geometry-binding-kit
+creature-skeleton-binding-kit
+creature-pose-binding-kit
+creature-render-frame-correlation-kit
 prehistoric-camera-target-policy-kit
 three-camera-transform-consumer-kit
 camera-light-render-adapter-kit
@@ -162,77 +180,61 @@ browser-frame-loop-kit
 prehistoric-rush-host-readback-kit
 ```
 
-## Current camera configuration
-
-```txt
-controller id: prehistoric-rush-player-camera
-positionSmoothTime: 0.22
-lookSmoothTime: 0.14
-maximumPositionSpeed: 45
-maximumLookSpeed: 65
-rotationSharpness: 12
-maximumDeltaTime: 1/30
-teleportThreshold: 24
-chase distance: 6.6
-chase height: 2.35
-look-ahead samples: 12
-look height above terrain: 1.15
-```
-
 ## Source revisions
 
 ```txt
-NexusEngine: e8252e51878a08eeef46f54b1aae9e8349a2442b
-NexusEngine-Kits: 5d3613b140ca33395f180acde014c167addf0ccc
+NexusEngine:           e8252e51878a08eeef46f54b1aae9e8349a2442b
+NexusEngine-Kits:      ae7ebda62f7c264bbde49c939a62e1a04fd60784
 NexusEngine-ProtoKits: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
-Three.js: 0.179.1
-Rapier: 0.15.0
-parent domain: prehistoric-rush-domain-kit 0.5.0
-camera kit: camera-smooth-follow-kit 0.1.0
-renderer label: three-seeded-patch-streaming-smooth-camera-v6
+Three.js:              0.179.1
+Rapier:                 0.15.0
+parent domain:          prehistoric-rush-domain-kit 0.5.0
+creature kit:           procedural-creature-body-kit 0.1.0
+camera kit:             camera-smooth-follow-kit 0.1.0
+renderer:               three-seeded-patch-streaming-smooth-camera-v6
 ```
 
 ## Main findings
 
-### 1. Persistent smoothing is now correctly shared
+### 1. The product consumes corrected triangle winding
 
-The host no longer locally lerps only camera position and immediately calls `lookAt()`. The shared controller now persists position velocity, look velocity and quaternion state across frames.
+The upstream tube index order changed from `a,c,b / b,c,d` to `a,b,c / b,d,c`. The product pin now includes that correction.
 
-### 2. Target policy has no immutable descriptor
+### 2. The Three adapter makes winding render-visible
 
-`setCameraTargets()` mutates two shared arrays from run position/yaw, route index and `sampleHeight()`. It does not publish target ID, run ID, simulation frame, patch/height revision or content fingerprint.
+`createCreatureMesh()` binds the descriptor index and normal arrays directly and creates a default FrontSide `MeshStandardMaterial`. The corrected winding therefore changes exterior visibility, lighting and shadow casting.
 
-### 3. Transform application has no result
+### 3. Descriptor identity excludes geometry payload
 
-`applyCameraTransform()` writes position and quaternion into the live Three camera and returns nothing. There is no accepted/rejected result, applied controller revision or transform fingerprint.
+`contentHash` hashes `{ recipe, topology }`, where topology is summary counts only. Old and corrected index payloads can share the same hash.
 
-### 4. Render consumption is unacknowledged
+### 4. Snapshot/load cannot detect the winding change
 
-`renderer.render(scene, camera)` does not record which target/controller/application revision was consumed by the frame.
+Snapshots retain recipe, incomplete `contentHash` and topology counts. `loadSnapshot()` recreates and compares only that hash.
 
-### 5. Public control-plane references remain mutable
+### 5. Product binding and frame consumption are result-free
 
-`PrehistoricRushHost` exposes `adapter` and `cameraFollow`, allowing external callers to reset, update or load snapshots outside run/session admission.
+Three geometry creation, skeleton binding, pose application and render submission do not return typed product results or correlate the exact geometry hash and pose revision with a committed frame.
 
-### 6. Controller lifecycle is unowned
+### 6. Public and lifecycle ownership remain incomplete
 
-The service can remove controllers, but the product never calls `remove()`. RAF, listeners, renderer and Worker also remain without an ordered teardown owner.
+`PrehistoricRushHost` exposes mutable engine, adapter, patch controller and camera owners. Creature geometry/material/skeleton disposal and stale pose rejection are absent.
 
-### 7. Integration fixtures are absent
+### 7. Executable proof is absent
 
-No executable proof covers run restart reset, route-index discontinuity, patch-height changes, frame stalls, teleport threshold, quaternion normalization, deterministic convergence or render-frame correlation.
+There is no full descriptor hash fixture, winding/normal agreement fixture, Three binding fixture, skinned render frame fixture or deployed creature smoke.
 
 ## Priority order
 
 ```txt
 P0 patch-content admission and acknowledged multi-consumer activation/release
-P1 camera target descriptor and transform/frame consumption proof
-P2 run-session reset with stream and camera epochs
-P3 Worker inflight/stale-result authority
-P4 lifecycle ownership and committed-frame observation
-P5 creature, core-kit and typed-command proof
+P1 creature geometry identity, winding/normal proof and binding/frame correlation
+P2 camera target descriptor and transform/frame consumption proof
+P3 run-session reset with stream/camera/resource epochs
+P4 Worker stale-result quarantine and ordered lifecycle disposal
+P5 core-kit consumption and typed command proof
 ```
 
 ## Validation status
 
-Documentation only. Runtime behavior was not changed. Source inspection verified the current pinned graph and camera path. The repository has no root `package.json`; camera integration fixtures and browser/Pages smoke are absent and were not run.
+Documentation only. Runtime behavior was not changed by this audit. The repository has no root `package.json`; creature geometry identity and browser render fixtures are absent and were not run.
