@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T17-39-47-04-00`
+**Updated:** `2026-07-11T19-09-25-04-00`
 
 ## Summary
 
@@ -8,43 +8,48 @@ This was a documentation-only audit. Source was read through the GitHub connecto
 
 ## Plan ledger
 
-**Goal:** record exactly what was proven about world-readiness order and what remains unexecuted.
+**Goal:** record exactly what was proven about cadence-sensitive stream budgets and what remains unexecuted.
 
 - [x] Confirm selected repository and `main` branch.
 - [x] Confirm no branch or pull request was created.
 - [x] Read `src/game.js`.
 - [x] Read `src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js`.
-- [x] Read `src/workers/prehistoric-patch-worker.js`.
-- [x] Read menu entry and retained `.agent` audits.
-- [x] Trace simulation before streaming update.
-- [x] Confirm height fallback is used when active patch is absent.
-- [x] Confirm terrain, colliders, pickups and render consumers activate later.
+- [x] Read `src/world/prehistoric-patch-generator.js`.
+- [x] Read the pinned `seeded-world-patch-controller-kit` source.
+- [x] Read the pinned `rapier-physics-domain-kit` source.
+- [x] Read current `.agent` audits and registry.
+- [x] Trace RAF delta, stream pump, ready activation, physics and render order.
+- [x] Confirm generation and activation budgets are applied per RAF call.
 - [x] Identify interaction loop, domains, kits and services.
 - [ ] Execute runtime tests.
 - [ ] Execute browser or Pages smoke.
-- [ ] Implement world-readiness fixtures.
+- [ ] Implement cadence and suspension fixtures.
 
 ## Source-backed findings
 
 ```txt
-frame order:
-  engine.tick(dt) mutates movement and distance
-  state.y samples active patch or fallbackHeight
-  updateStreaming(state) runs afterward
-  physics and collision run after streaming
-  render and HUD run last
+RAF clock:
+  dt = min(0.05, wall-clock delta)
+  engine.tick(dt) runs once per RAF
+  updateStreaming runs once per RAF
 
-streaming:
-  center patch can be generated synchronously
-  surrounding desired patches are queued/pumped
-  activation budget is one patch per update
-  no required-corridor readiness result exists
+stream work:
+  Worker path starts at most 2 requests per RAF
+  fallback path starts at most 1 request per RAF
+  ready activation admits at most 1 patch per RAF
 
-consumers:
-  active patch owns authoritative terrain heights
-  active patch contributes fixed colliders
-  active patch contributes pickups
-  active patch contributes tree/grass render data
+30/60/120 Hz maximum rates:
+  ready activation: 30 / 60 / 120 patches per second
+  Worker starts: 60 / 120 / 240 requests per second
+  fallback starts: 30 / 60 / 120 requests per second
+
+missing proof:
+  no visibility-state admission
+  no elapsed-time stream budget
+  no cadence revision
+  no backlog-age observation
+  no bounded resume plan
+  no first-visible-frame cadence receipt
 ```
 
 ## Validation performed
@@ -54,21 +59,25 @@ GitHub organization inventory comparison
 central ledger timestamp comparison
 same-window activity check
 root .agent presence check
-source and retained audit inspection
+product source inspection
+pinned controller and physics source inspection
 interaction/domain/kit/service inventory
-world-readiness contract derivation
+cadence-rate derivation from source constants
+contract and fixture derivation
 documentation consistency review
 ```
 
 ## Validation not performed
 
 ```txt
-local clone: unavailable because execution container could not resolve github.com
+local clone
 npm install
 Node fixtures
 browser automation
+refresh-rate emulation
+visibility suspension
 Rapier runtime execution
-Worker delay/reorder execution
+Worker timing execution
 Three render smoke
 GitHub Pages smoke
 deployment workflow run
@@ -92,18 +101,18 @@ target branch: main
 ## Missing executable gates
 
 ```txt
-required corridor fixture
-delayed patch movement fixture
-reordered patch delivery fixture
-partial consumer readiness fixture
-fallback-height policy fixture
-movement speed-cap/defer fixture
-readiness rollback fixture
-world/frame parity fixture
-browser stream-latency smoke
-Pages stream-latency smoke
+30/60/120 cadence parity fixture
+stream time-budget fixture
+generation-start rate fixture
+activation-rate fixture
+throttled-frame fixture
+hidden-tab suspension/resume fixture
+backlog starvation fixture
+cadence/world-readiness parity fixture
+browser refresh-parity smoke
+Pages refresh-parity smoke
 ```
 
 ## Claim boundary
 
-This audit proves only the current source order and missing authority contracts. It does not claim that the runner currently prevents stream outrun, terrain snapping, invisible collision gaps or pickup-readiness divergence.
+This audit proves only the current source order, per-call budgets and resulting maximum rate differences. It does not claim measured runtime throughput, equal gameplay behavior across refresh rates, correct hidden-tab recovery or cadence-safe world readiness.
