@@ -1,148 +1,141 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T14-31-27-04-00`
+**Updated:** `2026-07-11T15-59-12-04-00`
 
 ## Summary
 
-Finish route/profile authority first. Then complete transactional patch activation/release and exact collider retirement. After those results are typed, add committed-frame observation so simulation, streaming, physics, gameplay, camera, canvas, HUD and diagnostics share one frame record. Preserve shared epoch and lifecycle work as downstream ownership gates.
+Complete route/profile authority first, then transactional patch and collider ownership, then committed-frame observation. Build the run/reset epoch transaction on those typed results so retry can transfer one coherent world rather than resetting only `RunState`.
 
 ## Plan ledger
 
-**Goal:** reach a route-safe, patch-consistent, collision-provable and frame-coherent product without creating parallel runtime owners.
+**Goal:** produce a route-safe, profile-bound, patch-consistent, collision-provable, frame-coherent and atomically restartable game without adding parallel owners.
 
-- [ ] Complete P0 route/profile handoff.
-- [ ] Complete patch activation and release acknowledgements.
-- [ ] Add exact Rapier collider replacement and typed collision admission.
-- [ ] Add committed-frame IDs and per-stage receipts.
-- [ ] Replace live host aggregation with a detached frame read model.
-- [ ] Establish shared runtime/run/stream/collider epochs.
-- [ ] Complete startup rollback, disposal and host revocation.
-- [ ] Add executable Node, browser and Pages fixtures.
+- [ ] Complete P0 route/page/profile authority.
+- [ ] Complete P1 patch activation and release transactions.
+- [ ] Complete P1a exact collider retirement and collision admission.
+- [ ] Complete P2 committed-frame observation and detached host readback.
+- [ ] Implement P3 run/stream/collider/Worker/frame epoch reset authority.
+- [ ] Complete P4 startup rollback, resource ownership and disposal.
+- [ ] Gate deployment on Node, browser and Pages fixtures.
 
-## Phase 0: route and profile authority
-
-- [ ] Add valid `game.html` and `charactercreator.html` hosts.
-- [ ] Add a versioned route/page manifest and deployed route checks.
-- [ ] Make one committed profile fingerprint the game creature source.
-- [ ] Bind profile identity to creature body, collision and frame evidence.
-- [ ] Add conflict-safe profile writes and complete creator commits.
-
-## Phase 1: patch activation and release
-
-- [ ] Prepare terrain, trees, grass, pickups, colliders and height changes off to the side.
-- [ ] Validate patch ownership and content hashes.
-- [ ] Commit all consumers under one patch membership revision.
-- [ ] Return typed activation and release results.
-- [ ] Wait for every consumer retirement acknowledgement before release completion.
-
-## Phase 1a: collider retirement and collision admission
-
-- [ ] Add authoritative fixed-collider replacement to the pinned Rapier ProtoKit.
-- [ ] Remove retired collider instances and fixed bodies from Rapier.
-- [ ] Keep serialized and live collider membership identical.
-- [ ] Add contact actor, collider, patch, membership and source identity.
-- [ ] Reject retired and prior-epoch contacts.
-- [ ] Admit at most one terminal failure result per run.
-- [ ] Remove the fallback collision authority or prove exact parity.
-
-## Phase 2: committed frame observation
-
-- [ ] Allocate one monotonic `frameId` per admitted RAF candidate.
-- [ ] Snapshot input once per frame.
-- [ ] Return a simulation-step receipt.
-- [ ] Return stream and collider membership receipts.
-- [ ] Return a physics-step receipt.
-- [ ] Return ordered collision, pickup and terminal outcome receipts.
-- [ ] Derive immutable presentation state after gameplay mutation.
-- [ ] Return a camera-consumption receipt.
-- [ ] Wrap Three rendering in a typed render result.
-- [ ] Wrap HUD/button projection in a typed commit result.
-- [ ] Publish a committed frame only after render and HUD success.
-- [ ] Publish a typed failure result without advancing the committed pointer.
-
-## Phase 2a: host read model
-
-- [ ] Replace raw mutable owner exposure with a detached JSON-safe read model.
-- [ ] Expose runtime/run/frame identity and the last committed frame.
-- [ ] Expose the last failed frame separately.
-- [ ] Bound journals and omit DOM nodes, functions and large geometry arrays.
-- [ ] Add host lease and revocation behavior.
-
-## Phase 3: shared epochs and reset
-
-- [ ] Allocate `runtimeSessionId` once per host session.
-- [ ] Allocate `runSessionId` on each accepted start/retry.
-- [ ] Allocate `streamEpoch` and `colliderEpoch` with the run transaction.
-- [ ] Fence Worker responses, contacts and frame receipts by epoch.
-- [ ] Reset input, camera, actor, contacts, pickup state and committed frame atomically.
-
-## Phase 4: lifecycle and disposal
-
-- [ ] Add a typed startup transaction and cleanup stack.
-- [ ] Retain RAF and listener leases.
-- [ ] Quarantine Worker/executor callbacks.
-- [ ] Add Three and Rapier resource owners.
-- [ ] Revoke host capability before disposal.
-- [ ] Return ordered idempotent stop/dispose results.
-
-## Candidate frame kits
+## Ordered implementation queue
 
 ```txt
-runtime-frame-id-kit
-frame-input-snapshot-kit
-simulation-step-receipt-kit
-stream-consumption-receipt-kit
-collider-membership-receipt-kit
-physics-step-receipt-kit
-gameplay-mutation-receipt-kit
-presentation-state-kit
-camera-consumption-receipt-kit
-render-submit-result-kit
-hud-commit-result-kit
-committed-frame-record-kit
-frame-failure-result-kit
-frame-journal-kit
-host-frame-read-model-kit
-committed-frame-coherence-fixture-kit
+1. Route Manifest + Profile Handoff Authority
+2. Patch Activation / Release Commit Authority
+3. Exact Collider Replacement + Collision Admission
+4. Committed Frame Observation + Host Read Model
+5. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
+6. Runtime Lifecycle + Ordered Disposal
+```
+
+## P3 implementation sequence
+
+### 1. Introduce authority identities
+
+```txt
+runtimeSessionId
+runSessionId
+runEpoch
+streamEpoch
+colliderEpoch
+workerGeneration
+frameEpoch
+```
+
+Do not infer these identities from route names, numeric `runId`, patch IDs or RAF counters.
+
+### 2. Replace direct `start()` with a command
+
+```txt
+ResetRunCommand {
+  commandId
+  expectedRuntimeSessionId
+  expectedPredecessorRunSessionId
+  reason: start | retry | run-again
+}
+```
+
+Return a typed accepted, rejected, duplicate or failed result.
+
+### 3. Build a non-mutating plan
+
+The plan must state:
+
+```txt
+new identities
+cache preservation policy
+active patch reprojection policy
+Worker quarantine policy
+collider replacement policy
+actor reset
+game and browser input reset
+pickup reprojection
+camera reset
+frame/read-model reset
+rollback steps
+```
+
+### 4. Quarantine old asynchronous work
+
+- [ ] Reject Worker responses whose generation or stream epoch is stale.
+- [ ] Reject ready/release claims from the predecessor stream.
+- [ ] Reject contacts from a predecessor collider epoch.
+- [ ] Reject frame receipts from a predecessor frame epoch.
+- [ ] Revoke old host mutation capabilities.
+
+### 5. Rebuild run-scoped projections
+
+Even when active patch IDs remain unchanged:
+
+- [ ] Recompute `view.pickups` from the new collected-shard ledger.
+- [ ] Recompute shard instance buffers.
+- [ ] Recompute collider descriptors and exact Rapier membership.
+- [ ] Rebind height, terrain and tree membership to the new stream epoch.
+- [ ] Clear external keyboard booleans.
+- [ ] Reset actor and camera.
+- [ ] Clear terminal collision and frame observations.
+
+### 6. Commit atomically
+
+```txt
+prepare every consumer
+  -> validate every receipt
+  -> commit one authority transfer
+  -> publish one ResetRunResult
+  -> resume frame admission
+  -> commit first visible new-run frame
+```
+
+If any required consumer fails, preserve the prior terminal run and dispose staged work.
+
+## Required fixtures
+
+```bash
+node scripts/prehistoric-rush-retry-pickup-reset-fixture.mjs
+node scripts/prehistoric-rush-stale-worker-epoch-fixture.mjs
+node scripts/prehistoric-rush-stale-contact-epoch-fixture.mjs
+node scripts/prehistoric-rush-input-reset-fixture.mjs
+node scripts/prehistoric-rush-reset-rollback-fixture.mjs
+node scripts/prehistoric-rush-reset-idempotency-fixture.mjs
+node scripts/prehistoric-rush-first-frame-run-epoch-fixture.mjs
+node scripts/prehistoric-rush-browser-retry-parity-smoke.mjs
+node scripts/prehistoric-rush-pages-retry-parity-smoke.mjs
 ```
 
 ## Acceptance conditions
 
 ```txt
-one RAF candidate has one terminal frame result
-all receipts share runtime, run and frame identity
-render and HUD success are mandatory for commit
-failed frame preserves predecessor committed pointer
-host cannot mix mutable owner snapshots
-retry rejects prior-run frame receipts
-frame records are bounded and JSON-safe
-```
-
-## Future fixture commands
-
-```bash
-node scripts/prehistoric-rush-frame-record-fixture.mjs
-node scripts/prehistoric-rush-frame-failure-fixture.mjs
-node scripts/prehistoric-rush-host-read-model-fixture.mjs
-node scripts/prehistoric-rush-frame-journal-fixture.mjs
-node scripts/prehistoric-rush-browser-frame-coherence-smoke.mjs
-node scripts/prehistoric-rush-browser-render-failure-smoke.mjs
-node scripts/prehistoric-rush-browser-host-interleaving-smoke.mjs
-node scripts/prehistoric-rush-pages-frame-coherence-smoke.mjs
-```
-
-## Overall order
-
-```txt
-1. Route manifest and profile handoff.
-2. Atomic patch activation and release.
-3. Exact collider replacement and collision admission.
-4. Committed frame observation and host read model.
-5. Shared runtime/run/stream/collider epochs.
-6. Startup rollback, resource ownership and disposal.
-7. Node, browser and Pages fixtures.
+new run has a new runSessionId and epoch family
+same deterministic world cache may be reused without reusing mutable membership
+all pickups are reprojected from new run state
+all external and engine input starts neutral
+old Worker/contact/frame evidence is rejected
+Rapier and render membership cite the same new epochs
+canvas, HUD and host cite the first committed new-run frame
+failed reset does not partially replace the terminal run
 ```
 
 ## Do not do next
 
-Do not add a second RAF, simulation, physics, render or diagnostics owner. Do not treat current `PrehistoricRushHost.getState()` output as proof of the visible frame.
+Do not solve retry by recreating a second engine loop beside the existing one. Do not treat camera `runId` reset as shared run authority. Do not clear immutable patch cache unless policy requires it; rebind mutable consumers instead.

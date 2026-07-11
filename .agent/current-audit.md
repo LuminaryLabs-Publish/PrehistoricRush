@@ -1,218 +1,338 @@
-# Current Audit: PrehistoricRush Committed Frame Observation Authority
+# Current Audit: PrehistoricRush Run / Stream Epoch Reset Authority
 
-**Updated:** `2026-07-11T14-31-27-04-00`
+**Updated:** `2026-07-11T15-59-12-04-00`
 
 ## Summary
 
-The runtime owns a functioning simulation/render loop, but it does not own a committed frame. `src/game.js` mutates game state, patch membership, Rapier state, gameplay outcomes, camera state and Three presentation before separately writing the HUD. `PrehistoricRushHost.getState()` then samples mutable game, controller and camera owners independently.
+`game.start()` creates a fresh product `RunState`, but the browser host does not create a fresh runtime run. The seeded patch controller, Worker executor, active patch map, terrain slots, tree batches, grass instances, pickup projection, Rapier world, actor, fixed colliders, RAF and public host are created once in `main()` and reused across every Start, Retry and Run Again.
 
-The current public readback cannot prove which simulation state, stream membership, physics step, camera transform, canvas submission and HUD projection belong together. A render or HUD failure can leave runtime state ahead of the last visible frame without a typed failure result.
+The reset boundary is therefore partial. Numeric `runId` changes in the game domain and the camera resets when it observes that number, but no shared run, stream, collider, Worker or frame epoch fences old work or proves that every consumer adopted the new run.
 
 ## Plan ledger
 
-**Goal:** define one immutable frame receipt shared by simulation, streaming, physics, gameplay, camera, rendering, HUD and diagnostics.
+**Goal:** define one atomic reset transaction that transfers authority from a terminal or menu run to a fresh run while explicitly preserving reusable immutable cache data and retiring all run-scoped mutable projections.
 
-- [x] Trace the full RAF stage order.
-- [x] Trace game-domain simulation and snapshots.
-- [x] Trace patch and physics consumption.
-- [x] Trace render and HUD commit points.
-- [x] Trace public host aggregation.
-- [x] Identify all domains, kits and services.
-- [x] Define the frame authority DSK map.
-- [ ] Implement frame IDs and typed stage receipts.
-- [ ] Replace live host aggregation with a detached committed-frame read model.
-- [ ] Add pure and browser frame-coherence fixtures.
+- [x] Compare the full Publish inventory against central tracking.
+- [x] Exclude `TheCavalryOfRome`.
+- [x] Avoid active same-window work in `IntoTheMeadow`.
+- [x] Select only `PrehistoricRush` as the oldest stable eligible repository.
+- [x] Trace domain `start()`, browser `start()`, input, controller, Worker, consumers, physics, camera, RAF and host ownership.
+- [x] Identify the interaction loop, domains, kits and services.
+- [x] Identify a concrete retry pickup-projection failure.
+- [x] Define epoch, reset, retirement, stale-work and first-frame contracts.
+- [x] Add required root `.agent` outputs.
+- [ ] Implement and validate the transaction.
 
-## Current RAF path
-
-```txt
-input projection
-  -> engine.tick(dt)
-  -> game state mutation
-  -> updateStreaming(state)
-  -> patch release/generation/activation
-  -> actor transform submission
-  -> physics.step(dt)
-  -> collision failure admission
-  -> pickup collection admission
-  -> final game state read
-  -> creature/camera/light/grass/shard presentation mutation
-  -> renderer.render(scene, camera)
-  -> HUD HTML and button mutation
-  -> request next RAF
-```
-
-## Frame-coherence gap
+## Repository selection
 
 ```txt
-simulation tick identity: absent
-stream revision consumed by frame: absent
-collider membership revision consumed by physics: absent
-physics step receipt: absent
-ordered gameplay result receipts: absent
-presentation fingerprint: absent
-camera transform receipt: absent
-render result: absent
-HUD commit result: absent
-committed frame pointer: absent
-failed frame result: absent
+accessible Publish repositories: 10
+eligible non-Cavalry repositories: 9
+new or central-ledger-missing repositories: 0
+root-.agent-missing repositories: 0
+IntoTheMeadow: active same-window documentation commits
+selected stable repository: PrehistoricRush
+excluded repository: TheCavalryOfRome
 ```
 
-`renderer.render()` returns no product receipt. If it throws, simulation and other mutable owners have already advanced. The next RAF is not scheduled, but the global host remains available and can expose the newer mutable state.
+Only `LuminaryLabs-Publish/PrehistoricRush` is changed in the Publish organization.
 
-The HUD writes after rendering. A HUD failure can therefore leave the canvas on a new frame and status/button content on an older frame.
-
-## Public host gap
-
-Current host readback aggregates:
+## Complete interaction loop
 
 ```txt
-game.snapshot()
-patchController.getSnapshot()
-cameraFollow.getSnapshot()
-engine.gameComposer
-core scene host descriptor
-player body identity
-static renderer label
+module boot
+  -> load pinned Nexus Engine, Kits, ProtoKits, Three and Rapier
+  -> create one engine and product domain graph
+  -> create one Rapier world and dino actor
+  -> create one patch generator, Worker executor and patch controller
+  -> create one Three adapter and active consumer graph
+  -> create one camera-follow instance
+  -> start initial run and prime streaming
+  -> install listeners, host and RAF
+
+Start / Retry / Run Again
+  -> game.start()
+     -> initialRunState()
+     -> runId = previous runId + 1
+     -> status = game
+     -> replace RunState and InputState
+     -> emit RunStarted
+     -> transition to game
+  -> updateStreaming(state, true)
+     -> reuse existing controller/cache/queue/Worker
+     -> release or activate only changed membership
+  -> resetCamera(state)
+  -> existing RAF continues
 ```
 
-It does not expose:
+## Concrete reset gap
+
+`rebuildActiveContent(state)` is the only path that reconstructs pickup projection from `state.collectedShardIds`. It runs when a patch activates, releases, or a shard is collected.
+
+On retry:
+
+```txt
+new RunState.collectedShardIds = []
+active patch membership unchanged
+controller emits no new activation or release
+rebuildActiveContent() is not called
+view.pickups and shard instances remain filtered by the previous run
+```
+
+A new run can therefore start without pickups that its own state says are uncollected.
+
+## Additional retained state
+
+```txt
+external input booleans
+controller desired/active/cache/queue state
+in-flight Worker requests and responses
+activePatches and terrainByPatch maps
+tree batch cell membership
+grass/shard instance buffers
+view.colliders and view.pickups
+Rapier world, actor, fixed bodies and colliders
+camera-follow instance history until local reset
+RAF callback generation
+public host object and raw owner references
+```
+
+## Missing identities and results
 
 ```txt
 runtimeSessionId
-runSessionId
-frameId
-last committed frame
-last failed frame
-render result
-HUD result
-presentation fingerprint
-physics receipt
+runSessionId distinct from mutable numeric runId
+runEpoch
+streamEpoch
+colliderEpoch
+workerGeneration
+frameEpoch
+ResetRunCommand
+ResetRunPlan
+ResetRunResult
+consumer retirement acknowledgements
+stale Worker/contact/frame rejection
+first committed new-run frame acknowledgement
 ```
-
-Because the owners are sampled independently, readback can describe a state that was never presented as one frame.
 
 ## Domains in use
 
 ```txt
-page routes and player-profile persistence
-pinned dependency loading and module identity
-Nexus Engine composition and scene routing
-run simulation, input, movement, score and outcomes
-procedural creature generation, skinning and poses
-deterministic route and terrain classification
-patch generation, Worker/executor, cache and controller
-patch activation/release and active consumer membership
+route/page/profile authority
+module graph identity and pinned CDN loading
+Nexus Engine kit composition
+run simulation and scene transitions
+route, surface and terrain height
+procedural creature body and animation
+seeded patch generation and Worker execution
+patch scheduling, cache and membership
 terrain, tree, grass, pickup, collider and height projection
-Rapier actor, collider, step and contact state
-collision, pickup and terminal outcome admission
-browser input, delta sampling and RAF scheduling
-camera smooth-follow and transform projection
-Three scene/resources, lighting, shadows and rendering
-HUD/button projection and public diagnostics
-validation and Pages deployment
+Rapier actor, fixed-collider and contact runtime
+collision and terminal-outcome admission
+camera reset and smooth follow
+Three scene/resources/rendering
+HUD, buttons and public diagnostics
+run/stream/collider/frame epoch authority: missing
+atomic reset and stale-work rejection: missing
+fixtures and Pages deployment
 ```
 
 ## Complete kit inventory and services
 
-### Core kits
+### Nexus Engine core
 
 ```txt
-core-input-kit: actions, bindings, input state
-core-spatial-kit: transforms and spatial queries
-core-scene-kit: scene registry, transitions and host descriptor
-core-physics-kit: physics provider contract
-core-motion-kit: motion capability
-core-camera-kit: camera capability
-core-animation-kit: animation capability
-core-graphics-kit: graphics/frame capability
-core-skybox-kit: sky descriptor
-core-ui-kit: UI capability/projection
-core-diagnostics-kit: diagnostics/readback
-core-composition-kit: composition metadata/capability graph
+core-input-kit
+  actions, bindings, input state
+
+core-spatial-kit
+  transforms and spatial query contract
+
+core-scene-kit
+  scene registry, transitions and host descriptor
+
+core-physics-kit
+  physics-provider capability
+
+core-motion-kit
+  motion capability
+
+core-camera-kit
+  camera capability
+
+core-animation-kit
+  animation capability
+
+core-graphics-kit
+  graphics and frame capability
+
+core-skybox-kit
+  sky descriptor
+
+core-ui-kit
+  UI capability and projection
+
+core-diagnostics-kit
+  diagnostics and readback
+
+core-composition-kit
+  composition metadata and capability graph
 ```
 
-### Official kits
+### Official NexusEngine-Kits
 
 ```txt
-seed-kit: deterministic seeds and random streams
-procedural-creature-body-kit: geometry, topology, skeleton, skinning,
-  collision recommendation, bounds, poses, content hash and snapshots
-instanced-render-batch-kit: capacity, replace/release, flush, overflow,
-  bounds, statistics and snapshots
-seeded-world-patch-controller-kit: identity, focus, desired sets, cache,
-  queue, executor, ready/release delivery, budgets, eviction and snapshots
-camera-smooth-follow-kit: position/look/quaternion damping, reset,
-  teleport handling, delta clamp, transform access and snapshots
+seed-kit
+  deterministic seed and random streams
+
+procedural-creature-body-kit
+  recipe normalization, geometry, topology, skeleton, skinning,
+  collision recommendation, content hash, poses and snapshots
+
+instanced-render-batch-kit
+  cell replace/release, flush, overflow, bounds, statistics and snapshots
+
+seeded-world-patch-controller-kit
+  patch identity, focus, desired membership, cache, queue, executor,
+  ready/release delivery, budgets, eviction and snapshots
+
+camera-smooth-follow-kit
+  position/look/quaternion damping, reset, teleport handling and snapshots
 ```
 
-### Product/page/external/host kits
+### Product, page and Worker kits
 
 ```txt
-prehistoric-rush-domain-kit: run lifecycle, input, route, surface,
-  score, outcomes, events, transitions, creature access and snapshot
-player-character-schema-kit: defaults, normalization, clamps, color validation and merge
-player-character-profile-store-kit: load, save, patch, reset, subscribe,
-  storage sync, BroadcastChannel sync and close
-menu-page-kit: menu shell, profile projection and route links
-character-creator-page-kit: draft edit, controls, preview, debounce save,
-  reset and remote projection
-game-page-entry-kit: runtime loading
-drunk-route-generator: samples, nearest query, progress, classification and snapshot
-player-raptor-preset-kit: creature recipe and capsule collision descriptor
-prehistoric-patch-generator: terrain, trees, grass, pickups, colliders,
-  bounds and transferables
-prehistoric-patch-worker: initialization, generation, errors and transferables
-rapier-physics-domain-kit: world bridge, kinematic actor, fixed colliders,
-  transforms, step, contacts, snapshot and reset
-Three.js/product adapters: scene graph, geometry, materials, instancing,
-  skinning, camera, lighting, fog, shadows, render, HUD and host projection
+prehistoric-rush-domain-kit
+  run lifecycle, input, route, surface, score, outcomes, events,
+  scene transitions, player creature and snapshot
+
+player-character-schema-kit
+  defaults, normalization, clamps, color validation and merge
+
+player-character-profile-store-kit
+  load, save, patch, reset, subscription, storage sync,
+  BroadcastChannel sync and close
+
+menu-page-kit
+  menu shell, profile projection and route links
+
+character-creator-page-kit
+  draft editing, controls, preview, debounce save, reset and remote projection
+
+game-page-entry-kit
+  3D runtime loading
+
+drunk-route-generator
+  samples, nearest query, progress, region classification and snapshot
+
+player-raptor-preset-kit
+  creature recipe and capsule collision descriptor
+
+prehistoric-patch-generator
+  terrain, trees, grass, pickups, colliders, bounds and transferables
+
+prehistoric-patch-worker
+  initialization, generation, request/error protocol and transferable delivery
 ```
 
-## Required authority boundary
+### External and host adapter boundaries
 
 ```txt
-PrehistoricRush Committed Frame Observation Domain
-  runtime-frame-id-kit
-  frame-input-snapshot-kit
-  simulation-step-receipt-kit
-  stream-consumption-receipt-kit
-  collider-membership-receipt-kit
-  physics-step-receipt-kit
-  gameplay-mutation-receipt-kit
-  presentation-state-kit
-  camera-consumption-receipt-kit
-  render-submit-result-kit
-  hud-commit-result-kit
-  committed-frame-record-kit
-  frame-failure-result-kit
-  frame-journal-kit
-  host-frame-read-model-kit
-  committed-frame-coherence-fixture-kit
+rapier-physics-domain-kit
+  Rapier world bridge, kinematic actor, fixed colliders, transforms,
+  step, contacts, snapshot and reset
+
+Three runtime module
+  scene graph, geometry, materials, instancing, skinning, camera,
+  lighting, fog, shadows and rendering
+
+Rapier runtime module
+  rigid bodies, colliders, queries and world stepping
+
+message Worker executor adapter
+  request correlation and asynchronous generation
+
+active-content consumer adapter
+  patch render membership, pickup/collider projection and height sampling
+
+collision fallback adapter
+  descriptor XZ overlap and jump-height gate
+
+run failure adapter
+  contact/overlap to terminal game failure
+
+creature/camera/render host adapters
+  creature binding, pose, camera, light, shadows, HUD and host readback
+```
+
+## Required authority domain
+
+```txt
+prehistoric-rush-run-stream-epoch-authority-domain
+  -> runtime-session-id-kit
+  -> run-session-id-kit
+  -> run-epoch-kit
+  -> stream-epoch-kit
+  -> collider-epoch-kit
+  -> worker-generation-kit
+  -> frame-epoch-kit
+  -> run-reset-command-kit
+  -> run-reset-admission-kit
+  -> run-reset-plan-kit
+  -> input-reset-kit
+  -> patch-membership-reset-kit
+  -> pickup-projection-reset-kit
+  -> physics-reset-or-replacement-kit
+  -> camera-reset-ack-kit
+  -> stale-work-rejection-kit
+  -> run-reset-commit-kit
+  -> run-reset-result-kit
+  -> run-reset-journal-kit
+  -> retry-reset-parity-fixture-kit
+```
+
+## Required transaction
+
+```txt
+Start/Retry command
+  -> validate runtime, predecessor run and lifecycle
+  -> freeze frame, stream, physics and interaction admission
+  -> allocate new run/stream/collider/worker/frame epochs
+  -> retire or quarantine predecessor claims and callbacks
+  -> preserve immutable patch cache only by declared policy
+  -> reproject active patch consumers for the new run
+  -> exact-replace fixed colliders
+  -> reset actor, gameplay input, external input and pickup projection
+  -> reset camera and frame read model
+  -> atomically publish new run authority
+  -> resume RAF
+  -> acknowledge first committed new-run frame
 ```
 
 ## Acceptance conditions
 
 ```txt
-one RAF candidate has one frameId and terminal result
-all stage receipts share runtime, run and frame identity
-render and HUD success are required before frame publication
-failed frame does not advance committed-frame pointer
-host reads only a detached immutable committed record
-host cannot mix current game, stream, camera or physics snapshots
-records are bounded and JSON-safe
-retry cannot accept predecessor-run receipts
+retry always restores every uncollected pickup
+held prior-run input does not leak unless explicitly admitted
+old Worker responses reject without mutation
+old contacts and frame receipts reject
+controller and consumer membership share streamEpoch
+Rapier membership shares colliderEpoch
+camera, canvas, HUD and host acknowledge the same run/frame epoch
+reset failure preserves the prior terminal state
+duplicate retry command is idempotent
 ```
 
 ## Priority placement
 
 ```txt
-P0 route/profile handoff
-P1 patch activation/release
-P1a collider retirement/collision admission
-P2 committed frame observation/host read model
-P3 shared run/session/stream/collider epochs
-P4 lifecycle/disposal
+P0   route artifact and profile handoff
+P1   patch activation/release transaction
+P1a  exact collider retirement and collision admission
+P2   committed-frame observation and host read model
+P3   run/stream/collider/worker/frame epoch reset authority
+P4   startup rollback, resource ownership and disposal
 ```
 
 No runtime source was changed by this audit.

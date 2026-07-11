@@ -1,141 +1,139 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T14-31-27-04-00`
+**Updated:** `2026-07-11T15-59-12-04-00`
 
 ## Summary
 
-Route/profile authority remains P0. Patch activation/release and fixed-collider retirement remain the next runtime prerequisites. This pass adds the P2 committed-frame gap: the browser mutates simulation, streaming, physics, gameplay, camera and presentation without one frame identity or immutable record shared by the canvas, HUD and public host.
+The game still has unresolved route/profile, patch, collider and committed-frame gates. This audit adds the concrete P3 reset gap: retry replaces only the product run/input resources while process-lifetime streaming, physics, rendering and browser owners remain live.
 
 ## Plan ledger
 
-**Goal:** keep route, profile, patch, collision, frame, epoch and lifecycle risks explicit before implementation.
+**Goal:** keep every prerequisite and restart risk explicit so implementation extends existing owners in dependency order.
 
 - [x] Preserve route/profile gaps.
-- [x] Preserve patch activation and collider retirement gaps.
-- [x] Record frame-stage and public-host coherence gaps.
-- [x] Record missing render/HUD failure results.
-- [x] Record the required fixture matrix.
-- [ ] Close gaps through existing domain owners rather than parallel systems.
+- [x] Preserve patch activation/release gaps.
+- [x] Preserve collider/collision gaps.
+- [x] Preserve committed-frame and host gaps.
+- [x] Add run/stream/collider/Worker/frame epoch reset gaps.
+- [x] Add concrete pickup and input reset failures.
+- [x] Add fixture requirements.
+- [ ] Close gaps through existing domains and kits.
 
 ## Route and profile gaps
 
 ```txt
-- game.html and charactercreator.html are absent
-- game does not consume the saved profile as its creature source
-- profile writes lack transaction, fingerprint and conflict authority
-- creator, creature, collision and frame do not share one profile identity
+game.html and charactercreator.html are absent
+game does not consume the saved profile as creature source
+profile writes lack transaction/fingerprint/conflict authority
+creator, creature, collision and frame do not share profile identity
 ```
 
 ## Patch activation and release gaps
 
 ```txt
-- controller ready/release evidence precedes consumer acknowledgement
-- terrain, trees, grass, pickups, colliders and height mutate sequentially
-- no detached activation/release plan, rollback or shared consumer revision
-- no release result proves every consumer retired the patch
-- controller-active and consumer-active parity is not fixture-proven
+controller delivery state advances before consumer acknowledgement
+terrain, trees, grass, pickups, colliders and height mutate sequentially
+no detached plan, rollback or shared membership revision
+release does not prove every consumer retired
 ```
 
-## Fixed collider and collision gaps
+## Collider and collision gaps
 
 ```txt
-- setFixedColliders is add/update rather than authoritative replacement
-- live Rapier maps retain removed IDs
-- removed bodies/colliders are not removed from the world
-- contact observations lack patch, membership, source and edge identity
-- product admits any dino contact as fatal
-- Rapier and XZ fallback are divergent collision authorities
-- patch release does not wait for physics retirement
+fixed-collider submission is not exact replacement
+removed Rapier bodies/colliders can remain live
+contacts lack patch/membership/source/epoch identity
+Rapier contact and XZ fallback are competing authorities
+terminal failure is not a typed single-commit result
 ```
 
-## Committed frame gaps
+## Committed-frame and host gaps
 
 ```txt
-- no runtime frame ID exists
-- no simulation-step receipt exists
-- no stream or collider revision is correlated to rendering
-- no physics-step receipt is correlated to gameplay or rendering
-- collision, pickup and terminal mutations have no ordered frame receipts
-- no immutable presentation-state fingerprint exists
-- camera update has no consumed-frame receipt
-- renderer.render returns no product-level result
-- HUD/button writes return no commit result
-- no last-committed-frame pointer exists
-- no failed-frame result exists
+no frame identity or ordered stage receipts
+render and HUD have no product commit results
+no committed/failed frame pointer
+host independently samples mutable owners
+host exposes raw engine, physics, adapter, controller and camera
 ```
 
-## Public host gaps
+## Run/reset epoch gaps
 
 ```txt
-- host exposes mutable engine, physics, adapter, controller and camera owners
-- getState independently samples game, streaming and camera state
-- host can observe a state that was never presented as one frame
-- no runtimeSessionId, runSessionId or committedFrameId is exposed
-- no host lease or revocation result exists
-- readback is not a detached immutable frame record
+numeric runId exists only in product RunState
+no runtimeSessionId or runSessionId
+no streamEpoch, colliderEpoch, workerGeneration or frameEpoch
+controller/cache/queue/Worker survive retry
+active patch and consumer maps survive retry
+Rapier world/actor/colliders survive retry
+RAF and host survive without generation transfer
+old responses, contacts and frames are not rejected
 ```
 
-## Failure-path gaps
+## Concrete retry projection gap
 
 ```txt
-render failure:
-  simulation and other owners may already be advanced
-  previous canvas remains visible
-  HUD is not updated
-  no next RAF is scheduled
-  host remains published
-
-HUD failure:
-  canvas may advance while HUD remains stale
-  no commit/failure record identifies the split
+previous run collects shard
+  -> collected ID filters shard from view.pickups
+  -> Retry creates new state with empty collected IDs
+  -> active patch IDs remain unchanged
+  -> no activation/release occurs
+  -> rebuildActiveContent does not run
+  -> shard remains absent in the new run
 ```
 
-## Run/session and lifecycle gaps
+## Browser input gap
+
+The engine `InputState` is replaced during `game.start()`, but the host-level `input.left`, `input.right` and `input.boost` booleans are not cleared. A held or stale browser input can be projected into the first tick of the new run.
+
+## Reset failure-path gaps
 
 ```txt
-- retry has no shared runtime/run/stream/collider/frame epoch family
-- stale Worker responses, contacts and frame receipts are not fenced
-- RAF, listeners, Worker, executor, Three and Rapier owners remain unbounded
-- no startup rollback or ordered idempotent disposal result exists
-- public host cannot be revoked before resource disposal
+no staged reset plan
+no consumer prepare/commit receipts
+no rollback stack
+no duplicate command policy
+no partial-reset failure result
+no first committed new-run frame acknowledgement
 ```
 
 ## Missing proof matrix
 
 ```txt
-page manifest and profile handoff fixture
+route/page/profile fixture
 patch activation/release parity fixture
-fixed collider exact-replacement fixture
-released-patch collision fixture
-contact admission and collision-source parity fixtures
-committed frame record fixture
-render failure fixture
-HUD failure fixture
-host interleaved-read fixture
-frame journal JSON/bounds fixture
-retry stale-frame receipt fixture
+exact collider replacement fixture
+collision admission fixture
+committed-frame coherence fixture
+retry pickup reprojection fixture
+external input reset fixture
+stale Worker generation fixture
+stale contact/collider epoch fixture
+stale frame receipt fixture
+reset rollback and idempotency fixtures
+first-frame run-epoch browser smoke
 runtime lifecycle/disposal fixture
-Pages frame-coherence smoke
+Pages retry parity smoke
 ```
 
 ## Priority
 
 ```txt
-1. route artifact integrity and profile handoff
+1. route/page/profile authority
 2. patch activation/release transaction
-2a. fixed collider retirement and collision admission
-3. committed frame observation and host read model
-4. shared runtime/run/stream/collider/frame epochs
-5. runtime lifecycle, disposal and host revocation
+2a. collider retirement and collision admission
+3. committed-frame observation
+4. run/stream/collider/Worker/frame epoch reset
+5. runtime lifecycle and disposal
 ```
 
 ## Do not do next
 
 ```txt
-- do not work on TheCavalryOfRome
-- do not create a branch
-- do not add a second runtime, physics, render or diagnostics owner
-- do not treat mutable host aggregation as frame evidence
-- do not publish a frame before render and HUD both succeed
-- do not claim frame coherence without failure and interleaving fixtures
+do not work on TheCavalryOfRome
+do not create a branch
+do not add a second engine, controller, physics world or RAF
+do not use numeric runId as a complete epoch family
+do not preserve pickup/collider projections merely because patch IDs match
+do not accept prior-run Worker, contact or frame evidence
 ```
