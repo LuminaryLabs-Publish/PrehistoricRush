@@ -1,139 +1,149 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T10-58-10-04-00`
+**Updated:** `2026-07-11T12-39-53-04-00`
 
 ## Summary
 
-The published entry route now presents a menu and character customization feature, but the menu targets missing HTML artifacts and the game ignores the saved profile. Route integrity and profile handoff are now P0; patch activation, visual identity and lifecycle remain open behind it.
+Route/profile authority remains P0. This pass adds the exact browser runtime lifecycle gaps: startup has no rollback ledger, retry has no shared epoch, RAF/listeners are unowned, Worker/executor callbacks are not quarantined, Three/Rapier resources are not disposed, and the global host cannot be revoked.
 
 ## Plan ledger
 
-**Goal:** keep every route, profile, storage, synchronization, descriptor, collision, render and lifecycle risk explicit before adding more customization.
+**Goal:** keep route, profile, patch, session, callback, Worker, physics, render and host-lifecycle risks explicit before runtime implementation proceeds.
 
-- [x] Record missing page artifacts.
-- [x] Record the creator-to-game consumption gap.
-- [x] Record debounce, revision, storage and synchronization gaps.
-- [x] Preserve previous patch, visual and lifecycle gaps.
-- [ ] Close gaps with typed commands/results, canonical identity and fixtures.
+- [x] Preserve route/profile gaps.
+- [x] Preserve patch activation and visual identity gaps.
+- [x] Record startup rollback and partial-acquisition risks.
+- [x] Record retry, epoch and stale Worker-result risks.
+- [x] Record RAF, listener, Worker, Three, Rapier and host disposal gaps.
+- [ ] Close gaps through one session authority and executable fixtures.
 
-## Route gaps
+## Route and profile gaps
 
 ```txt
-- index.html now loads the menu instead of the game
-- menu Start Run points to ./game.html, which is absent
-- menu Character Creator points to ./charactercreator.html, which is absent
-- src/pages/game.js exists without an HTML host
-- src/pages/character-creator.js exists without an HTML host
-- no page manifest or route admission result exists
-- no source/deployed route fixture exists
+- game.html and charactercreator.html are absent
+- the game does not consume the saved profile
+- profile writes have no transaction/fingerprint/conflict authority
+- creator debounce can persist only the last captured group patch
+- profile subscriptions and BroadcastChannel are not page-lifecycle owned
+- creator preview, creature, collision and frame do not share identity
 ```
 
-## Profile consumption gaps
+## Patch activation gaps
 
 ```txt
-- src/game.js does not import the profile store
-- game construction still uses player-raptor-preset-kit
-- creator claim that the game reads the latest profile is not true in source
-- no profile admission before domain construction
-- no profile-to-creature descriptor result
-- no profile-to-collision binding result
-- no fallback/rejection policy for incompatible profiles
-```
-
-## Persistence and revision gaps
-
-```txt
-- localStorage setItem has no typed success/failure result
-- no transaction ID or writer identity
-- concurrent tabs can emit the same revision with different payloads
-- revision is not paired with a canonical profile fingerprint
-- no compare-and-swap or conflict result
-- no recovery journal
-- updatedAt uses local wall-clock time without authority
-```
-
-## Creator draft gaps
-
-```txt
-- draft projection can advance before durable commit
-- debounce timer persists only its captured final patch
-- rapid edits across different groups can lose earlier unsaved changes
-- no dirty/saving/committed/conflicted state machine
-- storage failure has no rollback or user-facing error result
-- remote updates can replace an active local draft without rebase policy
-```
-
-## Synchronization and lifecycle gaps
-
-```txt
-- storage and BroadcastChannel can report one logical update twice
-- no event transaction ID or deduplication
-- menu subscription is never released
-- creator subscription is never released
-- BroadcastChannel close is not called by page runtimes
-- pending save timer is not terminally flushed or cancelled on page exit
-- no profile epoch rejects stale callbacks
-```
-
-## Preview, collision and render gaps
-
-```txt
-- creator preview is CSS, not the procedural creature descriptor
-- preview does not validate topology, skinning or collision
-- game player descriptor does not name profile revision/fingerprint
-- Rapier actor does not name profile revision/fingerprint
-- pose and camera revisions remain absent
-- renderer emits no product frame receipt
-- host readback cannot prove which profile produced a visible frame
-```
-
-## Existing patch-streaming gaps
-
-```txt
-- controller marks ready patches active before consumer commit
+- controller marks ready patches active before consumer acknowledgement
+- terrain, trees, grass, shards, colliders and height mutate sequentially
+- no detached activation plan, rollback or shared consumer revision
 - release evidence clears before retirement acknowledgement
-- terrain, trees, grass, pickups, colliders and height mutate sequentially
-- no detached prepare plan, shared revision, rollback or acknowledgement
+- controller-active and consumer-active parity is not proved
 ```
 
-## Existing visual and lifecycle gaps
+## Startup transaction gaps
 
 ```txt
-- module graph and visual policy lack canonical fingerprints
-- creature exact geometry hash is incomplete
-- grass and shadow policies remain host literals
-- runSessionId and shared epochs are absent
-- RAF ID and listener leases are not retained
-- Worker and Three/Rapier resources lack ordered terminal disposal
-- public host exposure has no release lease
+- main() acquires modules and resources without a startup command/result
+- no runtimeSessionId or lifecycle phase exists
+- no cleanup stack records acquired resources
+- partial construction failure has no reverse rollback
+- fatal UI replacement can occur while Worker/GPU/physics resources remain live
+- public host publication is not tied to a successful startup commit
+```
+
+## Retry and epoch gaps
+
+```txt
+- start() reuses the same controller, Worker, executor and adapters
+- no runSessionId is allocated by the host
+- no streamEpoch fences queued/inflight patch generation
+- Worker requests/responses carry requestId but no session/run/stream identity
+- controller ready/release delivery can outlive the run that requested it
+- input, physics contacts, adapter time and all dynamic consumer state lack one reset result
+```
+
+## RAF and listener gaps
+
+```txt
+- RAF request ID is not retained
+- loop always schedules the next frame
+- no stop flag or generation fence exists
+- button.onclick has no lease/result
+- keydown, keyup, blur and resize callbacks are not removable through an owner
+- no pagehide/beforeunload/explicit-stop lifecycle handler exists
+- callbacks do not reject DISPOSING or DISPOSED state
+```
+
+## Worker and executor gaps
+
+```txt
+- Worker is created and retained but never terminated
+- executor disposal is not retained or invoked
+- Worker protocol has no cancel, shutdown or shutdown acknowledgement
+- late patch-generated/patch-error messages have no epoch rejection
+- fallback synchronous generation is not described by the same lifecycle result
+- inflight request count at retry/dispose is not observed
+```
+
+## Three resource gaps
+
+```txt
+- createThreeAdapter returns no dispose service
+- renderer.dispose is not called
+- renderer canvas is not explicitly removed
+- terrain geometries/material are not disposed
+- tree geometries/materials and instance buffers are not disposed
+- grass geometries/shader materials are not disposed
+- shard geometry/material is not disposed
+- creature geometry/material/skeleton resources are not disposed
+- camera/light/scene ownership has no terminal result
+```
+
+## Rapier resource gaps
+
+```txt
+- Rapier adapter returns only the public API
+- actor/fixed-collider/world disposal is not called
+- pending contacts and actor transform state have no terminal reset result
+- no proof prevents physics stepping after disposal begins
+- physics revision is not correlated with lifecycle phase
+```
+
+## Public host gaps
+
+```txt
+- PrehistoricRushHost exposes live engine, physics, adapter, controller and camera owners
+- no host lease or capability revocation exists
+- no detached clone-safe read model exists
+- no disposed-state marker invalidates old references
+- no bounded lifecycle/resource journal exists
 ```
 
 ## Missing proof matrix
 
 ```txt
-source and deployed page-manifest integrity
-menu-to-creator and menu-to-game navigation
-full draft persistence across rapid cross-group edits
-storage failure result and recovery
-concurrent-tab conflict ordering
-profile fingerprint sensitivity
-profile-to-creature recipe parity
-profile-to-collision parity
-creator preview/game descriptor parity
-profile/frame receipt correlation
-patch controller/consumer parity
-restart, stale callback rejection and ordered disposal
+page-manifest and profile handoff
+patch prepare/commit/rollback parity
+startup success and partial-failure rollback
+single RAF and listener lease ownership
+retry run/stream epoch separation
+late Worker response rejection
+Worker/executor termination
+Three resource disposal counts
+Rapier terminal disposal/reset
+public host revocation
+idempotent repeated dispose
+post-dispose input/tick/render rejection
+browser pagehide lifecycle smoke
 ```
 
 ## Priority
 
 ```txt
-1. route artifact integrity and page admission
-2. profile commit, conflict and cross-context synchronization
-3. game profile consumption and creature/collision binding
-4. creator preview and rendered-frame parity
-5. patch activation transaction
-6. visual-policy identity and lifecycle ownership
+1. route artifact integrity and profile handoff
+2. patch activation transaction
+3. run/session/stream epoch authority
+4. startup rollback and callback ownership
+5. Worker/Three/Rapier ordered disposal
+6. host revocation and lifecycle observation
 ```
 
 ## Do not do next
@@ -141,8 +151,8 @@ restart, stale callback rejection and ordered disposal
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
-- do not add more profile controls before route/profile P0
-- do not duplicate procedural-creature-body-kit
-- do not treat revision alone as profile identity
-- do not claim customization reaches gameplay without executable proof
+- do not add another lifecycle owner per adapter
+- do not rely on reload/browser destruction as cleanup proof
+- do not terminate only the Worker and leave executor callbacks admitted
+- do not claim retry isolation without epoch and stale-result fixtures
 ```
