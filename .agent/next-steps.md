@@ -1,93 +1,99 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-10T21-00-16-04-00`
+**Updated:** `2026-07-10T22-42-00-04-00`
 
 ## Immediate safe ledge
 
 ```txt
-PrehistoricRush Instance Pool Capacity Authority
-+ Deterministic Population Fixture Gate
+PrehistoricRush Population Admission Transaction
++ Render/Collider/Pickup Parity Fixture Gate
 ```
-
-This remains first. Do not place another abstraction in front of the current `populate()` path until writes and active draw counts are bounded.
 
 ## Goal
 
-Make the runtime's population and deployed source contract deterministic, bounded, observable, and honest. A successful deployment must identify which files and revisions actually control the live route.
+Make every streamed-window rebuild deterministic, capacity-safe, atomic, and observable. A committed generation must prove that rendered instances, physics colliders, and collectible pickups were derived from the same admitted candidate set.
 
 ## Plan ledger
 
-### Phase 0: complete the current population gate
+### Phase 0: separate planning from mutation
 
-- [ ] Add immutable capacity to every instance-pool wrapper.
-- [ ] Separate active draw count from allocation capacity.
-- [ ] Preflight matrix writes.
-- [ ] Produce requested, admitted, truncated, rejected, and overflow rows.
-- [ ] Add `windowKey` and `generationId`.
-- [ ] Correlate tree render rows with collider rows.
-- [ ] Correlate shard render rows with pickup rows.
-- [ ] Add dense, sparse, and repeated-generation fixtures.
+- [ ] Introduce a pure `buildPopulationPlan({ windowKey, generationId, state, tuning })` path.
+- [ ] Generate stable candidate IDs before touching Three.js, physics, or gameplay arrays.
+- [ ] Record candidate family, archetype/layer, transform, collider descriptor, pickup descriptor, and rejection reason.
+- [ ] Keep route and terrain sampling deterministic for identical inputs.
 
-### Phase 1: establish one runtime source contract
+### Phase 1: establish capacity authority
 
-- [ ] Decide whether existing root JSON files are runtime inputs or archival planning files.
-- [ ] Create one versioned `runtime-source-manifest.json`.
-- [ ] Record the exact entrypoint, active local kits, external modules, and configuration sources.
-- [ ] Add a schema/version field and deterministic fingerprint.
-- [ ] Reject duplicate authority for the same tuning or transition field.
-- [ ] If `runner-tuning.json` remains authoritative, load and validate it before constructing the route.
-- [ ] If tuning remains in JavaScript, stop deploying the JSON as an active configuration artifact.
-- [ ] If `game-scenes.json` remains authoritative, route scene changes through its transition table.
-- [ ] Otherwise label the scene files archival and remove them from the live artifact.
-- [ ] Reconcile `kit-composition.json` with the six active local domain kits.
-- [ ] Replace mutable `@main` dependency coordinates in the source manifest with immutable revisions.
-- [ ] Expose requested and resolved source rows through `PrehistoricRushHost.getState()`.
+- [ ] Wrap every instance pool with immutable `capacity` and mutable `activeCount`.
+- [ ] Never use `mesh.count` as allocation capacity.
+- [ ] Preflight tree, crown, root, grass, rock, and shard writes.
+- [ ] Return requested, admitted, truncated, rejected, and overflow counts per pool.
+- [ ] Increment admitted/write counters only after capacity and LOD acceptance.
+- [ ] Reject any published draw count greater than committed writes or immutable capacity.
 
-### Phase 2: add source-contract validation
+### Phase 2: enforce parity
 
-- [ ] Add `scripts/prehistoric-rush-source-contract-fixture.mjs`.
-- [ ] Assert every deployed authoritative file is consumed.
-- [ ] Assert every consumed runtime file is declared.
-- [ ] Assert declared tuning equals resolved runtime tuning.
-- [ ] Assert declared scene transitions equal runtime transitions.
-- [ ] Assert declared active kit IDs equal imported active kit IDs.
-- [ ] Assert source fingerprint is stable for identical inputs.
-- [ ] Fail Pages staging when an authoritative-looking file is copied but unconsumed.
-- [ ] Add a browser smoke that reads the host source fingerprint.
+- [ ] Derive tree collider rows only from admitted tree render rows.
+- [ ] Derive shard pickup rows only from admitted shard render rows.
+- [ ] Require stable source IDs across render, collider, pickup, and physics projections.
+- [ ] Assert exact tree-render/collider parity.
+- [ ] Assert exact shard-render/pickup parity.
+- [ ] Record deliberate render-only families such as grass and rocks explicitly.
 
-## Existing owners to update first
+### Phase 3: atomic generation commit
+
+- [ ] Prepare matrix arrays and projection rows detached from live pools.
+- [ ] Validate counts and IDs before mutation.
+- [ ] Commit all pool matrices, active counts, colliders, pickups, and physics rows under one `generationId`.
+- [ ] Keep the previous committed generation if planning or validation fails.
+- [ ] Produce an accepted/rejected commit result and state fingerprint.
+
+### Phase 4: observation and fixtures
+
+- [ ] Add population readback to `PrehistoricRushHost.getState()`.
+- [ ] Expose `windowKey`, `generationId`, capacities, counts, truncations, parity, and fingerprint.
+- [ ] Add dense-window, sparse-window, repeated-window, and capacity-overflow fixtures.
+- [ ] Prove identical inputs produce identical plans and fingerprints.
+- [ ] Prove failed generations do not partially mutate live state.
+- [ ] Prove no stale matrices are included in active draw counts.
+
+## Candidate kits
 
 ```txt
-src/game.js
-runner-tuning.json
-game-scenes.json
-kit-composition.json
-kit-cutover-inventory.json
-.github/workflows/deploy-pages.yml
-PrehistoricRushHost.getState()
+population-candidate-kit
+instance-pool-capacity-kit
+population-admission-kit
+population-plan-kit
+population-parity-kit
+population-generation-commit-kit
+population-fingerprint-kit
+population-observation-kit
+population-fixture-kit
 ```
 
-## New capability only where justified
+Update existing forest, grass, shard, physics, and host owners first. Add a new kit only where the responsibility is not already owned.
 
-```txt
-src/domains/source/runtime-source-manifest-kit.js
-src/domains/source/source-contract-validator-kit.js
-src/domains/source/source-fingerprint-kit.js
-src/domains/source/source-observation-kit.js
-scripts/prehistoric-rush-source-contract-fixture.mjs
+## Required fixture gate
+
+```bash
+node scripts/prehistoric-rush-population-plan-fixture.mjs
+node scripts/prehistoric-rush-population-capacity-fixture.mjs
+node scripts/prehistoric-rush-population-parity-fixture.mjs
+node scripts/prehistoric-rush-population-commit-fixture.mjs
 ```
 
-## Follow-on work
+After those pass independently, wire them into the repository validation and Pages staging gate.
+
+## Follow-on order
 
 ```txt
+runtime source-contract reconciliation
 restart/result/persistence transaction
-route-progress and goal authority
-best-distance writeback
-immutable external dependency admission
+immutable dependency admission
 mount/dispose/remount lifecycle
-camera-relative lighting and shadow frustum
+camera-relative lighting and shadow ownership
 ```
 
-## Stop conditions
+## Do not do next
 
-Do not add more visual content, new pickup families, new configuration files, another scene framework, or another kit inventory until the population and source-contract fixtures identify one runtime authority.
+Do not add more vegetation, pickups, colliders, visual systems, configuration files, or pool sizes as a workaround. Do not continue mutating live pools before a complete plan is validated.
