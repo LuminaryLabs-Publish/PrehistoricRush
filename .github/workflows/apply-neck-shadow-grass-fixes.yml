@@ -1,0 +1,119 @@
+name: Apply neck shadow and grass visual fixes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .agent/apply-neck-shadow-grass-fixes
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Apply scoped visual corrections
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/game.js')
+          text = path.read_text()
+
+          def replace_once(old, new, label):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              'const KITS_COMMIT = "ae7ebda62f7c264bbde49c939a62e1a04fd60784";',
+              'const KITS_COMMIT = "d6630367d557782d9ec965947aeb1c197d37ea15";',
+              'immutable Kits pin'
+          )
+
+          replace_once(
+              '    geometry.translate(0, 0.5, 0);\n    geometry.rotateY(Math.PI * index / planes);',
+              '    geometry.translate(0, 0.5, 0);\n    geometry.scale(0.62, 1, 1);\n    geometry.rotateY(Math.PI * index / planes);',
+              'grass card width'
+          )
+
+          replace_once(
+              '    fragmentShader: `uniform vec3 color;varying vec2 vUv;void main(){float a=(1.-smoothstep(.38,.5,abs(vUv.x-.5)))*smoothstep(0.,.18,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));if(a<.34)discard;gl_FragColor=vec4(color,1.);}`',
+              '    fragmentShader: `uniform vec3 color;varying vec2 vUv;void main(){float a=(1.-smoothstep(.16,.47,abs(vUv.x-.5)))*smoothstep(0.,.18,vUv.y)*(1.-smoothstep(.86,1.,vUv.y));if(a<.34)discard;float shade=mix(.82,1.18,smoothstep(0.,1.,vUv.y));gl_FragColor=vec4(color*shade,1.);}`',
+              'grass blade shading'
+          )
+
+          replace_once(
+              '  renderer.shadowMap.enabled = true;\n  renderer.outputColorSpace = THREE.SRGBColorSpace;',
+              '  renderer.shadowMap.enabled = true;\n  renderer.shadowMap.type = THREE.PCFSoftShadowMap;\n  renderer.outputColorSpace = THREE.SRGBColorSpace;',
+              'soft shadow map'
+          )
+
+          replace_once(
+              '  const sun = new THREE.DirectionalLight(0xffe6b2, 2.2);\n  sun.castShadow = true;\n  sun.shadow.mapSize.set(2048, 2048);\n  scene.add(sun, sun.target);',
+              '  const sun = new THREE.DirectionalLight(0xffe6b2, 2.2);\n  sun.castShadow = true;\n  sun.shadow.mapSize.set(2048, 2048);\n  sun.shadow.camera.left = -80;\n  sun.shadow.camera.right = 80;\n  sun.shadow.camera.top = 80;\n  sun.shadow.camera.bottom = -80;\n  sun.shadow.camera.near = 1;\n  sun.shadow.camera.far = 180;\n  sun.shadow.bias = -0.0004;\n  sun.shadow.normalBias = 0.06;\n  sun.shadow.camera.updateProjectionMatrix();\n  scene.add(sun, sun.target);',
+              'directional shadow volume'
+          )
+
+          replace_once(
+              '    trunk.castShadow = trunk.receiveShadow = true;\n    crown.castShadow = crown.receiveShadow = true;',
+              '    trunk.castShadow = trunk.receiveShadow = true;\n    crown.castShadow = false;\n    crown.receiveShadow = true;',
+              'crown shadow participation'
+          )
+
+          replace_once(
+              '    { capacity: 3600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x254f24), 3600) },\n    { capacity: 2600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x356d2e), 2600) },\n    { capacity: 1300, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4c8238), 1300) }',
+              '    { capacity: 3600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x3f7a37), 3600) },\n    { capacity: 2600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4f9340), 2600) },\n    { capacity: 1300, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x69a94d), 1300) }',
+              'grass colors'
+          )
+
+          replace_once(
+              '      renderer: "three-seeded-patch-streaming-smooth-camera-v6"',
+              '      renderer: "three-seeded-patch-streaming-neck-shadow-grass-v7"',
+              'renderer descriptor'
+          )
+
+          path.write_text(text)
+          PY
+
+          node --check src/game.js
+          grep -F 'const KITS_COMMIT = "d6630367d557782d9ec965947aeb1c197d37ea15";' src/game.js
+          grep -F 'crown.castShadow = false;' src/game.js
+          grep -F 'sun.shadow.camera.left = -80;' src/game.js
+          grep -F 'geometry.scale(0.62, 1, 1);' src/game.js
+          } 2>&1 | tee /tmp/neck-shadow-grass-fixes.log
+
+      - name: Commit visual corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .agent/neck-shadow-grass-fixes/workflow-error.log
+          git add src/game.js .agent/neck-shadow-grass-fixes/workflow-error.log 2>/dev/null || git add src/game.js
+          git commit -m "Fix creature neck seam shadows and grass cards"
+          git push origin HEAD:main
+
+      - name: Record failure
+        if: failure()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p .agent/neck-shadow-grass-fixes
+          cp /tmp/neck-shadow-grass-fixes.log .agent/neck-shadow-grass-fixes/workflow-error.log 2>/dev/null || echo "workflow failed before log creation" > .agent/neck-shadow-grass-fixes/workflow-error.log
+          git add .agent/neck-shadow-grass-fixes/workflow-error.log
+          git commit -m "Record neck shadow grass visual fix failure" || true
+          git push origin HEAD:main || true
