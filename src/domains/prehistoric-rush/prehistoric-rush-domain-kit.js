@@ -29,7 +29,8 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
   requireFactories(NexusEngineKits, [
     "createSeedKit",
     "createProceduralCreatureBodyKit",
-    "createInstancedRenderBatchKit"
+    "createInstancedRenderBatchKit",
+    "createSeededWorldPatchControllerKit"
   ], "Pinned NexusEngine-Kits module");
 
   const {
@@ -49,7 +50,8 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
   const {
     createSeedKit,
     createProceduralCreatureBodyKit,
-    createInstancedRenderBatchKit
+    createInstancedRenderBatchKit,
+    createSeededWorldPatchControllerKit
   } = NexusEngineKits;
 
   return [
@@ -77,6 +79,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createSeedKit({ seed: config.seed ?? 238991 }),
     createProceduralCreatureBodyKit({ creatures: [PLAYER_RAPTOR_PRESET] }),
     createInstancedRenderBatchKit(),
+    createSeededWorldPatchControllerKit(),
     createPrehistoricRushDomainKit(NexusEngine, config)
   ];
 }
@@ -186,7 +189,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     version: "0.4.0",
     stability: "game",
     services: ["run", "route", "surface", "score", "outcome", "player-creature"],
-    requires: ["n:procedural-creatures:body"],
+    requires: ["n:procedural-creatures:body", "world:seeded-patch-controller"],
     resources,
     events,
     systems: [{ phase: "simulate", name: "PrehistoricRushRunSystem", system }],
@@ -254,7 +257,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         snapshot: () => ({
           run: { ...getState(), collectedShardIds: [...getState().collectedShardIds] },
           route: route.snapshot(),
-          playerCreature: creatureBody.getSnapshot()
+          playerCreature: creatureBody.getSnapshot(),
+          patchStreaming: engine.n.seededWorldPatchController?.getSnapshot?.()
         })
       };
     },
@@ -275,7 +279,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "core-composition",
         "seed-kit",
         "procedural-creature-body-kit",
-        "instanced-render-batch-kit"
+        "instanced-render-batch-kit",
+        "seeded-world-patch-controller-kit"
       ],
       nestedKits: ["drunk-route-generator"]
     }
