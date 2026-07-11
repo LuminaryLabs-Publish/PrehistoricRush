@@ -1,19 +1,20 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T17-39-47-04-00`
+**Updated:** `2026-07-11T19-09-25-04-00`
 
 ## Summary
 
-Complete route/profile, patch activation and collider authority first. Then add world-readiness and movement admission so gameplay cannot outrun the patch consumers required by its next movement step. Committed-frame, reset-epoch and lifecycle work should consume that result rather than invent parallel world identities.
+Complete route/profile, patch activation and collider authority first. Then normalize stream work against elapsed time and visibility before world-readiness admission depends on that evidence. Committed-frame, reset-epoch and lifecycle work should consume the same clock and cadence revision.
 
 ## Plan ledger
 
-**Goal:** produce a route-safe, patch-consistent, collision-provable, stream-ready, frame-coherent and atomically restartable game.
+**Goal:** produce a route-safe, patch-consistent, cadence-stable, collision-provable, frame-coherent and atomically restartable game.
 
 - [ ] Complete P0 route/page/profile authority.
 - [ ] Complete P1 patch activation and release transactions.
 - [ ] Complete P1a exact collider retirement and collision admission.
-- [ ] Implement P1b world readiness and movement admission.
+- [ ] Implement P1b stream cadence and time-budget authority.
+- [ ] Implement P1c world readiness and movement admission.
 - [ ] Complete P2 committed-frame observation and detached host readback.
 - [ ] Implement P3 run/stream/collider/Worker/frame epoch reset authority.
 - [ ] Complete P4 startup rollback, resource ownership and disposal.
@@ -25,112 +26,131 @@ Complete route/profile, patch activation and collider authority first. Then add 
 1. Route Manifest + Profile Handoff Authority
 2. Patch Activation / Release Commit Authority
 3. Exact Collider Replacement + Collision Admission
-4. World Readiness + Movement Admission Authority
-5. Committed Frame Observation + Host Read Model
-6. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
-7. Runtime Lifecycle + Ordered Disposal
+4. Stream Cadence + Time Budget Authority
+5. World Readiness + Movement Admission Authority
+6. Committed Frame Observation + Host Read Model
+7. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
+8. Runtime Lifecycle + Ordered Disposal
 ```
 
 ## P1b implementation sequence
 
-### 1. Define the required corridor
+### 1. Define one runtime clock observation
 
 ```txt
-RequiredCorridor {
-  runSessionId
-  streamEpoch
-  origin
-  predictedEnd
-  routeIndexRange
-  patchIds
-  safetyHorizonSeconds
-  fingerprint
+RuntimeClockSample {
+  runtimeSessionId
+  frameId
+  wallNow
+  wallDelta
+  simulationDelta
+  visibilityState
+  visibilityRevision
+  cadenceRevision
 }
 ```
 
-Keep this smaller and stricter than desired, retained or prefetched membership.
+### 2. Replace raw per-frame stream budgets
 
-### 2. Add readiness receipts
-
-Each required patch must report:
+Current behavior:
 
 ```txt
-patch content identity
-controller membership revision
-terrain consumer revision
-height source revision
-collider descriptor revision
-Rapier membership revision
-pickup consumer revision
-render consumer revision
+pump maximum: 2 with Worker, 1 with fallback, per RAF
+activation maximum: 1 per RAF
 ```
 
-### 3. Classify readiness
+Target behavior:
 
 ```txt
-READY
-DEGRADED_DECLARED
-SPEED_CAPPED
-DEFERRED
-FAILED
+generation work admitted from an elapsed-time budget
+activation work admitted from an elapsed-time budget
+hard per-frame ceilings retained to prevent long stalls
+unused credit bounded so hidden tabs cannot bank unlimited work
 ```
 
-Silent fallback-height consumption is not an accepted state.
+### 3. Add backlog age and fairness
 
-### 4. Move admission before simulation mutation
+Each queued, inflight and ready item should expose:
 
 ```txt
-input snapshot
-  -> corridor prediction
-  -> readiness evaluation
-  -> movement policy
-  -> engine simulation application
-  -> physics step
-  -> render and HUD
-  -> committed frame record
+request identity
+patch identity
+queued timestamp
+started timestamp
+ready timestamp
+oldest age
+priority class
+admission reason
+cadence revision
 ```
 
-### 5. Preserve deterministic runner feel
+- [ ] Prevent starvation of required-route patches.
+- [ ] Keep prefetch work subordinate to required active work.
+- [ ] Bound catch-up after throttling or visibility restore.
+- [ ] Reject obsolete work through the planned stream epoch.
 
-- [ ] Use a bounded look-ahead horizon.
-- [ ] Cap speed before the readiness frontier rather than freezing too late.
-- [ ] Keep steering/jump input responsive while forward motion is deferred by policy.
-- [ ] Surface detached readiness state in HUD diagnostics.
-- [ ] Resume full speed only after consumer commit acknowledgement.
+### 4. Define simulation-step policy
 
-### 6. Reject stale and partial evidence
+Choose and document one policy:
 
-- [ ] Reject Worker results from another stream epoch.
-- [ ] Reject partial patch activation as movement-ready.
-- [ ] Reject collider or render receipts for another patch revision.
-- [ ] Reject frame commit when world readiness changed during submission.
+```txt
+fixed-step accumulator with bounded substeps
+or
+normalized variable step with cadence parity proof
+```
+
+The policy must cover run movement, jump integration, Rapier timestep, camera update and animation time. It must state what happens when wall delta exceeds the maximum admitted simulation interval.
+
+### 5. Define suspension and resume
+
+```txt
+visible -> hidden
+  freeze new gameplay command admission
+  stop or sharply limit nonessential stream work
+  retain bounded required state
+
+hidden -> visible
+  advance visibility revision
+  reject stale results
+  prepare bounded catch-up plan
+  commit one coherent world/frame revision
+  resume input after first visible-frame acknowledgement
+```
+
+### 6. Connect cadence to world readiness
+
+- [ ] Required-corridor readiness must include cadence revision.
+- [ ] Speed cap/defer policy must distinguish world latency from browser throttling.
+- [ ] HUD diagnostics must report backlog age and actual admitted work.
+- [ ] Frame commit must cite clock, cadence and world revisions.
 
 ## Required fixtures
 
 ```bash
-node scripts/prehistoric-rush-required-corridor-fixture.mjs
-node scripts/prehistoric-rush-delayed-patch-movement-fixture.mjs
-node scripts/prehistoric-rush-reordered-patch-delivery-fixture.mjs
-node scripts/prehistoric-rush-partial-consumer-readiness-fixture.mjs
-node scripts/prehistoric-rush-fallback-height-policy-fixture.mjs
-node scripts/prehistoric-rush-readiness-speed-cap-fixture.mjs
-node scripts/prehistoric-rush-readiness-rollback-fixture.mjs
-node scripts/prehistoric-rush-world-frame-parity-fixture.mjs
-node scripts/prehistoric-rush-browser-stream-latency-smoke.mjs
-node scripts/prehistoric-rush-pages-stream-latency-smoke.mjs
+node scripts/prehistoric-rush-cadence-30-60-120-fixture.mjs
+node scripts/prehistoric-rush-stream-time-budget-fixture.mjs
+node scripts/prehistoric-rush-generation-start-rate-fixture.mjs
+node scripts/prehistoric-rush-activation-rate-fixture.mjs
+node scripts/prehistoric-rush-throttled-frame-fixture.mjs
+node scripts/prehistoric-rush-hidden-tab-resume-fixture.mjs
+node scripts/prehistoric-rush-backlog-starvation-fixture.mjs
+node scripts/prehistoric-rush-cadence-world-readiness-fixture.mjs
+node scripts/prehistoric-rush-browser-refresh-parity-smoke.mjs
+node scripts/prehistoric-rush-pages-refresh-parity-smoke.mjs
 ```
 
 ## Acceptance conditions
 
 ```txt
-movement never enters an uncommitted required patch
-fallback height is either removed from movement authority or explicitly classified
-terrain, collision, pickups and rendering share the admitted patch revision
-stream lag results in deterministic cap/defer behavior
-no late patch can introduce an invisible-before-visible obstacle contradiction
-HUD and host report the same readiness revision as the visible frame
+equal wall time at 30, 60 and 120 Hz yields equivalent simulation and stream readiness
+per-second generation and activation remain within declared tolerances
+low-refresh behavior is explicit and bounded
+hidden-tab suspension cannot bank unlimited credits or stale completions
+resume cannot publish a mixed pre-suspend and post-resume frame
+world readiness and movement admission consume the same cadence revision
+HUD and host report actual time budgets, backlog age and first-visible-frame result
 ```
 
 ## Do not do next
 
-Do not add a second streamer, movement loop, height generator or collision system. Do not equate controller desired membership with readiness. Do not make all retained or prefetched patches blocking requirements; only the bounded required corridor gates movement.
+Do not create a second RAF, patch controller, Worker queue or movement clock. Do not convert per-frame limits into unbounded catch-up. Do not let prefetch work consume the required-route budget. Do not claim cadence parity from average FPS alone.
