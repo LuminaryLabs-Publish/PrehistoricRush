@@ -1,102 +1,119 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T00-39-25-04-00`  
+**Last aligned:** `2026-07-11T02-41-37-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
+
+## Summary
+
+`PrehistoricRush` now uses the official seeded world patch controller, deterministic product patch generation, optional Worker execution and stable tree instance batches. The next blocker is no longer patch scheduling; it is proving one atomic activation across terrain, vegetation, pickups, gameplay colliders, Rapier colliders and height sampling.
+
+## Plan ledger
+
+**Goal:** Preserve the new streaming architecture while adding a validated, observable and lifecycle-safe boundary between generated patch delivery and runtime consumption.
+
+- [x] Document the new controller, generator, Worker and batch integrations.
+- [x] Identify the interaction loop, domains, services and kits.
+- [x] Record render, gameplay, interaction, streaming and deployment gaps.
+- [ ] Add patch-content admission and validation.
+- [ ] Add Worker/session epochs and stale-result policy.
+- [ ] Add detached activation plans and atomic consumer commit.
+- [ ] Add controller/consumer parity snapshots.
+- [ ] Add reset/dispose ownership and fixtures.
 
 ## Current implementation gate
 
 ```txt
-PrehistoricRush Procedural Creature Consumption Authority
-+ Pinned Module Graph / Descriptor-Adapter Fixture Gate
+PrehistoricRush Seeded Patch Activation Authority
++ Worker / Render / Physics Parity Fixture Gate
 ```
 
-## Immediate companion gate
+## Read first
 
 ```txt
-PrehistoricRush Core-Kit Consumption Authority
-+ Kit-Graph / Thin-Adapter Fixture Gate
+.agent/trackers/2026-07-11T02-41-37-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T02-41-37-04-00.md
+.agent/current-audit.md
+.agent/known-gaps.md
+.agent/next-steps.md
+.agent/validation.md
+.agent/kit-registry.json
+.agent/architecture-audit/2026-07-11T02-41-37-04-00-seeded-patch-streaming-dsk-map.md
+.agent/render-audit/2026-07-11T02-41-37-04-00-patch-activation-render-parity-gap.md
+.agent/gameplay-audit/2026-07-11T02-41-37-04-00-run-stream-physics-loop.md
+.agent/interaction-audit/2026-07-11T02-41-37-04-00-focus-queue-activation-map.md
+.agent/world-streaming-audit/2026-07-11T02-41-37-04-00-worker-cache-consumer-transaction-contract.md
+.agent/deploy-audit/2026-07-11T02-41-37-04-00-patch-streaming-fixture-gate.md
+```
+
+Prior active audits:
+
+```txt
+.agent/creature-system-audit/2026-07-11T00-39-25-04-00-body-preset-descriptor-adapter-contract.md
+.agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
+.agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
 ```
 
 ## Selection
 
 The accessible `LuminaryLabs-Publish` inventory contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are centrally tracked and have root `.agent` state.
 
-`PrehistoricRush` was selected before the oldest-documented fallback because six runtime commits newer than its prior audit replaced the local procedural dinosaur generator with the official pinned `procedural-creature-body-kit`, added the product-owned player raptor preset, pinned the engine/kit sources and added the import map required by the shared kit.
+`PrehistoricRush` was selected because its prior audit was the oldest eligible record and six newer runtime commits installed stable tree batches, the seeded patch controller, deterministic patch generation, Worker execution and cached budgeted streaming.
 
 Only `LuminaryLabs-Publish/PrehistoricRush` was changed.
 
-## Read first
-
-```txt
-.agent/trackers/2026-07-11T00-39-25-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T00-39-25-04-00.md
-.agent/current-audit.md
-.agent/known-gaps.md
-.agent/next-steps.md
-.agent/validation.md
-.agent/kit-registry.json
-.agent/architecture-audit/2026-07-11T00-39-25-04-00-procedural-creature-consumption-dsk-map.md
-.agent/render-audit/2026-07-11T00-39-25-04-00-descriptor-three-binding-lifecycle-gap.md
-.agent/gameplay-audit/2026-07-11T00-39-25-04-00-run-pose-collision-consumption-loop.md
-.agent/interaction-audit/2026-07-11T00-39-25-04-00-input-run-pose-render-correlation-map.md
-.agent/creature-system-audit/2026-07-11T00-39-25-04-00-body-preset-descriptor-adapter-contract.md
-.agent/deploy-audit/2026-07-11T00-39-25-04-00-pinned-module-descriptor-fixture-gate.md
-```
-
-The prior core-kit composition and population-capacity audits remain active:
-
-```txt
-.agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
-.agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
-```
-
 ## Product read
 
-`PrehistoricRush` is a browser 3D infinite runner composed through Nexus Engine. The player follows a deterministic route, steers and boosts, jumps over hazards, collects shards and reaches a distance goal while streamed terrain, trees and layered grass move around a procedural skinned raptor.
+`PrehistoricRush` is a browser 3D runner. The player steers, boosts and jumps along a deterministic route while terrain, trees, grass, shards and hazards stream around a procedural skinned raptor.
 
 ## Active interaction loop
 
 ```txt
-index import map and pinned CDN loader
-  -> install 12 core kits, seed-kit, procedural-creature-body-kit and prehistoric-rush-domain-kit
-  -> normalize PLAYER_RAPTOR_PRESET
-  -> generate deterministic body/skeleton/skinning/collision descriptor
-  -> build Three SkinnedMesh and Rapier actor from that descriptor
-  -> browser input forwards run intent
-  -> engine.tick advances run state
-  -> adapter updates terrain, population and physics
-  -> official kit creates pose descriptor
-  -> Three adapter applies pose and renders
-  -> HUD and host publish aggregate state
+pinned browser module graph
+  -> install 12 core kits
+  -> install seed, creature, instance-batch and seeded-patch-controller kits
+  -> install prehistoric-rush-domain-kit 0.4.0
+  -> build deterministic product patch generator
+  -> initialize optional module Worker executor
+  -> create controller with active/retain/prefetch/cache/budget policy
+  -> prime center patch
+  -> browser input and engine.tick advance run state
+  -> focus updates desired patch sets
+  -> controller releases, queues, generates and delivers ready patches
+  -> adapter activates at most one patch per frame
+  -> terrain, trees, grass, shards, colliders and height source update
+  -> Rapier, creature pose, camera, render, HUD and host update
   -> RAF repeats
 ```
 
 ## Current finding
 
-The migration has the correct ownership split:
+The new ownership split is correct:
 
 ```txt
-product repo owns raptor configuration
-official kit owns reusable descriptor generation
-game domain owns run state and player-creature selection
-Three adapter owns renderer objects
-Rapier adapter owns physics consumption
+seeded-world-patch-controller-kit owns identity, cache and scheduling
+prehistoric-patch-generator owns deterministic content
+Worker adapter owns optional execution
+instanced-render-batch-kit owns stable tree batch capacity and cell updates
+Three/Rapier adapters own runtime consumption
 ```
 
-The route does not yet prove that chain. The import map and runtime constants are separate source authorities; descriptor validation, Three binding, pose application, Rapier collision, resource disposal and host readback have no typed correlated results. A visible raptor therefore does not prove source identity, hash continuity, skeleton/skin validity, collision parity or cleanup.
+The controller marks a delivered patch active before the host proves that every consumer committed it. `activatePatch()` then mutates terrain, tree batches, grass, shards, gameplay colliders, Rapier colliders and height sampling in sequence with no preflight, rollback, typed result or shared revision. Controller snapshots can therefore lead render/physics truth.
+
+The Worker executor also has no retained teardown owner or stream-session epoch, `pump()` has no explicit inflight ceiling, and every activation/release still rebuilds all active grass, shards and colliders on the main thread.
 
 ## Safe implementation order
 
 ```txt
-1. One immutable module graph and source-admission result.
-2. Product preset and descriptor validation with stable fingerprints.
-3. Named Three prepare/update/dispose adapter and render-binding result.
-4. Pose and collision consumption rows tied to run/frame sequence.
-5. JSON-safe creature host observation and deterministic fixtures.
-6. Reconcile creature consumption with the core-kit consumption ledger.
-7. Restore immutable population capacities and atomic generation commit.
-8. Add typed run commands, lifecycle disposal and committed-frame publication.
+1. Version and validate the patch-content contract.
+2. Add stream/Worker session identity and stale-result admission.
+3. Build a detached activation plan with capacity preflight.
+4. Commit terrain, tree, grass, shard, collider and height consumers atomically.
+5. Publish controller-active versus consumer-active parity.
+6. Add bounded generation/activation/lifecycle journals.
+7. Add idempotent Worker/controller/adapter disposal.
+8. Add Node fixtures, then browser and Pages streaming smoke.
+9. Continue the existing creature, composition and command authority work.
 ```
 
-Do not reintroduce a local generator, move product raptor configuration into the shared kit, add new creature archetypes, or expand visuals before the current descriptor-consumption boundary is observable and tested.
+Do not duplicate the official patch controller or instance-batch kit, expand the active radius, add more population, or treat a controller-active ID as proof that the rendered and physical world is committed.
