@@ -1,101 +1,102 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-10T23-08-11-04-00`
-
-**Repository:** `LuminaryLabs-Publish/PrehistoricRush`
-
+**Last aligned:** `2026-07-11T00-39-25-04-00`  
+**Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Current implementation gate
+
+```txt
+PrehistoricRush Procedural Creature Consumption Authority
++ Pinned Module Graph / Descriptor-Adapter Fixture Gate
+```
+
+## Immediate companion gate
 
 ```txt
 PrehistoricRush Core-Kit Consumption Authority
 + Kit-Graph / Thin-Adapter Fixture Gate
 ```
 
-The runtime was refactored after the prior audit. It now installs one `prehistoric-rush-domain-kit`, two nested specialized kits, and twelve Nexus Engine core kits, but the browser host still directly owns input capture, Rapier setup, terrain, population, camera, animation calls, rendering, HUD, frame scheduling, and diagnostics. Only scene transitions are visibly routed through a composed core service.
-
 ## Selection
 
-The accessible `LuminaryLabs-Publish` installation contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories have a central ledger and root `.agent` state.
+The accessible `LuminaryLabs-Publish` inventory contains ten repositories. `TheCavalryOfRome` remains excluded. All nine eligible repositories are centrally tracked and have root `.agent` state.
 
-`PrehistoricRush` was selected before the oldest-document fallback because its runtime changed after its latest central audit:
+`PrehistoricRush` was selected before the oldest-documented fallback because six runtime commits newer than its prior audit replaced the local procedural dinosaur generator with the official pinned `procedural-creature-body-kit`, added the product-owned player raptor preset, pinned the engine/kit sources and added the import map required by the shared kit.
 
-```txt
-central ledger last updated: 2026-07-10T22-42-00-04-00
-runtime refactor completed: 2026-07-10T23-02-57-04-00
-selection reason: current architecture and kit graph were undocumented
-```
-
-## Active interaction loop
-
-```txt
-index.html
-  -> src/runtime.mjs
-  -> src/game.js
-  -> import NexusEngine@main, Three.js, Rapier, and rapier-physics-domain-kit@main
-  -> createPrehistoricRushKitGraph()
-  -> install 12 core kits + prehistoric-rush-domain-kit
-  -> create inline browser/Rapier/Three adapter
-  -> start run and populate current 7 x 7 chunk window
-  -> browser input mutates local input state and calls game.setInput()
-  -> engine.tick(dt) advances the game-domain run system
-  -> adapter updates terrain/population/physics contacts/pickups
-  -> adapter projects dino pose, camera, HUD, and render frame
-  -> requestAnimationFrame schedules the next frame
-  -> PrehistoricRushHost exposes live engine/physics/adapter references and aggregate snapshots
-```
-
-## Main finding
-
-The composition graph is declared, but service consumption is not authoritative or observable.
-
-```txt
-core-input        installed, browser listeners bypass it
-core-physics      installed, external Rapier bridge lives outside it
-core-motion       installed, run movement is custom domain mutation
-core-camera       installed, Three camera is updated inline
-core-animation    installed, dino pose is applied inline
-core-graphics     installed, Three renderer is called inline
-core-skybox       installed, no core skybox consumer is visible
-core-ui           installed, DOM/HUD are inline
-core-diagnostics  installed, host readback is custom and incomplete
-core-composition  installed, graph exists but consumption rows are absent
-core-scene        installed and directly used for transitions
-core-spatial      installed with no visible runtime consumer
-```
-
-The refactor also retained the streamed-population mutation path. Tree, grass, and shard pools use mutable `InstancedMesh.count` as the next population ceiling after overwriting it with the previous active count, so population capacity can shrink between windows.
+Only `LuminaryLabs-Publish/PrehistoricRush` was changed.
 
 ## Read first
 
 ```txt
+.agent/trackers/2026-07-11T00-39-25-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T00-39-25-04-00.md
 .agent/current-audit.md
-.agent/next-steps.md
 .agent/known-gaps.md
+.agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-10T23-08-11-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-10T23-08-11-04-00.md
-.agent/architecture-audit/2026-07-10T23-08-11-04-00-core-kit-consumption-authority-dsk-map.md
-.agent/render-audit/2026-07-10T23-08-11-04-00-thin-render-adapter-consumption-gap.md
-.agent/gameplay-audit/2026-07-10T23-08-11-04-00-domain-run-adapter-contact-loop.md
-.agent/interaction-audit/2026-07-10T23-08-11-04-00-browser-input-core-action-bypass-map.md
-.agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
-.agent/deploy-audit/2026-07-10T23-08-11-04-00-kit-graph-adapter-fixture-gate.md
+.agent/architecture-audit/2026-07-11T00-39-25-04-00-procedural-creature-consumption-dsk-map.md
+.agent/render-audit/2026-07-11T00-39-25-04-00-descriptor-three-binding-lifecycle-gap.md
+.agent/gameplay-audit/2026-07-11T00-39-25-04-00-run-pose-collision-consumption-loop.md
+.agent/interaction-audit/2026-07-11T00-39-25-04-00-input-run-pose-render-correlation-map.md
+.agent/creature-system-audit/2026-07-11T00-39-25-04-00-body-preset-descriptor-adapter-contract.md
+.agent/deploy-audit/2026-07-11T00-39-25-04-00-pinned-module-descriptor-fixture-gate.md
 ```
 
-## Safe order
+The prior core-kit composition and population-capacity audits remain active:
 
 ```txt
-1. Freeze and expose a composition manifest.
-2. Record declared, installed, available, consumed, replaced, and unused status per kit.
-3. Route browser input and Rapier through explicit adapters with typed results.
-4. Remove unused core kits or make their service consumption real.
-5. Pin NexusEngine and ProtoKit source revisions.
-6. Add a DOM-free kit-graph fixture.
-7. Add a browser adapter-consumption smoke.
-8. Return to population admission using immutable allocation capacities.
+.agent/composition-authority-audit/2026-07-10T23-08-11-04-00-declared-installed-consumed-contract.md
+.agent/population-system-audit/2026-07-10T22-42-00-04-00-capacity-generation-commit-contract.md
 ```
 
-Documentation only. This pass did not alter runtime source, dependencies, rendering, physics, routes, or deployment behavior.
+## Product read
+
+`PrehistoricRush` is a browser 3D infinite runner composed through Nexus Engine. The player follows a deterministic route, steers and boosts, jumps over hazards, collects shards and reaches a distance goal while streamed terrain, trees and layered grass move around a procedural skinned raptor.
+
+## Active interaction loop
+
+```txt
+index import map and pinned CDN loader
+  -> install 12 core kits, seed-kit, procedural-creature-body-kit and prehistoric-rush-domain-kit
+  -> normalize PLAYER_RAPTOR_PRESET
+  -> generate deterministic body/skeleton/skinning/collision descriptor
+  -> build Three SkinnedMesh and Rapier actor from that descriptor
+  -> browser input forwards run intent
+  -> engine.tick advances run state
+  -> adapter updates terrain, population and physics
+  -> official kit creates pose descriptor
+  -> Three adapter applies pose and renders
+  -> HUD and host publish aggregate state
+  -> RAF repeats
+```
+
+## Current finding
+
+The migration has the correct ownership split:
+
+```txt
+product repo owns raptor configuration
+official kit owns reusable descriptor generation
+game domain owns run state and player-creature selection
+Three adapter owns renderer objects
+Rapier adapter owns physics consumption
+```
+
+The route does not yet prove that chain. The import map and runtime constants are separate source authorities; descriptor validation, Three binding, pose application, Rapier collision, resource disposal and host readback have no typed correlated results. A visible raptor therefore does not prove source identity, hash continuity, skeleton/skin validity, collision parity or cleanup.
+
+## Safe implementation order
+
+```txt
+1. One immutable module graph and source-admission result.
+2. Product preset and descriptor validation with stable fingerprints.
+3. Named Three prepare/update/dispose adapter and render-binding result.
+4. Pose and collision consumption rows tied to run/frame sequence.
+5. JSON-safe creature host observation and deterministic fixtures.
+6. Reconcile creature consumption with the core-kit consumption ledger.
+7. Restore immutable population capacities and atomic generation commit.
+8. Add typed run commands, lifecycle disposal and committed-frame publication.
+```
+
+Do not reintroduce a local generator, move product raptor configuration into the shared kit, add new creature archetypes, or expand visuals before the current descriptor-consumption boundary is observable and tested.
