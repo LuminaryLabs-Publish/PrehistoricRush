@@ -1,139 +1,123 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T02-41-37-04-00`
+**Updated:** `2026-07-11T02-48-17-04-00`
 
-## Summary
+## Goal
 
-Preserve the official seeded patch controller, stable instance-batch kit and deterministic generator. Implement the missing product boundary that validates generated content, coordinates Worker/session lifecycle and commits all render, gameplay, height and physics consumers under one activation revision.
+Add one authoritative start/retry transaction that resets run-owned state, explicitly retains or clears world-owned state, fences asynchronous deliveries and proves the first committed frame of the new run.
+
+## Immediate safe ledge
+
+```txt
+PrehistoricRush Run Session Reset Authority
++ Retry / Stream Epoch Fixture Gate
+```
 
 ## Plan ledger
 
-**Goal:** Make patch streaming atomic, bounded, gameplay-safe and observable while keeping existing domain ownership intact.
+### Phase 0: preserve the existing P0 patch boundary
 
-### Phase 0: preserve ownership
+- [ ] Add a versioned patch-content contract and admission result.
+- [ ] Add detached patch activation/release plans.
+- [ ] Preflight terrain, tree, grass, shard, collider and height consumers.
+- [ ] Commit or roll back all consumers together.
+- [ ] Reconcile controller-active and consumer-active sets.
 
-- [ ] Keep patch identity, cache, desired sets, priority, ready delivery and eviction in `seeded-world-patch-controller-kit`.
-- [ ] Keep tree cell capacity/replacement/release in `instanced-render-batch-kit`.
-- [ ] Keep terrain/vegetation/pickup/collider content in the product patch generator.
-- [ ] Keep Three and Rapier object ownership in product adapters.
-- [ ] Do not create duplicate controller, cache, prefetch or batch kits.
+### Phase 1: define run and stream identity
 
-### Phase 1: version and validate patch content
+- [ ] Add a monotonic `runSessionId` separate from the existing numeric `runId`.
+- [ ] Add a `streamEpoch` for controller/Worker delivery admission.
+- [ ] Define the relationship among world seed, generator version, controller ID, stream epoch and run session.
+- [ ] Include both identities in start, activation, collision, pickup, render and host evidence.
+- [ ] Reject or quarantine stale dynamic deliveries.
 
-- [ ] Add a product `patchSchemaVersion` and generator-content version.
-- [ ] Validate patch ID, coordinates, cache key and generator version.
-- [ ] Validate terrain array types, exact lengths and finite values.
-- [ ] Validate tree/grass matrices and stable unique IDs.
-- [ ] Validate pickup/collider IDs, dimensions and patch bounds.
-- [ ] Compute a stable patch-content fingerprint.
-- [ ] Return typed accepted/rejected generation-admission results.
+### Phase 2: declare retention policy
 
-### Phase 2: own Worker and stream sessions
+- [ ] Classify patch payload/cache records as immutable world-owned data.
+- [ ] Classify pickup visibility, active colliders, contacts, input, camera and frame journals as run-owned data.
+- [ ] Decide whether active terrain/tree bindings are retained or re-committed on retry.
+- [ ] Return a typed retained/reset/rebuilt/rejected decision for every owner.
+- [ ] Never clear the deterministic cache merely to simulate a reset.
 
-- [ ] Create a `streamSessionId` for boot/remount lifecycle.
-- [ ] Retain Worker ready state and wait for initialization acknowledgement.
-- [ ] Carry session/worker epoch through generation requests and results.
-- [ ] Define when a late result may enter cache and when it must not activate.
-- [ ] Add an explicit maximum inflight request count.
-- [ ] Retain the message executor and its `dispose()` operation.
-- [ ] Make reset/dispose terminal and idempotent.
-- [ ] Reject post-dispose generation and activation requests.
+### Phase 3: build the start/reset transaction
 
-### Phase 3: build detached activation plans
+- [ ] Prepare the next run state without publishing it.
+- [ ] Clear browser input latches and pending jump intent.
+- [ ] Reconcile active pickups from the new empty collected-ID set.
+- [ ] Rebuild gameplay and Rapier collider projections for the admitted active patch set.
+- [ ] Reset actor/contact state.
+- [ ] Reset camera interpolation and frame-local presentation state.
+- [ ] Commit the new run only after required consumers acknowledge.
+- [ ] Roll back to the prior terminal state if preparation fails.
 
-- [ ] Claim a ready patch without treating it as consumer-active.
-- [ ] Reserve a terrain slot before any live mutation.
-- [ ] Preflight tree batch capacities and IDs.
-- [ ] Preflight grass layer and shard capacities with admitted/rejected IDs.
-- [ ] Build gameplay and Rapier collider plans from the same patch set.
-- [ ] Build a height-source transition plan.
-- [ ] Compute one immutable activation-plan fingerprint.
-- [ ] Reject the plan before mutation if any required invariant fails.
+### Phase 4: own Worker and lifecycle state
 
-### Phase 4: commit every consumer atomically
+- [ ] Retain the message executor and Worker as named session resources.
+- [ ] Add an explicit inflight ceiling.
+- [ ] Tag requests/results with stream epoch.
+- [ ] Cancel, reject or quarantine pending results on restart/dispose.
+- [ ] Add ordered idempotent `stop`, `dispose` and `restart` operations.
+- [ ] Reject post-dispose input, generation, activation and render calls.
 
-- [ ] Commit terrain attributes, transform, visibility and bounds.
-- [ ] Commit tree cell replacements and batch flushes.
-- [ ] Commit grass and shard matrices/counts/bounds.
-- [ ] Commit gameplay collider and pickup rows.
-- [ ] Commit Rapier fixed colliders.
-- [ ] Commit patch height-source state.
-- [ ] Publish one activation result with per-consumer rows.
-- [ ] Update consumer-active patch IDs only after success.
-- [ ] Roll back or repair all consumers on failure.
-- [ ] Add an equivalent typed release transaction.
+### Phase 5: publish evidence
 
-### Phase 5: make gameplay readiness explicit
+- [ ] Add typed `run-start-result` and `run-reset-result` rows.
+- [ ] Record cache retention and dynamic-content reconciliation decisions.
+- [ ] Record stale Worker/controller result outcomes.
+- [ ] Publish first committed frame with run session, stream epoch, patch revision and physics revision.
+- [ ] Remove live engine, adapter, controller and physics owners from public readback.
+- [ ] Bound every journal.
 
-- [ ] Publish player patch and forward safety-ring readiness.
-- [ ] Distinguish generated, controller-ready and consumer-active states.
-- [ ] Record fallback versus committed-patch height source.
-- [ ] Record fallback-to-patch height delta and continuity decision.
-- [ ] Define deterministic slow/hold/fallback behavior when required patches are not collider-complete.
-- [ ] Correlate collision and pickup outcomes with patch and activation IDs.
+### Phase 6: fixture gates
 
-### Phase 6: observe and prove parity
-
-- [ ] Publish controller-active and consumer-active sets separately.
-- [ ] Publish per-consumer counts, capacities, rejected IDs and revisions.
-- [ ] Publish Worker ready/pending/error/lifecycle state.
-- [ ] Add a bounded stream lifecycle journal.
-- [ ] Add one patch-streaming parity fingerprint.
-- [ ] Remove or demote live mutable owners from public host readback.
-- [ ] Ensure all public snapshots are structured-clone safe.
-
-### Phase 7: fixture gates
-
-- [ ] Add deterministic generator and neighboring-edge fixtures.
-- [ ] Add invalid payload rejection fixtures.
-- [ ] Add controller focus/prefetch/retain/cache/eviction fixtures.
-- [ ] Add Worker ready, out-of-order, late-result and disposal fixtures.
-- [ ] Add activation success, capacity rejection and rollback fixtures.
-- [ ] Add controller/render/gameplay/Rapier parity fixtures.
-- [ ] Add height continuity and stream-readiness fixtures.
-- [ ] Add restart/remount/dispose lifecycle fixtures.
-- [ ] Add browser smoke across repeated patch boundaries.
+- [ ] Retry after collecting a shard without leaving the current active patch set.
+- [ ] Retry after collision while Worker requests are pending.
+- [ ] Retry after moving far enough to release patches.
+- [ ] Retry repeatedly and prove stable cache size and no duplicate RAF/listeners.
+- [ ] Deliver a stale Worker result after a new stream epoch and prove quarantine.
+- [ ] Prove first-frame pickup, collider, height and render parity.
+- [ ] Prove stop/dispose/restart idempotency.
+- [ ] Add deployed browser and Pages smoke.
 
 ## Candidate kits
 
 ```txt
-prehistoric-patch-content-contract-kit
-patch-worker-session-kit
-patch-generation-admission-result-kit
-patch-activation-plan-kit
-patch-consumer-transaction-kit
-patch-height-source-transition-kit
-patch-consumer-parity-kit
-patch-streaming-lifecycle-journal-kit
-patch-streaming-host-observation-kit
-patch-streaming-fixture-kit
+run-session-authority-kit
+run-start-reset-transaction-kit
+world-cache-retention-policy-kit
+stream-epoch-admission-kit
+dynamic-content-reconciliation-kit
+physics-contact-reset-kit
+camera-frame-reset-kit
+stale-worker-result-quarantine-kit
+run-session-observation-kit
+retry-stream-epoch-fixture-kit
 ```
 
-Use existing parent domains and adapters first. Promote a new kit only when the responsibility is coherent, reusable and not already owned upstream.
+Update `prehistoric-rush-domain-kit` and the existing host adapters first. Add a new reusable kit only where no current domain owns the responsibility.
 
 ## Required future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-module-graph-fixture.mjs
-node scripts/prehistoric-rush-patch-generator-fixture.mjs
-node scripts/prehistoric-rush-patch-controller-fixture.mjs
-node scripts/prehistoric-rush-patch-worker-fixture.mjs
 node scripts/prehistoric-rush-patch-activation-fixture.mjs
-node scripts/prehistoric-rush-patch-parity-fixture.mjs
-node scripts/prehistoric-rush-stream-readiness-fixture.mjs
-node scripts/prehistoric-rush-stream-lifecycle-fixture.mjs
+node scripts/prehistoric-rush-retry-reset-fixture.mjs
+node scripts/prehistoric-rush-stream-epoch-fixture.mjs
+node scripts/prehistoric-rush-dynamic-content-reconciliation-fixture.mjs
+node scripts/prehistoric-rush-lifecycle-fixture.mjs
 ```
 
 ## Follow-on order
 
 ```txt
-1. procedural creature descriptor/render/physics consumption authority
-2. core-kit declared/installed/consumed/replaced reconciliation
-3. typed run commands, transitions and outcome journal
-4. committed-frame and browser-host lifecycle authority
-5. visual fidelity and larger world content only after proof gates
+1. Patch-content admission and atomic activation.
+2. Run-session reset and world-cache retention.
+3. Worker/stream epoch and stale-result policy.
+4. Stream readiness for height, hazards and pickups.
+5. JSON-safe committed-frame observation.
+6. Creature and core-kit consumption authority.
+7. Typed run commands and transition results.
 ```
 
 ## Do not do next
 
-Do not increase the active radius, generation budget or population density; add more tree/grass/shard types; replace the official controller; or claim the Worker removed all frame hitch risk before activation cost, parity and lifecycle are executable and observable.
+Do not add trees, grass, shards, creatures or route radius; do not clear all caches as a substitute for a reset contract; do not duplicate the official controller; and do not treat `game.start()` or a changed `runId` as proof that every consumer reset.
