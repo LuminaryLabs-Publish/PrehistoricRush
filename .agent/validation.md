@@ -1,23 +1,24 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T10-58-10-04-00`
+**Updated:** `2026-07-11T12-39-53-04-00`
 
 ## Scope
 
-Documentation-only audit of the new menu, character-creator, shared player profile and game-page entry runtimes, with emphasis on page artifact integrity, durable profile commit, cross-context synchronization and profile consumption by the existing 3D game.
+Documentation-only audit of browser runtime startup, retry, RAF/listener ownership, Worker/executor quarantine, stream epochs, Three/Rapier resource ownership, public host revocation and terminal disposal.
 
 ## Plan ledger
 
-**Goal:** separate source-confirmed facts from executable proof and define the exact route/profile gates required before customization is treated as functional.
+**Goal:** separate source-confirmed lifecycle facts from executable proof and define the exact gates required before restart or teardown safety is claimed.
 
-- [x] Verify the current root and explicit menu routes.
-- [x] Verify menu navigation targets.
-- [x] Verify the profile schema and store services.
-- [x] Verify the creator draft/debounce path.
-- [x] Verify the game entry and current static creature source.
+- [x] Verify module and runtime construction order.
+- [x] Verify Worker creation and patch Worker protocol.
+- [x] Verify retry behavior.
+- [x] Verify listener and RAF registration.
+- [x] Verify public host exposure.
+- [x] Verify absence of explicit terminal disposal in current source.
 - [x] Verify domains, kits and services.
 - [x] Add required documentation outputs.
-- [ ] Execute Node, browser and Pages fixtures after implementation.
+- [ ] Execute Node and browser lifecycle fixtures after implementation.
 
 ## Selection verification
 
@@ -26,8 +27,9 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 central ledger entries: 9/9
 root .agent state: 9/9
-selected repository: LuminaryLabs-Publish/PrehistoricRush
-selection reason: substantive multi-page/profile runtime changes after prior audit
+nominal oldest repository: LuminaryLabs-Publish/IntoTheMeadow
+nominal oldest status: active same-window documentation writes
+selected stable repository: LuminaryLabs-Publish/PrehistoricRush
 excluded repository: LuminaryLabs-Publish/TheCavalryOfRome
 target branch: main
 branch created: no
@@ -37,63 +39,78 @@ pull request created: no
 ## Source facts verified
 
 ```txt
-index entry: index.html -> src/pages/menu.js
-explicit menu: menu.html -> src/pages/menu.js
-menu Start Run href: ./game.html
-game.html present: no
-menu Character Creator href: ./charactercreator.html
-charactercreator.html present: no
-game page runtime present: src/pages/game.js
-creator runtime present: src/pages/character-creator.js
-profile schema present: src/shared/player-character-schema.js
-profile store present: src/shared/player-character-store.js
+main entry: src/game.js -> main()
+required module loading: Promise.all over pinned Nexus/Kits/Three modules
+Rapier adapter construction: present
+patch generator construction: present
+module Worker construction: optional
+seeded patch controller construction: present
+smooth camera controller construction: present
+Three adapter/resource construction: present
+initial game.start(): present
+initial streaming prime: present
+initial camera reset: present
 ```
 
-## Profile schema/store facts verified
+## Retry facts verified
 
 ```txt
-schema version: prehistoric-rush.character.v1
-storage key: prehistoric-rush:character:v1
-broadcast channel: prehistoric-rush:character
-normalization/clamping: present
-deep merge helper: present
-load/save/patch/reset: present
-storage-event sync: present
-BroadcastChannel sync: present
-typed load/save result: absent
-profile fingerprint: absent
-writer/transaction identity: absent
-conflict result: absent
+retry entry points: button, Enter, Space outside active game
+retry implementation: game.start + updateStreaming(primeCenter) + resetCamera
+new runtimeSessionId: absent
+new runSessionId exposed by host: absent
+new streamEpoch: absent
+Worker recreation: no
+controller recreation: no
+Rapier recreation/reset result: no
+Three resource recreation: no
+pending Worker cancellation/fence: absent
 ```
 
-## Creator facts verified
+## Scheduling and callback facts verified
 
 ```txt
-initial draft loads from store: yes
-numeric controls: seven
-color controls: two
-preview type: CSS silhouette
-JSON projection: yes
-autosave delay: 140 ms
-save persists captured final patch: yes
-full draft candidate persisted each debounce: no
-remote update replaces draft: yes
-subscription disposed: no
-pending timer lifecycle result: absent
+RAF request ID retained: no
+loop schedules next RAF unconditionally: yes
+button callback lease: absent
+keydown listener removal: absent
+keyup listener removal: absent
+blur listener removal: absent
+resize listener removal: absent
+pagehide lifecycle handler: absent
+explicit stop/dispose API: absent
+post-dispose rejection: absent
 ```
 
-## Game consumption facts verified
+## Worker facts verified
 
 ```txt
-src/pages/game.js imports src/game.js: yes
-src/game.js imports player profile store: no
-game creature source: game.getPlayerBody()
-static preset source: player-raptor-preset-kit
-saved profile admission: absent
-profile-to-creature result: absent
-profile-to-Rapier collision result: absent
-profile revision in PrehistoricRushHost: absent
-profile revision in rendered frame receipt: absent
+Worker path: src/workers/prehistoric-patch-worker.js
+Worker mode: module
+Worker init message: init-patch-worker
+Worker generation message: generate-patch
+Worker success message: patch-generated
+Worker failure message: patch-error
+request correlation: requestId
+session/run/stream epoch in protocol: absent
+cancel message: absent
+shutdown message/ack: absent
+worker.terminate call: absent
+executor disposal call: absent
+```
+
+## Resource ownership facts verified
+
+```txt
+Three adapter dispose service: absent
+renderer.dispose call: absent
+geometry/material disposal calls: absent
+renderer canvas removal: absent
+Rapier terminal dispose/reset result: absent
+public host lease/revocation: absent
+public host exposes mutable owners: yes
+startup cleanup stack: absent
+startup rollback: absent
 ```
 
 ## Existing runtime identity
@@ -118,7 +135,7 @@ architecture audit: yes
 render audit: yes
 gameplay audit: yes
 interaction audit: yes
-player-profile audit: yes
+lifecycle audit: yes
 deploy audit: yes
 runtime source changed by this pass: no
 rendering changed by this pass: no
@@ -129,46 +146,51 @@ deployment workflow changed by this pass: no
 ## Validation not executed
 
 ```txt
-source/deployed route crawler
-menu navigation browser smoke
-profile store Node fixture
-cross-tab conflict fixture
-rapid cross-group debounce fixture
-profile-to-game binding fixture
-profile-to-collision fixture
-profile frame-receipt fixture
-patch activation fixture
+startup success fixture
+partial startup rollback fixture
+single RAF/listener ownership fixture
+retry epoch fixture
+late Worker response rejection fixture
+Worker/executor termination fixture
+Three resource disposal fixture
+Rapier disposal/reset fixture
+host revocation fixture
+idempotent repeated dispose fixture
+post-dispose command rejection fixture
+browser pagehide lifecycle smoke
 Pages smoke
 ```
 
-The GitHub connector provided source inspection and documentation writes. No runnable checkout or browser session was available, so no executable validation claim is made.
+The GitHub connector provided source inspection and documentation writes. No runnable checkout or browser session was available, so no executable lifecycle claim is made.
 
 ## Required future proof
 
 ```txt
-all page-manifest entries exist in source and Pages artifact
-menu links load valid modules without 404
-rapid changes to proportions and material persist together
-storage failure returns a typed rejection and preserves prior commit
-concurrent writers produce deterministic order or explicit conflict
-profile fingerprint changes with any normalized creature field
-game creature recipe equals committed profile
-Rapier collision equals accepted profile collision
-creator preview and game binding use one adapter
-rendered frame names profile, creature, collision, camera and patch revisions
-stale profile/page epoch cannot publish
+one startup command produces one live session
+partial startup failure leaves zero retained runtime resources
+retry changes run/stream epoch and does not duplicate host resources
+old Worker responses cannot mutate the new run
+stop prevents further tick, streaming, physics and rendering
+all callbacks/listeners are retired
+Worker/executor terminate or dispose with an acknowledged result
+Three and Rapier resources release in a defined order
+public host capabilities are revoked before disposal
+repeated dispose is stable and idempotent
+post-dispose commands return typed rejection
 ```
 
 ## Future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-page-manifest-fixture.mjs
-node scripts/prehistoric-rush-profile-store-fixture.mjs
-node scripts/prehistoric-rush-profile-conflict-fixture.mjs
-node scripts/prehistoric-rush-profile-game-binding-fixture.mjs
-node scripts/prehistoric-rush-profile-frame-receipt-fixture.mjs
+node scripts/prehistoric-rush-lifecycle-startup-fixture.mjs
+node scripts/prehistoric-rush-startup-rollback-fixture.mjs
+node scripts/prehistoric-rush-retry-epoch-fixture.mjs
+node scripts/prehistoric-rush-worker-stale-result-fixture.mjs
+node scripts/prehistoric-rush-resource-disposal-fixture.mjs
+node scripts/prehistoric-rush-host-revocation-fixture.mjs
+node scripts/prehistoric-rush-browser-lifecycle-smoke.mjs
 ```
 
 ## Readiness statement
 
-The new source files are confirmed, but the published navigation path is incomplete and saved character profiles are not consumed by gameplay. Route admission, durable profile commit, conflict handling, creature/collision binding and frame correlation remain unimplemented and unproved.
+The current source constructs and runs the game, but startup, retry and teardown are not session-owned or executable-proofed. Route/profile authority remains P0; runtime lifecycle should not be treated as safe until epoch, rollback, disposal and stale-callback fixtures exist.
