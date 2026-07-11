@@ -1,25 +1,25 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T14-20-32-04-00`
+**Updated:** `2026-07-11T14-31-27-04-00`
 
 ## Scope
 
-Documentation-only audit of streamed patch collider membership, pinned Rapier fixed-collider replacement, contact collection, product-side collision admission, visual/physics parity and terminal failure proof.
+Documentation-only audit of RAF stage ordering, simulation and streaming mutation, physics and gameplay application, camera/render/HUD consumption and `PrehistoricRushHost` observation.
 
 ## Plan ledger
 
-**Goal:** separate source-confirmed collider-retirement facts from executable proof and define the exact release blockers.
+**Goal:** separate source-confirmed frame-coherence facts from executable proof and define the exact blockers for trustworthy runtime diagnostics.
 
-- [x] Verify generated collider descriptors.
-- [x] Verify active collider list is rebuilt from active patches.
-- [x] Verify release removes descriptors from browser active membership.
-- [x] Verify pinned ProtoKit retains removed runtime fixed bodies/colliders.
-- [x] Verify contact collection iterates retained runtime colliders.
-- [x] Verify product accepts any dino Rapier contact.
-- [x] Verify fallback uses a different current-descriptor overlap rule.
-- [x] Verify domains, kits and services.
+- [x] Verify the RAF stage order.
+- [x] Verify simulation and streaming mutate before render.
+- [x] Verify physics, collision and pickup mutation occur before render.
+- [x] Verify camera and presentation mutate inside `adapter.render`.
+- [x] Verify `renderer.render()` returns no product receipt.
+- [x] Verify HUD projection occurs after rendering.
+- [x] Verify the host independently samples mutable owners.
+- [x] Verify all domains, kits and services.
 - [x] Add required documentation outputs.
-- [ ] Execute Node and browser collision fixtures after implementation.
+- [ ] Execute pure and browser frame fixtures after implementation.
 
 ## Selection verification
 
@@ -28,7 +28,7 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 central ledger entries: 9/9
 root .agent state: 9/9
-selected oldest eligible repository: LuminaryLabs-Publish/PrehistoricRush
+selected repository: LuminaryLabs-Publish/PrehistoricRush
 excluded repository: LuminaryLabs-Publish/TheCavalryOfRome
 target branch: main
 branch created: no
@@ -38,72 +38,71 @@ pull request created: no
 ## Source facts verified
 
 ```txt
-patch collider source:
-  src/world/prehistoric-patch-generator.js
+runtime entry:
+  src/runtime.mjs -> imports src/game.js
 
-tree collider descriptor:
-  shape ball
-  x/y/z from tree ground point
-  radius trunk radius * 1.3
-  tags hazard, tree
+frame owner:
+  src/game.js -> loop(now)
 
-active collider reconstruction:
-  src/game.js -> rebuildActiveContent
-  view.colliders reset and rebuilt from activePatches
-  physics.setFixedColliders(view.colliders)
+simulation:
+  game.setInput
+  engine.tick(dt)
 
-patch release:
-  activePatches.delete
-  terrain hidden
-  tree cells released
-  rebuildActiveContent called
+streaming:
+  updateStreaming(state)
+  controller release/generate/pump/activate
 
-pinned physics source:
-  NexusEngine-ProtoKits@11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
-  protokits/rapier-physics-domain-kit/index.js
+physics/gameplay:
+  actor transform
+  physics.step(dt)
+  collision fail
+  shard collection
+
+presentation:
+  adapter.render(state, dt)
+  creature pose
+  camera follow
+  light, grass and shard mutation
+  renderer.render(scene, camera)
+
+HUD:
+  status.innerHTML
+  button.textContent
+
+host:
+  PrehistoricRushHost.getState
 ```
 
-## ProtoKit facts verified
+## Frame identity facts
 
 ```txt
-runtime maps:
-  actorBodies
-  actorColliders
-  fixedBodies
-  fixedColliders
-
-setFixedColliders:
-  normalizes submitted values
-  creates or moves submitted IDs
-  replaces serialized state.colliders
-  does not diff removed IDs
-  does not remove fixed collider instances
-  does not remove fixed rigid bodies
-  does not delete runtime map entries
-
-collectContacts:
-  iterates runtime.fixedColliders
-  first checks Rapier intersectionPair
-  can emit contact for ID absent from state.colliders
+runtimeSessionId: absent
+runSessionId: absent outside product runId
+frameId: absent
+simulation receipt: absent
+stream receipt: absent
+collider membership receipt: absent
+physics receipt: absent
+gameplay receipts: absent
+presentation fingerprint: absent
+camera receipt: absent
+render result: absent
+HUD result: absent
+committed frame record: absent
+failed frame result: absent
 ```
 
-## Product admission facts verified
+## Host readback facts
 
 ```txt
-actor transform submitted each game frame: yes
-manual Rapier step: yes
-any contact with actorId dino is fatal: yes
-colliderId current-membership check: no
-patchId check: no
-hazard tag check: no
-membership revision check: no
-contact enter/stay/exit distinction: no
-
-fallback path:
-  current view.colliders only
-  XZ distance
-  collider radius + player radius
-  jumpHeight < 1.05
+host publishes raw mutable owners: yes
+host getState samples game snapshot: yes
+host getState samples controller snapshot separately: yes
+host getState samples camera snapshot separately: yes
+host reports static renderer label: yes
+host exposes committedFrameId: no
+host exposes render/HUD receipt: no
+host prevents interleaved reads: no
 ```
 
 ## Existing runtime identity
@@ -128,56 +127,56 @@ architecture audit: yes
 render audit: yes
 gameplay audit: yes
 interaction audit: yes
-collision authority audit: yes
+frame-authority audit: yes
 deploy audit: yes
 runtime source changed by this pass: no
 rendering changed by this pass: no
-physics implementation changed by this pass: no
+physics changed by this pass: no
 deployment changed by this pass: no
 ```
 
 ## Validation not executed
 
 ```txt
-exact fixed-collider replacement fixture
-removed Rapier body/collider fixture
-released-patch invisible-tree fixture
-contact current-membership fixture
-contact enter/stay/exit fixture
-Rapier/fallback parity fixture
-single failure transaction fixture
-terminal frame correlation fixture
-browser stale-collider smoke
-Pages smoke
+frame record fixture
+frame failure fixture
+host read-model fixture
+frame journal fixture
+browser frame-coherence smoke
+browser render-failure smoke
+browser host-interleaving smoke
+Pages frame-coherence smoke
 ```
 
-No runnable checkout or browser session was available through the connector, so no executable collision-correctness claim is made.
+No runnable checkout or browser session was used through the connector, so no frame-coherence claim is made.
 
 ## Required future proof
 
 ```txt
-live Rapier collider IDs exactly equal committed collider membership
-removed IDs disappear from state, runtime maps and Rapier world
-released patch cannot create a later contact
-contact identifies actor, collider, patch, membership revision and source
-retired or prior-epoch contact is rejected
-one admitted contact creates one failure result
-visual active tree set and physics hazard set remain in parity
-terminal frame identifies the admitted failure result
+one RAF candidate receives one frameId
+all stage receipts share runtime, run and frame identity
+render and HUD success are mandatory before publication
+render failure preserves the predecessor committed frame
+HUD failure preserves the predecessor committed frame
+host reads during pipeline stages return only the predecessor committed frame
+retry rejects predecessor-run receipts
+frame records round-trip through JSON and remain bounded
+source and deployed Pages behavior match
 ```
 
 ## Future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-fixed-collider-replacement-fixture.mjs
-node scripts/prehistoric-rush-released-patch-collision-fixture.mjs
-node scripts/prehistoric-rush-contact-admission-fixture.mjs
-node scripts/prehistoric-rush-collision-source-parity-fixture.mjs
-node scripts/prehistoric-rush-single-failure-transaction-fixture.mjs
-node scripts/prehistoric-rush-collision-terminal-frame-fixture.mjs
-node scripts/prehistoric-rush-browser-stale-collider-smoke.mjs
+node scripts/prehistoric-rush-frame-record-fixture.mjs
+node scripts/prehistoric-rush-frame-failure-fixture.mjs
+node scripts/prehistoric-rush-host-read-model-fixture.mjs
+node scripts/prehistoric-rush-frame-journal-fixture.mjs
+node scripts/prehistoric-rush-browser-frame-coherence-smoke.mjs
+node scripts/prehistoric-rush-browser-render-failure-smoke.mjs
+node scripts/prehistoric-rush-browser-host-interleaving-smoke.mjs
+node scripts/prehistoric-rush-pages-frame-coherence-smoke.mjs
 ```
 
 ## Readiness statement
 
-The source currently proves that active browser collider descriptors can diverge from live Rapier fixed colliders. Patch release and collision correctness must not be treated as safe until exact replacement, retirement acknowledgement, contact admission and stale-collider fixtures pass.
+The source proves that runtime state and public readback can advance without a correlated canvas/HUD commit. `PrehistoricRushHost` must not be treated as frame-coherent evidence until the committed-frame contract and fixtures pass.
