@@ -1,19 +1,31 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
+import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 
 const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "6c0c041f842f79d015bf001b4b73c84944e72536";
+const KITS_COMMIT = "9546a6fb25b4c6a7b65432df068701a4627ab20f";
 const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
 const CDN = {
   nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
   seedKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/foundation/seed-kit/index.js`,
   creatureKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/procedural-creatures/procedural-creature-body-kit/index.js`,
   batchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/render-descriptors/instanced-render-batch-kit/index.js`,
+  patchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/simulation/seeded-world-patch-controller-kit/index.js`,
   three: "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
   rapier: "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.15.0/rapier.es.js",
   rapierKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/index.js`
 };
-const cfg = { seed: 238991, chunk: 56, radius: 3, segments: 30, trees: 7, grass: 70, goal: 3600 };
+
+const cfg = { seed: 238991, chunk: 56, segments: 30, trees: 7, grass: 70, goal: 3600 };
+const STREAM = {
+  activeRadius: 2,
+  retainRadius: 4,
+  prefetchDistance: 2,
+  cacheLimit: 96,
+  activationBudget: 1,
+  generationBudget: 2
+};
 const TREE_BATCH_CAPACITY = 256;
+const TERRAIN_SLOT_COUNT = (STREAM.activeRadius * 2 + 1) ** 2;
 const treeTypes = [
   [34, 58, 2.5, 10.5, 18, 0x214f28],
   [38, 68, 1.8, 7.5, 26, 0x173c26],
@@ -30,12 +42,6 @@ const load = async (url) => {
     return null;
   }
 };
-const hash = (x, z, seed = 1) => {
-  let value = Math.imul(x | 0, 374761393) ^ Math.imul(z | 0, 668265263) ^ Math.imul(seed | 0, 1442695041);
-  value = Math.imul(value ^ (value >>> 13), 1274126177);
-  return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
-};
-const noise = (x, z) => Math.sin((x + cfg.seed) * 0.019) * 1.6 + Math.cos((z - cfg.seed) * 0.022) * 1.3 + Math.sin((x + z) * 0.008) * 2.6 + Math.cos((x - z) * 0.006) * 1.7;
 
 function shell() {
   const root = document.querySelector("#app") ?? document.body;
@@ -183,76 +189,46 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
   sun.shadow.mapSize.set(2048, 2048);
   scene.add(sun, sun.target);
 
-  const terrainGroup = new THREE.Group();
-  const chunks = [];
-  const terrainMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
-  scene.add(terrainGroup);
-
-  function baseGeometry() {
+  function baseTerrainGeometry() {
     const positions = [];
     const colors = [];
+    const normals = [];
     const indices = [];
-    for (let z = 0; z <= cfg.segments; z += 1) for (let x = 0; x <= cfg.segments; x += 1) {
-      positions.push((x / cfg.segments - 0.5) * cfg.chunk, 0, (z / cfg.segments - 0.5) * cfg.chunk);
-      colors.push(0.2, 0.4, 0.18);
+    for (let z = 0; z <= cfg.segments; z += 1) {
+      for (let x = 0; x <= cfg.segments; x += 1) {
+        positions.push((x / cfg.segments - 0.5) * cfg.chunk, 0, (z / cfg.segments - 0.5) * cfg.chunk);
+        colors.push(0.2, 0.4, 0.18);
+        normals.push(0, 1, 0);
+      }
     }
-    for (let z = 0; z < cfg.segments; z += 1) for (let x = 0; x < cfg.segments; x += 1) {
-      const a = z * (cfg.segments + 1) + x;
-      const b = a + 1;
-      const c = a + cfg.segments + 1;
-      const d = c + 1;
-      indices.push(a, c, b, b, c, d);
+    for (let z = 0; z < cfg.segments; z += 1) {
+      for (let x = 0; x < cfg.segments; x += 1) {
+        const a = z * (cfg.segments + 1) + x;
+        const b = a + 1;
+        const c = a + cfg.segments + 1;
+        const d = c + 1;
+        indices.push(a, c, b, b, c, d);
+      }
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setIndex(indices);
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
     return geometry;
   }
 
-  for (let z = -cfg.radius; z <= cfg.radius; z += 1) for (let x = -cfg.radius; x <= cfg.radius; x += 1) {
-    const mesh = new THREE.Mesh(baseGeometry(), terrainMaterial);
+  const terrainMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.94 });
+  const terrainSlots = [];
+  const terrainByPatch = new Map();
+  for (let index = 0; index < TERRAIN_SLOT_COUNT; index += 1) {
+    const mesh = new THREE.Mesh(baseTerrainGeometry(), terrainMaterial);
     mesh.receiveShadow = true;
-    terrainGroup.add(mesh);
-    chunks.push({ mesh, x, z });
+    mesh.visible = false;
+    scene.add(mesh);
+    terrainSlots.push({ mesh, patchId: null });
   }
 
-  const sample = (x, z) => {
-    const nearest = route.nearest(x, z, 0, route.samples.length);
-    return noise(x, z) - Math.max(0, 1 - nearest.distance / (nearest.width + 2.4)) * 0.34;
-  };
-  game.setHeightSampler(sample);
-
-  let terrainKey = "";
-  function updateTerrain(x, z) {
-    const centerX = Math.floor(x / cfg.chunk);
-    const centerZ = Math.floor(z / cfg.chunk);
-    const key = `${centerX}:${centerZ}`;
-    if (key === terrainKey) return false;
-    terrainKey = key;
-    for (const chunk of chunks) {
-      const chunkX = centerX + chunk.x;
-      const chunkZ = centerZ + chunk.z;
-      const positions = chunk.mesh.geometry.attributes.position;
-      const colors = chunk.mesh.geometry.attributes.color;
-      for (let index = 0; index < positions.count; index += 1) {
-        const worldX = chunkX * cfg.chunk + positions.getX(index);
-        const worldZ = chunkZ * cfg.chunk + positions.getZ(index);
-        const nearest = route.nearest(worldX, worldZ, 0, route.samples.length);
-        const region = route.classify(nearest.distance, nearest.width);
-        const color = region === "path" ? [0.36, 0.25, 0.13] : region === "edge" ? [0.34, 0.36, 0.16] : region === "verge" ? [0.18, 0.39, 0.18] : [0.11, 0.29, 0.13];
-        positions.setY(index, sample(worldX, worldZ));
-        colors.setXYZ(index, ...color);
-      }
-      positions.needsUpdate = true;
-      colors.needsUpdate = true;
-      chunk.mesh.geometry.computeVertexNormals();
-      chunk.mesh.position.set(chunkX * cfg.chunk, 0, chunkZ * cfg.chunk);
-    }
-    return true;
-  }
-
-  const dummy = new THREE.Object3D();
   const matrix = new THREE.Matrix4();
   const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b4028, roughness: 0.98 });
   const trees = treeTypes.map((type, typeIndex) => {
@@ -260,204 +236,196 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
     const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshStandardMaterial({ color: type[5], roughness: 0.92 }), TREE_BATCH_CAPACITY);
     trunk.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     crown.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    trunk.castShadow = true;
-    trunk.receiveShadow = true;
-    crown.castShadow = true;
-    crown.receiveShadow = true;
+    trunk.castShadow = trunk.receiveShadow = true;
+    crown.castShadow = crown.receiveShadow = true;
+    scene.add(trunk, crown);
     return {
-      type,
       typeIndex,
       trunk,
       crown,
       trunkBatch: instanceBatches.create({ id: `prehistoric-rush-tree-${typeIndex}-trunks`, capacity: TREE_BATCH_CAPACITY, boundsMode: "recompute-on-change" }),
-      crownBatch: instanceBatches.create({ id: `prehistoric-rush-tree-${typeIndex}-crowns`, capacity: TREE_BATCH_CAPACITY, boundsMode: "recompute-on-change" }),
-      overflowSignature: ""
+      crownBatch: instanceBatches.create({ id: `prehistoric-rush-tree-${typeIndex}-crowns`, capacity: TREE_BATCH_CAPACITY, boundsMode: "recompute-on-change" })
     };
   });
-  trees.forEach((tree) => scene.add(tree.trunk, tree.crown));
+
+  const grass = [
+    { capacity: 3600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x254f24), 3600) },
+    { capacity: 2600, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x356d2e), 2600) },
+    { capacity: 1300, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4c8238), 1300) }
+  ];
+  grass.forEach(({ mesh }) => {
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    scene.add(mesh);
+  });
+  const shards = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.34), new THREE.MeshStandardMaterial({ color: 0x8fe8ff, emissive: 0x43d4ff, emissiveIntensity: 1 }), 240);
+  shards.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  scene.add(shards);
+
+  const playerDescriptor = game.getPlayerBody();
+  const player = createCreatureMesh(THREE, playerDescriptor);
+  scene.add(player);
+  const activePatches = new Map();
+  const view = { colliders: [], pickups: [], time: 0, treeBatchStats: [], patchStats: {} };
+
+  function fallbackHeight(x, z) {
+    const nearest = route.nearest(x, z, 0, route.samples.length);
+    const noise = Math.sin((x + cfg.seed) * 0.019) * 1.6 + Math.cos((z - cfg.seed) * 0.022) * 1.3 + Math.sin((x + z) * 0.008) * 2.6 + Math.cos((x - z) * 0.006) * 1.7;
+    return noise - Math.max(0, 1 - nearest.distance / (nearest.width + 2.4)) * 0.34;
+  }
+
+  function samplePatchHeight(patch, x, z) {
+    const localX = (x - (patch.x * cfg.chunk - cfg.chunk * 0.5)) / cfg.chunk * cfg.segments;
+    const localZ = (z - (patch.z * cfg.chunk - cfg.chunk * 0.5)) / cfg.chunk * cfg.segments;
+    const x0 = Math.max(0, Math.min(cfg.segments, Math.floor(localX)));
+    const z0 = Math.max(0, Math.min(cfg.segments, Math.floor(localZ)));
+    const x1 = Math.min(cfg.segments, x0 + 1);
+    const z1 = Math.min(cfg.segments, z0 + 1);
+    const tx = Math.max(0, Math.min(1, localX - x0));
+    const tz = Math.max(0, Math.min(1, localZ - z0));
+    const side = cfg.segments + 1;
+    const h00 = patch.terrain.heights[z0 * side + x0];
+    const h10 = patch.terrain.heights[z0 * side + x1];
+    const h01 = patch.terrain.heights[z1 * side + x0];
+    const h11 = patch.terrain.heights[z1 * side + x1];
+    const top = h00 + (h10 - h00) * tx;
+    const bottom = h01 + (h11 - h01) * tx;
+    return top + (bottom - top) * tz;
+  }
+
+  function sampleHeight(x, z) {
+    const patch = activePatches.get(`${Math.floor((x + cfg.chunk * 0.5) / cfg.chunk)}:${Math.floor((z + cfg.chunk * 0.5) / cfg.chunk)}`);
+    return patch ? samplePatchHeight(patch, x, z) : fallbackHeight(x, z);
+  }
+  game.setHeightSampler(sampleHeight);
+
+  function acquireTerrainSlot(patchId) {
+    const current = terrainByPatch.get(patchId);
+    if (current) return current;
+    const slot = terrainSlots.find((candidate) => candidate.patchId == null) ?? terrainSlots[0];
+    if (slot.patchId) terrainByPatch.delete(slot.patchId);
+    slot.patchId = patchId;
+    terrainByPatch.set(patchId, slot);
+    return slot;
+  }
+
+  function applyTerrainPatch(patch) {
+    const slot = acquireTerrainSlot(patch.id);
+    const positions = slot.mesh.geometry.attributes.position;
+    const colors = slot.mesh.geometry.attributes.color;
+    const normals = slot.mesh.geometry.attributes.normal;
+    for (let index = 0; index < positions.count; index += 1) positions.setY(index, patch.terrain.heights[index]);
+    colors.array.set(patch.terrain.colors);
+    normals.array.set(patch.terrain.normals);
+    positions.needsUpdate = true;
+    colors.needsUpdate = true;
+    normals.needsUpdate = true;
+    slot.mesh.position.set(patch.x * cfg.chunk, 0, patch.z * cfg.chunk);
+    slot.mesh.visible = true;
+    slot.mesh.geometry.computeBoundingBox();
+    slot.mesh.geometry.computeBoundingSphere();
+  }
 
   function applyBatchToMesh(mesh, update, label) {
     for (let index = 0; index < update.activeCount; index += 1) {
-      const descriptor = update.instances[index];
-      if (descriptor.matrix) {
-        matrix.fromArray(descriptor.matrix);
-      } else {
-        matrix.compose(
-          new THREE.Vector3(...descriptor.position),
-          new THREE.Quaternion(),
-          new THREE.Vector3(...descriptor.scale)
-        );
-      }
+      matrix.fromArray(update.instances[index].matrix);
       mesh.setMatrixAt(index, matrix);
     }
     mesh.count = update.activeCount;
     mesh.instanceMatrix.needsUpdate = true;
     if (update.boundsDirty) {
       if (update.bounds) {
-        mesh.boundingBox = new THREE.Box3(
-          new THREE.Vector3(...update.bounds.min),
-          new THREE.Vector3(...update.bounds.max)
-        );
-        mesh.boundingSphere = new THREE.Sphere(
-          new THREE.Vector3(...update.bounds.center),
-          update.bounds.radius
-        );
+        mesh.boundingBox = new THREE.Box3(new THREE.Vector3(...update.bounds.min), new THREE.Vector3(...update.bounds.max));
+        mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(...update.bounds.center), update.bounds.radius);
       } else {
         mesh.boundingBox = new THREE.Box3().makeEmpty();
         mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 0);
       }
     }
-    if (update.overflow.count > 0) {
-      const signature = `${update.requestedCount}:${update.overflow.count}`;
-      if (mesh.userData.overflowSignature !== signature) {
-        mesh.userData.overflowSignature = signature;
-        console.warn(`${label} overflow`, update.overflow);
-      }
-    } else {
-      mesh.userData.overflowSignature = "";
+    if (update.overflow.count > 0) console.warn(`${label} overflow`, update.overflow);
+  }
+
+  function flushTrees() {
+    view.treeBatchStats = [];
+    for (const tree of trees) {
+      const trunkUpdate = tree.trunkBatch.flush();
+      const crownUpdate = tree.crownBatch.flush();
+      applyBatchToMesh(tree.trunk, trunkUpdate, trunkUpdate.id);
+      applyBatchToMesh(tree.crown, crownUpdate, crownUpdate.id);
+      view.treeBatchStats.push({ typeIndex: tree.typeIndex, trunks: tree.trunkBatch.getStats(), crowns: tree.crownBatch.getStats() });
     }
   }
 
-  const grass = [
-    { h: 0.26, w: 0.46, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x254f24), 3600) },
-    { h: 0.78, w: 0.72, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x356d2e), 2600) },
-    { h: 1.28, w: 0.9, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x4c8238), 1300) }
-  ];
-  grass.forEach(({ mesh }) => scene.add(mesh));
-  const shards = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.34), new THREE.MeshStandardMaterial({ color: 0x8fe8ff, emissive: 0x43d4ff, emissiveIntensity: 1 }), 240);
-  scene.add(shards);
-
-  const playerDescriptor = game.getPlayerBody();
-  const player = createCreatureMesh(THREE, playerDescriptor);
-  scene.add(player);
-  const view = { key: "", colliders: [], pickups: [], time: 0, treeBatchStats: [] };
-
-  function populate(state) {
-    const centerX = Math.floor(state.x / cfg.chunk);
-    const centerZ = Math.floor(state.z / cfg.chunk);
-    const key = `${centerX}:${centerZ}`;
-    if (key === view.key) return;
-    view.key = key;
+  function rebuildActiveContent(state) {
+    const grassCounts = [0, 0, 0];
+    let shardCount = 0;
     view.colliders = [];
     view.pickups = [];
-    const grassCounts = [0, 0, 0];
-    const activeCellIds = new Set();
-    let shardCount = 0;
-
-    for (let chunkZ = centerZ - cfg.radius; chunkZ <= centerZ + cfg.radius; chunkZ += 1) {
-      for (let chunkX = centerX - cfg.radius; chunkX <= centerX + cfg.radius; chunkX += 1) {
-        const cellId = `${chunkX}:${chunkZ}`;
-        activeCellIds.add(cellId);
-        const trunkDescriptors = trees.map(() => []);
-        const crownDescriptors = trees.map(() => []);
-
-        for (let index = 0; index < cfg.trees; index += 1) {
-          const x = chunkX * cfg.chunk + (hash(chunkX * 31 + index, chunkZ * 17, 11) - 0.5) * cfg.chunk;
-          const z = chunkZ * cfg.chunk + (hash(chunkX * 19, chunkZ * 23 + index, 13) - 0.5) * cfg.chunk;
-          const nearest = route.nearest(x, z, state.routeIndex, 180);
-          if (nearest.distance < nearest.width + 5.5) continue;
-          const typeIndex = Math.floor(hash(chunkX + index, chunkZ - index, 41) * trees.length) % trees.length;
-          const pool = trees[typeIndex];
-          const type = pool.type;
-          const height = type[0] + hash(chunkX, chunkZ, index + 47) * (type[1] - type[0]);
-          const radius = type[2] * (0.82 + hash(index, chunkX, 61) * 0.42);
-          const groundY = sample(x, z);
-          const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
-
-          dummy.position.set(x, groundY + height * 0.5, z);
-          dummy.rotation.set(0, 0, 0);
-          dummy.scale.set(radius, height, radius);
-          dummy.updateMatrix();
-          trunkDescriptors[typeIndex].push({
-            id: `${treeId}:trunk`,
-            matrix: dummy.matrix.toArray(),
-            bounds: { min: [x - radius, groundY, z - radius], max: [x + radius, groundY + height, z + radius] },
-            metadata: { treeId, cellId, typeIndex }
-          });
-
-          const crownRadius = type[3];
-          const crownHeight = type[4];
-          const crownY = groundY + height * 0.78;
-          dummy.position.set(x, crownY, z);
-          dummy.rotation.set(0, 0, 0);
-          dummy.scale.set(crownRadius, crownHeight, crownRadius);
-          dummy.updateMatrix();
-          crownDescriptors[typeIndex].push({
-            id: `${treeId}:crown`,
-            matrix: dummy.matrix.toArray(),
-            bounds: {
-              min: [x - crownRadius, crownY - crownHeight * 0.5, z - crownRadius],
-              max: [x + crownRadius, crownY + crownHeight * 0.5, z + crownRadius]
-            },
-            metadata: { treeId, cellId, typeIndex }
-          });
-          view.colliders.push({ id: treeId, x, z, radius: radius * 1.3 });
+    const collected = new Set(state.collectedShardIds);
+    const patches = [...activePatches.values()].sort((left, right) => left.id.localeCompare(right.id));
+    for (const patch of patches) {
+      view.colliders.push(...patch.colliders);
+      for (let layerIndex = 0; layerIndex < grass.length; layerIndex += 1) {
+        const layer = grass[layerIndex];
+        for (const descriptor of patch.grass[layerIndex]) {
+          const item = grassCounts[layerIndex];
+          if (item >= layer.capacity) break;
+          matrix.fromArray(descriptor.matrix);
+          layer.mesh.setMatrixAt(item, matrix);
+          grassCounts[layerIndex] += 1;
         }
-
-        trees.forEach((pool, typeIndex) => {
-          pool.trunkBatch.replaceCell(cellId, trunkDescriptors[typeIndex]);
-          pool.crownBatch.replaceCell(cellId, crownDescriptors[typeIndex]);
-        });
-
-        for (let index = 0; index < cfg.grass; index += 1) {
-          const x = chunkX * cfg.chunk + (hash(chunkX * 71 + index, chunkZ * 37, 79) - 0.5) * cfg.chunk;
-          const z = chunkZ * cfg.chunk + (hash(chunkX * 43, chunkZ * 59 + index, 83) - 0.5) * cfg.chunk;
-          const nearest = route.nearest(x, z, state.routeIndex, 190);
-          const region = route.classify(nearest.distance, nearest.width);
-          if (region === "path") continue;
-          const layerIndex = region === "edge" ? 0 : region === "verge" ? (hash(index, chunkX, 89) > 0.48 ? 1 : 2) : (hash(index, chunkZ, 97) > 0.28 ? 1 : 0);
-          const layer = grass[layerIndex];
-          const item = grassCounts[layerIndex]++;
-          if (item >= layer.mesh.count) continue;
-          const routeScale = region === "edge" ? 0.22 : region === "verge" ? 0.72 : 1;
-          dummy.position.set(x, sample(x, z), z);
-          dummy.rotation.set(0, hash(index, chunkZ, 109) * Math.PI, 0);
-          dummy.scale.set(layer.w, layer.h * routeScale, layer.w);
-          dummy.updateMatrix();
-          layer.mesh.setMatrixAt(item, dummy.matrix);
-        }
-
-        for (let index = 0; index < 2 && shardCount < shards.count; index += 1) {
-          const id = `${chunkX}:${chunkZ}:${index}`;
-          if (state.collectedShardIds.includes(id)) continue;
-          const point = route.samples[Math.max(0, Math.min(route.samples.length - 1, state.routeIndex + Math.floor(hash(chunkX, chunkZ, index + 149) * 100) - 20))];
-          const x = point.x + (hash(index, chunkX, 151) * 2 - 1) * Math.min(point.width * 0.65, 2.1);
-          const z = point.z;
-          dummy.position.set(x, sample(x, z) + 1.15, z);
-          dummy.rotation.set(0, 0, 0);
-          dummy.scale.setScalar(1);
-          dummy.updateMatrix();
-          shards.setMatrixAt(shardCount++, dummy.matrix);
-          view.pickups.push({ id, x, z, radius: 1.1 });
-        }
+      }
+      for (const pickup of patch.pickups) {
+        if (collected.has(pickup.id) || shardCount >= 240) continue;
+        matrix.makeTranslation(pickup.x, pickup.y, pickup.z);
+        shards.setMatrixAt(shardCount++, matrix);
+        view.pickups.push(pickup);
       }
     }
-
-    view.treeBatchStats = [];
-    trees.forEach((tree) => {
-      for (const cellId of tree.trunkBatch.listCellIds()) {
-        if (!activeCellIds.has(cellId)) {
-          tree.trunkBatch.releaseCell(cellId);
-          tree.crownBatch.releaseCell(cellId);
-        }
-      }
-      const trunkUpdate = tree.trunkBatch.flush();
-      const crownUpdate = tree.crownBatch.flush();
-      applyBatchToMesh(tree.trunk, trunkUpdate, `${trunkUpdate.id}`);
-      applyBatchToMesh(tree.crown, crownUpdate, `${crownUpdate.id}`);
-      view.treeBatchStats.push({
-        typeIndex: tree.typeIndex,
-        trunks: tree.trunkBatch.getStats(),
-        crowns: tree.crownBatch.getStats()
-      });
-    });
     grass.forEach((layer, index) => {
       layer.mesh.count = grassCounts[index];
       layer.mesh.instanceMatrix.needsUpdate = true;
+      layer.mesh.computeBoundingBox?.();
+      layer.mesh.computeBoundingSphere?.();
     });
     shards.count = shardCount;
     shards.instanceMatrix.needsUpdate = true;
-    physics?.setFixedColliders?.(view.colliders.map((collider) => ({ ...collider, shape: "ball", y: sample(collider.x, collider.z), tags: ["hazard", "tree"] })));
+    shards.computeBoundingBox?.();
+    shards.computeBoundingSphere?.();
+    physics?.setFixedColliders?.(view.colliders);
+  }
+
+  function activatePatch(entry, state) {
+    const patch = entry.patch;
+    activePatches.set(patch.id, patch);
+    applyTerrainPatch(patch);
+    trees.forEach((tree, typeIndex) => {
+      tree.trunkBatch.replaceCell(patch.id, patch.trees[typeIndex].trunks);
+      tree.crownBatch.replaceCell(patch.id, patch.trees[typeIndex].crowns);
+    });
+    flushTrees();
+    rebuildActiveContent(state);
+  }
+
+  function releasePatches(ids, state) {
+    let changed = false;
+    for (const patchId of ids) {
+      if (!activePatches.delete(patchId)) continue;
+      changed = true;
+      const slot = terrainByPatch.get(patchId);
+      if (slot) {
+        slot.mesh.visible = false;
+        slot.patchId = null;
+        terrainByPatch.delete(patchId);
+      }
+      for (const tree of trees) {
+        tree.trunkBatch.releaseCell(patchId);
+        tree.crownBatch.releaseCell(patchId);
+      }
+    }
+    if (changed) {
+      flushTrees();
+      rebuildActiveContent(state);
+    }
   }
 
   function render(state, dt) {
@@ -472,9 +440,10 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
       resistance: 1 - state.surfaceMultiplier
     }));
     const ahead = route.samples[Math.min(route.samples.length - 1, state.routeIndex + 12)] ?? route.samples[state.routeIndex];
-    const back = new THREE.Vector3(-Math.sin(state.yaw), 0, -Math.cos(state.yaw));
-    camera.position.lerp(new THREE.Vector3(state.x, state.y + 2.35, state.z).addScaledVector(back, 6.6), 1 - Math.exp(-8.5 * dt));
-    camera.lookAt(ahead.x, sample(ahead.x, ahead.z) + 1.15, ahead.z);
+    const backX = -Math.sin(state.yaw);
+    const backZ = -Math.cos(state.yaw);
+    camera.position.lerp(new THREE.Vector3(state.x + backX * 6.6, state.y + 2.35, state.z + backZ * 6.6), 1 - Math.exp(-8.5 * dt));
+    camera.lookAt(ahead.x, sampleHeight(ahead.x, ahead.z) + 1.15, ahead.z);
     sun.position.set(state.x - 25, state.y + 45, state.z - 20);
     sun.target.position.set(state.x, state.y, state.z);
     grass.forEach((layer) => {
@@ -485,39 +454,109 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
     renderer.render(scene, camera);
   }
 
-  return { scene, camera, renderer, sun, player, playerDescriptor, trees, grass, shards, view, sample, updateTerrain, populate, render };
+  return {
+    scene,
+    camera,
+    renderer,
+    sun,
+    player,
+    playerDescriptor,
+    view,
+    sampleHeight,
+    activatePatch,
+    releasePatches,
+    refreshDynamicContent: rebuildActiveContent,
+    render
+  };
+}
+
+function createWorkerExecutor(PatchModule, generatorOptions) {
+  if (typeof Worker !== "function" || typeof PatchModule.createMessageWorkerExecutor !== "function") return { executor: null, worker: null };
+  try {
+    const worker = new Worker(new URL("./workers/prehistoric-patch-worker.js", import.meta.url), { type: "module" });
+    worker.postMessage({ type: "init-patch-worker", payload: generatorOptions });
+    return { executor: PatchModule.createMessageWorkerExecutor(worker), worker };
+  } catch (error) {
+    console.warn("patch worker unavailable; using deferred synchronous generation", error);
+    return { executor: null, worker: null };
+  }
 }
 
 async function main() {
   const ui = shell();
-  const [NexusEngine, SeedModule, CreatureModule, BatchModule, THREE] = await Promise.all([
+  const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, THREE] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
     load(CDN.creatureKit),
     load(CDN.batchKit),
+    load(CDN.patchKit),
     load(CDN.three)
   ]);
-  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !THREE) throw new Error("Required pinned runtime module failed to load.");
-  const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule };
+  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !THREE) {
+    throw new Error("Required pinned runtime module failed to load.");
+  }
+  const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, { seed: cfg.seed, goalDistance: cfg.goal })
   });
   const game = engine.n.prehistoricRush;
   const instanceBatches = engine.n.instancedRenderBatch;
-  if (!game) throw new Error("PrehistoricRush domain did not install.");
-  if (!instanceBatches) throw new Error("Instanced render batch domain did not install.");
+  const patchControllers = engine.n.seededWorldPatchController;
+  if (!game || !instanceBatches || !patchControllers) throw new Error("PrehistoricRush composition did not install.");
+
   const playerBody = game.getPlayerBody();
   const physics = await createRapierAdapter(playerBody.collision);
+  const generatorOptions = {
+    config: { ...cfg, shardsPerPatch: 2 },
+    treeTypes,
+    routeSamples: game.route.samples
+  };
+  const generator = createPrehistoricPatchGenerator(generatorOptions);
+  const workerState = createWorkerExecutor(PatchModule, generatorOptions);
+  const controller = patchControllers.create({
+    id: "prehistoric-rush-world",
+    worldSeed: String(cfg.seed),
+    generatorVersion: "prehistoric-patch-v1",
+    patchSize: cfg.chunk,
+    activeRadius: STREAM.activeRadius,
+    retainRadius: STREAM.retainRadius,
+    prefetchDistance: STREAM.prefetchDistance,
+    cacheLimit: STREAM.cacheLimit,
+    activationBudget: STREAM.activationBudget,
+    generationBudget: STREAM.generationBudget,
+    terrainSettingsHash: `segments-${cfg.segments}`,
+    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}`,
+    generator,
+    executor: workerState.executor
+  });
   const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches);
   const input = { left: false, right: false, boost: false };
-  adapter.updateTerrain(0, 0);
+
+  function updateStreaming(state, primeCenter = false) {
+    const forward = { x: Math.sin(state.yaw), z: Math.cos(state.yaw) };
+    controller.setFocus({
+      position: { x: state.x + cfg.chunk * 0.5, z: state.z + cfg.chunk * 0.5 },
+      velocity: { x: forward.x * state.speed, z: forward.z * state.speed },
+      forward
+    });
+    controller.update();
+    adapter.releasePatches(controller.takeReleasedPatchIds(), state);
+    if (primeCenter) {
+      const centerX = Math.floor((state.x + cfg.chunk * 0.5) / cfg.chunk);
+      const centerZ = Math.floor((state.z + cfg.chunk * 0.5) / cfg.chunk);
+      controller.generateSync(centerX, centerZ);
+    }
+    controller.pump({ maximum: workerState.worker ? STREAM.generationBudget : 1 });
+    for (const patch of controller.takeReadyPatches({ maximum: STREAM.activationBudget })) adapter.activatePatch(patch, state);
+    adapter.view.patchStats = controller.getStats();
+  }
+
   game.start();
-  adapter.populate(game.getState());
+  updateStreaming(game.getState(), true);
 
   const start = () => {
     game.start();
-    adapter.view.key = "";
-    adapter.populate(game.getState());
+    updateStreaming(game.getState(), true);
   };
   ui.button.onclick = () => game.getState().status === "game" ? game.setInput({ jump: true }) : start();
   addEventListener("keydown", (event) => {
@@ -552,10 +591,8 @@ async function main() {
     game.setInput({ steer: (input.left ? 1 : 0) - (input.right ? 1 : 0), boost: input.boost });
     engine.tick(dt);
     let state = game.getState();
-    if (adapter.updateTerrain(state.x, state.z)) {
-      adapter.view.key = "";
-      adapter.populate(state);
-    }
+    updateStreaming(state);
+
     if (state.status === "game") {
       physics?.setActorTransform?.("dino", { x: state.x, y: state.y + state.jumpHeight + playerBody.collision.centerY, z: state.z });
       const contacts = physics?.step?.(dt)?.contacts ?? [];
@@ -563,16 +600,17 @@ async function main() {
       if (hit) game.fail({ kind: "tree-impact", x: state.x, z: state.z });
       for (const pickup of adapter.view.pickups) {
         if (Math.hypot(pickup.x - state.x, pickup.z - state.z) < pickup.radius + 0.4 && game.collectShard(pickup.id)) {
-          adapter.view.key = "";
-          adapter.populate(game.getState());
+          adapter.refreshDynamicContent(game.getState());
           break;
         }
       }
       state = game.getState();
     }
+
     adapter.render(state, dt);
     const progress = Math.min(1, state.distance / cfg.goal);
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>stable tree batches · refreshed bounds</small>`;
+    const patchStats = adapter.view.patchStats;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>patches ${patchStats.active}/${patchStats.desiredActive} · cache ${patchStats.cached} · queue ${patchStats.queued} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -581,14 +619,15 @@ async function main() {
     engine,
     physics,
     adapter,
+    patchController: controller,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
+      patchStreaming: controller.getSnapshot(),
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
-      treeBatches: instanceBatches.list(),
-      renderer: "three-instanced-tree-batch-adapter-v5"
+      renderer: "three-seeded-patch-streaming-v5"
     })
   };
   requestAnimationFrame(loop);
