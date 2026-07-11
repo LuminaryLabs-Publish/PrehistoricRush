@@ -1,167 +1,128 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T05-02-00-04-00`
+**Updated:** `2026-07-11T05-39-11-04-00`
+
+## Summary
+
+The smooth camera implementation fixes the former position-only smoothing and immediate rotation snap. Its remaining risks are target provenance, transform/frame consumption, mutable control-plane exposure, session lifecycle and missing executable proof. Patch activation integrity remains the repository-wide P0.
 
 ## Plan ledger
 
-**Goal:** Keep patch delivery, consumer commit, gameplay readiness, run reset, asynchronous admission and lifecycle risks explicit before content or visual expansion.
+**Goal:** Keep camera, streaming, gameplay, observation and lifecycle risks explicit before further content or visual tuning.
 
-- [x] Promote acknowledged patch activation and release to P0.
-- [x] Record controller-first mutation semantics.
-- [x] Record consumer preparation, rollback and parity gaps.
-- [x] Retain run-session, Worker, render, gameplay and lifecycle gaps.
-- [x] Rank the implementation order.
+- [x] Record the new shared camera kit and pinned source revision.
+- [x] Record target, reset/update, transform and frame gaps.
+- [x] Retain patch activation and run-session P0/P2 gaps.
+- [x] Rank implementation order.
+- [ ] Close gaps with typed results and fixtures.
 
-## Controller delivery and acknowledgement
-
-```txt
-- takeReadyPatches marks records active before host commit
-- ready queue evidence is spent before consumer success
-- host cannot reject or defer while preserving ready state
-- takeReleasedPatchIds clears release evidence before retirement success
-- no activation or release claim identity exists
-- no controller acknowledgement API exists
-- duplicate delivery and acknowledgement policy is absent
-- no exact controller/consumer parity result exists
-```
-
-## Patch-content admission
+## Camera target policy
 
 ```txt
-- patch payload has no explicit product schema version
-- content hash is not validated by the host
-- terrain arrays and numeric values are trusted
-- tree and grass matrices are trusted
-- shard and collider IDs are trusted
-- bounds and coordinate identity are trusted
-- malformed content can reach mutation paths
-- no typed admission result exists
+- target arrays are mutated in place
+- no CameraTargetDescriptor exists
+- target has no target ID or sequence
+- target has no run/session epoch
+- target has no simulation-frame identity
+- target has no route snapshot revision
+- target has no patch/height-source revision
+- target has no policy version or fingerprint
+- non-finite target rejection is not product-visible
 ```
 
-## Consumer prepare and commit
+## Controller admission and results
 
 ```txt
-- activePatches mutates before terrain commit
-- terrain slots and buffers mutate live
-- tree cells replace and flush live
-- grass and shard matrices rebuild live
-- gameplay collider array mutates live
-- Rapier fixed colliders replace live
-- height sampler observes host activePatches directly
-- no detached activation or release plan exists
-- no shared consumer revision exists
-- no rollback or terminal fault result exists
+- reset/update calls are not wrapped in typed product commands
+- stale run/session target rejection is absent
+- duplicate update/reset result policy is absent
+- requested versus clamped delta time is not journaled
+- transform output is a reused mutable object
+- no product result binds target sequence to controller revision
+- loadSnapshot remains publicly reachable through the exposed controller
 ```
 
-## Capacity and truncation
+## Three transform and render consumption
 
 ```txt
-- terrain slot acquisition falls back to slot zero
-- tree overflow is warned after mutation
-- grass layers truncate at fixed capacities
-- shards truncate at 240
-- rejected descriptor IDs are not returned
-- capacity policy is not part of admission
-- one activation flushes every tree batch
-- one activation rebuilds all active grass, shards and colliders
+- applyCameraTransform returns no result
+- transform finiteness/normalization is not checked by the adapter
+- applied controller revision is not recorded
+- applied transform fingerprint is absent
+- projection resize revision is absent
+- renderer frame ID is absent
+- rendered frame does not acknowledge target/controller/application revisions
+- first camera frame after run restart is not identified
 ```
 
-## Gameplay readiness
+## Camera lifecycle and observation
 
 ```txt
-- controller-active does not mean render-ready
-- controller-active does not mean physics-ready
-- controller-active does not mean gameplay-ready
-- desired but inactive patches have fallback height and no active hazards or pickups
-- no forward safety-ring readiness policy exists
-- manual and Rapier collisions are separate unclassified outcome sources
-- collision and pickup rows have no patch activation revision
-- height, hazard, pickup and render parity is not journaled
+- PrehistoricRushHost exposes mutable cameraFollow and adapter owners
+- external code can reset/update/load camera state without admission
+- controller removal is never called
+- no camera/session disposed state exists
+- no post-dispose rejection exists
+- RAF and listeners have no ownership ledger
+- camera journal and bounded detached observation are absent
 ```
 
-## Run-session reset
+## Camera validation
 
 ```txt
-- game.start resets RunState and InputState only
-- no runSessionId distinct from runId exists
-- no typed start/reset transaction exists
-- no retained/reset/rebuilt policy exists per owner
-- retry may preserve stale pickup presentation
-- actor/contact state has no explicit retry reset
-- camera interpolation and render time continue across runs
-- first committed frame of a new run is not identified
+- no controller convergence fixture
+- no frame-time partition fixture
+- no frame-stall clamp fixture
+- no run reset fixture
+- no teleport reset fixture
+- no route-index discontinuity fixture
+- no terrain-height discontinuity fixture
+- no quaternion normalization fixture
+- no transform/frame correlation fixture
+- no camera lifecycle fixture
+- no browser or Pages camera smoke
 ```
 
-## Controller and Worker execution
+## Patch activation remains P0
 
 ```txt
-- generationBudget limits starts per pump call, not total concurrent inflight work
-- Worker readiness is not awaited or exposed
-- no streamEpoch/controllerEpoch/workerEpoch exists
-- pending results cannot prove admission to the current run
-- controller reset does not cancel executor pending requests
-- executor dispose exists upstream but is not retained or invoked
-- no stale-result quarantine journal exists
-- post-dispose request rejection is absent
+- controller marks ready patches active before consumer commit
+- release evidence clears before retirement succeeds
+- terrain/tree/grass/shard/collider/height consumers mutate sequentially
+- no detached prepare plan, shared revision, rollback or acknowledgement
+- controller-active does not prove render/physics/gameplay readiness
 ```
 
-## Lifecycle and resources
+## Run session and asynchronous execution
+
+```txt
+- no runSessionId distinct from runId
+- no shared streamEpoch/cameraEpoch
+- Worker stale-result quarantine is absent
+- retry does not own an ordered world/camera reset transaction
+- first committed world and camera frame of a new run is not identified
+```
+
+## General lifecycle
 
 ```txt
 - RAF ID is not retained
-- key, blur and resize listeners have no owner ledger
+- listeners are anonymous/unowned
 - Worker is not terminated
 - renderer, geometries and materials are not disposed
-- physics world and actors are not terminally disposed
+- physics world is not terminally disposed
 - global host exposure has no release lease
-- stop, dispose and restart operations are absent
-```
-
-## Observation
-
-```txt
-- host exposes mutable engine, physics, adapter and controller references
-- host has no pending activation or release claims
-- consumer-active and gameplay-ready IDs are absent
-- patch activation and release results are absent
-- render and physics acknowledgement revisions are absent
-- exact parity differences are absent
-- bounded activation, release, reset and lifecycle journals are absent
-```
-
-## Validation
-
-```txt
-- no root package.json or unified validation command
-- no patch-content admission fixture
-- no activation commit fixture
-- no release commit fixture
-- no rollback fixture
-- no controller/consumer parity fixture
-- no retry reset or stream epoch fixture
-- no lifecycle/disposal fixture
-- no browser or Pages streaming smoke
-```
-
-## Prior active gaps
-
-```txt
-- creature descriptor, render binding, pose and collision proof remain incomplete
-- twelve core kits have no consumed/replaced/unused ledger
-- typed run commands and transition-result journal remain incomplete
-- module graph fingerprint remains absent
 ```
 
 ## Priority
 
 ```txt
-1. patch-content admission and acknowledged multi-consumer activation/release
-2. controller-active, consumer-active and gameplay-ready parity
-3. run-session reset and world-cache retention policy
-4. Worker/stream epoch, inflight ceiling and stale-result quarantine
-5. dynamic pickup/collider/height/render reconciliation
-6. lifecycle ownership and committed-frame observation
-7. creature, core-kit and typed-command proof
+1. acknowledged multi-consumer patch activation/release
+2. camera target/transform/render-frame consumption proof
+3. run-session reset with stream and camera epochs
+4. Worker stale-result quarantine
+5. ordered runtime disposal
+6. creature/core-kit/typed-command proof
 ```
 
 ## Do not do next
@@ -169,9 +130,8 @@
 ```txt
 - do not work on TheCavalryOfRome
 - do not create a branch
-- do not duplicate seeded-world-patch-controller-kit
-- do not duplicate instanced-render-batch-kit
-- do not increase active radius or population
-- do not clear deterministic caches to hide defects
-- do not treat controller-active state as consumer commit
+- do not duplicate camera-smooth-follow-kit
+- do not reintroduce immediate lookAt rotation
+- do not tune around missing source/frame provenance
+- do not treat camera snapshot revision as render acknowledgement
 ```

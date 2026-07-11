@@ -1,24 +1,24 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-11T05-02-00-04-00`
+**Updated:** `2026-07-11T05-39-11-04-00`
 
 ## Summary
 
-The seeded patch controller owns deterministic patch identity, cache, generation and desired-set scheduling, but its current delivery APIs mutate controller active/released state before the product host proves a matching multi-consumer commit. The next safe ledge is acknowledged patch activation and release across terrain, trees, grass, shards, gameplay collision, Rapier collision and height sampling.
+The runtime now installs `camera-smooth-follow-kit` `0.1.0` from pinned `NexusEngine-Kits@5d3613b140ca33395f180acde014c167addf0ccc`, creates one persistent player-camera controller, resets it on initial run/restart/run change, updates it every render frame and applies its position/quaternion to the Three.js camera. This closes the previous immediate rotation-snap defect, but target provenance, transform consumption, frame acknowledgement, public observation and lifecycle ownership remain implicit.
 
 ## Plan ledger
 
-**Goal:** Document one transactional boundary between controller delivery and gameplay-ready world state without duplicating existing Nexus Engine kits.
+**Goal:** Fully catalogue the current game and isolate the missing camera consumption boundary without displacing the higher-priority patch activation transaction.
 
-- [x] Reconcile the Publish inventory and central timestamps.
-- [x] Inspect the pinned controller implementation.
-- [x] Inspect active terrain, vegetation, pickup, collider and height consumers.
-- [x] Identify the interaction loop, domains, kits and services.
-- [x] Record controller-first activation and release semantics.
-- [x] Record capacity, failure, rollback and parity gaps.
-- [x] Define the required parent domain and candidate kits.
-- [ ] Implement the transaction and acknowledgement surface.
-- [ ] Execute deterministic Node, browser and Pages fixtures.
+- [x] Reconcile Publish inventory and central tracking.
+- [x] Inspect the current `src/game.js` camera path.
+- [x] Inspect `prehistoric-rush-domain-kit` `0.5.0`.
+- [x] Inspect pinned `camera-smooth-follow-kit` `0.1.0`.
+- [x] Identify interaction loop, domains, kits and services.
+- [x] Record deterministic target/update/application gaps.
+- [x] Record observation, lifecycle and fixture gaps.
+- [ ] Implement camera consumption proof after patch activation P0.
+- [ ] Execute Node, browser and Pages validation.
 
 ## Selection audit
 
@@ -28,53 +28,49 @@ eligible non-Cavalry repositories: 9
 central ledger entries: 9/9
 root .agent state: 9/9
 selected: LuminaryLabs-Publish/PrehistoricRush
-selection rule: oldest eligible central record
-prior central timestamp: 2026-07-11T02-48-17-04-00
+selection rule: recent undocumented runtime change before oldest fallback
 excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
 ## Interaction loop
 
 ```txt
-index.html import map
-  -> src/runtime.mjs
-  -> src/game.js
-  -> load pinned NexusEngine, NexusEngine-Kits, Three, Rapier and ProtoKits
-  -> install core, seed, creature, instance-batch, patch-controller and game kits
-  -> create deterministic patch generator and optional module Worker
-  -> create seeded patch controller
-  -> create Three and Rapier consumers
-  -> start run and prime center patch
-  -> browser input and engine.tick update run state
-  -> controller.setFocus and update desired sets
-  -> controller records releases and host consumes them
-  -> controller pumps generation
-  -> controller marks ready patches active and returns them
-  -> host applies terrain, trees, grass, shards, colliders and height state
-  -> physics, pickup, pose, camera, render, HUD and host update
-  -> RAF repeats
+index.html -> src/runtime.mjs -> src/game.js
+  -> load pinned NexusEngine, NexusEngine-Kits, ProtoKits, Three and Rapier
+  -> install 12 core kits
+  -> install seed, creature, instance-batch, patch-controller and smooth-camera kits
+  -> install prehistoric-rush-domain-kit 0.5.0
+  -> create patch generator, Worker executor, patch controller and camera controller
+  -> start run, prime streaming and reset camera
+  -> browser input + engine.tick update run state
+  -> patch streaming updates active terrain/height consumers
+  -> setCameraTargets derives chase position and route-ahead look point
+  -> cameraFollow.reset on run change, otherwise cameraFollow.update
+  -> apply position/quaternion to Three PerspectiveCamera
+  -> render world, update HUD and expose snapshots
+  -> requestAnimationFrame repeats
 ```
 
 ## Domains in use
 
 ```txt
 runtime module graph and source admission
-Nexus Engine core input, spatial, scene, physics, motion, camera, animation, graphics, skybox, UI, diagnostics and composition
+Nexus Engine core input, spatial, scene, physics, motion, camera, animation,
+graphics, skybox, UI, diagnostics and composition
 seed and deterministic random streams
-procedural creature body, topology, skeleton, skinning, collision and pose
-instanced render-batch capacity, cell replacement, release, bounds and overflow
-seeded patch identity, desired active/retain/prefetch sets, cache, queue, generation, ready delivery and release
-product patch generation and Worker protocol
-patch-content admission and activation authority
-terrain slot allocation and terrain-buffer mutation
-tree trunk and crown batch consumption
-grass and shard instance consumption
-gameplay collider and pickup projection
-Rapier fixed colliders, actor stepping and contacts
-patch height sampling and fallback height
-run lifecycle, route, movement, jump, score and outcomes
+procedural creature body, skeleton, skinning, collision and pose
+instanced render-batch capacity and cell ownership
+seeded patch identity, cache, scheduling, generation, delivery and release
+product patch generation and Worker execution
+patch-content admission and multi-consumer activation authority
+terrain, vegetation, pickup, collider and height consumers
+run lifecycle, route, surface, movement, jump, score and outcomes
+camera target policy and route-ahead composition
+persistent camera SmoothDamp position and look-target state
+camera quaternion damping and reset semantics
+Three camera transform application and frame rendering
 browser input, resize, blur, RAF, HUD and host observation
-run-session reset, stream epoch and lifecycle authority
+run/stream/camera session lifecycle
 static Pages deployment and validation
 ```
 
@@ -115,24 +111,30 @@ seeded-world-patch-controller-kit 0.1.0
   patch/cache identity, focus, active/retain/prefetch sets, generation queue,
   executor handoff, ready/release delivery, budgets, eviction, stats,
   snapshot/load and reset
+
+camera-smooth-follow-kit 0.1.0
+  controller registry, position SmoothDamp, look-target SmoothDamp,
+  quaternion rotation damping, reset, teleport reset, delta-time clamp,
+  transform access, snapshot/load and service reset
 ```
 
 ### Product and local kits
 
 ```txt
-prehistoric-rush-domain-kit 0.4.0
-  run/input resources, start/fail/win/shard events, simulation, route,
-  surface, score, player body/pose queries, transitions and snapshot
+prehistoric-rush-domain-kit 0.5.0
+  run/input resources, simulation, route, surface, score, outcomes,
+  creature access, events, scene transitions and snapshot
 
 drunk-route-generator
-  deterministic route samples, nearest query, progress, region classification and snapshot
+  deterministic route samples, nearest query, progress,
+  region classification and snapshot
 
 player-raptor-preset-kit
   product creature configuration
 
 prehistoric-patch-generator
-  terrain arrays, tree descriptors, grass matrices, pickups, colliders,
-  bounds and transferables
+  terrain arrays, tree descriptors, grass matrices, pickups,
+  colliders, bounds and transferables
 
 prehistoric-patch-worker
   initialization, generation, error protocol and transferable delivery
@@ -152,94 +154,85 @@ shard-pickup-consumer-kit
 patch-collider-consumer-kit
 patch-height-sampler-kit
 three-procedural-creature-adapter-kit
+prehistoric-camera-target-policy-kit
+three-camera-transform-consumer-kit
 camera-light-render-adapter-kit
 patch-streaming-hud-kit
 browser-frame-loop-kit
 prehistoric-rush-host-readback-kit
 ```
 
-### Required activation-authority candidates
+## Current camera configuration
 
 ```txt
-patch-content-schema-kit
-patch-content-admission-kit
-patch-consumer-capability-kit
-patch-activation-plan-kit
-patch-release-plan-kit
-terrain-slot-preflight-kit
-tree-batch-preflight-kit
-dynamic-instance-preflight-kit
-patch-collider-preflight-kit
-patch-height-preflight-kit
-patch-consumer-commit-kit
-patch-consumer-rollback-kit
-patch-controller-acknowledgement-kit
-patch-consumer-revision-kit
-patch-activation-result-kit
-patch-release-result-kit
-patch-parity-observation-kit
-patch-activation-journal-kit
-patch-activation-fixture-kit
+controller id: prehistoric-rush-player-camera
+positionSmoothTime: 0.22
+lookSmoothTime: 0.14
+maximumPositionSpeed: 45
+maximumLookSpeed: 65
+rotationSharpness: 12
+maximumDeltaTime: 1/30
+teleportThreshold: 24
+chase distance: 6.6
+chase height: 2.35
+look-ahead samples: 12
+look height above terrain: 1.15
 ```
 
 ## Source revisions
 
 ```txt
 NexusEngine: e8252e51878a08eeef46f54b1aae9e8349a2442b
-NexusEngine-Kits: 9546a6fb25b4c6a7b65432df068701a4627ab20f
+NexusEngine-Kits: 5d3613b140ca33395f180acde014c167addf0ccc
 NexusEngine-ProtoKits: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
 Three.js: 0.179.1
 Rapier: 0.15.0
-patch generator: prehistoric-patch-v1
+parent domain: prehistoric-rush-domain-kit 0.5.0
+camera kit: camera-smooth-follow-kit 0.1.0
+renderer label: three-seeded-patch-streaming-smooth-camera-v6
 ```
 
 ## Main findings
 
-### 1. Ready delivery marks controller state active before host commit
+### 1. Persistent smoothing is now correctly shared
 
-`takeReadyPatches()` removes a ready entry, adds its ID to the active set and marks the record active before returning the patch to the host. The host cannot reject or defer the patch while leaving controller state ready.
+The host no longer locally lerps only camera position and immediately calls `lookAt()`. The shared controller now persists position velocity, look velocity and quaternion state across frames.
 
-### 2. Release evidence is cleared before host retirement succeeds
+### 2. Target policy has no immutable descriptor
 
-`takeReleasedPatchIds()` copies and clears the controller released set before `adapter.releasePatches()` mutates live consumers. A failed retirement has no retained controller-side claim to retry.
+`setCameraTargets()` mutates two shared arrays from run position/yaw, route index and `sampleHeight()`. It does not publish target ID, run ID, simulation frame, patch/height revision or content fingerprint.
 
-### 3. Host activation is mutation-first and result-free
+### 3. Transform application has no result
 
-```txt
-activePatches.set
-terrain slot acquisition and buffer writes
-tree cell replacement and full batch flush
-grass and shard rebuild
-fixed-collider replacement
-height sampler visibility
-```
+`applyCameraTransform()` writes position and quaternion into the live Three camera and returns nothing. There is no accepted/rejected result, applied controller revision or transform fingerprint.
 
-No step returns a typed prepare or commit result. No shared revision, rollback or first-frame acknowledgement exists.
+### 4. Render consumption is unacknowledged
 
-### 4. Capacity policy is incomplete
+`renderer.render(scene, camera)` does not record which target/controller/application revision was consumed by the frame.
 
-Tree batch overflow is warned after mutation. Grass and shard descriptors are truncated at fixed capacities without returning rejected IDs. Terrain slot fallback can reuse slot zero. None of these decisions participates in patch admission.
+### 5. Public control-plane references remain mutable
 
-### 5. Controller and consumer observations can diverge
+`PrehistoricRushHost` exposes `adapter` and `cameraFollow`, allowing external callers to reset, update or load snapshots outside run/session admission.
 
-The host exposes controller snapshots but no consumer-active IDs, patch activation revisions, pending claims, exact parity differences or bounded activation journal.
+### 6. Controller lifecycle is unowned
 
-### 6. Gameplay readiness is not a distinct state
+The service can remove controllers, but the product never calls `remove()`. RAF, listeners, renderer and Worker also remain without an ordered teardown owner.
 
-Movement, collision, pickup and height sampling continue without a typed guarantee that the current and forward patch set is render-ready, physics-ready and gameplay-ready.
+### 7. Integration fixtures are absent
+
+No executable proof covers run restart reset, route-index discontinuity, patch-height changes, frame stalls, teleport threshold, quaternion normalization, deterministic convergence or render-frame correlation.
 
 ## Priority order
 
 ```txt
 P0 patch-content admission and acknowledged multi-consumer activation/release
-P1 controller-active versus consumer-active parity observation
-P2 run-session reset and world-cache retention policy
-P3 Worker/stream epochs, inflight ceiling and stale-result quarantine
-P4 dynamic pickup/collider/height/render reconciliation
-P5 idempotent stop/dispose/restart ownership
-P6 creature, core-kit, typed-command and committed-frame proof
+P1 camera target descriptor and transform/frame consumption proof
+P2 run-session reset with stream and camera epochs
+P3 Worker inflight/stale-result authority
+P4 lifecycle ownership and committed-frame observation
+P5 creature, core-kit and typed-command proof
 ```
 
 ## Validation status
 
-Documentation only. No runtime, dependency, route, rendering, physics or deployment behavior changed. No branch or pull request was created. The repository has no root `package.json`; patch admission, activation, release, rollback, parity and deployed browser fixtures are absent and were not run.
+Documentation only. Runtime behavior was not changed. Source inspection verified the current pinned graph and camera path. The repository has no root `package.json`; camera integration fixtures and browser/Pages smoke are absent and were not run.

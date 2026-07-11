@@ -1,163 +1,135 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-11T05-02-00-04-00`  
+**Last aligned:** `2026-07-11T05-39-11-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` has deterministic patch generation, caching and budgeted delivery, but a patch becomes controller-active or controller-released before terrain, trees, grass, shards, gameplay colliders, Rapier colliders and height sampling prove one shared commit. The next boundary is an acknowledged patch activation and release transaction.
+`PrehistoricRush` now uses the pinned `camera-smooth-follow-kit` for persistent SmoothDamp position, look-target smoothing and quaternion rotation damping. The integration removes the previous immediate `lookAt()` snap, but target generation, controller updates, Three.js application and rendered-frame proof are still spread across the browser host without one typed consumption result.
+
+The previously documented seeded patch activation transaction remains the highest gameplay-integrity priority. This audit records the newer camera runtime change so the repository ledger matches the actual module graph and renderer path.
 
 ## Plan ledger
 
-**Goal:** Preserve the official seeded patch controller and instance-batch kits while adding product-side content admission, detached consumer preparation, atomic commit, rollback and parity proof.
+**Goal:** Preserve the shared smooth-follow kit while making the product camera target policy, reset/update admission, transform application, frame correlation, observation and lifecycle explicit.
 
-- [x] Compare all ten accessible Publish repositories with the central ledger.
+- [x] Compare the full accessible `LuminaryLabs-Publish` inventory with the central ledger.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm all nine eligible repositories have central and root `.agent` state.
-- [x] Select only `PrehistoricRush` as the oldest eligible central record.
-- [x] Re-read the pinned controller and active consumer path.
+- [x] Confirm the nine eligible repositories are centrally tracked and have root `.agent` state.
+- [x] Select only `PrehistoricRush` because camera runtime commits landed after its prior audit.
+- [x] Re-read the pinned camera kit and active Three.js consumer.
 - [x] Identify the interaction loop, domains, kits and services.
-- [x] Record activation and release divergence windows.
-- [x] Add timestamped architecture, render, gameplay, interaction, streaming and deploy audits.
-- [x] Refresh the required root `.agent` files.
-- [ ] Implement acknowledged patch activation and release.
-- [ ] Add prepare, commit, rollback and parity fixtures.
+- [x] Record camera target, reset, update, render and lifecycle gaps.
+- [x] Add timestamped architecture, render, gameplay, interaction, camera-system and deploy audits.
+- [x] Refresh required root `.agent` files.
+- [ ] Keep patch-content admission and acknowledged multi-consumer activation/release as P0 implementation work.
+- [ ] Add camera target/transform/frame fixtures before further camera behavior changes.
 
-## Current implementation gate
-
-```txt
-PrehistoricRush Seeded Patch Activation Commit Authority
-+ Multi-Consumer Prepare / Commit / Rollback Fixture Gate
-```
-
-## Follow-on gate
+## Latest documentation gate
 
 ```txt
-PrehistoricRush Run Session Reset Authority
-+ Retry / Stream Epoch Fixture Gate
+PrehistoricRush Smooth Camera Consumption Authority
++ Target / Transform / Render-Frame Fixture Gate
 ```
 
-Run-session reset must consume a trustworthy patch transaction boundary. A reset cannot prove parity while controller-active and consumer-active state can diverge.
+## Overall implementation priority
+
+```txt
+P0 Seeded Patch Activation Commit Authority
+P1 Camera Target / Transform Consumption Proof
+P2 Run Session Reset + Stream/Camera Epoch Authority
+```
 
 ## Read first
 
 ```txt
-.agent/trackers/2026-07-11T05-02-00-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-11T05-02-00-04-00.md
+.agent/trackers/2026-07-11T05-39-11-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-11T05-39-11-04-00.md
 .agent/current-audit.md
 .agent/known-gaps.md
 .agent/next-steps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/architecture-audit/2026-07-11T05-02-00-04-00-patch-activation-commit-dsk-map.md
-.agent/render-audit/2026-07-11T05-02-00-04-00-multi-consumer-patch-commit-gap.md
-.agent/gameplay-audit/2026-07-11T05-02-00-04-00-focus-ready-active-world-loop.md
-.agent/interaction-audit/2026-07-11T05-02-00-04-00-ready-delivery-commit-result-map.md
-.agent/world-streaming-audit/2026-07-11T05-02-00-04-00-controller-consumer-activation-contract.md
-.agent/deploy-audit/2026-07-11T05-02-00-04-00-patch-activation-fixture-gate.md
+.agent/architecture-audit/2026-07-11T05-39-11-04-00-smooth-camera-consumption-dsk-map.md
+.agent/render-audit/2026-07-11T05-39-11-04-00-camera-transform-frame-correlation-gap.md
+.agent/gameplay-audit/2026-07-11T05-39-11-04-00-run-route-height-camera-loop.md
+.agent/interaction-audit/2026-07-11T05-39-11-04-00-camera-reset-update-admission-map.md
+.agent/camera-system-audit/2026-07-11T05-39-11-04-00-target-provenance-transform-consumption-contract.md
+.agent/deploy-audit/2026-07-11T05-39-11-04-00-smooth-camera-fixture-gate.md
 ```
 
-Prior active companion audit:
+Prior active world-streaming audit:
 
 ```txt
-.agent/run-session-audit/2026-07-11T02-48-17-04-00-run-world-cache-reset-contract.md
+.agent/world-streaming-audit/2026-07-11T05-02-00-04-00-controller-consumer-activation-contract.md
 ```
 
 ## Selection
 
-```txt
-PrehistoricRush      selected / 2026-07-11T02-48-17-04-00
-TheOpenAbove         tracked  / 2026-07-11T03-01-38-04-00
-HorrorCorridor       tracked  / 2026-07-11T03-18-44-04-00
-PhantomCommand       tracked  / 2026-07-11T03-41-49-04-00
-ZombieOrchard        tracked  / 2026-07-11T03-48-31-04-00
-TheUnmappedHouse     tracked  / 2026-07-11T04-00-07-04-00
-MyCozyIsland         tracked  / 2026-07-11T04-09-54-04-00
-AetherVale           tracked  / 2026-07-11T04-28-33-04-00
-IntoTheMeadow        tracked  / 2026-07-11T04-49-30-04-00
-TheCavalryOfRome     excluded
-```
-
-All nine eligible repositories were already tracked and had root `.agent` state. `PrehistoricRush` was the oldest eligible central record.
+The accessible Publish inventory contains ten repositories. All nine eligible non-Cavalry repositories are centrally tracked. `PrehistoricRush` was selected because the runtime added the official smooth-follow camera kit and changed the renderer path after the prior `05-02-00` documentation audit.
 
 ## Product read
 
-`PrehistoricRush` is a browser 3D runner. The player steers, boosts and jumps along a deterministic route while cached terrain, trees, grass, shards and hazards stream around a procedural skinned raptor.
+`PrehistoricRush` is a browser 3D runner. The player steers, boosts and jumps along a deterministic route while procedural terrain, vegetation, pickups and collision stream around a skinned raptor.
 
 ## Active interaction loop
 
 ```txt
-browser input and run simulation
-  -> controller focus and desired sets
-  -> controller records releases
-  -> host takes and mutates release consumers
-  -> controller queues and generates patch content
-  -> controller marks ready entries active
-  -> host mutates terrain, tree and dynamic consumers
-  -> host replaces gameplay and Rapier colliders
-  -> height sampler reads host active patches
-  -> physics, pickup, render, HUD and host readback
+browser input
+  -> prehistoric-rush simulation updates position, yaw, route index and run ID
+  -> seeded patch streaming changes active terrain and height sources
+  -> product camera target policy derives follow position and route-ahead look point
+  -> camera-smooth-follow controller resets or updates persistent state
+  -> Three adapter applies controller position and quaternion
+  -> renderer consumes the live camera
+  -> HUD and PrehistoricRushHost expose aggregate snapshots
   -> RAF repeats
+```
+
+## Camera ownership split
+
+```txt
+camera-smooth-follow-kit
+  owns persistent damped position, look point, velocities, quaternion,
+  reset behavior, snapshots and controller registry
+
+PrehistoricRush target policy
+  owns chase offset, route-ahead sample, terrain-aware look height,
+  run-change reset reasons and product tuning
+
+Three adapter
+  owns PerspectiveCamera, projection, transform application and rendering
+
+browser host
+  owns controller creation, run lifecycle calls, observation and eventual disposal
 ```
 
 ## Main finding
 
-The controller spends delivery state before the host proves consumer commit.
+The smoothing algorithm is correctly centralized in a renderer-agnostic shared kit, but the product has no single immutable row proving:
 
 ```txt
-activation:
-  controller marks active
-  -> host begins side effects
-  -> no result or acknowledgement
-
-release:
-  controller clears release evidence
-  -> host begins retirement side effects
-  -> no result or acknowledgement
+runId + simulation frame + routeIndex + height-source revision
+  -> target position + target look point
+  -> camera controller revision/reset reason
+  -> applied Three camera transform
+  -> rendered frame acknowledgement
 ```
 
-Host consumer mutation is sequential:
-
-```txt
-activePatches
-terrain slot
-terrain arrays and bounds
-tree batch cell replacements and flushes
-grass and shard instances
-gameplay colliders
-Rapier fixed colliders
-height sampling
-```
-
-A malformed payload, capacity failure or injected error can leave those consumers on different revisions while controller diagnostics still report the patch active or released.
-
-## Required ownership split
-
-```txt
-seeded-world-patch-controller-kit
-  patch identity, cache, desired sets, scheduling, claims and final acknowledgements
-
-prehistoric-patch-activation-authority-domain
-  content admission, consumer preparation, commit, rollback and result journal
-
-host consumers
-  detached plans, deterministic commit results and resource retirement
-```
+The target is recomputed from mutable run and patch state, `applyCameraTransform()` returns no result, and the host exposes mutable `cameraFollow` and `adapter` owners. There is also no teardown path that removes the controller or releases renderer/listener/RAF ownership.
 
 ## Safe implementation order
 
 ```txt
-1. Add a versioned patch-content schema and admission result.
-2. Add non-mutating ready and release claims to the controller.
-3. Preflight terrain, tree, grass, shard, collider and height consumers.
-4. Commit all required consumers under one activation revision.
-5. Acknowledge controller active only after consumer success.
-6. Commit releases before clearing controller release evidence.
-7. Publish exact controller/consumer parity and first render/physics acknowledgements.
-8. Add deterministic rollback, duplicate, stale-claim and capacity fixtures.
-9. Build run-session reset and stream epochs on top of this boundary.
-10. Add ordered stop, dispose, restart and deployed browser proof.
+1. Keep camera-smooth-follow-kit as the smoothing-state authority.
+2. Add a JSON-safe product CameraTargetDescriptor with run and source provenance.
+3. Add typed reset/update admission and result rows.
+4. Return an immutable Three camera-application result.
+5. Correlate target revision, controller revision and rendered frame.
+6. Expose detached bounded observation instead of mutable owners.
+7. Add controller removal and session teardown ownership.
+8. Add deterministic Node fixtures and browser/Pages camera smoke.
 ```
 
-Do not duplicate the official patch controller or instance-batch kit, increase active radius or population, or treat controller-active state as proof that the rendered and physical world committed.
+Do not replace the shared kit with local lerp/lookAt logic, add a second camera state machine, or treat a controller snapshot as proof that a particular rendered frame consumed it.
