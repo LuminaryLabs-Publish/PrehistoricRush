@@ -1,12 +1,12 @@
 # Current Audit: PrehistoricRush
 
-**Updated:** `2026-07-10T22-42-00-04-00`
+**Updated:** `2026-07-10T23-08-11-04-00`
 
 ## Summary
 
-`PrehistoricRush` is a static browser 3D runner whose live route is `index.html -> src/runtime.mjs -> src/game.js`. Six repo-local domain kits, Three.js, Rapier, and the external Rapier physics adapter are composed directly by the browser host.
+`PrehistoricRush` was materially refactored after the prior population audit. The browser now creates a Nexus Engine game from `createPrehistoricRushKitGraph()`, which returns twelve core kits plus one `prehistoric-rush-domain-kit`. The game domain contains run state, input state, route sampling, surface classification, score/outcome behavior, scene-transition requests, and a nested procedural dino body service.
 
-The immediate correctness boundary is population admission. `populate()` currently generates candidates, mutates instance matrices, creates collider and pickup rows, publishes draw counts, and replaces physics colliders without an explicit generation plan or commit result.
+The architectural intent is correct, but the composition boundary is incomplete. `src/game.js` still implements nearly every platform-facing and presentation-facing service directly, while the corresponding core kits remain installed without consumption evidence.
 
 ## Selection audit
 
@@ -16,129 +16,172 @@ eligible non-Cavalry repositories: 9
 central ledger entries: 9/9
 root .agent state: 9/9
 selected: LuminaryLabs-Publish/PrehistoricRush
-selection rule: oldest eligible documented fallback
-prior selected-repo timestamp: 2026-07-10T21-00-16-04-00
+selection rule: undocumented runtime refactor before oldest fallback
+prior central timestamp: 2026-07-10T22-42-00-04-00
+new runtime head: 643cff89f6e74db983863a942a4644e6746947b5
+runtime refactor local time: 2026-07-10T23-02-57-04-00
 ```
 
 ## Interaction loop
 
 ```txt
 boot
-  -> import src/game.js
-  -> construct route, surface, forest, grass, wind, and dino-body services
-  -> load Three.js, Rapier, and rapier-physics-domain-kit
+  -> index.html imports src/runtime.mjs
+  -> src/runtime.mjs imports src/game.js
+  -> CDN loader imports NexusEngine@main, Three.js, Rapier, and ProtoKit@main
+  -> createPrehistoricRushKitGraph(NexusEngine, config)
+  -> createRealtimeGame({ kits })
+
+composition
+  -> install core-input
+  -> install core-spatial
+  -> install core-scene
+  -> install core-physics
+  -> install core-motion
+  -> install core-camera
+  -> install core-animation
+  -> install core-graphics
+  -> install core-skybox
+  -> install core-ui
+  -> install core-diagnostics
+  -> install core-composition
+  -> install prehistoric-rush-domain-kit
 
 mount
-  -> create shell, scene, terrain, pools, player, physics, input, HUD, camera
-  -> terrain.update(0, 0)
-  -> populate initial window
+  -> create DOM shell and HUD
+  -> create an external Rapier adapter
+  -> create Three scene, terrain, population pools, dino, camera, lights, and renderer
+  -> inject the terrain height sampler into the game domain
+  -> start the run
+  -> populate the initial streamed window
 
-run
-  -> update runner motion and route index
-  -> terrain chunk transition invalidates populationKey
-  -> populate rebuilds render/collider/pickup state
-  -> physics fixed-collider set is replaced
-  -> resolve contacts and pickups
-  -> update camera, grass wind, HUD, and render
-
-restart
-  -> partial runner reset
-  -> same RAF, listeners, population pools, collected set, and resource owners continue
+frame
+  -> browser listeners update a local input object
+  -> game.setInput() copies steer/boost/jump into game-domain InputState
+  -> engine.tick(dt) runs PrehistoricRushRunSystem
+  -> adapter detects chunk changes and repopulates live instance pools
+  -> adapter moves the external Rapier actor and steps contacts
+  -> adapter reports fail or shard collection back to the game domain
+  -> adapter applies procedural dino pose
+  -> adapter updates camera, light, HUD, grass uniforms, and Three render
+  -> requestAnimationFrame schedules the next frame
 
 readback
-  -> PrehistoricRushHost.app exposes mutable live objects
-  -> getState returns aggregate runner and domain snapshots
+  -> globalThis.PrehistoricRushHost exposes engine, physics, and adapter live references
+  -> getState returns game snapshot, composition object, scene descriptor, and renderer label
 ```
 
 ## Domains in use
 
 ```txt
-runtime/platform:
-  static shell, module resolution, Three.js, Rapier, physics adapter, Pages deploy
+runtime/source:
+  static module boot, CDN resolution, external dependency admission, runtime source revision
 
-route/terrain/traversal:
-  control points, spline samples, nearest query, region classification
-  height field, chunk window, surface resistance
+Nexus Engine core graph:
+  input, spatial, scene, physics, motion, camera, animation, graphics, skybox, UI, diagnostics, composition
 
-population:
-  forest archetypes, tree pools, root pool, grass layers, rocks, shards
-  candidate generation, route exclusion, LOD, admission, matrix writes
-  collider projection, pickup projection, physics collider replacement
+game domain:
+  run lifecycle, run state, input state, route position, surface class, speed, yaw, jump, score, shards, outcome
 
-character/gameplay:
-  procedural dino topology/skeleton/skinning/pose
-  keyboard/button input, start/restart, motion, yaw, boost, jump
-  contacts, shard collection, travel score, goal and scene state
+route domain:
+  deterministic control points, Catmull-Rom samples, nearest query, tangent/progress, path/edge/verge/forest classification
 
-presentation/observation:
-  camera, HUD, shadows, render submission, host snapshots
-  population capacity, generation identity, parity, fixtures, central sync
+character domain:
+  procedural topology, skeleton, skinning, material, pose, character snapshot
+
+browser adapter:
+  DOM shell, input listeners, resize/blur handling, RAF, HUD projection
+
+render/population:
+  terrain mesh generation, height sampling, tree pools, layered grass pools, shard pool, camera, lights, shadows, render submission
+
+physics adapter:
+  Rapier initialization, kinematic actor, collider replacement, transform projection, step, contact projection
+
+observation/deploy:
+  host readback, static route, Pages source, repo-local and central audit state
 ```
 
-## Active kits and services
+## Kit inventory and services
 
-- `route-field-domain-kit`: deterministic route control points, Catmull-Rom samples, nearest lookup, region classification, extension, snapshot.
-- `surface-traversal-domain-kit`: region multipliers, smoothing, state, snapshot.
-- `forest-archetype-domain-kit`: five tree archetypes, indexed lookup, snapshot.
-- `grass-patch-domain-kit`: carpet/main/verge descriptors, route scale policy, snapshot.
-- `grass-wind-domain-kit`: deterministic gust update, wind state, snapshot.
-- `procedural-dino-body-domain-kit`: skinned body construction, skeleton, weights, procedural pose, descriptor, snapshot.
-- `three@0.179.1`: scene graph, geometry, instancing, skinning, camera, lighting, fog, rendering.
+### Nexus Engine core kits declared
+
+- `core-input-kit`: action and binding contracts for jump, boost, start, retry, and steer.
+- `core-spatial-kit`: shared spatial capability and transform/query ownership.
+- `core-scene-kit`: menu/game/run-over/win scene registry and direct transitions.
+- `core-physics-kit`: physics capability/provider contract.
+- `core-motion-kit`: motion capability and movement composition contract.
+- `core-camera-kit`: camera capability and camera-state ownership contract.
+- `core-animation-kit`: animation capability and animation-state contract.
+- `core-graphics-kit`: graphics/render capability and frame contract.
+- `core-skybox-kit`: skybox capability and sky descriptor ownership.
+- `core-ui-kit`: UI capability and UI-state projection contract.
+- `core-diagnostics-kit`: diagnostics capability and runtime observation contract.
+- `core-composition-kit`: game-composition metadata and capability composition contract.
+
+### Game and nested kits
+
+- `prehistoric-rush-domain-kit`: run/input resources, run-start/fail/win/shard events, simulation system, route/surface/score/outcome API, scene-transition requests, snapshots.
+- `drunk-route-generator`: deterministic control points and route samples, nearest route lookup, region classification, route snapshot.
+- `procedural-dino-body`: alias of `procedural-dino-body-domain-kit`; skinned body construction, procedural skeleton/weights/material, runtime pose, descriptor and snapshot.
+
+### External kits and modules
+
+- `NexusEngine@main`: runtime, DSK definition, world/resources/events/systems, core-kit factories, game composition.
+- `three@0.179.1`: scene graph, geometry, materials, instancing, skinning, camera, lighting, fog, WebGL rendering.
 - `@dimforge/rapier3d-compat@0.15.0`: physics runtime.
-- `rapier-physics-domain-kit`: world bridge, actor/collider registration, transforms, stepping, contacts.
+- `rapier-physics-domain-kit@main`: Rapier world bridge, kinematic actor, fixed colliders, transforms, stepping, contacts.
 
-## Population source facts
+### Host-implied kits
 
-```txt
-terrain radius: 3
-window dimensions: 7 x 7
-window chunks: 49
-
-treesPerChunk: 7
-maximum tree candidates: 343
-per-archetype trunk capacity: 100
-per-archetype crown capacity: 100
-explicit tree capacity check: none
-
-roots per admitted tree: 4
-maximum root candidates: 1,372
-root capacity: 400
-explicit root capacity check: none
-
-grassPerChunk: 70
-maximum grass candidates: 3,430
-layer allocations: carpet 3,600 / main 2,600 / verge 1,300
-capacity comparison source: layer.mesh.count
-counter increment occurs before capacity and LOD admission: yes
-published draw count source: candidate counter
-
-rocks maximum candidates: 98 / capacity 320
-shards maximum candidates: 98 / capacity 220
-```
+- `static-shell-adapter-kit`: DOM host, panel, status, button.
+- `browser-input-adapter-kit`: key/button/blur handling and input forwarding.
+- `rapier-host-adapter-kit`: external engine/world shim and Rapier API setup.
+- `terrain-render-adapter-kit`: chunk geometry, height sampling, route coloration.
+- `tree-population-render-kit`: tree candidate selection and instanced trunk/crown writes.
+- `layered-grass-render-kit`: grass candidate selection, layer assignment, wind shader, instance writes.
+- `shard-render-pickup-kit`: shard placement, render rows, pickup rows, collection reset.
+- `dino-render-animation-adapter-kit`: skinned-body creation and per-frame pose projection.
+- `camera-light-render-adapter-kit`: camera follow, sun follow, render submission.
+- `runner-hud-adapter-kit`: progress, status, speed, region and shard DOM projection.
+- `browser-frame-loop-kit`: dt sampling, engine tick, adapter updates, RAF scheduling.
+- `prehistoric-rush-host-readback-kit`: aggregate snapshot and live reference exposure.
 
 ## Main findings
 
-1. Tree and root writes are not preflighted against immutable allocation capacities.
-2. Root demand can exceed allocation by 972 rows under configured maximum density.
-3. Grass uses the prior active draw count as the next admission ceiling, not the immutable allocation capacity.
-4. Grass counters advance before LOD rejection, so published draw counts can include unwritten or stale matrices.
-5. Tree collider rows are appended regardless of render-pool admission; render and collision authority can diverge.
-6. Shard pickup rows and shard matrices are produced inline without a shared admission result.
-7. `populate()` mutates live pools and gameplay arrays before a generation can be validated or committed.
-8. No `generationId`, `windowKey`, population fingerprint, requested/admitted/truncated counts, or parity rows are exposed through `PrehistoricRushHost`.
-9. Runtime source-contract drift remains the next separate gate after population correctness.
+### 1. Declared composition is not consumed composition
+
+The graph installs twelve core kits, but the runtime does not publish a ledger proving that any configured service was consumed. `core-scene` is the only core API visibly invoked by the game domain. The browser host bypasses the configured input, physics, motion, camera, animation, graphics, skybox, UI, diagnostics, and spatial capabilities.
+
+### 2. The browser adapter remains a large runtime owner
+
+`createAdapter()` owns terrain construction, population generation, collider and pickup projection, dino creation, camera, light, animation calls, render submission, and mutable frame state. `main()` owns dependency admission, input, restart, contacts, pickups, HUD, RAF, resize and global host installation.
+
+### 3. Source contracts are mutable
+
+NexusEngine and the Rapier ProtoKit resolve from `@main`. The game domain imports the factories available at page load rather than a pinned engine revision. A compatible local audit does not prove the deployed page will receive the same API or behavior later.
+
+### 4. Population capacity authority remains incorrect after the refactor
+
+Tree pools allocate 160 entries per archetype and grass pools allocate 3,600 / 2,600 / 1,300 entries. After each population pass, `InstancedMesh.count` is overwritten with the active count. The next pass uses that mutable draw count as its admission ceiling. Population capacity can therefore shrink to the previous window's occupancy.
+
+Shard capacity is also read from mutable `shards.count`, then overwritten with the latest active count. Render and pickup rows are now generated together, but immutable allocation capacity is still not represented.
+
+### 5. Host readback cannot prove the architecture
+
+The host exposes mutable engine/physics/adapter references. Its JSON-like snapshot does not include source revisions, declared/installed/consumed core kits, adapter ownership, transition results, event rows, pool capacities, lifecycle state, frame IDs, or failure admission evidence.
 
 ## Priority order
 
 ```txt
-P0 population admission transaction and parity fixture
-P1 runtime source contract reconciliation and deployed artifact fixture
-P2 restart/result/persistence transaction
-P3 immutable external dependency admission
-P4 mount/dispose/remount lifecycle
-P5 camera-relative lighting and shadow ownership
+P0 core-kit consumption authority and kit-graph fixture
+P1 immutable source revision and dependency admission
+P2 browser adapter ownership and lifecycle/disposal
+P3 immutable population capacities and atomic population plan
+P4 typed start/fail/win/retry/collect results and transition correlation
+P5 frame/render/host observation authority
 ```
 
 ## Validation status
 
-Documentation only. Runtime source, dependencies, routes, rendering, physics, and deployment behavior were not changed. No branch or pull request was created.
+Documentation only. Runtime source, dependencies, routes, rendering, physics and deployment were not changed by this pass. No branch or pull request was created.
