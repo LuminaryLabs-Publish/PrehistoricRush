@@ -1,142 +1,168 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T07-08-45-04-00`
+**Updated:** `2026-07-11T08-48-04-04-00`
 
 ## Summary
 
-Keep the shared procedural creature generator and the local Three/Rapier consumers. Extend the reusable descriptor identity so exact geometry payload and orientation are versioned, then add typed product binding and rendered-frame proof. Do not let this work displace P0 seeded patch activation authority.
+Finish acknowledged patch activation first. Then replace the manual renderer label and fragmented source/render settings with one canonical visual-policy graph that identifies the exact creature topology, grass policy and shadow policy consumed by each committed frame.
 
 ## Plan ledger
 
-**Goal:** make every visible player-creature frame traceable from pinned source and normalized recipe through exact geometry, binding, pose and render acknowledgement.
+**Goal:** make every visible frame traceable to accepted world content and an exact visual-policy revision.
 
-### Phase 0: preserve ownership
+### Phase 0: patch activation remains P0
 
-- [ ] Keep `procedural-creature-body-kit` as renderer-agnostic geometry authority.
-- [ ] Keep `player-raptor-preset-kit` as product recipe authority.
-- [ ] Keep `prehistoric-rush-domain-kit` as run and pose-state authority.
-- [ ] Keep Three and Rapier integration outside the shared body kit.
-- [ ] Update existing reusable kits before adding a second shared generator.
+- [ ] Add detached patch-content validation.
+- [ ] Claim ready patches without marking them active.
+- [ ] Prepare terrain, tree, grass, pickup, collider and height consumers.
+- [ ] Commit all consumers under one `consumerRevision`.
+- [ ] Roll back every prepared consumer on failure.
+- [ ] Acknowledge activation to the controller only after commit.
+- [ ] Keep release evidence until all consumers retire successfully.
+- [ ] Add controller/consumer exact-ID parity fixtures.
 
-### Phase 1: version the descriptor contract
+### Phase 1: create one module-graph manifest
 
-- [ ] Add `descriptorSchemaVersion` and `generatorVersion`.
-- [ ] Add source revision or source-manifest identity.
-- [ ] Declare coordinate system, front face, winding, normal space and skinning space.
-- [ ] Add explicit geometry-format migration/rejection policy.
-- [ ] Update snapshot schema and load admission.
+- [ ] Define schema version and product build identity.
+- [ ] Record exact NexusEngine, NexusEngine-Kits, ProtoKits, Three and Rapier coordinates.
+- [ ] Record upstream kit integrity where available.
+- [ ] Record product runtime source revision.
+- [ ] Canonically serialize and fingerprint the graph.
+- [ ] Reject missing, malformed or unexpected graph fields before runtime construction.
 
-### Phase 2: hash complete payload identity
+### Phase 2: version creature geometry identity
 
-- [ ] Add canonical recipe hash.
-- [ ] Add positions, normals, colors and indices hashes.
-- [ ] Add skin indices/weights hash.
-- [ ] Add skeleton, attachment, material, collision and bounds hashes.
-- [ ] Add full descriptor hash over all semantic fields.
-- [ ] Ensure typed-array/container representation does not change canonical hashes.
-- [ ] Ensure changed index order changes geometry and full hashes.
+- [ ] Keep `procedural-creature-body-kit` as renderer-agnostic generator authority.
+- [ ] Add descriptor schema and generator version.
+- [ ] Add source and integrity identity.
+- [ ] Declare coordinate, front-face, winding, normal and skin spaces.
+- [ ] Hash exact positions, normals, colors, indices, skinning, skeleton, attachments, collision, bounds and material.
+- [ ] Preserve connected-component count as validation, not as the full geometry identity.
+- [ ] Add snapshot/load migration or rejection policy.
 
-### Phase 3: validate geometry and orientation
+### Phase 3: extract local visual policies
 
-- [ ] Validate array lengths and finite values.
-- [ ] Validate integer index range and triangle divisibility.
-- [ ] Report or reject degenerate triangles.
-- [ ] Validate supplied normal lengths.
-- [ ] Validate geometric triangle normals against supplied vertex normals.
-- [ ] Validate declared FrontSide/winding convention.
-- [ ] Validate skin indices and normalized weights.
-- [ ] Validate skeleton hierarchy and required bone IDs.
+- [ ] Define `GrassCardGeometryPolicy`.
+- [ ] Define `GrassAlphaShaderPolicy`.
+- [ ] Define `GrassPalettePolicy`.
+- [ ] Define `ShadowMapPolicy`.
+- [ ] Define `ShadowCameraPolicy`.
+- [ ] Define `ShadowCasterPolicy`.
+- [ ] Move literal values and shader-source identity into immutable descriptors.
+- [ ] Canonically hash each descriptor and the aggregate visual policy.
+- [ ] Keep renderer construction as a consumer, not the policy owner.
 
-### Phase 4: admit product consumers
+### Phase 4: admit and bind policies
 
+- [ ] Add typed module-graph admission result.
 - [ ] Add typed creature descriptor admission result.
-- [ ] Add typed Three geometry/skeleton/material binding result.
-- [ ] Add typed Rapier collision binding result.
-- [ ] Prepare both consumers before committing the active player binding.
-- [ ] Roll back prepared resources if either consumer fails.
-- [ ] Retain descriptor, geometry, skeleton and collision hashes in binding rows.
+- [ ] Add typed grass geometry/material binding result.
+- [ ] Add typed shadow-map/light/caster binding result.
+- [ ] Prepare all visual consumers before committing the active policy.
+- [ ] Roll back created Three resources on binding failure.
+- [ ] Assign a monotonic `visualPolicyRevision`.
 
-### Phase 5: prove pose and frame consumption
+### Phase 5: correlate committed frames
 
-- [ ] Add monotonic pose revision.
-- [ ] Make pose descriptor name descriptor and skeleton hashes.
-- [ ] Make `applyCreaturePose()` return accepted/rejected/stale results.
-- [ ] Reject missing required bones instead of silently skipping them.
 - [ ] Assign committed render-frame IDs.
-- [ ] Correlate frame, creature binding, geometry hash, pose revision and camera revision.
-- [ ] Publish bounded detached observation only.
+- [ ] Add monotonic creature pose and camera revisions.
+- [ ] Retain patch consumer revision from P0.
+- [ ] Make frame receipt name module graph, visual policy, creature geometry, pose, camera and patch revisions.
+- [ ] Publish only detached JSON-safe observations.
+- [ ] Reject stale run/session/resource epochs.
 
-### Phase 6: own lifecycle
+### Phase 6: lifecycle
 
-- [ ] Fence descriptor, binding and pose operations by run/session epoch.
-- [ ] Dispose creature geometry, material, skeleton and mesh exactly once.
-- [ ] Reject pose/render operations after disposal.
-- [ ] Remove mutable adapter and service owners from public readback.
-- [ ] Integrate creature disposal with Worker, camera, physics, renderer and RAF shutdown.
+- [ ] Retain RAF ID and listener leases.
+- [ ] Terminate the patch Worker.
+- [ ] Dispose creature, terrain, tree, grass, pickup and renderer resources exactly once.
+- [ ] Dispose or release Rapier state.
+- [ ] Retire the public host and reject stale callbacks.
+- [ ] Make restart create new run, stream, visual-policy and resource epochs.
 
 ### Phase 7: fixture gates
 
-- [ ] Prove deterministic full descriptor hashes.
-- [ ] Prove index-order changes alter geometry identity.
-- [ ] Prove triangle normals agree with supplied normals.
-- [ ] Prove invalid indices, normals and skin data reject.
-- [ ] Prove snapshot/load exact geometry identity.
-- [ ] Prove Three attribute and index counts match the descriptor.
-- [ ] Prove material remains FrontSide during orientation validation.
-- [ ] Prove bind pose and animated poses render correctly.
-- [ ] Prove one frame references one binding and pose revision.
-- [ ] Add browser and Pages smoke.
+- [ ] Prove joined neck/head topology has six indexed components.
+- [ ] Prove exact geometry hash changes when topology or winding changes.
+- [ ] Prove grass geometry, shader or palette edits change policy identity.
+- [ ] Prove shadow-map, camera or caster edits change policy identity.
+- [ ] Prove manual renderer label is not used as the fingerprint.
+- [ ] Prove Three bindings match accepted descriptors.
+- [ ] Prove one frame names one accepted policy and binding revision.
+- [ ] Add browser and deployed Pages pixel/screenshot smoke.
 
 ## Preferred kit changes
 
-Update the existing shared body kit for reusable identity and CPU proof. Keep product consumers local until their contracts stabilize.
+Update existing reusable kits first:
 
 ```txt
-existing shared kit:
-  procedural-creature-body-kit
-    schema/version metadata
-    full payload hashes
-    orientation declarations
-    deterministic geometry fixtures
+procedural-creature-body-kit
+  descriptor schema
+  full geometry identity
+  orientation declarations
+  CPU topology/winding/normal fixtures
 
-product-side kits:
-  creature-descriptor-admission-kit
-  creature-surface-orientation-kit
-  creature-geometry-binding-kit
-  creature-skeleton-binding-kit
-  creature-collision-binding-kit
-  creature-pose-binding-kit
-  creature-render-frame-correlation-kit
-  creature-observation-kit
-  creature-resource-lifecycle-kit
-  creature-geometry-fixture-kit
+seeded-world-patch-controller-kit
+  claim and acknowledgement protocol
+  active/release state after consumer acknowledgement
 ```
 
-## Required future fixture commands
+Product-side candidate kits:
 
-```bash
-node scripts/prehistoric-rush-creature-descriptor-fixture.mjs
-node scripts/prehistoric-rush-creature-binding-fixture.mjs
-node scripts/prehistoric-rush-creature-frame-fixture.mjs
-node scripts/prehistoric-rush-creature-lifecycle-fixture.mjs
+```txt
+runtime-module-graph-manifest-kit
+visual-policy-schema-kit
+creature-topology-policy-kit
+grass-card-geometry-policy-kit
+grass-alpha-shader-policy-kit
+grass-palette-policy-kit
+shadow-map-policy-kit
+shadow-camera-policy-kit
+shadow-caster-policy-kit
+render-policy-fingerprint-kit
+render-policy-admission-kit
+render-binding-result-kit
+render-frame-policy-correlation-kit
+visual-policy-observation-kit
+visual-policy-fixture-kit
 ```
 
-Shared kit fixture:
+## Acceptance conditions
+
+```txt
+patch controller active IDs equal committed consumer IDs
+no failed patch activation becomes gameplay-ready
+source pin or local render-policy change changes visualPolicyFingerprint
+joined neck/head geometry is validated and exactly identified
+grass shader/geometry/palette binding matches accepted policy
+shadow map/camera/caster binding matches accepted policy
+rendered frame receipt names all accepted revisions
+stale epoch cannot mutate or publish a frame
+observation is bounded, detached and JSON-safe
+```
+
+## Future fixture commands
 
 ```bash
+node scripts/prehistoric-rush-patch-activation-fixture.mjs
 node scripts/procedural-creature-geometry-identity-fixture.mjs
+node scripts/prehistoric-rush-visual-policy-fixture.mjs
+node scripts/prehistoric-rush-render-binding-fixture.mjs
+node scripts/prehistoric-rush-frame-receipt-fixture.mjs
+node scripts/prehistoric-rush-lifecycle-fixture.mjs
 ```
 
 ## Overall order
 
 ```txt
-1. Patch-content admission and acknowledged patch activation/release.
-2. Creature geometry identity and winding/normal/binding/frame proof.
-3. Camera target/transform/frame consumption proof.
-4. Run-session reset with stream/camera/creature epochs.
-5. Worker stale-result quarantine and full runtime disposal.
+1. Patch-content admission and acknowledged activation/release.
+2. Module graph plus creature/grass/shadow visual-policy identity.
+3. Typed visual binding and render-frame correlation.
+4. Camera target/transform/frame proof.
+5. Run-session reset with stream/camera/creature/resource epochs.
+6. Worker quarantine and ordered runtime disposal.
 ```
 
 ## Do not do next
 
-Do not use `DoubleSide`, regenerate geometry in the Three adapter, silently call `computeVertexNormals()` as a patch, weaken source pinning, or accept current `contentHash` as proof of exact geometry.
+Do not add more ad hoc renderer labels, duplicate the creature generator, hide geometry defects with `DoubleSide`, disable all shadows as a substitute for policy ownership, or add more streamed consumers before P0 acknowledgement.
