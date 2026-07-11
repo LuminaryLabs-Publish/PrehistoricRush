@@ -1,43 +1,77 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-10T22-42-00-04-00`
+**Updated:** `2026-07-10T23-08-11-04-00`
 
 ## Scope
 
-Documentation-only architecture and population-system audit.
+Documentation-only audit of the post-refactor Nexus Engine kit graph, host-adapter ownership, dependency source contract and remaining population-capacity defects.
 
 ## Verified by source inspection
 
 ```txt
 active route: index.html -> src/runtime.mjs -> src/game.js
-active repo-local domain kits: 6
-terrain radius: 3
+parent game domain: prehistoric-rush-domain-kit 0.2.0
+nested specialized kits: 2
+Nexus Engine core kits declared: 12
+external runtime modules: NexusEngine@main, Three.js 0.179.1, Rapier 0.15.0, Rapier ProtoKit@main
+removed superseded repo-local domains: route, surface, forest, grass patch, grass wind
+retained procedural dino implementation: yes
+browser host adapter remains broad: yes
+```
+
+## Composition facts verified
+
+```txt
+core-scene direct runtime use: yes
+core-input direct runtime use: no visible use
+core-spatial direct runtime use: no visible use
+core-physics direct runtime use: no visible use
+core-motion direct runtime use: no visible use
+core-camera direct runtime use: no visible use
+core-animation direct runtime use: no visible use
+core-graphics direct runtime use: no visible use
+core-skybox direct runtime use: no visible use
+core-ui direct runtime use: no visible use
+core-diagnostics direct runtime use: no visible use
+core-composition readback: engine.gameComposer reference only
+per-kit consumption ledger: absent
+composition fingerprint: absent
+```
+
+## Host ownership verified
+
+```txt
+browser input listeners: src/game.js
+local input authority: src/game.js input object
+run input forwarding: game.setInput()
+Rapier initialization and world shim: src/game.js rapierAdapter()
+terrain mesh and height sampling: src/game.js createAdapter()
+tree/grass/shard population: src/game.js createAdapter().populate()
+physics contact and pickup forwarding: src/game.js frame loop
+camera/light/dino pose/render: src/game.js adapter.render()
+HUD projection: src/game.js frame loop
+RAF scheduling: src/game.js frame loop
+public host installation: src/game.js
+```
+
+## Population facts verified after refactor
+
+```txt
+window dimensions: 7 x 7
 window chunks: 49
 trees per chunk: 7
 maximum tree candidates: 343
-roots per admitted tree: 4
-maximum root candidates: 1,372
-root instance capacity: 400
-grass per chunk: 70
-maximum grass candidates: 3,430
-grass capacities: 3,600 / 2,600 / 1,300
-rocks maximum/capacity: 98 / 320
-shards maximum/capacity: 98 / 220
-```
-
-## Population behavior verified
-
-```txt
-- tree and root counters increment before unguarded setMatrixAt calls
-- tree and root writes have no explicit capacity checks
-- grass candidate counter increments before capacity and LOD checks
-- grass capacity check reads layer.mesh.count
-- layer.mesh.count is overwritten with the candidate counter after generation
-- tree colliders are appended independently from render admission
-- shard pickup rows are appended inline with matrix writes
-- physics fixed colliders are replaced from state.colliders after generation
-- no generation plan, commit result, rollback, fingerprint, or parity rows exist
-- PrehistoricRushHost.getState exposes no population admission evidence
+tree archetype pools: 5
+allocated entries per trunk/crown pool: 160
+grass candidates maximum: 3430
+grass allocations: 3600 / 2600 / 1300
+shard candidates maximum: 98
+shard allocation: 240
+immutable capacity fields: absent
+next-pass tree ceiling source: previous trunk.count
+next-pass grass ceiling source: previous grass mesh.count
+next-pass shard ceiling source: previous shards.count
+atomic population plan/commit: absent
 ```
 
 ## Documentation output
@@ -50,7 +84,7 @@ architecture audit: yes
 render audit: yes
 gameplay audit: yes
 interaction audit: yes
-population-system audit: yes
+composition-authority audit: yes
 deploy audit: yes
 central ledger sync required: yes
 central change-log entry required: yes
@@ -59,7 +93,7 @@ central change-log entry required: yes
 ## Runtime validation not performed
 
 ```txt
-runtime source changed: no
+runtime source changed by this pass: no
 package scripts changed: no
 dependencies changed: no
 routes changed: no
@@ -69,11 +103,11 @@ deployment workflow changed: no
 branch created: no
 pull request created: no
 root package.json found: no
-npm validation: unavailable
-population plan fixture: absent / not run
-capacity fixture: absent / not run
-parity fixture: absent / not run
-atomic commit fixture: absent / not run
+kit-graph fixture: absent / not run
+core-consumption fixture: absent / not run
+source-admission fixture: absent / not run
+adapter-contract fixture: absent / not run
+population-capacity fixture: absent / not run
 browser smoke: not run
 Pages smoke: not run
 target branch: main
@@ -82,22 +116,23 @@ target branch: main
 ## Required future proof
 
 ```txt
-- activeCount never exceeds immutable capacity
-- committed draw count equals successful matrix writes
-- rejected or LOD-culled candidates do not consume active slots
-- root overflow returns typed truncation or rejection evidence
-- every admitted tree render row has exactly one collider row
-- every admitted shard render row has exactly one pickup row
-- failed generation leaves the prior committed generation unchanged
-- identical inputs produce identical plans and fingerprints
-- host readback reports generationId, windowKey, counts, parity, and fingerprint
+- every declared core kit has a stable consumption classification
+- required core services fail startup when unavailable
+- replaced core services name their authoritative adapter owner
+- resolved NexusEngine and ProtoKit revisions are immutable and observable
+- game, physics, render and UI adapters return typed results
+- public host readback is JSON-safe and excludes live mutable owners
+- InstancedMesh allocation capacity never derives from active draw count
+- repeated population of identical windows produces identical plans and fingerprints
+- stop/dispose/remount leaves no duplicate RAF, listeners, GPU or physics owners
 ```
 
 ## Required fixture commands after implementation
 
 ```bash
-node scripts/prehistoric-rush-population-plan-fixture.mjs
+node scripts/prehistoric-rush-kit-graph-fixture.mjs
+node scripts/prehistoric-rush-core-consumption-fixture.mjs
+node scripts/prehistoric-rush-source-admission-fixture.mjs
+node scripts/prehistoric-rush-adapter-contract-fixture.mjs
 node scripts/prehistoric-rush-population-capacity-fixture.mjs
-node scripts/prehistoric-rush-population-parity-fixture.mjs
-node scripts/prehistoric-rush-population-commit-fixture.mjs
 ```
