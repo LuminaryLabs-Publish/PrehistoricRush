@@ -1,17 +1,19 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
 
 const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "b107be495e272b67316a8f9e17b85ffd7bbeff64";
+const KITS_COMMIT = "6c0c041f842f79d015bf001b4b73c84944e72536";
 const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
 const CDN = {
   nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
   seedKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/foundation/seed-kit/index.js`,
   creatureKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/procedural-creatures/procedural-creature-body-kit/index.js`,
+  batchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/render-descriptors/instanced-render-batch-kit/index.js`,
   three: "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
   rapier: "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.15.0/rapier.es.js",
   rapierKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/index.js`
 };
 const cfg = { seed: 238991, chunk: 56, radius: 3, segments: 30, trees: 7, grass: 70, goal: 3600 };
+const TREE_BATCH_CAPACITY = 256;
 const treeTypes = [
   [34, 58, 2.5, 10.5, 18, 0x214f28],
   [38, 68, 1.8, 7.5, 26, 0x173c26],
@@ -161,7 +163,7 @@ function grassMaterial(THREE, color) {
   });
 }
 
-function createThreeAdapter(THREE, game, physics, ui) {
+function createThreeAdapter(THREE, game, physics, ui, instanceBatches) {
   const route = game.route;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x15251b);
@@ -251,14 +253,71 @@ function createThreeAdapter(THREE, game, physics, ui) {
   }
 
   const dummy = new THREE.Object3D();
+  const matrix = new THREE.Matrix4();
   const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b4028, roughness: 0.98 });
-  const trees = treeTypes.map((type) => ({
-    type,
-    trunk: new THREE.InstancedMesh(new THREE.CylinderGeometry(0.7, 1.15, 1, 10), trunkMaterial, 160),
-    crown: new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshStandardMaterial({ color: type[5], roughness: 0.92 }), 160),
-    count: 0
-  }));
+  const trees = treeTypes.map((type, typeIndex) => {
+    const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.7, 1.15, 1, 10), trunkMaterial, TREE_BATCH_CAPACITY);
+    const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshStandardMaterial({ color: type[5], roughness: 0.92 }), TREE_BATCH_CAPACITY);
+    trunk.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    crown.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    trunk.castShadow = true;
+    trunk.receiveShadow = true;
+    crown.castShadow = true;
+    crown.receiveShadow = true;
+    return {
+      type,
+      typeIndex,
+      trunk,
+      crown,
+      trunkBatch: instanceBatches.create({ id: `prehistoric-rush-tree-${typeIndex}-trunks`, capacity: TREE_BATCH_CAPACITY, boundsMode: "recompute-on-change" }),
+      crownBatch: instanceBatches.create({ id: `prehistoric-rush-tree-${typeIndex}-crowns`, capacity: TREE_BATCH_CAPACITY, boundsMode: "recompute-on-change" }),
+      overflowSignature: ""
+    };
+  });
   trees.forEach((tree) => scene.add(tree.trunk, tree.crown));
+
+  function applyBatchToMesh(mesh, update, label) {
+    for (let index = 0; index < update.activeCount; index += 1) {
+      const descriptor = update.instances[index];
+      if (descriptor.matrix) {
+        matrix.fromArray(descriptor.matrix);
+      } else {
+        matrix.compose(
+          new THREE.Vector3(...descriptor.position),
+          new THREE.Quaternion(),
+          new THREE.Vector3(...descriptor.scale)
+        );
+      }
+      mesh.setMatrixAt(index, matrix);
+    }
+    mesh.count = update.activeCount;
+    mesh.instanceMatrix.needsUpdate = true;
+    if (update.boundsDirty) {
+      if (update.bounds) {
+        mesh.boundingBox = new THREE.Box3(
+          new THREE.Vector3(...update.bounds.min),
+          new THREE.Vector3(...update.bounds.max)
+        );
+        mesh.boundingSphere = new THREE.Sphere(
+          new THREE.Vector3(...update.bounds.center),
+          update.bounds.radius
+        );
+      } else {
+        mesh.boundingBox = new THREE.Box3().makeEmpty();
+        mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 0);
+      }
+    }
+    if (update.overflow.count > 0) {
+      const signature = `${update.requestedCount}:${update.overflow.count}`;
+      if (mesh.userData.overflowSignature !== signature) {
+        mesh.userData.overflowSignature = signature;
+        console.warn(`${label} overflow`, update.overflow);
+      }
+    } else {
+      mesh.userData.overflowSignature = "";
+    }
+  }
+
   const grass = [
     { h: 0.26, w: 0.46, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 2), grassMaterial(THREE, 0x254f24), 3600) },
     { h: 0.78, w: 0.72, mesh: new THREE.InstancedMesh(grassGeometry(THREE, 3), grassMaterial(THREE, 0x356d2e), 2600) },
@@ -271,7 +330,7 @@ function createThreeAdapter(THREE, game, physics, ui) {
   const playerDescriptor = game.getPlayerBody();
   const player = createCreatureMesh(THREE, playerDescriptor);
   scene.add(player);
-  const view = { key: "", colliders: [], pickups: [], time: 0 };
+  const view = { key: "", colliders: [], pickups: [], time: 0, treeBatchStats: [] };
 
   function populate(state) {
     const centerX = Math.floor(state.x / cfg.chunk);
@@ -281,12 +340,17 @@ function createThreeAdapter(THREE, game, physics, ui) {
     view.key = key;
     view.colliders = [];
     view.pickups = [];
-    trees.forEach((tree) => { tree.count = 0; });
     const grassCounts = [0, 0, 0];
+    const activeCellIds = new Set();
     let shardCount = 0;
 
     for (let chunkZ = centerZ - cfg.radius; chunkZ <= centerZ + cfg.radius; chunkZ += 1) {
       for (let chunkX = centerX - cfg.radius; chunkX <= centerX + cfg.radius; chunkX += 1) {
+        const cellId = `${chunkX}:${chunkZ}`;
+        activeCellIds.add(cellId);
+        const trunkDescriptors = trees.map(() => []);
+        const crownDescriptors = trees.map(() => []);
+
         for (let index = 0; index < cfg.trees; index += 1) {
           const x = chunkX * cfg.chunk + (hash(chunkX * 31 + index, chunkZ * 17, 11) - 0.5) * cfg.chunk;
           const z = chunkZ * cfg.chunk + (hash(chunkX * 19, chunkZ * 23 + index, 13) - 0.5) * cfg.chunk;
@@ -294,21 +358,46 @@ function createThreeAdapter(THREE, game, physics, ui) {
           if (nearest.distance < nearest.width + 5.5) continue;
           const typeIndex = Math.floor(hash(chunkX + index, chunkZ - index, 41) * trees.length) % trees.length;
           const pool = trees[typeIndex];
-          if (pool.count >= pool.trunk.count) continue;
           const type = pool.type;
           const height = type[0] + hash(chunkX, chunkZ, index + 47) * (type[1] - type[0]);
           const radius = type[2] * (0.82 + hash(index, chunkX, 61) * 0.42);
-          const item = pool.count++;
-          dummy.position.set(x, sample(x, z) + height * 0.5, z);
+          const groundY = sample(x, z);
+          const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
+
+          dummy.position.set(x, groundY + height * 0.5, z);
+          dummy.rotation.set(0, 0, 0);
           dummy.scale.set(radius, height, radius);
           dummy.updateMatrix();
-          pool.trunk.setMatrixAt(item, dummy.matrix);
-          dummy.position.set(x, sample(x, z) + height * 0.78, z);
-          dummy.scale.set(type[3], type[4], type[3]);
+          trunkDescriptors[typeIndex].push({
+            id: `${treeId}:trunk`,
+            matrix: dummy.matrix.toArray(),
+            bounds: { min: [x - radius, groundY, z - radius], max: [x + radius, groundY + height, z + radius] },
+            metadata: { treeId, cellId, typeIndex }
+          });
+
+          const crownRadius = type[3];
+          const crownHeight = type[4];
+          const crownY = groundY + height * 0.78;
+          dummy.position.set(x, crownY, z);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(crownRadius, crownHeight, crownRadius);
           dummy.updateMatrix();
-          pool.crown.setMatrixAt(item, dummy.matrix);
-          view.colliders.push({ id: `tree-${chunkX}-${chunkZ}-${index}`, x, z, radius: radius * 1.3 });
+          crownDescriptors[typeIndex].push({
+            id: `${treeId}:crown`,
+            matrix: dummy.matrix.toArray(),
+            bounds: {
+              min: [x - crownRadius, crownY - crownHeight * 0.5, z - crownRadius],
+              max: [x + crownRadius, crownY + crownHeight * 0.5, z + crownRadius]
+            },
+            metadata: { treeId, cellId, typeIndex }
+          });
+          view.colliders.push({ id: treeId, x, z, radius: radius * 1.3 });
         }
+
+        trees.forEach((pool, typeIndex) => {
+          pool.trunkBatch.replaceCell(cellId, trunkDescriptors[typeIndex]);
+          pool.crownBatch.replaceCell(cellId, crownDescriptors[typeIndex]);
+        });
 
         for (let index = 0; index < cfg.grass; index += 1) {
           const x = chunkX * cfg.chunk + (hash(chunkX * 71 + index, chunkZ * 37, 79) - 0.5) * cfg.chunk;
@@ -322,7 +411,7 @@ function createThreeAdapter(THREE, game, physics, ui) {
           if (item >= layer.mesh.count) continue;
           const routeScale = region === "edge" ? 0.22 : region === "verge" ? 0.72 : 1;
           dummy.position.set(x, sample(x, z), z);
-          dummy.rotation.y = hash(index, chunkZ, 109) * Math.PI;
+          dummy.rotation.set(0, hash(index, chunkZ, 109) * Math.PI, 0);
           dummy.scale.set(layer.w, layer.h * routeScale, layer.w);
           dummy.updateMatrix();
           layer.mesh.setMatrixAt(item, dummy.matrix);
@@ -335,6 +424,7 @@ function createThreeAdapter(THREE, game, physics, ui) {
           const x = point.x + (hash(index, chunkX, 151) * 2 - 1) * Math.min(point.width * 0.65, 2.1);
           const z = point.z;
           dummy.position.set(x, sample(x, z) + 1.15, z);
+          dummy.rotation.set(0, 0, 0);
           dummy.scale.setScalar(1);
           dummy.updateMatrix();
           shards.setMatrixAt(shardCount++, dummy.matrix);
@@ -343,11 +433,23 @@ function createThreeAdapter(THREE, game, physics, ui) {
       }
     }
 
+    view.treeBatchStats = [];
     trees.forEach((tree) => {
-      tree.trunk.count = tree.count;
-      tree.crown.count = tree.count;
-      tree.trunk.instanceMatrix.needsUpdate = true;
-      tree.crown.instanceMatrix.needsUpdate = true;
+      for (const cellId of tree.trunkBatch.listCellIds()) {
+        if (!activeCellIds.has(cellId)) {
+          tree.trunkBatch.releaseCell(cellId);
+          tree.crownBatch.releaseCell(cellId);
+        }
+      }
+      const trunkUpdate = tree.trunkBatch.flush();
+      const crownUpdate = tree.crownBatch.flush();
+      applyBatchToMesh(tree.trunk, trunkUpdate, `${trunkUpdate.id}`);
+      applyBatchToMesh(tree.crown, crownUpdate, `${crownUpdate.id}`);
+      view.treeBatchStats.push({
+        typeIndex: tree.typeIndex,
+        trunks: tree.trunkBatch.getStats(),
+        crowns: tree.crownBatch.getStats()
+      });
     });
     grass.forEach((layer, index) => {
       layer.mesh.count = grassCounts[index];
@@ -383,27 +485,30 @@ function createThreeAdapter(THREE, game, physics, ui) {
     renderer.render(scene, camera);
   }
 
-  return { scene, camera, renderer, sun, player, playerDescriptor, grass, shards, view, sample, updateTerrain, populate, render };
+  return { scene, camera, renderer, sun, player, playerDescriptor, trees, grass, shards, view, sample, updateTerrain, populate, render };
 }
 
 async function main() {
   const ui = shell();
-  const [NexusEngine, SeedModule, CreatureModule, THREE] = await Promise.all([
+  const [NexusEngine, SeedModule, CreatureModule, BatchModule, THREE] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
     load(CDN.creatureKit),
+    load(CDN.batchKit),
     load(CDN.three)
   ]);
-  if (!NexusEngine || !SeedModule || !CreatureModule || !THREE) throw new Error("Required pinned runtime module failed to load.");
-  const NexusEngineKits = { ...SeedModule, ...CreatureModule };
+  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !THREE) throw new Error("Required pinned runtime module failed to load.");
+  const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, { seed: cfg.seed, goalDistance: cfg.goal })
   });
   const game = engine.n.prehistoricRush;
+  const instanceBatches = engine.n.instancedRenderBatch;
   if (!game) throw new Error("PrehistoricRush domain did not install.");
+  if (!instanceBatches) throw new Error("Instanced render batch domain did not install.");
   const playerBody = game.getPlayerBody();
   const physics = await createRapierAdapter(playerBody.collision);
-  const adapter = createThreeAdapter(THREE, game, physics, ui);
+  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches);
   const input = { left: false, right: false, boost: false };
   adapter.updateTerrain(0, 0);
   game.start();
@@ -467,7 +572,7 @@ async function main() {
     }
     adapter.render(state, dt);
     const progress = Math.min(1, state.distance / cfg.goal);
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>pinned NexusEngine · procedural creature descriptor</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>stable tree batches · refreshed bounds</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -482,7 +587,8 @@ async function main() {
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
-      renderer: "three-procedural-creature-adapter-v4"
+      treeBatches: instanceBatches.list(),
+      renderer: "three-instanced-tree-batch-adapter-v5"
     })
   };
   requestAnimationFrame(loop);
