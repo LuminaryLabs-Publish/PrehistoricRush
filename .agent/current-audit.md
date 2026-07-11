@@ -1,26 +1,27 @@
-# Current Audit: PrehistoricRush Player Profile Handoff Authority
+# Current Audit: PrehistoricRush Runtime Session Lifecycle Authority
 
-**Updated:** `2026-07-11T10-58-10-04-00`
+**Updated:** `2026-07-11T12-39-53-04-00`
 
 ## Summary
 
-`PrehistoricRush` now has a menu page runtime, a character-creator runtime, a shared player-character profile schema and a browser profile store. The current root route was changed from the game to the menu. The new architecture is not complete: `game.html` and `charactercreator.html` are absent, and `src/game.js` does not consume the saved profile.
+`PrehistoricRush` constructs one long-lived browser runtime inside `main()`. The function loads pinned modules, creates the Nexus Engine game, Rapier adapter, procedural patch generator, optional Worker, seeded patch controller, smooth camera controller, Three scene/resources, listeners, RAF loop and global host. No object owns the complete startup, retry, stop, failure and disposal lifecycle.
 
-The product currently presents a customizable raptor feature whose navigation and gameplay handoff are not authoritative. The correct next boundary is a versioned page manifest plus an atomic player-profile commit and binding result shared by the creator, menu, procedural creature descriptor, Rapier collision and rendered frame.
+The immediate product priority remains route/profile handoff. This audit establishes the later lifecycle contract so route fixes do not harden an unbounded game host.
 
 ## Plan ledger
 
-**Goal:** catalogue the complete current product and define one profile and route authority without losing the previously documented patch-streaming and visual-policy priorities.
+**Goal:** map every runtime allocation and callback to one session owner, then define startup rollback, retry fencing and ordered idempotent disposal.
 
 - [x] Reconcile the accessible Publish inventory with the central ledger.
 - [x] Confirm all eligible repositories have root `.agent` state.
+- [x] Avoid concurrent writes in nominal-oldest `IntoTheMeadow`.
 - [x] Select only `LuminaryLabs-Publish/PrehistoricRush`.
-- [x] Inspect the six new runtime commits that introduced the schema, store and page runtimes.
-- [x] Inspect current menu links and current 3D game boot.
-- [x] Identify all interaction loops, domains, kits and services.
-- [x] Record route, persistence, sync, draft, binding and frame gaps.
-- [x] Preserve patch activation and visual identity as downstream gates.
-- [ ] Implement route/profile fixtures after this documentation pass.
+- [x] Inspect module loading, engine/kit construction and adapters.
+- [x] Inspect Worker creation and patch protocol.
+- [x] Inspect start/retry, input listeners, RAF and public host exposure.
+- [x] Identify domains, kits and offered services.
+- [x] Record startup, epoch, resource, callback and disposal gaps.
+- [ ] Implement after route/profile authority and patch activation ordering are settled.
 
 ## Selection audit
 
@@ -29,161 +30,120 @@ accessible Publish repositories: 10
 eligible non-Cavalry repositories: 9
 central ledgers: 9/9
 root .agent state: 9/9
+nominal oldest: IntoTheMeadow
+concurrency decision: skipped due same-window documentation commits
 selected: LuminaryLabs-Publish/PrehistoricRush
-reason: substantive multi-page/profile runtime changes postdate the previous audit
 excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
-## Source graph
+## Runtime construction graph
 
 ```txt
-NexusEngine:           e8252e51878a08eeef46f54b1aae9e8349a2442b
-NexusEngine-Kits:      d6630367d557782d9ec965947aeb1c197d37ea15
-NexusEngine-ProtoKits: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
-Three.js:              0.179.1
-Rapier:                 0.15.0
-profile schema:         prehistoric-rush.character.v1
-storage key:            prehistoric-rush:character:v1
-broadcast channel:      prehistoric-rush:character
-parent game domain:     prehistoric-rush-domain-kit 0.5.0
+main()
+  load pinned modules
+  createRealtimeGame(...)
+  resolve product and official kit APIs
+  create Rapier world bridge and dino actor
+  create synchronous patch generator
+  optionally create module Worker + message executor
+  create seeded patch controller
+  create smooth camera controller
+  create Three adapter
+    scene
+    camera
+    renderer
+    lights/shadow resources
+    terrain geometries/material
+    instanced tree geometry/materials
+    grass geometry/shaders
+    shard geometry/material
+    skinned creature geometry/material/skeleton
+  start game
+  prime patch streaming
+  reset camera
+  attach browser callbacks
+  expose PrehistoricRushHost
+  schedule RAF
 ```
 
-## Current interaction loops
+No startup ledger records which resources were acquired. A failure after partial construction reaches the outer catch and replaces body text, but already-created Worker, renderer, GPU resources, physics resources or listeners have no rollback owner.
 
-### Entry/menu loop
+## Interaction loops
+
+### Run frame
 
 ```txt
-index.html or menu.html
-  -> src/pages/menu.js
-  -> loadPlayerCharacterProfile()
-  -> render profile color, scale, tail and revision
-  -> subscribePlayerCharacterProfile()
-  -> Start Run -> ./game.html
-  -> Character Creator -> ./charactercreator.html
+RAF callback
+  -> compute capped dt
+  -> project browser input
+  -> engine.tick(dt)
+  -> controller setFocus/update/pump
+  -> release patches
+  -> takeReadyPatches and mutate consumers
+  -> step physics and inspect contacts
+  -> fail or collect shard
+  -> update creature pose/camera/light/grass
+  -> renderer.render
+  -> update HUD
+  -> requestAnimationFrame(loop)
 ```
 
-Both destination HTML files are absent on `main`.
-
-### Character creator loop
+### Retry
 
 ```txt
-intended HTML host
-  -> src/pages/character-creator.js
-  -> load profile into draft
-  -> render numeric controls, colors, CSS silhouette and JSON
-  -> input mutates draft
-  -> clear prior timer
-  -> schedule 140 ms save
-  -> patchPlayerCharacterProfile(final patch)
-  -> localStorage setItem
-  -> BroadcastChannel message
-  -> local listeners
-  -> remote storage/broadcast event can replace draft
+button, Enter or Space outside active game
+  -> start()
+  -> game.start()
+  -> updateStreaming(currentState, true)
+  -> resetCamera(currentState)
 ```
 
-### Game loop
+Retry reuses the same controller, Worker, executor, active/cached patches, Rapier world, fixed colliders, Three resources, RAF callback, listeners, input object, adapter view time and public host.
+
+### Page/runtime termination
 
 ```txt
-intended game.html
-  -> src/pages/game.js
-  -> src/game.js
-  -> resolve pinned runtime modules
-  -> install core and official kits
-  -> create prehistoric-rush-domain-kit
-  -> game.getPlayerBody() from static player-raptor-preset-kit
-  -> create Rapier actor and Three skinned creature
-  -> start run, patch streaming and smooth camera
-  -> input, tick, world activation, collision, pose and render
-  -> HUD and PrehistoricRushHost projection
-  -> RAF
+pagehide / beforeunload / explicit stop / dispose
+  -> no handler
+  -> no lifecycle result
+  -> browser eventually destroys document
 ```
-
-The game loop never imports the profile schema or store.
 
 ## Domains in use
 
 ```txt
-browser route and page artifact hosting
-menu navigation and profile projection
-player-character schema versioning
-profile defaults, normalization, clamping and deep merge
-localStorage profile persistence
-profile revision and updated-time mutation
-BroadcastChannel synchronization
-storage-event synchronization
-creator draft state and debounce scheduling
-creator numeric and color controls
-creator CSS preview and JSON projection
-Nexus Engine module graph and core composition
-seed and deterministic random streams
-procedural creature recipe, geometry, topology, skeleton and skinning
-creature collision, bounds, pose and Three binding
-Rapier actor, collider, transform and contacts
-seeded patch controller, Worker and multi-consumer world activation
-terrain, trees, grass, pickups, colliders and height sampling
-run lifecycle, route, movement, jump, score and outcomes
-camera target and smooth follow
-lighting, shadows, grass wind and Three render submission
-HUD, public host, lifecycle, static deployment and validation
+page route and profile lifecycle
+module graph loading and pinned dependency identity
+Nexus Engine composition and product run state
+procedural creature descriptor and render/physics bindings
+Rapier actor/fixed collider/contact runtime
+seeded patch generator, Worker, executor, controller and cache
+terrain/tree/grass/shard/collider/height consumers
+run start, retry, movement, score and terminal outcomes
+browser input and focus lifecycle
+RAF clock and frame scheduling
+camera damping and transform application
+Three resource ownership and render submission
+public host/readback and diagnostics
+static validation and Pages deployment
 ```
 
 ## Complete kit inventory and services
 
-### New source-backed product kits
+### Nexus Engine core
 
 ```txt
-player-character-schema-kit
-  PLAYER_CHARACTER_SCHEMA_VERSION
-  default profile creation
-  profile normalization
-  numeric clamping
-  color validation
-  nested profile merge
-
-player-character-profile-store-kit
-  load from localStorage
-  save normalized profile
-  monotonic-looking local revision increment
-  patch and reset
-  local listener subscription
-  storage-event synchronization
-  BroadcastChannel synchronization
-  channel/listener close
-
-menu-page-kit
-  menu shell
-  active-profile projection
-  profile subscription
-  game and creator navigation links
-
-character-creator-page-kit
-  draft profile ownership
-  slider and color controls
-  CSS silhouette preview
-  JSON projection
-  140 ms debounce
-  patch save
-  reset
-  remote profile projection
-
-game-page-entry-kit
-  one-line import of the existing 3D game runtime
-```
-
-### Nexus Engine core kits
-
-```txt
-core-input-kit         actions, bindings and input state
+core-input-kit         input actions, bindings and state
 core-spatial-kit       transforms and spatial queries
 core-scene-kit         scene registry and transitions
-core-physics-kit       physics provider contract
-core-motion-kit        motion capability
+core-physics-kit       physics capability contract
+core-motion-kit        movement capability
 core-camera-kit        camera capability
 core-animation-kit     animation capability
-core-graphics-kit      graphics and frame capability
+core-graphics-kit      graphics/frame capability
 core-skybox-kit        sky descriptor
 core-ui-kit            UI capability and projection
-core-diagnostics-kit   diagnostics and readback
+core-diagnostics-kit   diagnostics/readback
 core-composition-kit   capability graph and composition metadata
 ```
 
@@ -193,131 +153,146 @@ core-composition-kit   capability graph and composition metadata
 seed-kit
   deterministic seed and random streams
 
-procedural-creature-body-kit 0.1.0
+procedural-creature-body-kit
   recipe normalization, geometry, topology, skeleton, skinning,
-  attachments, collision recommendation, bounds, poses, registry,
-  content hash, snapshot, load and reset
+  attachments, collision recommendation, bounds, poses, content hash,
+  snapshots, loading and reset
 
 instanced-render-batch-kit
-  capacity, cell replace/release, flush, overflow, bounds and snapshots
+  capacity, cell replace/release, flush, overflow, bounds, stats and snapshots
 
-seeded-world-patch-controller-kit 0.1.0
-  patch/cache identity, focus, active/retain/prefetch sets, queue,
-  executor handoff, ready/release delivery, budgets and eviction
+seeded-world-patch-controller-kit
+  identity, cache, focus, active/retain/prefetch sets, queue, executor,
+  ready/release delivery, budgets, eviction and snapshots
 
-camera-smooth-follow-kit 0.1.0
+camera-smooth-follow-kit
   position/look damping, quaternion damping, reset, teleport handling,
   delta clamp, transform access and snapshots
 ```
 
-### Existing product, external and host kits
+### Product and page kits
 
 ```txt
 prehistoric-rush-domain-kit
-  run lifecycle, input, route, surface, score, outcomes, creature access,
-  events, scene transitions and snapshot
+  run lifecycle, input, route, surface, score, outcomes, events,
+  scene transitions, creature access and snapshot
+
+player-character-schema-kit
+  defaults, normalization, clamps, color validation and merge
+
+player-character-profile-store-kit
+  load, save, patch, reset, subscription, storage/BroadcastChannel sync and close
+
+menu-page-kit
+  menu shell, profile projection and route links
+
+character-creator-page-kit
+  draft editing, controls, preview, debounce save, reset and remote projection
+
+game-page-entry-kit
+  existing 3D runtime entry
 
 drunk-route-generator
-  deterministic samples, nearest query, progress, region and snapshot
+  deterministic route samples, nearest/progress/region queries and snapshot
 
 player-raptor-preset-kit
-  static product creature recipe and collision configuration
+  static creature recipe and collision configuration
 
-prehistoric-patch-generator / prehistoric-patch-worker
-  deterministic terrain, trees, grass, pickups, colliders, transferables,
-  Worker initialization, generation and error protocol
+prehistoric-patch-generator
+  terrain, trees, grass, pickups, colliders, bounds and transferables
 
-rapier-physics-domain-kit / rapier-runtime-module
-  world bridge, actor, fixed colliders, transforms, step and contacts
+prehistoric-patch-worker
+  initialization, generation, error protocol and transferable delivery
+```
 
-three-runtime-module
-  scene graph, geometry, instancing, skinning, camera, lights, fog,
-  shadows and rendering
+### External and host services
 
-module-worker-executor-adapter-kit
-terrain-slot-consumer-kit
-tree-instance-batch-consumer-kit
-grass-patch-consumer-kit
-shard-pickup-consumer-kit
-patch-collider-consumer-kit
-patch-height-sampler-kit
-three-procedural-creature-adapter-kit
-creature-descriptor-admission-kit
-creature-geometry-binding-kit
-creature-skeleton-binding-kit
-creature-collision-binding-kit
-creature-pose-binding-kit
-prehistoric-camera-target-policy-kit
-three-camera-transform-consumer-kit
-camera-light-render-adapter-kit
-shadow-map-policy-kit
-shadow-camera-policy-kit
-shadow-caster-policy-kit
-grass-card-geometry-policy-kit
-grass-alpha-shader-policy-kit
-grass-palette-policy-kit
-patch-streaming-hud-kit
-browser-frame-loop-kit
-prehistoric-rush-host-readback-kit
+```txt
+rapier-physics-domain-kit
+  world bridge, kinematic actor, fixed colliders, transforms, step and contacts
+
+Three.js runtime
+  scene graph, geometry, materials, instancing, skinning, camera, lights,
+  fog, shadows, renderer and GPU resources
+
+Worker executor adapter
+  request correlation and asynchronous patch generation
+
+host consumers
+  terrain slots, tree batches, grass, shards, colliders, height sampler,
+  creature binding, pose, camera, lighting, shadows, HUD and public readback
 ```
 
 ## Main findings
 
-### 1. The root route no longer reaches the game
+### 1. Startup is not transactional
 
-`index.html` now loads `src/pages/menu.js`. Its two primary actions target `game.html` and `charactercreator.html`, but neither file exists on `main`. The existing game runtime remains present yet is no longer reachable through the published entry flow.
+Resources are acquired sequentially with no cleanup stack. The outer catch reports an error but cannot reverse partial Worker, Rapier or Three allocation.
 
-### 2. Saved profiles are not gameplay inputs
+### 2. RAF and listeners are unowned
 
-The creator states that the game reads the latest profile when a run starts. `src/game.js` does not import the store and continues to call `game.getPlayerBody()`, which is derived from `player-raptor-preset-kit` during domain construction.
+The RAF request ID is not retained. Every frame schedules the next frame unconditionally. Button, keydown, keyup, blur and resize callbacks have no lease records or removal path.
 
-### 3. Profile revision is not a cross-context authority
+### 3. Retry is not a new shared epoch
 
-Each tab loads the previous value and calculates its own next revision. Concurrent writers can publish the same revision with different payloads. There is no compare-and-swap, writer identity, transaction ID, canonical profile fingerprint or conflict result.
+`game.start()` changes product run state, but no session/stream/physics/resource epoch is allocated. Pending asynchronous patch responses can still arrive through the reused controller and executor.
 
-### 4. Debounced edits can lose cross-group changes
+### 4. Worker execution is not quarantined
 
-The creator updates the in-memory draft for every input, but the surviving timer persists only its captured `patch`. Rapid edits in different groups can leave the preview showing both changes while storage receives only the final group patch.
+The created Worker is retained only in `workerState`. Neither `worker.terminate()` nor executor disposal is called. The Worker protocol has no cancel, epoch, shutdown or acknowledgement message.
 
-### 5. Persistence effects are untyped
+### 5. Three and Rapier resources have no owner
 
-`localStorage.setItem()` can throw, but save has no typed accepted/rejected result, no rollback and no durable-vs-projected status. The UI displays `Saved revision ...` only after a synchronous return, but cannot distinguish authoritative commit, cross-tab conflict or later overwrite.
+The adapter returns live scene, camera and renderer references but no `dispose()`. Geometry, materials, shaders, skeleton resources, renderer and physics world are not explicitly released.
 
-### 6. Synchronization and lifecycle are incomplete
+### 6. The public host cannot be revoked
 
-Menu and creator subscriptions are not released. The module-scoped BroadcastChannel remains open unless `closePlayerCharacterProfileStore()` is explicitly called, which neither page does. Storage and broadcast notifications can also duplicate one logical update.
+`PrehistoricRushHost` exposes live engine, physics, adapter, patch controller and camera controller references. There is no host lease, detached read model or post-dispose invalidation.
 
-### 7. Preview, physics and rendered frame do not share identity
+### 7. Disposal and stale-call behavior are undefined
 
-The creator preview is a CSS silhouette, not the procedural creature descriptor. The game, Rapier collision and Three frame expose no accepted profile revision or fingerprint, so profile appearance, collision and rendered evidence cannot be correlated.
-
-### 8. Previous runtime gates remain open
-
-Patch delivery still becomes controller-active before all world consumers acknowledge a shared commit. Visual-policy identity, run/session epochs and ordered disposal also remain unresolved.
+There is no lifecycle state machine, idempotent stop/dispose result, post-dispose command rejection, bounded journal or proof that old callbacks cannot mutate a later session.
 
 ## Required authority boundary
 
 ```txt
-PrehistoricRush Player Character Profile Authority Domain
-  route-manifest-kit
-  page-artifact-admission-kit
-  player-profile-schema-kit
-  player-profile-fingerprint-kit
-  profile-load-result-kit
-  profile-write-command-kit
-  profile-write-result-kit
-  profile-revision-authority-kit
-  profile-conflict-resolution-kit
-  creator-draft-transaction-kit
-  profile-cross-context-sync-kit
-  game-profile-admission-kit
-  profile-to-creature-descriptor-kit
-  profile-to-collision-binding-kit
-  profile-render-binding-result-kit
-  profile-frame-receipt-kit
-  profile-observation-kit
-  profile-lifecycle-kit
-  route-profile-fixture-kit
+PrehistoricRush Browser Runtime Session Authority Domain
+  runtime-session-id-kit
+  runtime-lifecycle-state-kit
+  runtime-startup-command-kit
+  runtime-startup-transaction-kit
+  runtime-cleanup-stack-kit
+  animation-frame-lease-kit
+  listener-lease-kit
+  worker-resource-owner-kit
+  patch-executor-quarantine-kit
+  stream-epoch-fence-kit
+  three-resource-owner-kit
+  rapier-resource-owner-kit
+  public-host-lease-kit
+  ordered-runtime-dispose-kit
+  startup-rollback-kit
+  lifecycle-result-kit
+  lifecycle-journal-kit
+  lifecycle-observation-kit
+  runtime-lifecycle-fixture-kit
+```
+
+## Required ordering
+
+```txt
+1. admit startup command and allocate session ID
+2. create cleanup stack
+3. acquire resources and register reverse cleanup immediately
+4. publish RUNNING only after required owners are ready
+5. route retry through run-session transaction with new run/stream epoch
+6. fence or cancel prior asynchronous results
+7. stop RAF and input admission before resource disposal
+8. revoke public host mutation capability
+9. release controller/executor/Worker
+10. release physics and Three resources
+11. remove listeners and globals
+12. publish stable idempotent DISPOSED result
 ```
 
 ## Priority order
@@ -327,7 +302,7 @@ P0 Multi-Page Route Admission + Player Profile Handoff Authority
 P1 Seeded Patch Activation Commit Authority
 P2 Visual Policy Graph Identity + Render-Frame Correlation
 P3 Run Session Reset + Shared Epoch Authority
-P4 Worker Quarantine + Ordered Runtime Disposal
+P4 Browser Runtime Session Lifecycle + Worker/Three/Rapier Disposal
 ```
 
 No runtime code was changed by this audit.
