@@ -1,150 +1,132 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T12-39-53-04-00`
+**Updated:** `2026-07-11T14-20-32-04-00`
 
 ## Summary
 
-Complete route/profile authority first. Then make patch activation transactional, establish run/stream epochs, and finally place RAF, listeners, Worker, executor, Rapier, Three resources and the public host behind one browser runtime-session owner.
+Complete route/profile authority first. Then extend the existing patch activation transaction so release owns exact Rapier collider replacement, contact provenance and one terminal failure result. Do not solve the stale-collider failure with a parallel collision system.
 
 ## Plan ledger
 
-**Goal:** reach a route-safe, profile-bound and lifecycle-bounded product without creating parallel session, Worker or renderer ownership systems.
+**Goal:** reach a route-safe, profile-bound, patch-consistent and collision-provable product using one patch membership revision and one physics owner.
 
-- [ ] Complete the P0 route/profile handoff work.
-- [ ] Add acknowledged patch activation before changing lifecycle behavior.
-- [ ] Establish one session/run/stream epoch family.
-- [ ] Add startup rollback and reverse cleanup registration.
-- [ ] Add explicit stop/dispose with idempotent results.
-- [ ] Add executable lifecycle and stale-result fixtures.
+- [ ] Complete P0 route/profile handoff.
+- [ ] Add acknowledged patch activation and release.
+- [ ] Add exact fixed-collider replacement/removal in the pinned Rapier ProtoKit.
+- [ ] Add typed collision observations and admission.
+- [ ] Establish run/stream/collider epochs.
+- [ ] Add committed terminal-frame correlation.
+- [ ] Preserve later runtime lifecycle and disposal work.
 
-## Phase 0: page route and profile authority
+## Phase 0: route and profile authority
 
 - [ ] Add valid `game.html` and `charactercreator.html` hosts.
-- [ ] Add a versioned page manifest and source/deployed route checks.
-- [ ] Make one committed profile fingerprint the game creature source.
-- [ ] Bind that fingerprint to procedural body, Rapier collision and frame evidence.
-- [ ] Add conflict-safe profile writes and complete creator draft commits.
+- [ ] Add a versioned page manifest and deployed route checks.
+- [ ] Bind one committed profile fingerprint to creature, collision and frame evidence.
+- [ ] Add conflict-safe profile writes and full creator draft commits.
 
-## Phase 1: patch activation authority
+## Phase 1: patch activation and release
 
-- [ ] Validate generated patch content before delivery.
-- [ ] Prepare terrain, tree, grass, shard, collider and height changes off to the side.
-- [ ] Commit all consumers under one patch activation revision.
+- [ ] Prepare terrain, trees, grass, pickups, colliders and height off to the side.
+- [ ] Validate patch ownership and content hashes.
+- [ ] Commit activation under one `patchMembershipRevision`.
+- [ ] Produce a release plan before deleting consumer evidence.
+- [ ] Wait for render, pickup, height and physics retirement acknowledgements.
 - [ ] Return typed activation/release results.
-- [ ] Keep controller-active and consumer-active sets in parity.
 
-## Phase 2: run and stream epochs
+## Phase 1a: exact fixed collider replacement
 
-- [ ] Allocate `runtimeSessionId` once per host session.
-- [ ] Allocate `runSessionId` for every accepted start/retry.
-- [ ] Allocate `streamEpoch` with each run transaction.
-- [ ] Mark Worker requests with session/run/stream identity.
-- [ ] Reject stale responses before controller/cache/consumer mutation.
-- [ ] Reset input, camera, physics actor/contacts and dynamic pickup state atomically.
+- [ ] Add a ProtoKit service that treats the submitted set as authoritative.
+- [ ] Diff previous and next collider IDs.
+- [ ] Remove retired collider instances from Rapier.
+- [ ] Remove retired fixed bodies from Rapier.
+- [ ] Delete retired IDs from runtime maps.
+- [ ] Add/update retained and new colliders.
+- [ ] Commit `colliderMembershipRevision`.
+- [ ] Return added, retained, updated, removed and failed IDs.
+- [ ] Keep serialized state and runtime maps identical.
 
-## Phase 3: startup transaction
+## Phase 1b: collision admission
 
-- [ ] Replace ad hoc `main()` acquisition with a typed startup command/result.
-- [ ] Create a cleanup stack before the first resource allocation.
-- [ ] Register reverse cleanup immediately after each successful acquisition.
-- [ ] Do not publish `RUNNING` or `PrehistoricRushHost` until required resources are ready.
-- [ ] On failure, execute reverse rollback and return a bounded failure result.
+- [ ] Produce a typed contact observation with actor, collider, patch and membership identity.
+- [ ] Include hazard tags and contact source.
+- [ ] Distinguish contact enter, stay and exit.
+- [ ] Reject contacts from retired membership revisions.
+- [ ] Admit at most one terminal failure transaction per run.
+- [ ] Remove the fallback collision authority or prove exact parity.
+- [ ] Correlate the failure result with the first terminal frame and host snapshot.
 
-## Phase 4: callback and scheduling ownership
+## Phase 2: run and collider epochs
 
-- [ ] Retain the RAF request ID and generation fence.
-- [ ] Stop scheduling new frames before disposal begins.
-- [ ] Replace anonymous global callbacks with listener leases.
-- [ ] Reject input and retry commands outside admitted lifecycle states.
-- [ ] Handle `pagehide` and explicit stop through the same disposal transaction.
+- [ ] Allocate one `runtimeSessionId` per host.
+- [ ] Allocate one `runSessionId` for each accepted start/retry.
+- [ ] Allocate `streamEpoch` and `colliderEpoch` together.
+- [ ] Reset actor transform, contacts and active collider membership atomically.
+- [ ] Reject prior-run contacts and patch responses.
 
-## Phase 5: Worker and patch executor quarantine
+## Phase 3: lifecycle ownership
 
-- [ ] Retain executor disposal and Worker termination operations.
-- [ ] Add cancel/shutdown protocol or hard termination policy.
-- [ ] Retire queued/inflight requests by epoch before termination.
-- [ ] Ignore late message callbacks after disposal.
-- [ ] Prove fallback synchronous generation follows the same lifecycle contract.
+- [ ] Retain RAF and listener leases.
+- [ ] Quarantine Worker/executor callbacks.
+- [ ] Add Three and Rapier resource owners.
+- [ ] Revoke the public host before disposal.
+- [ ] Return idempotent startup/stop/dispose results.
 
-## Phase 6: Three and Rapier resource ownership
-
-- [ ] Add adapter-owned disposal for creature, terrain, tree, grass and shard resources.
-- [ ] Dispose geometries, materials, shader materials, skeleton resources and renderer.
-- [ ] Remove the renderer canvas from the host.
-- [ ] Add Rapier actor, collider and world disposal/reset results.
-- [ ] Ensure disposal order prevents rendering or physics after owner release.
-
-## Phase 7: host revocation and observation
-
-- [ ] Replace raw mutable owner exposure with a detached read model.
-- [ ] Add host lease/session identity.
-- [ ] Revoke command capability before resource disposal.
-- [ ] Return lifecycle phase, session/run/stream epochs and resource counts.
-- [ ] Keep lifecycle journals bounded and JSON-safe.
-
-## Candidate kits
+## Candidate collision kits
 
 ```txt
-runtime-session-id-kit
-runtime-lifecycle-state-kit
-runtime-startup-command-kit
-runtime-startup-transaction-kit
-runtime-cleanup-stack-kit
-animation-frame-lease-kit
-listener-lease-kit
-worker-resource-owner-kit
-patch-executor-quarantine-kit
-stream-epoch-fence-kit
-three-resource-owner-kit
-rapier-resource-owner-kit
-public-host-lease-kit
-ordered-runtime-dispose-kit
-startup-rollback-kit
-lifecycle-result-kit
-lifecycle-journal-kit
-lifecycle-observation-kit
-runtime-lifecycle-fixture-kit
+patch-collider-identity-kit
+collider-membership-revision-kit
+fixed-collider-replacement-plan-kit
+fixed-collider-retirement-kit
+rapier-collider-removal-adapter-kit
+collider-retirement-result-kit
+collision-contact-observation-kit
+collision-contact-admission-kit
+collision-source-parity-kit
+run-failure-transaction-kit
+collision-journal-kit
+collision-render-correlation-kit
+stale-collider-fixture-kit
 ```
 
 ## Acceptance conditions
 
 ```txt
-one admitted startup creates one live runtime session
-partial startup failure leaves no Worker, RAF, listener, canvas or global host
-retry creates a new run/stream epoch without duplicating host resources
-old Worker results cannot activate patches in the new epoch
-stop prevents additional engine, physics, streaming or render ticks
-all listeners and global leases are removed
-Worker/executor, Three and Rapier resources are released in order
-dispose is idempotent and returns the same terminal result
-post-dispose commands are rejected
-host observation is detached, bounded and JSON-safe
+released patch IDs disappear from visual and physics membership together
+live Rapier fixed collider IDs equal current submitted IDs
+removed fixed bodies and colliders no longer intersect the actor
+contact observations carry current patch and membership identity
+retired or prior-epoch contacts are rejected
+one collision creates one run-failure result
+fallback and Rapier cannot disagree silently
+terminal frame and host state identify the admitted collision
 ```
 
 ## Future fixture commands
 
 ```bash
-node scripts/prehistoric-rush-lifecycle-startup-fixture.mjs
-node scripts/prehistoric-rush-startup-rollback-fixture.mjs
-node scripts/prehistoric-rush-retry-epoch-fixture.mjs
-node scripts/prehistoric-rush-worker-stale-result-fixture.mjs
-node scripts/prehistoric-rush-resource-disposal-fixture.mjs
-node scripts/prehistoric-rush-host-revocation-fixture.mjs
-node scripts/prehistoric-rush-browser-lifecycle-smoke.mjs
+node scripts/prehistoric-rush-fixed-collider-replacement-fixture.mjs
+node scripts/prehistoric-rush-released-patch-collision-fixture.mjs
+node scripts/prehistoric-rush-contact-admission-fixture.mjs
+node scripts/prehistoric-rush-collision-source-parity-fixture.mjs
+node scripts/prehistoric-rush-single-failure-transaction-fixture.mjs
+node scripts/prehistoric-rush-collision-terminal-frame-fixture.mjs
+node scripts/prehistoric-rush-browser-stale-collider-smoke.mjs
 ```
 
 ## Overall order
 
 ```txt
 1. Route manifest and profile handoff.
-2. Atomic patch activation.
-3. Run/session/stream epoch authority.
-4. Startup transaction and rollback.
-5. RAF/listener/Worker/resource ownership.
-6. Ordered idempotent disposal and host revocation.
-7. Node and browser lifecycle fixtures.
+2. Atomic patch activation and release.
+3. Exact Rapier fixed-collider replacement.
+4. Contact admission and single failure transaction.
+5. Visual/physics/terminal-frame parity.
+6. Run/stream/collider epochs.
+7. Browser runtime lifecycle and ordered disposal.
 ```
 
 ## Do not do next
 
-Do not add another runtime loop, add page-specific disposal systems, rely on browser destruction as cleanup, or terminate the Worker without fencing executor callbacks and patch delivery.
+Do not add a second physics world, patch around the bug only in `src/game.js`, or treat a smaller serialized collider map as proof that retired Rapier objects were removed.
