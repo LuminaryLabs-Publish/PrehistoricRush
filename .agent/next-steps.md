@@ -1,66 +1,70 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T03-51-15-04-00`
+**Updated:** `2026-07-12T05-21-52-04-00`
 
 ## Summary
 
-Implement a canonical active-shard index and exactly-once collection transaction after patch activation authority, then correlate each accepted result with shard removal, HUD projection and the first visible frame.
+Implement one browser-input command authority before further gameplay expansion. It must route button and keyboard observations through the installed core input capability, distinguish edges from holds, reject repeat/stale commands, retire state at lifecycle barriers and correlate accepted input with simulation and visible frames.
 
 ## Plan ledger
 
-**Goal:** prevent unknown, stale, out-of-phase or out-of-range shard IDs from mutating score and make every accepted award observable across gameplay and presentation.
+**Goal:** prevent active-run replacement, repeat-generated start/jump edges and parallel input ownership while preserving responsive steering, boost and jump controls.
 
-- [ ] Define a versioned shard descriptor and canonical identity.
-- [ ] Include world seed, generator version, settings fingerprint, patch identity and local index.
-- [ ] Build an immutable active-shard index from committed patch activation/release results.
-- [ ] Publish a monotonic active-shard-set revision.
-- [ ] Define `ShardCollectionCommand` with command, run, state and patch revisions.
-- [ ] Validate active gameplay phase inside the collection authority.
-- [ ] Resolve the shard from the authoritative active index.
-- [ ] Capture player and shard transforms once.
-- [ ] Define explicit horizontal and vertical collection policy.
-- [ ] Add command and identity idempotency receipts.
-- [ ] Commit collected ledger, count, state revision and event atomically.
-- [ ] Replace the boolean API with a typed result and compatibility adapter.
-- [ ] Project committed results into shard instances and HUD.
-- [ ] Acknowledge the first frame containing shard absence and the new count.
-- [ ] Add detached collection observations and a bounded journal.
-- [ ] Quarantine raw public-host access behind the existing host gateway plan.
+- [ ] Define normalized input source, code, modality and repeat descriptors.
+- [ ] Add monotonic sample IDs and command IDs.
+- [ ] Define edge actions: start, retry, jump and optional explicit restart.
+- [ ] Define held actions: steer-left, steer-right and boost.
+- [ ] Reject browser repeat as a source of new edge commands.
+- [ ] Require release before a second edge from the same source/code.
+- [ ] Gate start/retry/restart against current phase and run revision.
+- [ ] Route the button through the same semantic command adapters as keyboard input.
+- [ ] Replace the browser-local held-state owner with a core-input adapter.
+- [ ] Produce one immutable input snapshot per simulation step.
+- [ ] Return typed command and step-consumption results.
+- [ ] Retire held state on keyup, blur, visibility hidden, reset and disposal.
+- [ ] Reject predecessor-run and stale-generation commands.
+- [ ] Project detached input observations through diagnostics and host readback.
+- [ ] Acknowledge the first frame consuming each accepted input revision.
 - [ ] Execute deterministic, browser and Pages fixtures.
 
 ## Required command
 
 ```txt
-ShardCollectionCommand {
+InputCommand {
   commandId
   runtimeGeneration
   runId
   expectedRunRevision
-  activeShardSetRevision
-  shardIdentity
-  sourceFrameId
+  sampleId
+  source
+  code
+  action
+  semanticKind
+  phase
+  repeat
+  observedAt
 }
 ```
 
 ## Required result
 
 ```txt
-ShardCollectionResult {
+InputCommandResult {
   status
   reason
   commandId
-  collectionId
+  sampleId
   runtimeGeneration
   runId
-  shardIdentity
-  patchId
-  descriptorFingerprint
-  beforeRevision
-  afterRevision
-  beforeCount
-  afterCount
-  spatialEvidence
+  action
+  semanticKind
+  beforeInputRevision
+  afterInputRevision
+  edgeAccepted
+  holdState
   idempotentReplay
+  consumedSimulationStepId
+  visibleFrameId
 }
 ```
 
@@ -68,7 +72,8 @@ ShardCollectionResult {
 
 ```txt
 0. Runtime Module Graph Admission and Source Provenance
-0a. Render Surface Resolution and Frame Correlation
+0a. Browser Input Command Admission and Edge/Hold Authority
+0b. Render Surface Resolution and Frame Correlation
 1. Route/Profile Artifact Proof
 2. Creator Draft/Commit/Preview Authority
 3. Patch Activation and Release Commit Authority
@@ -86,21 +91,22 @@ ShardCollectionResult {
 ## Required fixtures
 
 ```txt
-identity canonicalization and source fingerprint
-Worker/fallback shard identity parity
-unknown and malformed ID rejection
-wrong run and wrong phase rejection
-inactive and stale patch rejection
-stale active-shard-set rejection
-horizontal and vertical distance policy
+active-run Enter rejection
+single accepted start under held Enter
+single jump edge under held Space
+release/press second jump edge
+button/keyboard start parity
+button/keyboard jump parity
+wrong phase/run/revision rejection
 duplicate command receipt
-duplicate identity exactly-once award
-stable candidate ordering and per-step budget
-state/event/result parity
-visible shard removal and HUD parity
-run reset and stale generation rejection
-public-host bypass rejection
-browser and Pages collection smoke
+held steer/boost press-repeat-release
+blur retirement
+visibility retirement
+run reset retirement
+runtime disposal retirement
+immutable per-step input snapshot
+input/state/frame correlation
+browser and Pages input smoke
 ```
 
-Do not create a second pickup scan or visual owner. Adapt the existing patch generator, controller, active-content adapter, product domain, renderer, HUD and host.
+Do not create another keyboard state owner. Adapt the existing listeners and button into `core-input-kit`, then make `prehistoric-rush-domain-kit` consume the resulting per-step snapshot.
