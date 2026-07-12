@@ -1,107 +1,67 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T22-38-54-04-00`
+**Updated:** `2026-07-12T00-30-49-04-00`
 
 ## Summary
 
-The leading gameplay gap is run-step outcome arbitration. Movement, collision, pickups and goal completion mutate through different owners, allowing a same-step goal to skip collision checks and a collision failure to be followed by reward mutation. The public-host capability, creator, streaming, collider, cadence, readiness, frame, reset and lifecycle gaps remain open.
+The leading startup gap is runtime module graph admission. Current source pins and HTML import maps are aligned, but loaded modules, export contracts, optional-provider selection, public diagnostics and visible frames do not share one admitted graph fingerprint.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved outcome, host, creator and runtime dependency explicit and close them through existing owners in dependency order.
+**Goal:** close source-identity and compatibility gaps through the existing startup and lifecycle owners while preserving every prior product authority gap.
 
-- [x] Preserve creator and runtime gap history.
-- [x] Preserve the public-host capability and read-model gaps.
-- [x] Add goal/collision/pickup precedence and terminal-frame gaps.
-- [x] Add outcome-policy, event-order and idempotency fixtures.
-- [ ] Close gaps through existing subsystem owners in dependency order.
+- [x] Reconcile current source pins with internal records.
+- [x] Add graph, provider, frame and fixture gaps.
+- [x] Preserve route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
+- [ ] Implement in dependency order.
 
-## Run-step outcome gaps
+## Runtime module graph gaps
 
 ```txt
-movement and distance commit before collision admission
-goal is checked inside engine tick before host physics
-same-step goal can suppress Rapier and fallback collision checks
-no explicit collision-versus-goal policy
-collision failure does not stop the same host block
-collectShard has no active-run status guard
-ShardCollected can emit after RunFailed
-no collision-versus-pickup policy
-no goal-versus-pickup policy
-no failed-movement retention policy
-no frozen terminal reward set
-no runStepId or predecessor revision
-no immutable candidate set
-no typed continue/fail/win arbitration result
-no atomic movement/reward/status/transition commit
-no ordered terminal event bundle
-no outcome policy version or outcomeRevision
+no canonical runtime module manifest result
+no graph-wide compatibility policy result
+no sourceGraphFingerprint
+no typed per-module load result
+selected factory checks do not cover the complete graph
+no runtime proof that loaded URL equals declared immutable ref/version
+no explicit import-map parity receipt
+no admitted active-capability set
+Rapier null fallback is not a typed provider decision
+no graph admission journal
+no public immutable admission read model
 ```
 
-## Collision-source gaps
+## Frame and diagnostics gaps
 
 ```txt
-Rapier contacts and XZ fallback reduce immediately to boolean OR
-source disagreement is not recorded
-fallback descriptors lack committed membership revision
-contacts lack patch, run-step and outcome identity
-query failure can be indistinguishable from no collision
+HUD and canvas carry no sourceGraphFingerprint
+first visible frame does not cite graph admission
+PrehistoricRushHost.versions repeats constants only
+host readback does not prove import-map resolution or loaded exports
+physics provider is not identified in committed frame evidence
 ```
 
-## Terminal-frame gaps
+## Startup failure gaps
 
 ```txt
-renderer samples final mutable run state
-HUD independently formats the same mutable state
-no terminal frame receipt
-no runStepId or outcomeRevision in scene/HUD output
-win frame does not prove collision arbitration completed
-run-over frame does not prove reward set was frozen
-transition request is not visible-frame acknowledgement
+required imports collapse to null before aggregate failure
+no graph-level rejection reason bundle
+no proof rejected startup leaves no Worker, renderer, listeners, RAF or host
+no retry generation or admission revision
 ```
 
-## Public host capability gaps
+## Preserved gaps
 
 ```txt
-live Nexus Engine instance exposed
-live physics API exposed
-live Three adapter exposed
-live patch controller exposed
-live camera-follow service exposed
-scene, renderer, camera and Object3D references reachable
-active patch, collider and run mutations reachable
-no capability descriptor
-no command envelope or command ID
-no expected run/epoch admission
-no duplicate or stale-command result
-no raw-owner quarantine
-future host commands could bypass run-step outcome authority
-```
-
-## Public read-model gaps
-
-```txt
-getState independently samples mutable owners
-no committedFrameId or runStepId
-no runtimeSessionId or hostGeneration
-no shared run/stream/Worker/collider/frame epoch set
-no profile or world-content fingerprint correlation
-no outcome/event/transition/render/HUD commit correlation
-no immutable deep-detached read model
-no bounded command/read journal
-```
-
-## Retained creator and runtime gaps
-
-```txt
-creator draft dirty-field and durable commit authority
-preview descriptor convergence and projection-correct framing
-profile/game fingerprint parity
+route/profile artifact handoff
+creator draft/commit/preview convergence
 patch activation/release acknowledgement
 exact collider retirement and contact provenance
-30/60/120 Hz stream cadence and hidden-tab policy
+run-step collision/goal/pickup arbitration
+stream cadence and hidden-tab policy
 world readiness before movement
-committed gameplay-frame receipts
+committed gameplay frame and read model
+public host owner quarantine and command gateway
 coordinated run/stream/Worker/collider/frame epochs
 startup rollback and ordered disposal
 ```
@@ -109,46 +69,32 @@ startup rollback and ordered disposal
 ## Missing proof matrix
 
 ```txt
-goal-only, collision-only and pickup-only fixtures
-goal + collision precedence fixture
-collision + pickup terminal reward fixture
-goal + pickup fixture
-all-three candidate fixture
-Rapier/fallback disagreement fixture
-terminal event ordering fixture
-outcome idempotency fixture
-terminal scene/HUD frame parity fixture
-public owner isolation fixture
-unsupported/stale/duplicate host command fixtures
-committed read-model coherence and immutability fixtures
-creator, streaming, collider, cadence, readiness, reset and lifecycle fixtures
-browser and Pages terminal-outcome smoke
+module manifest and fingerprint fixtures
+import-map parity fixtures
+required module/export rejection fixtures
+compatibility-policy fixtures
+Rapier/fallback provider fixtures
+rejected-startup quiescence fixture
+first-frame source provenance fixture
+public admission read-model fixture
+browser and Pages source-graph smoke
+all previously documented gameplay/runtime fixtures
 ```
 
 ## Priority
 
 ```txt
-1. route/profile handoff proof
-2. creator draft/commit/preview authority
-3. patch activation/release
-4. collider replacement/collision admission
-5. run-step outcome arbitration and terminal frame
-6. cadence and world readiness
-7. committed gameplay frame/read model
-7a. public host gateway
-8. coordinated reset epochs
-9. lifecycle and disposal
+0 runtime module graph admission
+1 route/profile
+2 creator
+3 patch activation/release
+4 collider admission
+5 run-step outcome
+6 cadence/readiness
+7 committed frame/read model
+7a public host gateway
+8 coordinated reset
+9 lifecycle/disposal
 ```
 
-## Do not do next
-
-```txt
-do not work on TheCavalryOfRome
-do not create a branch
-do not encode outcome precedence through source placement
-do not allow direct fail, win or reward mutation outside the step commit
-do not add a second run-state store, physics world or pickup inventory
-do not let the public host bypass the outcome authority
-do not build a read model by independently sampling mutable owners
-do not treat transition submission or mutable state as visible-frame proof
-```
+Do not treat declared constants, successful import, factory presence or a visible frame as graph-admission proof by themselves.
