@@ -1,131 +1,152 @@
-# Current Audit: PrehistoricRush Streamed Content / Outcome Parity
+# Current Audit: PrehistoricRush Motion / Articulation / Presentation Parity
 
-**Updated:** `2026-07-12T11-21-01-04-00`  
-**Runtime revision reviewed:** `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`  
-**Documentation head observed before completion:** `057785f0d492e5f57d234017b532e88fd55a309c`
+**Updated:** `2026-07-12T12-01-04-04-00`  
+**Runtime revision reviewed:** `68c821a4864b6ad0edc12bc51514752e4ada750c`  
+**Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
 
 ## Summary
 
-The product outcome policy executes inside Nexus Engine `core-simulation`, but collision and pickup evidence comes from browser-host materialization state that is updated after the tick. The committed outcome and the subsequently rendered frame therefore lack a shared active-content revision.
+The runtime now composes `createCoreMotionDomain()` and `createCorePhysicsDomain()`. It records player movement intent and Core Motion frames, submits kinematic motion to Core Physics, registers an articulated raptor rig and exposes an articulated solver.
 
-The previous documentation head had advanced root files to this audit but had not published the timestamped tracker and audit files referenced by those roots. This run completes the audit family and central synchronization.
+The game renderer still derives a legacy procedural pose directly from run state. The creator preview installs no motion domain and also derives a legacy pose directly from the procedural-creature API. No typed result proves that Core Motion, articulated motion, Core Physics and the visible skeleton describe the same frame.
 
 ## Plan ledger
 
-**Goal:** ensure every committed continue, pickup, failure or win result is derived from and rendered against one immutable streamed-content snapshot.
+**Goal:** make every visible raptor pose an acknowledged consumer of one authoritative motion source revision.
 
-- [x] Review post-audit runtime, test, import-pin and module-admission commits.
-- [x] Confirm the pinned Nexus Engine revision and `core-simulation` committed-frame behavior.
-- [x] Trace run proposals, physics observations, fallback observations, outcome policy and cleanup transition.
-- [x] Trace patch release, generation, activation, full content rebuild, collider sync and render.
-- [x] Inventory all active domains, 41 implemented/adapted/proof surfaces and services.
-- [x] Define the missing content revision, parity digest and fixture boundary.
-- [x] Publish the complete timestamped tracker and audit family.
-- [x] Synchronize the central repository ledger and internal change log.
+- [x] Review all post-audit motion, physics, articulation, test and runtime-pin commits.
+- [x] Verify the final Core Motion root API preservation fix.
+- [x] Trace parent/subdomain composition and product dependencies.
+- [x] Trace intent, motion-frame and physics-request creation.
+- [x] Trace rig registration, articulated solving, legacy pose creation and Three bone application.
+- [x] Trace creator preview composition and pose behavior.
+- [x] Reconcile the kit census to 45 implemented/adapted/proof surfaces.
+- [x] Define the missing product authority and fixture boundary.
 - [ ] Implement and execute the runtime authority.
 
 ## Source-backed ordering
 
 ```txt
-engine.tick(dt)
-  -> run proposal samples pickupSampler(next)
-  -> physics observation steps current provider collider set
-  -> fallback observation samples current adapter collider set
-  -> policy commits state/events/transition
+browser input
+  -> product InputState
+  -> runSystem integrates RunState
+  -> coreMotion.submitIntent()
+  -> coreMotion.commitMotionFrame({ requests: [motionRequest] })
+  -> corePhysics.submitMotionRequests([motionRequest])
+  -> coreSimulation commits outcome
 
-after tick
-  -> accepted pickups can trigger visible-content rebuild
-  -> controller focus and membership update
-  -> released patches rebuild visible content and sync colliders
-  -> ready patch can activate
-  -> activation rebuilds visible content and syncs colliders
-  -> renderer draws the resulting content set
+browser presentation
+  -> derive pose state again from current RunState/InputState
+  -> game.createPlayerPose()
+  -> procedural-creature-body-kit createPose()
+  -> applyCreaturePose() to Three skeleton
+  -> render
+```
+
+The implemented alternative path is not called:
+
+```txt
+legacy creature pose
+  -> createPlayerArticulatedPose()
+  -> articulatedMotion.solve()
+  -> articulated motion frame
+  -> selected presentation result
 ```
 
 ## Source-backed gaps
 
 ```txt
-no activeContentRevision on run-state proposal
-no activePatchSetRevision on pickup or collision observation
-no colliderSetRevision on physics frame
-no pickupSetRevision on pickup proposal
-no stream generation or materialization revision on committed frame
-no admission that proposals and observations share one content snapshot
-no rollback if collider synchronization fails after state commit
-no stale Worker result rejection against the committed observation revision
-no visible frame receipt citing simulation and content revisions
+no product motionSourceRevision
+no physics request reference to coreMotionFrameId
+no articulated solve command in gameplay frame
+no articulated solve command in creator frame
+no explicit pose-selection policy
+no typed legacy fallback result
+no renderer bone-application receipt
+no creator/game motion-profile parity result
+no run/profile generation on pose application
+no first visible pose-frame acknowledgement
 ```
-
-Nexus Engine's committed frame records step/tick/frame, policy, outcome, accepted/rejected values, events and transition. PrehistoricRush must project product content provenance into typed results and its public read model rather than treating the generic committed frame as sufficient.
 
 ## Concrete mismatch paths
 
-### False positive from released content
+### Installed articulation without presentation consumption
 
 ```txt
-tick observes collider C
-  -> collision commits failure
-  -> updateStreaming releases C's patch
-  -> collider set is replaced
-  -> frame renders without C
+articulated rig registers successfully
+Core Motion frame commits successfully
+visible raptor uses legacy procedural pose
+articulated current frame remains null or stale
+public diagnostics expose all owners without a parity result
 ```
 
-### False negative from activated content
+### Physics authorization is implicit
 
 ```txt
-tick resolves without ready patch P
-  -> updateStreaming activates P
-  -> tree collider or pickup from P becomes visible
-  -> physics and pickup resolution did not include P until the next tick
+motionRequest is embedded in Core Motion frame
+same object data is submitted separately to Core Physics
+physics frame does not cite the authorizing Core Motion frame
+consumer must infer equality from request fields
+```
+
+### Creator and game can drift
+
+```txt
+creator installs seed + procedural creature only
+creator uses creatureApi.createPose()
+game installs Core Motion/Physics domains but still uses createPlayerPose()
+no shared motion profile or selected-pose fingerprint proves parity
 ```
 
 ## Domains in use
 
 ```txt
-page routes and profile lifecycle
-creator draft, preview, persistence and transition
-runtime preflight, source identity and pinned imports
-core input/spatial/scene/physics/simulation/motion/camera/animation/graphics/skybox/UI/diagnostics/composition
-product run/input/movement/proposals/observations/policy/events/transitions
-Worker/fallback patch generation and patch-controller scheduling
-active patch, terrain, tree, grass, shard, pickup and collider materialization
-Rapier provider, body, motion, current collider set and contact frame
-camera follow, creature pose, Three rendering and HUD
-public host tick/simulation/physics/stream/camera readback
-validation, static build and Pages deployment
-streamed-content/outcome parity authority: missing
+page routes, profile lifecycle and creator draft/preview
+runtime source identity, import map and module preflight
+Core Input, Spatial, Scene and Simulation
+Core Physics and articulated-dynamics subdomain
+Core Motion and articulated-motion subdomain
+Core Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
+seed, procedural creature, instanced batch, patch controller and camera follow
+product run, route, surface, score, outcome policy and player articulation
+Rapier provider, body, collider, motion request and physics frame
+Worker/fallback patch generation and active-content materialization
+Three mesh, skeleton, pose application, camera, lighting, rendering and HUD
+public host snapshots, Node proof and Pages deployment
+motion/articulation/presentation parity authority: missing
 ```
 
 ## Kit/service census
 
 ```txt
-13 Nexus Engine core kits
+15 Nexus Engine root/subdomain kits
 5 official NexusEngine-Kits
-13 product/page/Worker kits
+14 product/page/Worker kits
 9 external/host adapters
-1 outcome-policy proof kit
-41 implemented/adapted/proof surfaces total
+2 proof kits
+45 implemented/adapted/proof surfaces total
 ```
 
-Exact names and services are retained in `.agent/kit-registry.json` and the timestamped tracker.
+Exact names and services are retained in `.agent/kit-registry.json` and the current tracker.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-streamed-content-outcome-parity-authority-domain
+prehistoric-rush-motion-presentation-parity-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-one simulation step admits exactly one active-content revision
-physics, fallback collision and pickup sampling cite that revision
-content release/activation cannot silently change the set between observation and visible proof
-state, event and transition results cite patch/collider/pickup digests
-failed content or collider commit preserves the predecessor set
-stale Worker and patch results cannot attach to a newer revision
-the first visible frame cites the same simulation and content revisions
-public readback never combines committed outcome with an unrelated content set
+one product motion source revision per admitted gameplay tick
+Core Physics request cites the authorizing Core Motion frame
+articulated solving is either consumed or explicitly disabled by typed policy
+renderer applies only the selected pose result
+legacy fallback is explicit and observable
+creator and game declare comparable rig/profile/motion-policy fingerprints
+stale pose cannot apply after run or profile replacement
+first visible raptor frame cites run, motion, physics, pose and renderer revisions
+public readback cannot imply articulated presentation without a consumption receipt
 ```
 
-Documentation only. No runtime behavior changed by this pass.
+The streamed-content/outcome parity audit remains an active dependency. This documentation pass changes no runtime behavior.
