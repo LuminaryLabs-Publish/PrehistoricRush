@@ -1,51 +1,66 @@
-# Current Audit: PrehistoricRush Render Surface Authority
+# Current Audit: PrehistoricRush Shard Collection Authority
 
-**Updated:** `2026-07-12T02-21-55-04-00`
+**Updated:** `2026-07-12T03-51-15-04-00`
 
 ## Summary
 
-The gameplay renderer and camera use global window dimensions, while the character creator uses a local preview-container `ResizeObserver`. Both sample device pixel ratio only during renderer construction. Neither path emits an authoritative surface result, physical-buffer receipt, surface revision or first-frame acknowledgement.
+The current shard loop trusts a mutable browser-side pickup projection and passes only a shard ID into `collectShard()`. The service checks duplicate ID membership but does not validate gameplay phase, run identity, active patch membership, descriptor provenance, spatial evidence or state revision. Gameplay mutation, event publication, instance removal and HUD projection have no shared result or visible-frame receipt.
 
 ## Plan ledger
 
-**Goal:** make one render-surface policy and transaction the authority for creator and gameplay size, DPR, camera projection, renderer buffer, diagnostics and visible-frame correlation.
+**Goal:** make one shard authority responsible for canonical identity, active membership, 3D evidence, exactly-once state/event commit and visible presentation proof.
 
-- [x] Trace creator and gameplay surface construction and resize ingress.
-- [x] Compare CSS-size, DPR and camera/renderer commit policies.
+- [x] Trace shard descriptors from patch generation through active presentation.
+- [x] Trace proximity detection, `collectShard`, event, refresh, render and HUD ordering.
 - [x] Inventory interaction loops, domains, kits and services.
 - [x] Define parent domain, candidate kits and fixture gate.
-- [ ] Implement and execute the surface transaction.
+- [ ] Implement and execute the shard transaction.
 
 ## Complete interaction loop
 
 ```txt
 menu/profile -> creator or game
-creator -> pinned modules -> local renderer/camera -> container ResizeObserver
-        -> profile edits -> procedural preview -> RAF
-game -> runtime graph -> engine/Worker/physics -> window-sized renderer/camera
-     -> global keyboard/blur/resize listeners
-resize -> direct renderer/camera mutation without a result
-RAF -> input -> simulation -> streaming -> collision -> pickups -> render -> HUD
-host -> subsystem snapshots without surface provenance
+creator -> profile draft -> procedural preview -> commit and synchronization
+
+game startup
+  -> pinned runtime graph -> engine -> Worker/fallback generator
+  -> patch controller -> physics -> camera -> Three renderer
+  -> initial patch activation -> RAF
+
+frame
+  -> input -> engine tick -> movement and possible terminal outcome
+  -> patch focus/release/generation/activation
+  -> active-content rebuild creates mutable view.pickups and shard instances
+  -> physics/fallback hazard test
+  -> XZ-only shard overlap test
+  -> collectShard(id) boolean mutation and event
+  -> full active-content rebuild
+  -> world render -> HUD -> public host observation
 ```
 
 ## Source-backed findings
 
 ```txt
-gameplay CSS dimensions: innerWidth / innerHeight
-gameplay startup DPR: min(devicePixelRatio, 2)
-gameplay DPR resampling: absent
-gameplay container observation: absent
-creator CSS dimensions: preview.clientWidth / preview.clientHeight
-creator ResizeObserver: present
-creator startup DPR: min(devicePixelRatio, 2)
-creator DPR resampling: absent
-shared quality/pixel policy: absent
-surface ID/revision: absent
-actual physical-buffer readback: absent
-first post-resize frame acknowledgement: absent
-public surface observation: absent
+shard descriptor ID: `${chunkX}:${chunkZ}:${index}`
+identity source fingerprint: absent
+active shard set revision: absent
+collection command ID: absent
+run/status admission inside collectShard: absent
+known active descriptor lookup: absent
+expected state revision: absent
+horizontal evidence: browser-side mutable values
+vertical evidence: absent
+unknown ID rejection: absent
+accepted duplicate receipt: absent
+collection result: boolean only
+state/event revision: absent
+projection result: absent
+first visible-frame acknowledgement: absent
 ```
+
+`collectShard()` can accept any first-time value because it only tests `collectedShardIds.includes(shardId)`. The normal browser loop gates on `status === "game"`, but the service itself does not, and the raw engine remains exposed through `PrehistoricRushHost`.
+
+Patch release and activation happen before collection detection in the same RAF. The detector consumes the resulting mutable `view.pickups` array without capturing a patch activation or shard-set revision. The overlap test uses XZ distance only, so jump height and shard Y do not contribute.
 
 ## Domains in use
 
@@ -55,26 +70,27 @@ creator draft, procedural preview and persistence
 runtime source identity, import maps and CDN loading
 Nexus Engine composition and 12 core kits
 five official NexusEngine-Kits
-run, route, movement, surface, score, pickups and outcomes
+run, route, movement, surface, score, shards and outcomes
 Worker patch generation, queue, cache and membership
-terrain, trees, grass, pickups, colliders and height
+terrain, trees, grass, shard descriptors, colliders and height
+active-content projection and instance rebuilding
 Rapier and fallback collision
 camera follow and Three rendering
 HUD, transitions and public host observation
-runtime graph, outcome, frame, host, reset and lifecycle authorities
-validation, build and Pages deployment
-render-surface resolution and frame correlation: missing
+runtime graph, surface, outcome, frame, host, reset and lifecycle authorities
+validation, static deployment and Pages
+shard identity, evidence, commit and frame correlation: missing
 ```
 
 ## Complete kit groups
 
 ```txt
 Core: core-input, core-spatial, core-scene, core-physics, core-motion,
-      core-camera, core-animation, core-graphics, core-skybox, core-ui,
-      core-diagnostics, core-composition
+  core-camera, core-animation, core-graphics, core-skybox, core-ui,
+  core-diagnostics, core-composition
 
 Official: seed-kit, procedural-creature-body-kit, instanced-render-batch-kit,
-          seeded-world-patch-controller-kit, camera-smooth-follow-kit
+  seeded-world-patch-controller-kit, camera-smooth-follow-kit
 
 Product/page/Worker: prehistoric-rush-domain-kit, player-character-schema-kit,
   player-character-profile-store-kit, menu-page-kit, character-creator-page-kit,
@@ -92,19 +108,34 @@ Detailed services are retained in `.agent/kit-registry.json` and the timestamped
 ## Required domain
 
 ```txt
-prehistoric-rush-render-surface-authority-domain
+prehistoric-rush-shard-collection-authority-domain
 ```
 
 ```txt
-surface observation
-  -> generation and revision admission
-  -> coherent CSS-size and DPR sample
-  -> quality and physical-pixel policy
-  -> renderer and camera commit
-  -> actual-value readback
-  -> SurfaceCommitResult
-  -> first visible frame acknowledgement
-  -> detached public observation
+committed patch activation
+  -> canonical active shard index and set revision
+  -> shard command admission against run phase and state revision
+  -> canonical descriptor/source lookup
+  -> authoritative player/shard transform capture
+  -> 3D spatial policy
+  -> command and identity idempotency
+  -> atomic collected-ledger, count, revision and event commit
+  -> shard and HUD projection results
+  -> first visible-frame acknowledgement
+  -> detached observation and bounded journal
+```
+
+## Required invariants
+
+```txt
+unknown, stale or inactive IDs never award
+collection is closed outside active gameplay
+one identity awards once per run
+same command returns the same receipt
+vertical collection policy is explicit
+patch/source provenance is verifiable
+state, event and result share one revision
+shard disappearance and HUD count share one collection/frame receipt
 ```
 
 ## Ordered safe ledges
@@ -115,6 +146,7 @@ surface observation
 1 route/profile proof
 2 creator authority
 3 patch activation/release
+3a shard identity/collection/visible removal
 4 collider replacement/admission
 5 run-step outcome authority
 6 stream cadence/time budget
@@ -125,4 +157,4 @@ surface observation
 10 lifecycle/disposal
 ```
 
-No runtime behavior changed and no render-surface, cross-page parity or deployment-readiness claim is made.
+No runtime behavior changed and no shard-correctness, visible-removal or deployment-readiness claim is made.
