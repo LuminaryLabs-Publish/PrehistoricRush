@@ -1,98 +1,77 @@
-# Current Audit: PrehistoricRush Run Start/Restart Authority
+# Current Audit: PrehistoricRush Streamed Content / Outcome Parity
 
-**Updated:** `2026-07-12T09-01-44-04-00`
+**Updated:** `2026-07-12T11-11-34-04-00`  
+**Repository revision reviewed:** `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`
 
 ## Summary
 
-Since the previous audit, PrehistoricRush added `core-simulation`, a product resolution policy, proposal/observation-based outcome resolution, a pure policy test and corrected pinned Nexus Engine imports. Collision, pickup and goal precedence now commit through one authoritative engine tick.
-
-The remaining discontinuity is run creation. Initial start and retry call `game.start()` outside `engine.tick()`. That API directly replaces run/input resources, resets resolution, emits `RunStarted` and requests a scene transition. Content, streaming and camera are then reset by separate browser-host calls with no run-start result or first-frame proof.
+The product outcome policy now executes inside Nexus Engine `core-simulation`, but its collision and pickup evidence is sourced from browser-host materialization state that is updated after the tick. The committed outcome and the subsequently rendered frame therefore lack a shared active-content revision.
 
 ## Plan ledger
 
-**Goal:** make run creation one atomic cross-consumer transaction whose epoch is shared by simulation, physics, streaming, content, camera, rendering, HUD and public observation.
+**Goal:** ensure every committed continue, pickup, failure or win result is derived from and rendered against one immutable streamed-content snapshot.
 
-- [x] Review the eleven commits after the previous documentation head.
-- [x] Trace `core-simulation` installation and product policy registration.
-- [x] Trace run proposals, motion requests, observations, resolution, state patch, events and transitions.
-- [x] Confirm the pure policy tests cover continue, win, collision precedence, pickup rejection, pickup+goal, duplicate pickup and fallback collision.
-- [x] Trace initial `game.start()` and browser retry handling.
-- [x] Inventory current domains, 41 kit/proof surfaces and their services.
-- [x] Define the missing start/restart authority and fixture boundary.
-- [ ] Implement and execute the transaction.
+- [x] Review post-audit runtime, test, import-pin and module-admission commits.
+- [x] Confirm the pinned Nexus Engine revision and `core-simulation` committed-frame behavior.
+- [x] Trace run proposals, physics observations, fallback observations, outcome policy and cleanup transition.
+- [x] Trace `updateStreaming()`, release, activation, full content rebuild, collider sync and render.
+- [x] Inventory all active domains, 41 implemented/adapted/proof surfaces and services.
+- [x] Define the missing content revision, parity digest and fixture boundary.
+- [ ] Implement and execute the authority.
 
-## Selection comparison
-
-```txt
-accessible Publish repositories: 10
-eligible non-Cavalry repositories: 9
-new or central-ledger-missing repositories: 0
-root-.agent-missing repositories: 0
-
-AetherVale         active unsynchronized Vulkan-bootstrap audit, skipped
-TheOpenAbove       active unsynchronized parchment-map audit, skipped
-PrehistoricRush    selected: 11 runtime/test/pin commits after 07:09 audit
-TheCavalryOfRome   excluded
-```
-
-Only `LuminaryLabs-Publish/PrehistoricRush` is modified in the Publish organization.
-
-## Implemented authoritative tick
+## Source-backed ordering
 
 ```txt
-run proposal system
-  -> clone predecessor state
-  -> apply input/movement/jump/height
-  -> submit kinematic target
-  -> submit run-state, pickup and goal proposals
+engine.tick(dt)
+  -> run proposal samples pickupSampler(next)
+  -> physics observation steps current provider collider set
+  -> fallback observation samples current adapter.view.colliders
+  -> policy commits state/events/transition
 
-observation phase
-  -> core physics step
-  -> fallback collision sample
-
-resolution policy
-  -> fatal collision beats goal and pickups
-  -> otherwise accept unique pickups
-  -> then resolve goal
-  -> return one state patch, event list and optional transition
-
-cleanup
-  -> request scene transition once per committed step
-```
-
-## Remaining start/restart bypass
-
-```txt
-button, Enter or Space while terminal
-  -> start()
-  -> game.start()
-     -> resetResolution()
-     -> replace RunState
-     -> replace InputState
-     -> emit RunStarted
-     -> request direct game transition
-  -> refreshDynamicContent(new state)
-  -> updateStreaming(new state, primeCenter=true)
-  -> resetCamera(new state)
-  -> wait for next RAF/engine.tick
+after tick
+  -> accepted pickups trigger visible-content rebuild
+  -> controller focus/update
+  -> released patches rebuild visible content and sync colliders
+  -> generated ready patch can activate
+  -> activation rebuilds visible content and syncs colliders
+  -> renderer draws the resulting content set
 ```
 
 ## Source-backed gaps
 
 ```txt
-no RunStartCommand or command ID
-no expected predecessor run/tick/frame revision
-no run epoch shared across consumers
-no physics body reset result
-no patch-controller reset/adoption result
-no active-content revision reset result
-no camera reset receipt
-no scene-transition prepare/commit result
-no rollback if one reset participant fails
-no stale asynchronous Worker/generation rejection tied to new run epoch
-no first committed tick acknowledgement for the new run
-no first visible frame acknowledgement
-public readback can mix new RunState with predecessor committed-frame evidence
+no activeContentRevision on run-state proposal
+no activePatchSetRevision on pickup or collision observation
+no colliderSetRevision on physics frame
+no pickupSetRevision on pickup proposal
+no stream generation or materialization revision on committed frame
+no admission that proposals and observations share one content snapshot
+no rollback if collider synchronization fails after state commit
+no stale Worker result rejection against the committed observation revision
+no visible frame receipt citing simulation and content revisions
+```
+
+Nexus Engine's committed frame records step/tick/frame, policy, outcome, accepted/rejected values, events and transition. It intentionally does not preserve the product's proposal and observation payloads or a product content revision. PrehistoricRush must project the required provenance into typed result fields and a product read model rather than treating the generic frame as sufficient.
+
+## Concrete mismatch paths
+
+### False positive from released content
+
+```txt
+tick observes collider C in previous active set
+  -> collision commits failure
+  -> updateStreaming releases C's patch
+  -> collider set is replaced
+  -> frame renders without C
+```
+
+### False negative from activated content
+
+```txt
+tick resolves without ready patch P
+  -> updateStreaming activates P
+  -> tree/pickup from P becomes visible
+  -> physics and pickup resolution did not include P until the next tick
 ```
 
 ## Domains in use
@@ -100,16 +79,16 @@ public readback can mix new RunState with predecessor committed-frame evidence
 ```txt
 page routes and profile lifecycle
 creator draft, preview, persistence and transition
-pinned runtime graph and import-map parity
-Nexus Engine input, spatial, scene, physics, simulation, motion, camera, animation, graphics, skybox, UI, diagnostics and composition
-product run, route, surface, score, proposals, observations, outcome policy, events and transitions
+runtime preflight, source identity and pinned imports
+core input/spatial/scene/physics/simulation/motion/camera/animation/graphics/skybox/ui/diagnostics/composition
+product run/input/movement/proposals/observations/policy/events/transitions
 Worker/fallback patch generation and patch-controller scheduling
 active patch, terrain, tree, grass, shard, pickup and collider materialization
-Rapier provider, kinematic body, motion requests, contacts and fallback collision
+Rapier provider, body, motion, current collider set and contact frame
 camera follow, creature pose, Three rendering and HUD
-public host, committed tick/simulation/physics/stream/camera readback
-validation, static deployment and Pages
-run-start/restart epoch, cross-consumer reset and first-frame authority: missing
+public host tick/simulation/physics/stream/camera readback
+validation, static build and Pages deployment
+streamed-content/outcome parity authority: missing
 ```
 
 ## Kit/service census
@@ -123,26 +102,25 @@ run-start/restart epoch, cross-consumer reset and first-frame authority: missing
 41 implemented/adapted/proof surfaces total
 ```
 
-The exact names and services are in the timestamped tracker and `.agent/kit-registry.json`.
+Exact names and services are retained in `.agent/kit-registry.json` and the timestamped tracker.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-run-start-restart-authority-domain
+prehistoric-rush-streamed-content-outcome-parity-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-one accepted start command creates exactly one run epoch
-all required reset participants cite that epoch
-no new run becomes public before required participants prepare successfully
-failure preserves or restores the predecessor committed state
-stale Worker, stream, physics or frame results cannot attach to the new run
-first committed tick and first visible frame cite the same run epoch
-repeated Enter/button/Space starts are idempotent
-initial boot and retry use the same transaction
-public readback never pairs a new run with predecessor frame evidence
+one simulation step admits exactly one active-content revision
+physics, fallback collision and pickup sampling cite that revision
+content release/activation cannot silently change the set between observation and visible proof
+state, event and transition results cite patch/collider/pickup digests
+failed content or collider commit preserves the predecessor set
+stale Worker and patch results cannot attach to a newer revision
+the first visible frame after commit cites the same simulation and content revisions
+public readback never combines committed outcome with an unrelated content set
 ```
 
 Documentation only. No runtime behavior changed by this pass.
