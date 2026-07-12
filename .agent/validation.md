@@ -1,28 +1,50 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T22-29-24-04-00`
+**Updated:** `2026-07-11T22-38-54-04-00`
 
 ## Summary
 
-Documentation-only audit of the public browser host, raw runtime-owner exposure, independently sampled diagnostics, command admission and committed read-model requirements.
+This was a documentation-only source audit. It proves the current run-step ordering and its deterministic goal/collision/pickup failure paths. It also preserves the preceding proof that the public browser host exposes raw mutable owners and independently sampled diagnostics. No outcome, host-safety or runtime-correctness claim is made.
 
 ## Plan ledger
 
-**Goal:** separate source-backed proof of the current mutable host from unimplemented host isolation and coherence guarantees.
+**Goal:** record exactly what the inspected source proves and separate it from unexecuted runtime, physics, rendering, host-isolation and deployment validation.
 
-- [x] Confirm selected repository and `main` branch.
+- [x] Confirm the selected repository and `main` branch.
 - [x] Confirm no branch or pull request was created.
-- [x] Read current root `.agent` state and central ledger.
-- [x] Read `game.html`, `src/pages/game.js` and `src/game.js`.
-- [x] Trace engine, patch, physics, camera, render, HUD and host construction.
-- [x] Confirm public raw owner exposure.
-- [x] Confirm `getState()` independently samples mutable owners.
-- [x] Identify complete interaction, domain, kit and service inventory.
-- [x] Define authority and fixtures.
-- [ ] Execute browser or Pages host-isolation tests.
-- [ ] Implement the host gateway.
+- [x] Compare all Publish repositories with central tracking.
+- [x] Read the current product domain, browser host and pinned runtime identities.
+- [x] Trace movement, goal, collision, pickup, events, transitions, render and HUD order.
+- [x] Confirm `collectShard()` lacks an active-run guard.
+- [x] Confirm collision checks run only while state remains `game`.
+- [x] Preserve the public-host owner exposure and read-model findings.
+- [x] Inventory interaction loops, domains, kits and services.
+- [x] Derive outcome, event, frame, host and fixture contracts.
+- [ ] Execute Node, Rapier, browser or Pages proof.
+- [ ] Implement run-step outcome and host capability authorities.
 
-## Source-backed findings
+## Source-backed outcome findings
+
+```txt
+engine simulation:
+  movement, distance and height mutate
+  goal is checked immediately
+  win status/event/transition can commit inside engine.tick
+
+host:
+  collision and pickups run only when post-tick status remains game
+  a win therefore skips same-step collision checks
+  collision calls game.fail and emits RunFailed
+  the host continues into pickup scanning
+  collectShard checks duplicate ID but not active run status
+  ShardCollected can therefore follow RunFailed
+
+presentation:
+  Three renderer and HUD sample final mutable state
+  no runStepId, outcomeRevision or terminal frame receipt exists
+```
+
+## Preserved public-host findings
 
 ```txt
 PrehistoricRushHost exists: yes
@@ -31,8 +53,7 @@ raw physics service exposed: yes
 raw Three adapter exposed: yes
 raw patch controller exposed: yes
 raw camera-follow service exposed: yes
-adapter includes scene/camera/renderer references: yes
-adapter includes activate/release/render/reset mutation services: yes
+adapter exposes scene/camera/renderer and mutation services: yes
 getState samples multiple mutable owners: yes
 committedFrameId in host state: no
 shared subsystem epoch set in host state: no
@@ -40,26 +61,48 @@ owner quarantine: no
 typed public command gateway: no
 ```
 
-## Static reasoning proof
+## Static reasoning proof: goal suppresses collision
 
 ```txt
-1. same-page consumer obtains PrehistoricRushHost.adapter
-2. consumer invokes activatePatch, releasePatches, resetCamera or render
-3. mutation occurs outside normal RAF and subsystem admission
-4. no host command or epoch result is journaled
-5. getState samples current owners independently
-6. returned diagnostics cannot prove one coherent committed frame
+1. proposed movement crosses goal and obstacle
+2. engine system adds distance
+3. distance reaches goalDistance
+4. system sets status win and requests win transition
+5. host reads state
+6. host enters collision block only when status == game
+7. collision is not evaluated
+8. renderer displays win state
+```
+
+## Static reasoning proof: reward after failure
+
+```txt
+1. host collision query returns hit
+2. game.fail sets run-over
+3. RunFailed emits and run-over transition is requested
+4. host does not return or re-check status
+5. pickup overlap is evaluated
+6. collectShard accepts a previously uncollected ID
+7. shard count increments and ShardCollected emits
+8. renderer displays run-over with the mutated reward total
 ```
 
 ## Validation performed
 
 ```txt
-GitHub organization and central-ledger comparison
-root .agent presence check
-current source inspection
+GitHub organization inventory comparison
+central ledger comparison
+repo-local concurrent audit discovery and preservation
+recent commit inspection
+root .agent presence confirmation
+src/game.js inspection
+prehistoric-rush-domain-kit.js inspection
+pinned runtime version inspection
+current kit registry inspection
 public object and adapter surface inspection
 interaction/domain/kit/service inventory
-authority and fixture derivation
+source-order failure derivation
+contract and fixture derivation
 documentation consistency review
 ```
 
@@ -67,12 +110,15 @@ documentation consistency review
 
 ```txt
 local clone
+npm install
 Node fixtures
 browser automation
-public-host property traversal
-mutation bypass execution
-committed-frame coherence execution
-Rapier or Worker execution
+Rapier execution
+WebGL render smoke
+goal/collision/pickup combination execution
+event-order readback
+terminal screenshot/frame receipt
+public-host property traversal or isolation execution
 GitHub Pages smoke
 deployment workflow run
 ```
@@ -84,6 +130,7 @@ runtime source changed: no
 dependencies changed: no
 profile implementation changed: no
 route files changed: no
+gameplay behavior changed: no
 render behavior changed: no
 physics behavior changed: no
 Worker behavior changed: no
@@ -96,17 +143,22 @@ target branch: main
 ## Missing executable gates
 
 ```txt
-raw owner isolation fixture
-prototype/returned-value traversal fixture
-unsupported-command zero-mutation fixture
-stale-run/epoch fixture
-duplicate command fixture
-committed read-model coherence fixture
-read-model clone/freeze fixture
-host browser smoke
-host Pages smoke
+goal-only, collision-only and pickup-only fixtures
+goal + collision fixture
+collision + pickup fixture
+goal + pickup fixture
+all-three candidate fixture
+Rapier/fallback disagreement fixture
+terminal event-order fixture
+outcome idempotency fixture
+terminal frame parity fixture
+raw owner isolation and traversal fixtures
+unsupported/stale/duplicate host command fixtures
+committed read-model coherence and clone/freeze fixtures
+browser terminal-outcome/host smoke
+Pages terminal-outcome/host smoke
 ```
 
 ## Claim boundary
 
-This audit proves that live mutable owners are publicly exposed and that host state is independently sampled. It does not claim the public host has been isolated, that commands are safe, that readback is frame-coherent or that Pages deployment currently passes the proposed gates.
+The audit proves source ordering, reachable mutation paths, public owner exposure and independently sampled readback. It does not prove which precedence policy the game should select, that a deployed browser reproduces every combination, or that the proposed authorities and fixtures exist.
