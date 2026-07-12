@@ -1,25 +1,25 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T21-00-00-04-00`
+**Updated:** `2026-07-11T22-29-24-04-00`
 
 ## Summary
 
-Finish the route/profile proof, then make creator edits transactional and preview framing projection-correct before returning to patch, collider, cadence, readiness, frame, reset and lifecycle gates.
+Continue the existing route, creator, streaming, collision, cadence, readiness and committed-frame work. Once a committed gameplay frame exists, use it as the only public read source and quarantine every raw runtime owner behind a typed command gateway.
 
 ## Plan ledger
 
-**Goal:** produce one creator path where every control edit survives debounce, every saved revision reaches the game, and every Ready/Saved status is backed by a visible correctly framed creature frame.
+**Goal:** expose useful diagnostics and automation without allowing scripts to bypass gameplay, stream, physics, camera, render or lifecycle authority.
 
 - [ ] Complete route and deployed-page artifact proof.
-- [ ] Implement creator draft identity and dirty-field accumulation.
-- [ ] Replace partial-patch debounce commits with full canonical-draft flushes.
-- [ ] Add profile predecessor validation and typed conflict results.
-- [ ] Add descriptor fingerprints and transition identities.
-- [ ] Replace heuristic local-box framing with projection-correct fit.
-- [ ] Commit preview frames carrying draft, profile, descriptor and viewport revisions.
-- [ ] Gate Saved and Ready on durable-write and visible-frame receipts.
-- [ ] Prove creator/game profile fingerprint parity.
-- [ ] Continue patch, collider, cadence, readiness, frame, reset and lifecycle work afterward.
+- [ ] Implement creator draft, profile commit and preview-frame authority.
+- [ ] Implement patch activation/release and exact collider authority.
+- [ ] Implement cadence and world-readiness gates.
+- [ ] Commit one coherent gameplay-frame record.
+- [ ] Add host session and capability descriptors.
+- [ ] Replace raw owner fields with immutable observations.
+- [ ] Add typed public command admission and epoch fences.
+- [ ] Add host isolation, coherence and stale-command fixtures.
+- [ ] Complete coordinated reset and ordered disposal afterward.
 
 ## Ordered implementation queue
 
@@ -30,158 +30,90 @@ Finish the route/profile proof, then make creator edits transactional and previe
 4. Exact Collider Replacement + Collision Admission
 5. Stream Cadence + Time Budget Authority
 6. World Readiness + Movement Admission
-7. Committed Gameplay Frame + Host Read Model
+7. Committed Gameplay Frame Authority
+7a. Public Host Capability Gateway + Committed Read Model
 8. Run / Stream / Collider / Worker / Frame Epoch Reset
 9. Runtime Lifecycle + Ordered Disposal
 ```
 
-## Creator implementation sequence
+## Host implementation sequence
 
-### 1. Introduce draft identity
+### 1. Define the public API
 
 ```txt
-CreatorDraftState {
-  draftId
-  draftRevision
-  baseProfileRevision
-  dirtyPaths
-  profile
-  descriptorFingerprint
-  status
+PrehistoricRushHost {
+  version
+  capabilities
+  getCommittedState()
+  getJournal()
+  submit(command)
 }
 ```
 
-Every input event must increment `draftRevision`, merge into the same canonical draft and add its path to `dirtyPaths`.
+No field may reference engine, physics, Three, patch-controller, Worker or camera-follow owners.
 
-### 2. Flush the complete draft
+### 2. Create a committed read model
 
-Current behavior captures one final partial patch. Replace it with:
+- [ ] Source it from the committed gameplay-frame authority.
+- [ ] Include runtime session, host generation and run identity.
+- [ ] Include run, stream, Worker, collider and frame epochs.
+- [ ] Include profile, player-body and world-content fingerprints.
+- [ ] Include render and HUD results.
+- [ ] Deep-clone and freeze the returned value.
 
-```txt
-debounce expires
-  -> snapshot complete canonical draft
-  -> capture baseProfileRevision
-  -> submit one profile write command
-  -> retain dirty fields until accepted
-```
-
-A later input may cancel the timer, but it must not delete dirty fields already represented in the canonical draft.
-
-### 3. Add typed profile results
+### 3. Define command capabilities
 
 ```txt
-ProfileWriteResult {
+HostCommand {
   commandId
-  draftId
-  draftRevision
-  predecessorRevision
-  accepted
-  committedProfileRevision
-  profileFingerprint
-  conflict
-  error
+  capability
+  expectedRunSessionId
+  expectedRunEpoch
+  expectedStreamEpoch
+  expectedColliderEpoch
+  payload
 }
 ```
 
-Cross-tab writes must either merge by an explicit policy or reject with the observed and current revisions. Silent last-writer replacement is not sufficient.
+- [ ] Validate schema and supported capability.
+- [ ] Validate lifecycle and work budget.
+- [ ] Reject stale epochs with zero mutation.
+- [ ] Route accepted commands to existing domain owners.
+- [ ] Preserve typed owner results.
+- [ ] Make duplicate commands idempotent.
 
-### 4. Separate revision classes
+### 4. Quarantine owners
 
-Do not reuse one profile revision for every preview stage.
+- [ ] Remove `engine`, `physics`, `adapter`, `patchController` and `cameraFollow` from the public object.
+- [ ] Do not expose Three scene, renderer, camera, player or material references.
+- [ ] Do not expose Worker or executor references.
+- [ ] Make legacy `getState()` return the committed read model only.
 
-```txt
-draftRevision
-profileRevision
-descriptorRevision
-meshRevision
-poseRevision
-viewportRevision
-previewFrameId
-```
-
-`Ready` requires the rendered mesh and camera to acknowledge the current descriptor and viewport. `Saved` requires durable profile write success. `Saved + Ready` requires both conditions for the same profile fingerprint.
-
-### 5. Implement projection-correct framing
-
-For the active mesh or crossfade pair:
-
-```txt
-update skeleton matrices
-compute conservative posed world bounds
-union previous and next bounds during crossfade
-transform bounds into camera-facing fit space
-calculate vertical fit from camera fov
-calculate horizontal fit from fov and aspect
-apply declared screen-space margin
-clamp only after fit distance is known
-commit camera target and distance against viewportRevision
-```
-
-Use a stable conservative descriptor bound if per-frame skinned bounds are too expensive. The fallback must be documented and tested.
-
-### 6. Commit a preview frame receipt
-
-```txt
-PreviewFrameReceipt {
-  frameId
-  draftRevision
-  profileRevision
-  profileFingerprint
-  descriptorRevision
-  descriptorFingerprint
-  meshRevision
-  viewportRevision
-  cameraFitRevision
-  transitionMode
-  saved
-  ready
-  bounds
-  screenMargins
-}
-```
-
-The DOM status should project this receipt rather than infer state from revision equality alone.
-
-### 7. Preserve shared generator and adapter ownership
-
-- [ ] Keep `procedural-creature-body-kit` as descriptor authority.
-- [ ] Keep `three-procedural-creature.js` as the shared mesh/pose/disposal adapter.
-- [ ] Extend `character-preview-transition.js`; do not duplicate it in the page.
-- [ ] Move inline viewport fitting into one testable adapter or kit.
-- [ ] Keep one preview RAF and one ResizeObserver.
-
-## Required fixtures
+### 5. Add fixtures
 
 ```bash
-node scripts/prehistoric-rush-creator-rapid-multigroup-edit-fixture.mjs
-node scripts/prehistoric-rush-creator-debounce-flush-fixture.mjs
-node scripts/prehistoric-rush-profile-write-conflict-fixture.mjs
-node scripts/prehistoric-rush-preview-revision-state-fixture.mjs
-node scripts/prehistoric-rush-preview-topology-crossfade-fixture.mjs
-node scripts/prehistoric-rush-preview-portrait-fit-fixture.mjs
-node scripts/prehistoric-rush-preview-square-fit-fixture.mjs
-node scripts/prehistoric-rush-preview-wide-fit-fixture.mjs
-node scripts/prehistoric-rush-preview-saved-ready-frame-fixture.mjs
-node scripts/prehistoric-rush-creator-game-profile-parity-fixture.mjs
-node scripts/prehistoric-rush-character-creator-browser-smoke.mjs
-node scripts/prehistoric-rush-character-creator-pages-smoke.mjs
+node scripts/prehistoric-rush-host-owner-isolation-fixture.mjs
+node scripts/prehistoric-rush-host-command-admission-fixture.mjs
+node scripts/prehistoric-rush-host-stale-epoch-fixture.mjs
+node scripts/prehistoric-rush-host-read-model-coherence-fixture.mjs
+node scripts/prehistoric-rush-host-read-model-immutability-fixture.mjs
+node scripts/prehistoric-rush-host-browser-smoke.mjs
+node scripts/prehistoric-rush-host-pages-smoke.mjs
 ```
 
 ## Acceptance conditions
 
 ```txt
-rapid Size then Skin edits persist together
-rapid edits in all six visible controls persist together
-cancelled debounce timers cannot remove dirty paths
-cross-tab predecessor conflicts return typed results
-preview cannot report Ready while descriptor damping remains above threshold
-Saved cannot appear before durable write success
-Saved + Ready identifies one profile fingerprint and one preview frame
-portrait, square and wide viewports preserve declared margins
-animated tail, legs and topology crossfade remain in frame
-opening game.html produces the same committed creature fingerprint
+no public owner reference or mutating bypass is reachable
+unsupported and stale commands cause zero mutation
+duplicates return stable prior results
+public state comes from one committed frame
+all subsystem observations share one correlation set
+returned state is detached and immutable
+commands do not imply visible-frame success until a later frame commits
+browser and Pages fixtures pass
 ```
 
 ## Do not do next
 
-Do not add a second profile store, generator, creature adapter, preview RAF or persistence channel. Do not solve framing with another fixed distance multiplier. Do not clear dirty fields when a timer is cancelled. Do not treat stored revision equality as mesh or frame completion.
+Do not add a second host with the same raw owners. Do not use shallow wrappers as quarantine. Do not route host commands around existing domain ownership. Do not independently sample mutable owners for public state.
