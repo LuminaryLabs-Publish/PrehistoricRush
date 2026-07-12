@@ -1,39 +1,49 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T00-30-49-04-00`
+**Updated:** `2026-07-12T02-21-55-04-00`
 
 ## Summary
 
-Admit and fingerprint one runtime module graph before continuing the existing route, creator, streaming, collider, outcome, frame, host, reset and lifecycle work.
+Implement one surface policy and transaction shared by the creator preview and gameplay renderer, then correlate each accepted surface revision with the first visible frame and detached public diagnostics.
 
 ## Plan ledger
 
-**Goal:** prevent source pins, import maps, loaded exports, provider selection and visible-frame provenance from diverging.
+**Goal:** prevent CSS size, device scale, physical buffer, camera projection, visible frames and public observations from diverging.
 
-- [ ] Define a canonical runtime module manifest from `runtime-versions.js`.
-- [ ] Verify `game.html` and `charactercreator.html` import-map parity.
-- [ ] Return typed load results instead of null-only failure collapse.
-- [ ] Validate required export contracts for every required provider.
-- [ ] Version the Nexus/Kits/ProtoKits/Three/Rapier compatibility policy.
-- [ ] Make Rapier or fallback selection an explicit capability decision.
-- [ ] Compute and retain `sourceGraphFingerprint`.
-- [ ] Gate engine, Worker, renderer, RAF and public-host creation on admission.
-- [ ] Correlate the first visible frame and public read model to the fingerprint.
-- [ ] Execute local and Pages fixture gates.
+- [ ] Define one versioned render-surface policy.
+- [ ] Assign stable creator and gameplay surface IDs.
+- [ ] Capture CSS size and DPR in one observation.
+- [ ] Add a named quality tier and maximum physical-pixel budget.
+- [ ] Route creator `ResizeObserver` data through the authority.
+- [ ] Observe the actual gameplay host instead of mutating from global window data directly.
+- [ ] Coalesce duplicate resize ingress and reject stale runtime generations.
+- [ ] Commit renderer size and camera projection under one atomic result.
+- [ ] Read back actual drawing-buffer dimensions and accepted camera aspect.
+- [ ] Publish a monotonic surface revision.
+- [ ] Require the next rendered frame to acknowledge that revision.
+- [ ] Add detached surface state to the committed read model.
+- [ ] Execute creator, gameplay, DPR, pixel-budget and Pages fixtures.
 
 ## Required result
 
 ```txt
-RuntimeGraphAdmissionResult {
+SurfaceCommitResult {
   status
+  surfaceId
+  revision
+  runtimeGeneration
+  observationSource
   policyVersion
-  sourceGraphFingerprint
-  importMapParity
-  moduleResults
-  exportContractResults
-  activeCapabilities
-  rejectedCapabilities
-  physicsProvider
+  qualityTier
+  cssWidth
+  cssHeight
+  deviceScale
+  requestedPhysicalWidth
+  requestedPhysicalHeight
+  actualPhysicalWidth
+  actualPhysicalHeight
+  cameraAspect
+  rejectionReason
 }
 ```
 
@@ -41,6 +51,7 @@ RuntimeGraphAdmissionResult {
 
 ```txt
 0. Runtime Module Graph Admission and Source Provenance
+0a. Render Surface Resolution and Frame Correlation
 1. Route/Profile artifact proof
 2. Creator draft/commit/preview authority
 3. Patch activation/release
@@ -57,17 +68,20 @@ RuntimeGraphAdmissionResult {
 ## Required fixtures
 
 ```txt
-manifest canonicalization/fingerprint
-HTML import-map parity
-required module unavailable
-required export missing
-incompatible graph rejection
-Rapier admitted
-explicit fallback admitted
-rejected startup leaves no resources or recurring work
-first-frame graph parity
-public read-model detachment
-Pages source-graph smoke
+surface policy canonicalization
+creator container resize
+game host resize
+DPR increase and decrease
+physical-pixel budget clamp
+invalid or zero-area observation policy
+stale observation rejection
+duplicate resize coalescing
+actual drawing-buffer readback
+camera aspect/projection readback
+creator/game policy parity
+first frame after surface revision
+late resize after disposal
+Pages creator and gameplay smoke
 ```
 
-Do not add another loader or engine instance. Extend the current runtime constants, startup path and existing lifecycle owner.
+Do not add another renderer, camera, observer loop or RAF. Adapt the existing owners.
