@@ -1,49 +1,66 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T02-21-55-04-00`
+**Updated:** `2026-07-12T03-51-15-04-00`
 
 ## Summary
 
-Implement one surface policy and transaction shared by the creator preview and gameplay renderer, then correlate each accepted surface revision with the first visible frame and detached public diagnostics.
+Implement a canonical active-shard index and exactly-once collection transaction after patch activation authority, then correlate each accepted result with shard removal, HUD projection and the first visible frame.
 
 ## Plan ledger
 
-**Goal:** prevent CSS size, device scale, physical buffer, camera projection, visible frames and public observations from diverging.
+**Goal:** prevent unknown, stale, out-of-phase or out-of-range shard IDs from mutating score and make every accepted award observable across gameplay and presentation.
 
-- [ ] Define one versioned render-surface policy.
-- [ ] Assign stable creator and gameplay surface IDs.
-- [ ] Capture CSS size and DPR in one observation.
-- [ ] Add a named quality tier and maximum physical-pixel budget.
-- [ ] Route creator `ResizeObserver` data through the authority.
-- [ ] Observe the actual gameplay host instead of mutating from global window data directly.
-- [ ] Coalesce duplicate resize ingress and reject stale runtime generations.
-- [ ] Commit renderer size and camera projection under one atomic result.
-- [ ] Read back actual drawing-buffer dimensions and accepted camera aspect.
-- [ ] Publish a monotonic surface revision.
-- [ ] Require the next rendered frame to acknowledge that revision.
-- [ ] Add detached surface state to the committed read model.
-- [ ] Execute creator, gameplay, DPR, pixel-budget and Pages fixtures.
+- [ ] Define a versioned shard descriptor and canonical identity.
+- [ ] Include world seed, generator version, settings fingerprint, patch identity and local index.
+- [ ] Build an immutable active-shard index from committed patch activation/release results.
+- [ ] Publish a monotonic active-shard-set revision.
+- [ ] Define `ShardCollectionCommand` with command, run, state and patch revisions.
+- [ ] Validate active gameplay phase inside the collection authority.
+- [ ] Resolve the shard from the authoritative active index.
+- [ ] Capture player and shard transforms once.
+- [ ] Define explicit horizontal and vertical collection policy.
+- [ ] Add command and identity idempotency receipts.
+- [ ] Commit collected ledger, count, state revision and event atomically.
+- [ ] Replace the boolean API with a typed result and compatibility adapter.
+- [ ] Project committed results into shard instances and HUD.
+- [ ] Acknowledge the first frame containing shard absence and the new count.
+- [ ] Add detached collection observations and a bounded journal.
+- [ ] Quarantine raw public-host access behind the existing host gateway plan.
+- [ ] Execute deterministic, browser and Pages fixtures.
+
+## Required command
+
+```txt
+ShardCollectionCommand {
+  commandId
+  runtimeGeneration
+  runId
+  expectedRunRevision
+  activeShardSetRevision
+  shardIdentity
+  sourceFrameId
+}
+```
 
 ## Required result
 
 ```txt
-SurfaceCommitResult {
+ShardCollectionResult {
   status
-  surfaceId
-  revision
+  reason
+  commandId
+  collectionId
   runtimeGeneration
-  observationSource
-  policyVersion
-  qualityTier
-  cssWidth
-  cssHeight
-  deviceScale
-  requestedPhysicalWidth
-  requestedPhysicalHeight
-  actualPhysicalWidth
-  actualPhysicalHeight
-  cameraAspect
-  rejectionReason
+  runId
+  shardIdentity
+  patchId
+  descriptorFingerprint
+  beforeRevision
+  afterRevision
+  beforeCount
+  afterCount
+  spatialEvidence
+  idempotentReplay
 }
 ```
 
@@ -52,36 +69,38 @@ SurfaceCommitResult {
 ```txt
 0. Runtime Module Graph Admission and Source Provenance
 0a. Render Surface Resolution and Frame Correlation
-1. Route/Profile artifact proof
-2. Creator draft/commit/preview authority
-3. Patch activation/release
-4. Collider replacement/admission
-5. Run-step outcome and terminal frame
-6. Stream cadence/time budget
-7. World readiness
-8. Committed frame/read model
-8a. Public host gateway
-9. Coordinated reset epochs
-10. Lifecycle/disposal
+1. Route/Profile Artifact Proof
+2. Creator Draft/Commit/Preview Authority
+3. Patch Activation and Release Commit Authority
+3a. Shard Identity, Collection Commit and Visible Removal Authority
+4. Collider Replacement and Admission
+5. Run-Step Outcome and Terminal Frame
+6. Stream Cadence and Time Budget
+7. World Readiness
+8. Committed Frame and Read Model
+8a. Public Host Gateway
+9. Coordinated Reset Epochs
+10. Lifecycle and Disposal
 ```
 
 ## Required fixtures
 
 ```txt
-surface policy canonicalization
-creator container resize
-game host resize
-DPR increase and decrease
-physical-pixel budget clamp
-invalid or zero-area observation policy
-stale observation rejection
-duplicate resize coalescing
-actual drawing-buffer readback
-camera aspect/projection readback
-creator/game policy parity
-first frame after surface revision
-late resize after disposal
-Pages creator and gameplay smoke
+identity canonicalization and source fingerprint
+Worker/fallback shard identity parity
+unknown and malformed ID rejection
+wrong run and wrong phase rejection
+inactive and stale patch rejection
+stale active-shard-set rejection
+horizontal and vertical distance policy
+duplicate command receipt
+duplicate identity exactly-once award
+stable candidate ordering and per-step budget
+state/event/result parity
+visible shard removal and HUD parity
+run reset and stale generation rejection
+public-host bypass rejection
+browser and Pages collection smoke
 ```
 
-Do not add another renderer, camera, observer loop or RAF. Adapt the existing owners.
+Do not create a second pickup scan or visual owner. Adapt the existing patch generator, controller, active-content adapter, product domain, renderer, HUD and host.
