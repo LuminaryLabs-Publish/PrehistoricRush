@@ -1,47 +1,50 @@
-# Current Audit: PrehistoricRush Runtime Module Graph Admission
+# Current Audit: PrehistoricRush Render Surface Authority
 
-**Updated:** `2026-07-12T00-30-49-04-00`
+**Updated:** `2026-07-12T02-21-55-04-00`
 
 ## Summary
 
-Current browser source pins Nexus Engine `d86188c66692d9c24815aa2b29612c70df8fde4e`, NexusEngine-Kits `9673594de5669b4691737b91a9d56fa282e74370`, ProtoKits `11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5`, Three `0.179.1` and Rapier `0.15.0`. The prior internal registry still recorded older Nexus and Kits commits.
-
-HTML import maps are aligned with the current Nexus pin, but startup has no single source-graph manifest admission, graph fingerprint, graph-wide compatibility result, typed optional-provider decision or frame-correlated source provenance.
+The gameplay renderer and camera use global window dimensions, while the character creator uses a local preview-container `ResizeObserver`. Both sample device pixel ratio only during renderer construction. Neither path emits an authoritative surface result, physical-buffer receipt, surface revision or first-frame acknowledgement.
 
 ## Plan ledger
 
-**Goal:** make one admitted runtime graph the prerequisite for engine, streaming, physics, camera, renderer, diagnostics and first-frame authority.
+**Goal:** make one render-surface policy and transaction the authority for creator and gameplay size, DPR, camera projection, renderer buffer, diagnostics and visible-frame correlation.
 
-- [x] Reconcile current runtime source with internal docs.
-- [x] Trace import maps, dynamic imports, factory checks and fallback physics.
-- [x] Inventory all interaction loops, domains, kits and services.
+- [x] Trace creator and gameplay surface construction and resize ingress.
+- [x] Compare CSS-size, DPR and camera/renderer commit policies.
+- [x] Inventory interaction loops, domains, kits and services.
 - [x] Define parent domain, candidate kits and fixture gate.
-- [ ] Implement and execute graph admission.
+- [ ] Implement and execute the surface transaction.
 
 ## Complete interaction loop
 
 ```txt
 menu/profile -> creator or game
-creator -> import map + pinned modules -> preview -> profile commit
-game -> seven CDN imports -> presence checks -> selected factory checks
-     -> Rapier admitted or null fallback
-     -> engine/Worker/renderer/camera construction
-RAF  -> input -> simulation -> streaming -> collision -> pickups -> render -> HUD
-host -> declared version constants and mutable subsystem snapshots
+creator -> pinned modules -> local renderer/camera -> container ResizeObserver
+        -> profile edits -> procedural preview -> RAF
+game -> runtime graph -> engine/Worker/physics -> window-sized renderer/camera
+     -> global keyboard/blur/resize listeners
+resize -> direct renderer/camera mutation without a result
+RAF -> input -> simulation -> streaming -> collision -> pickups -> render -> HUD
+host -> subsystem snapshots without surface provenance
 ```
 
 ## Source-backed findings
 
 ```txt
-current HTML/runtime Nexus pin parity: yes
-previous .agent sourceGraph parity: no, now reconciled
-required module object presence check: yes
-selected Nexus/Kits factory checks: yes
-graph-wide compatibility result: no
-sourceGraphFingerprint: no
-explicit Rapier/fallback capability result: no
-first-frame source provenance: no
-public admission read model: no
+gameplay CSS dimensions: innerWidth / innerHeight
+gameplay startup DPR: min(devicePixelRatio, 2)
+gameplay DPR resampling: absent
+gameplay container observation: absent
+creator CSS dimensions: preview.clientWidth / preview.clientHeight
+creator ResizeObserver: present
+creator startup DPR: min(devicePixelRatio, 2)
+creator DPR resampling: absent
+shared quality/pixel policy: absent
+surface ID/revision: absent
+actual physical-buffer readback: absent
+first post-resize frame acknowledgement: absent
+public surface observation: absent
 ```
 
 ## Domains in use
@@ -58,8 +61,9 @@ terrain, trees, grass, pickups, colliders and height
 Rapier and fallback collision
 camera follow and Three rendering
 HUD, transitions and public host observation
-outcome, frame, host capability, reset and lifecycle authorities
+runtime graph, outcome, frame, host, reset and lifecycle authorities
 validation, build and Pages deployment
+render-surface resolution and frame correlation: missing
 ```
 
 ## Complete kit groups
@@ -88,26 +92,26 @@ Detailed services are retained in `.agent/kit-registry.json` and the timestamped
 ## Required domain
 
 ```txt
-prehistoric-rush-runtime-module-graph-admission-domain
+prehistoric-rush-render-surface-authority-domain
 ```
 
 ```txt
-canonical manifest
-  -> import-map parity
-  -> candidate load results
-  -> export-contract results
-  -> compatibility and optional-capability policy
-  -> active physics-provider decision
-  -> sourceGraphFingerprint
-  -> atomic admission
-  -> engine composition
-  -> first-frame receipt and immutable observation
+surface observation
+  -> generation and revision admission
+  -> coherent CSS-size and DPR sample
+  -> quality and physical-pixel policy
+  -> renderer and camera commit
+  -> actual-value readback
+  -> SurfaceCommitResult
+  -> first visible frame acknowledgement
+  -> detached public observation
 ```
 
 ## Ordered safe ledges
 
 ```txt
 0 runtime module graph admission
+0a render-surface resolution/frame correlation
 1 route/profile proof
 2 creator authority
 3 patch activation/release
@@ -121,4 +125,4 @@ canonical manifest
 10 lifecycle/disposal
 ```
 
-No runtime behavior changed and no module-compatibility or deployment-readiness claim is made.
+No runtime behavior changed and no render-surface, cross-page parity or deployment-readiness claim is made.
