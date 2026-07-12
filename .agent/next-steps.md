@@ -1,153 +1,159 @@
-# Next Steps: PrehistoricRush Coordinated Run Reset
+# Next Steps: PrehistoricRush Player Character Profile Convergence
 
-**Updated:** `2026-07-12T16-11-48-04-00`
+**Updated:** `2026-07-12T18-18-59-04-00`
 
 ## Plan ledger
 
-**Goal:** replace the browser-composed partial restart with one admitted reset transaction that advances every required participant to the same run generation or commits nothing.
+**Goal:** replace read-increment-write profile persistence and best-effort creator debounce with one conflict-aware durable commit protocol, monotonic cross-tab projection and commit-bound game navigation.
 
-### Gate 0: preserve current gameplay
+### Gate 0: preserve current content
 
-- [ ] Preserve deterministic route, profile, creature descriptor and outcome policy behavior.
-- [ ] Keep normal jump, steering, boost, collision, pickup and stream behavior unchanged.
-- [ ] Declare whether immutable patch cache is preserved or cleared on restart.
-- [ ] Keep terminal runtime disposal separate from reusable run reset.
+- [ ] Preserve the current v1 profile shape, defaults and field clamps.
+- [ ] Preserve current creator controls, preview behavior and route structure.
+- [ ] Preserve one immutable profile binding per active run.
+- [ ] Keep profile authority separate from procedural creature and renderer implementation.
 
-### Gate 1: define restart commands and phase policy
+### Gate 1: freeze identities and schemas
 
-- [ ] Add `RunRestartCommand` with command ID, source, sequence and expected run identity.
-- [ ] Admit start from menu, retry from run-over and run-again from win.
-- [ ] Reject active-run Enter restart by default.
-- [ ] Treat intentional quick restart as a distinct product command.
-- [ ] Return typed zero-mutation rejection results.
-- [ ] Deduplicate browser key repeat and repeated activation.
+- [ ] Add `writerSessionId`, `commandId` and command sequence.
+- [ ] Add durable `commitId` and `profileFingerprint`.
+- [ ] Define `PlayerProfileEditCommand`, `PlayerProfileResetCommand` and `PlayerProfileCommitResult`.
+- [ ] Define expected predecessor revision/fingerprint fields.
+- [ ] Define field-path patch schema and changed-path extraction.
+- [ ] Define explicit schema migration/rejection policy.
 
-### Gate 2: establish reset identity
+### Gate 2: replace revision allocation
 
-- [ ] Add `resetTransactionId`.
-- [ ] Add cross-domain `runGeneration` separate from product `runId`.
-- [ ] Add participant revision and fingerprint fields.
-- [ ] Add reset lifecycle states: admitting, preparing, committing, rolling back and awaiting visible frame.
-- [ ] Mark public readback `reset-in-progress` until all required participants align.
+- [ ] Read one durable predecessor envelope.
+- [ ] Validate expected predecessor before commit.
+- [ ] Detect same-revision/different-fingerprint divergence.
+- [ ] Allocate successor revision only after admission.
+- [ ] Verify storage readback after write.
+- [ ] Return typed durable, volatile, rejected or failed result.
+- [ ] Never publish durable success before verified readback.
 
-### Gate 3: define participant protocol
+### Gate 3: define conflict and merge policy
 
-- [ ] Register required and optional reset participants.
-- [ ] Add `prepareReset`, `commitReset` and `rollbackReset` contracts.
-- [ ] Require every result to cite the same reset transaction and run generation.
-- [ ] Reject commit when any required prepare result fails.
-- [ ] Produce an explicit terminal fault if rollback cannot restore parity.
+- [ ] Compare changed field paths against the predecessor.
+- [ ] Permit deterministic disjoint-field merge only under explicit policy.
+- [ ] Reject overlapping stale field writes with conflict paths.
+- [ ] Prevent stale nested-group patches from replacing remote subfields.
+- [ ] Define reset as an exclusive profile-epoch barrier.
+- [ ] Record merge/rejection decisions in a bounded journal.
 
-### Gate 4: reset simulation, motion, physics and articulation
+### Gate 4: make delivery monotonic
 
-- [ ] Prepare and commit product RunState and InputState together.
-- [ ] Reset Core Simulation resolution and committed-frame generation.
-- [ ] Clear or rebind Core Motion intents, trajectories and frame history.
-- [ ] Reset the player physics body to the admitted origin.
-- [ ] Clear predecessor motion requests and physics-frame provenance.
-- [ ] Reset or rebind articulated-motion pose/target state.
-- [ ] Reset or rebind articulated-dynamics joint/body state.
-- [ ] Reject predecessor tick, frame and request results.
+- [ ] Publish one `PlayerProfileCommitEnvelope` per accepted commit.
+- [ ] Include event ID, commit ID, writer, revision and fingerprint.
+- [ ] Treat BroadcastChannel and storage events as delivery adapters.
+- [ ] Deduplicate the same commit across both adapters.
+- [ ] Reject lower revisions.
+- [ ] Fault or reconcile same-revision/different-fingerprint events.
+- [ ] Return a typed subscriber delivery result.
 
-### Gate 5: reset streaming, Worker and active content
+### Gate 5: replace creator timeout with a save lease
 
-- [ ] Choose `clear-all`, `preserve-cache-clear-active` or generation-fenced preservation.
-- [ ] Apply the selected policy through a typed patch-controller result.
-- [ ] Attach runtime session and run generation to Worker requests and responses.
-- [ ] Reject or explicitly cache predecessor-generation Worker results.
-- [ ] Rebuild terrain, trees, grass, shards, pickups and colliders from one committed active-content revision.
-- [ ] Return content and collider parity digests.
+- [ ] Track local draft revision separately from durable profile revision.
+- [ ] Give every scheduled save a lease ID and captured predecessor.
+- [ ] Cancel or rebase the lease when a remote commit is admitted.
+- [ ] Preserve disjoint local edits through explicit rebase.
+- [ ] Surface overlapping conflict rather than silently overwriting.
+- [ ] Project `Saving`, `Saved`, `Conflict`, `Volatile` and `Failed` from results.
 
-### Gate 6: reset input, camera, renderer and public projection
+### Gate 6: bind navigation to save outcome
 
-- [ ] Clear browser key state under the reset transaction.
-- [ ] Reject stale browser events from the predecessor run.
-- [ ] Bind camera reset to the same transaction and generation.
-- [ ] Declare whether renderer animation time resets or is preserved.
-- [ ] Publish one immutable `RunRestartResult`.
-- [ ] Prevent raw public readback from combining participant generations.
-- [ ] Publish the first visible new-run frame acknowledgement.
+- [ ] Intercept Play and Menu navigation while a save lease is unresolved.
+- [ ] Flush and await commit, reject navigation, or explicitly choose predecessor policy.
+- [ ] Clear/cancel timers during terminal creator disposal.
+- [ ] Unsubscribe profile listeners on creator disposal.
+- [ ] Include the accepted commit ID in route transition context.
+- [ ] Add timeout/failure handling that never labels an uncommitted draft as saved.
 
-### Gate 7: rollback and failure handling
+### Gate 7: bind runtime and render proof
 
-- [ ] Add participant prepare-failure fixtures.
-- [ ] Add commit-failure rollback fixtures.
-- [ ] Verify zero public mutation before successful commit.
-- [ ] Verify no stale Worker, motion, physics or input result crosses rollback.
-- [ ] Record bounded observations and a reset journal.
+- [ ] Read and verify one durable profile envelope at game boot.
+- [ ] Create `RuntimePlayerProfileBinding` with commit, revision and fingerprint.
+- [ ] Pass that binding into engine composition and creature generation.
+- [ ] Expose binding in `PrehistoricRushHost` readback.
+- [ ] Publish the first menu, creator and game frame acknowledgements.
+- [ ] Keep the active run stable even if later profile commits arrive.
 
-### Gate 8: terminal lifecycle remains separate
+### Gate 8: storage capability and lifecycle
 
-- [ ] Cancel RAF on page stop.
-- [ ] Remove browser listeners.
-- [ ] Dispose the Worker executor and terminate its Worker.
-- [ ] Dispose Three.js geometry, materials and renderer resources.
-- [ ] Release engine/provider ownership.
-- [ ] Remove `PrehistoricRushHost` during terminal disposal.
+- [ ] Classify unavailable, denied, quota, serialization and readback failures.
+- [ ] Define explicit volatile-session behavior.
+- [ ] Close BroadcastChannel only when store ownership ends.
+- [ ] Keep per-subscriber disposal separate from global store shutdown.
+- [ ] Define reset and page-unload ordering.
 
 ### Gate 9: executable proof
 
-- [ ] Add active-run Enter rejection fixture.
-- [ ] Add terminal retry and run-again admission fixtures.
-- [ ] Add rapid-repeat idempotency fixture.
-- [ ] Add simulation/motion/physics/articulation reset parity fixture.
-- [ ] Add stale Worker completion after reset fixture.
-- [ ] Add active-content/collider reset parity fixture.
-- [ ] Add failed-prepare zero-commit fixture.
-- [ ] Add rollback fixture.
-- [ ] Add coherent public-readback fixture.
-- [ ] Add browser and deployed Pages first-visible-frame smokes.
+- [ ] Add same-predecessor conflicting-write fixture.
+- [ ] Add same-predecessor disjoint-merge fixture.
+- [ ] Add duplicate BroadcastChannel/storage delivery fixture.
+- [ ] Add stale and same-revision-divergence fixtures.
+- [ ] Add remote-update-during-debounce fixture.
+- [ ] Add reset-during-debounce fixture.
+- [ ] Add edit-then-immediate-Play/Menu fixtures.
+- [ ] Add storage failure/readback mismatch fixtures.
+- [ ] Add runtime profile-binding fixture.
+- [ ] Add browser and deployed Pages first-frame matrices.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-coordinated-run-reset-authority-domain
-run-restart-command-kit
-run-restart-admission-kit
-run-generation-kit
-reset-transaction-id-kit
-reset-participant-registry-kit
-reset-prepare-result-kit
-reset-commit-result-kit
-reset-rollback-kit
-stale-run-command-rejection-kit
-core-simulation-reset-participant-kit
-core-motion-reset-participant-kit
-core-physics-reset-participant-kit
-articulated-motion-reset-participant-kit
-articulated-dynamics-reset-participant-kit
-patch-controller-reset-participant-kit
-active-content-reset-participant-kit
-worker-generation-barrier-kit
-camera-reset-participant-kit
-renderer-reset-participant-kit
-input-reset-participant-kit
-public-host-reset-receipt-kit
-first-visible-run-frame-ack-kit
-run-reset-observation-kit
-run-reset-journal-kit
-mid-run-enter-restart-fixture-kit
-stale-worker-after-reset-fixture-kit
-browser-pages-reset-parity-smoke-kit
+prehistoric-rush-player-character-profile-commit-convergence-authority-domain
+player-profile-writer-session-kit
+player-profile-command-id-kit
+player-profile-command-sequence-kit
+player-profile-revision-kit
+player-profile-content-fingerprint-kit
+player-profile-edit-command-kit
+player-profile-patch-schema-kit
+player-profile-expected-predecessor-kit
+player-profile-commit-admission-kit
+player-profile-conflict-detection-kit
+player-profile-conflict-policy-kit
+player-profile-merge-plan-kit
+player-profile-storage-write-result-kit
+player-profile-storage-readback-kit
+player-profile-commit-result-kit
+player-profile-reset-command-kit
+player-profile-reset-result-kit
+player-profile-event-id-kit
+player-profile-channel-envelope-kit
+player-profile-monotonic-subscription-kit
+player-profile-duplicate-delivery-rejection-kit
+player-profile-stale-delivery-rejection-kit
+creator-draft-revision-kit
+creator-save-lease-kit
+creator-save-rebase-kit
+creator-save-flush-kit
+creator-navigation-barrier-kit
+runtime-player-profile-binding-kit
+player-profile-visible-frame-ack-kit
+player-profile-observation-kit
+player-profile-journal-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:active-run-enter-rejection
-fixture:terminal-restart-admission
-fixture:rapid-restart-idempotency
-fixture:simulation-motion-physics-articulation-reset-parity
-fixture:patch-controller-reset-policy
-fixture:stale-worker-generation-rejection
-fixture:active-content-collider-reset-parity
-fixture:prepare-failure-zero-commit
-fixture:commit-failure-rollback
-fixture:public-readback-single-generation
-fixture:first-visible-new-run-frame
-browser restart matrix
-Pages restart matrix
+fixture:profile-normalization-stability
+fixture:same-predecessor-conflict
+fixture:disjoint-field-merge
+fixture:same-revision-fingerprint-conflict
+fixture:duplicate-delivery-rejection
+fixture:stale-delivery-rejection
+fixture:remote-commit-during-debounce
+fixture:reset-during-debounce
+fixture:navigation-save-flush
+fixture:storage-write-and-readback-failure
+fixture:runtime-profile-binding
+fixture:first-visible-profile-frame
+browser multi-tab matrix
+Pages multi-tab/navigation matrix
 ```
 
-Do not remove current restart behavior until the replacement proves equivalent gameplay, explicit cache policy, stale-work rejection and first-visible-frame parity.
+Do not remove current storage compatibility until the replacement proves normalized content parity, deterministic conflict handling and creator-to-game profile binding.
