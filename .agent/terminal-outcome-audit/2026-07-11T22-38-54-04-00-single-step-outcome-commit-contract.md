@@ -47,7 +47,7 @@ TerminalOutcomePolicy {
 
 ```txt
 collisionVsGoal: collision-first
-a collisionVsPickup: collision-first
+collisionVsPickup: collision-first
 goalVsPickup: admit-before-goal | suppress-on-goal
 failedMovementPolicy: predecessor | contact-pose | proposed
 terminalRewardPolicy: explicit accepted set only
