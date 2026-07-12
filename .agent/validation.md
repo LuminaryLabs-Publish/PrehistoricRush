@@ -1,98 +1,104 @@
-# Validation: PrehistoricRush Coordinated Run Reset
+# Validation: PrehistoricRush Player Character Profile Convergence
 
-**Updated:** `2026-07-12T16-11-48-04-00`
+**Updated:** `2026-07-12T18-18-59-04-00`
 
 ## Scope
 
-Documentation-only review of PrehistoricRush restart behavior, browser activation, Core Simulation/Motion/Physics/articulation state, patch-controller and Worker lifecycle, active-content materialization, camera reset, renderer submission and public host readback. Runtime source through `e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28` was reviewed; pinned Nexus Engine remains `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`.
+Documentation-only review of the profile schema, localStorage store, BroadcastChannel and storage-event adapters, creator draft/debounce/reset/navigation flow, menu projection, game boot profile binding, public readback and current package test boundary.
 
 ## Plan ledger
 
-**Goal:** distinguish a product-state restart from executable proof that every stateful participant entered one compatible new run generation.
+**Goal:** distinguish profile normalization and visible draft updates from executable proof of atomic durable commit, cross-tab convergence and creator-to-game frame parity.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Select only `PrehistoricRush` by the oldest eligible synchronized timestamp.
-- [x] Review initial start, button, Space and Enter activation.
-- [x] Review product RunState/InputState reset.
-- [x] Review Core Simulation, Motion, Physics and articulation APIs.
-- [x] Review patch-controller queues, reset and snapshots.
-- [x] Review Worker executor pending-request disposal behavior.
-- [x] Review active-content, camera, render and public-host paths.
-- [x] Confirm no coordinated prepare/commit/rollback or visible-frame receipt exists.
-- [x] Publish the complete `16-11-48` audit family.
+- [x] Review `player-character-schema.js`.
+- [x] Review `player-character-store.js`.
+- [x] Review menu profile loading/subscription.
+- [x] Review creator draft, timer, external updates, reset and unload.
+- [x] Review game boot profile consumption and public readback.
+- [x] Confirm no commit, conflict, convergence, navigation or visible-frame authority exists.
+- [x] Publish the complete `18-18-59` audit family.
 - [x] Change no runtime source, dependency or deployment configuration.
 - [x] Create no branch or pull request.
 
 ## Source-backed validation performed
 
 ```txt
-verified game.start() increments runId and replaces RunState/InputState
-verified game.start() calls coreSimulation.resetResolution()
-verified game.start() does not call Core Motion, Core Physics or articulation reset
-verified browser start() refreshes active content, updates streaming and resets camera
-verified Enter calls browser start() without status admission
-verified restart occurs outside authoritative TickContext
-verified patch-controller reset() exists but is not called by restart
-verified patch-controller retains records, queue, inflight, active and desired sets until reset
-verified Worker executor dispose() rejects pending requests and terminates the Worker
-verified restart does not dispose or generation-fence Worker requests
-verified public host exposes independently advancing game, simulation, physics, stream and camera snapshots
-verified renderer returns no first-visible-new-run acknowledgement
-verified npm test covers outcome policy and articulation conversion only
+verified profile schema is normalized to prehistoric-rush.character.v1
+verified revision is a nonnegative integer field
+verified save reads previous profile before assigning successor revision
+verified save writes one complete JSON snapshot with localStorage.setItem
+verified save does not compare an expected predecessor
+verified save does not verify durable readback
+verified BroadcastChannel payloads are normalized then emitted without revision admission
+verified storage-event payloads are normalized then emitted without revision admission
+verified creator schedules a 160 ms timeout after draft/preview mutation
+verified external creator updates do not clear or rebase the pending timer
+verified creator Play/Menu navigation has no save flush barrier
+verified beforeunload disposes the preview only
+verified menu projects every admitted profile event directly
+verified game loads one profile before engine composition
+verified public host exposes profileId/revision but no commit/fingerprint
+verified npm test covers outcome policy and articulation only
 ```
 
 ## Executable proof currently present
 
 ```txt
+profile normalization code exists
+profile load/save/patch/reset helpers exist
+menu and creator subscriptions exist
+numeric revision is exposed
+creator preview transition exists
+runtime binds one loaded profile for one page session
 npm test command exists
-outcome-policy test exists
-player-articulation adapter test exists
-runtime module preflight exists
-patch-controller snapshot/reset API exists upstream
-Worker executor disposal API exists upstream
+outcome-policy and articulation tests exist
 ```
 
 ## Proof currently absent
 
 ```txt
-active-run Enter restart rejection fixture
-restart command idempotency fixture
-cross-domain run generation fixture
-participant prepare/commit/rollback fixture
-Core Motion reset parity fixture
-Core Physics body/request/frame reset parity fixture
-articulation reset parity fixture
-patch-controller reset-policy fixture
-stale Worker completion rejection fixture
-active-content/collider reset parity fixture
-coherent public readback fixture
-first visible new-run frame acknowledgement
-browser and Pages restart matrix
-terminal runtime disposal fixture
+profile command idempotency fixture
+expected-predecessor/CAS fixture
+same-predecessor conflict fixture
+disjoint field merge fixture
+same-revision fingerprint divergence fixture
+storage write/readback result fixture
+duplicate delivery fixture
+stale/out-of-order delivery fixture
+remote commit during debounce fixture
+reset barrier fixture
+navigation save-flush fixture
+storage unavailable/failure fixture
+runtime profile binding fixture
+first visible profile-dependent frame acknowledgement
+browser and Pages multi-tab/navigation matrix
 ```
 
 ## Commands not run in this pass
 
 ```txt
 npm test
-browser game smoke
-Pages game smoke
-Worker restart ordering smoke
-first-visible-frame capture
+browser creator/menu/game smoke
+multi-tab BroadcastChannel/storage smoke
+storage failure injection
+navigation timing smoke
+Pages profile convergence smoke
+first-visible-profile-frame capture
 ```
 
-The GitHub connector supplied current source and write access but no checked-out browser runtime. No executable restart or rendering result is claimed.
+The GitHub connector supplied current source and write access but no checked-out browser runtime. The direct public clone attempt failed because the execution container could not resolve `github.com`. No executable persistence or rendering result is claimed.
 
 ## Change-state validation
 
 ```txt
 runtime source changed by audit: no
-gameplay behavior changed by audit: no
-motion, physics or articulation behavior changed by audit: no
-streaming or Worker behavior changed by audit: no
+profile behavior changed by audit: no
+creator/menu/game behavior changed by audit: no
 render behavior changed by audit: no
-package or dependencies changed by audit: no
+package scripts or dependencies changed by audit: no
 deployment changed by audit: no
 branch created: no
 pull request created: no
@@ -102,4 +108,4 @@ central ledger and internal change log synchronized: yes
 
 ## Completion boundary
 
-Do not claim coordinated reset until restart is phase-admitted, every required participant prepares and commits under one reset transaction and run generation, predecessor input and asynchronous work are rejected, public readback is generation-coherent and the first visible frame cites the committed reset result.
+Do not claim atomic profile persistence, multi-tab convergence, safe creator navigation or creator-to-game visual parity until commands are expected-predecessor admitted, writes are verified, deliveries are monotonic and duplicate-safe, pending saves resolve before navigation, runtime binding cites the accepted commit and the first visible profile-dependent frame acknowledges it.
