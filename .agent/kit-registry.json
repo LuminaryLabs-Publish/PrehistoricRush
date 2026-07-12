@@ -47,7 +47,7 @@
     "externalHostAdapters": 9,
     "proofKits": 2,
     "implementedAdaptedProofTotal": 45,
-    "candidatePlayerProfileAuthorityKitsIncludingParent": 31
+    "candidatePlayerProfileAuthorityKitsIncludingParent": 32
   },
   "interactionLoops": [
     "menu-load-profile-subscribe-and-project",
