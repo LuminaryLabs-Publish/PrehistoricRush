@@ -1,91 +1,119 @@
 # START HERE: PrehistoricRush
 
-## Last aligned
-
-```txt
-2026-07-12T07-09-49-04-00
-```
+**Last aligned:** `2026-07-12T09-01-44-04-00`  
+**Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
+**Branch:** `main`
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a persisted procedural raptor, Three.js creator and gameplay renderers, deterministic Worker/fallback patch generation, streamed terrain and vegetation, Rapier/fallback collision, shards, HUD projection and Pages deployment.
+PrehistoricRush now routes movement proposals, physics/fallback observations, pickup admission, goal evaluation, outcome precedence, state patches, events and terminal transitions through Nexus Engine `core-simulation`. The prior collision/goal/pickup precedence defect is therefore materially addressed and has a pure Node policy test.
 
-The current audit isolates **active content materialization authority**. Patch releases trigger a full tree flush plus complete grass, shard, pickup and collider rebuild. Activating one ready patch repeats that complete work in the same frame. One release-plus-activation frame can visit up to 3,500 grass descriptors, 100 shard descriptors and replace the full fixed-collider set twice before rendering one final state.
-
-All prior runtime-module, input, render-surface, profile, creator, streaming, shard, collision, cadence, readiness, outcome, frame, host, reset and lifecycle audits remain active dependencies.
+Run start and restart remain outside that authority. `game.start()` directly replaces run/input resources, resets resolution, emits `RunStarted` and requests a scene transition; the browser then refreshes content, streaming and camera separately before any new committed tick or first-frame receipt exists.
 
 ## Plan ledger
 
-**Goal:** coalesce patch membership changes into one bounded transaction that commits terrain, trees, grass, shards and colliders under one active-content revision and proves the first frame rendered from it.
+**Goal:** make initial start and every restart one authoritative transaction that creates a new run epoch, resets all required consumers and proves the first compatible committed and visible frame.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Avoid overlapping newer unsynchronized `TheOpenAbove` repo-local work.
-- [x] Select only `PrehistoricRush` as the next-oldest stable eligible repository.
-- [x] Trace controller release/activation, terrain slots, tree batches, grass/shards, colliders, physics and rendering.
-- [x] Identify all interaction loops, domains, kits and services.
-- [x] Quantify the complete active-set rebuild bound.
+- [x] Avoid concurrent AetherVale and TheOpenAbove documentation work.
+- [x] Select only `PrehistoricRush` because eleven runtime/test/pin commits postdate its current audit.
+- [x] Trace the new `core-simulation` proposal, observation, resolution and commit flow.
+- [x] Trace initial start, retry, input, content refresh, streaming, physics, camera, render, HUD and host readback.
+- [x] Identify all interaction loops, domains, kits and offered services.
+- [x] Record the implemented outcome-policy advance and the remaining start/restart authority gap.
 - [x] Add timestamped architecture and system audits.
 - [x] Update documentation directly on `main`; create no branch or pull request.
-- [ ] Implement materialization authority and executable fixtures.
+- [ ] Implement authoritative start/restart and executable cross-consumer fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T07-09-49-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T09-01-44-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T07-09-49-04-00-active-content-materialization-dsk-map.md
-.agent/render-audit/2026-07-12T07-09-49-04-00-double-rebuild-visible-content-gap.md
-.agent/gameplay-audit/2026-07-12T07-09-49-04-00-release-activation-rebuild-loop.md
-.agent/interaction-audit/2026-07-12T07-09-49-04-00-patch-delta-materialization-result-map.md
-.agent/content-materialization-audit/2026-07-12T07-09-49-04-00-coalescing-budget-commit-contract.md
-.agent/deploy-audit/2026-07-12T07-09-49-04-00-materialization-fixture-gate.md
-.agent/turn-ledger/2026-07-12T07-09-49-04-00.md
+.agent/architecture-audit/2026-07-12T09-01-44-04-00-run-start-restart-authority-dsk-map.md
+.agent/render-audit/2026-07-12T09-01-44-04-00-new-run-old-frame-provenance-gap.md
+.agent/gameplay-audit/2026-07-12T09-01-44-04-00-restart-outside-authoritative-tick-loop.md
+.agent/interaction-audit/2026-07-12T09-01-44-04-00-start-command-admission-result-map.md
+.agent/run-start-audit/2026-07-12T09-01-44-04-00-run-epoch-reset-first-frame-contract.md
+.agent/deploy-audit/2026-07-12T09-01-44-04-00-authoritative-start-restart-fixture-gate.md
+.agent/turn-ledger/2026-07-12T09-01-44-04-00.md
 .agent/kit-registry.json
 ```
 
-## Main findings
+## Current interaction loop
 
 ```txt
-releasePatches performs a complete active-content rebuild
-activatePatch performs another complete active-content rebuild
-release plus activation can therefore rebuild twice in one frame
-all active grass and uncollected shards are recopied on each rebuild
-all fixed colliders are reconstructed and replaced on each rebuild
-all tree batches are flushed after release and activation
-there is no aggregate patch delta or materialization command
-there is no elapsed-time or work-unit budget
-there is no prepare/commit/rollback boundary
-there is no active-content revision or cross-consumer parity digest
-there is no first visible-frame acknowledgement
+menu/profile -> creator or gameplay
+creator -> draft -> procedural preview -> persistence
+
+initial start or retry
+  -> game.start() directly replaces RunState and InputState
+  -> reset core-simulation resolution
+  -> emit RunStarted and request game transition
+  -> refresh dynamic content
+  -> update/prime streaming
+  -> reset camera
+
+committed gameplay tick
+  -> browser input patch
+  -> engine.tick
+  -> movement/run-state proposal + pickup proposal + goal proposal
+  -> kinematic motion request
+  -> Rapier observation + fallback-collision observation
+  -> product resolution policy
+  -> one state patch, event bundle and optional terminal transition
+  -> cleanup system requests committed transition
+
+host frame
+  -> read committed run state and simulation frame
+  -> remove accepted pickups from visible content
+  -> update patch streaming
+  -> render creature/world/camera
+  -> update HUD and public readback
 ```
 
 ## Domains and kit groups
 
 ```txt
-routes/profile/creator
-runtime module graph and import maps
-12 Nexus Engine core kits
+routes, profile and creator
+runtime source identity, pinned import maps and module admission
+13 Nexus Engine core kits including core-simulation
 5 official NexusEngine-Kits
-12 product/page/Worker kits
-9 external and host adapter boundaries
-run, streaming, terrain, trees, grass, shards, colliders and physics
+13 product/page/Worker kits including the resolution policy
+9 external/host adapter boundaries
+1 outcome-policy proof kit
+run, input, movement, proposals, observations, resolution, events and transitions
+streaming, terrain, trees, grass, shards, colliders and physics
 camera, Three rendering, HUD and public readback
-active-content delta, coalescing, budgeting, revision, commit, rollback and frame authority: missing
+run-start command, epoch, cross-consumer reset and first-frame authority: missing
 ```
 
-See the tracker and kit registry for every kit and service.
+## Main findings
+
+```txt
+terminal outcome precedence is now renderer-agnostic and engine-tick-owned
+collision beats goal and rejects same-step pickups
+pickup-before-goal is supported when no collision occurs
+policy outputs are serializable and covered by a pure test
+
+initial start and retry still mutate outside TickContext
+game.start replaces state and emits/transitions synchronously
+simulation, physics, stream, content, camera and frame revisions are not committed together
+public readback can temporarily combine a new run with predecessor tick/physics/stream/frame evidence
+no start command ID, run epoch, prepare/commit/rollback or first visible-frame acknowledgement exists
+```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-active-content-materialization-authority-domain
+prehistoric-rush-run-start-restart-authority-domain
 ```
 
-It coordinates aggregate release/activation deltas, terrain/tree/grass/shard/collider plans, elapsed-time and work-unit budgets, detached preparation, atomic commit, rollback, stale-plan rejection, parity digests, observations, journals and first-visible-frame proof.
+It coordinates admitted start commands, run epochs, predecessor checks, run/input/simulation/physics/stream/content/camera reset plans, atomic commit, rollback, stale-result rejection, observations, journals and first-compatible-frame proof.
 
 ## Ordered implementation queue
 
@@ -99,7 +127,8 @@ It coordinates aggregate release/activation deltas, terrain/tree/grass/shard/col
 3a. Active Content Materialization and Coalescing Authority
 3b. Shard Identity, Collection Commit and Visible Removal Authority
 4. Exact Collider Replacement and Collision Admission
-5. Run-Step Outcome Arbitration and Terminal Frame Authority
+5. Run-Step Outcome Arbitration: implemented baseline, integration proof remains
+5a. Run Start/Restart Epoch and First-Frame Authority
 6. Stream Cadence and Time Budget Authority
 7. World Readiness and Movement Admission
 8. Committed Gameplay Frame and Read Model
@@ -107,5 +136,3 @@ It coordinates aggregate release/activation deltas, terrain/tree/grass/shard/col
 9. Coordinated Run/Stream/Worker/Collider/Frame Reset
 10. Runtime Lifecycle and Ordered Disposal
 ```
-
-Do not add a second streaming owner. Adapt the existing controller and product consumer into one materialization transaction, then make physics, rendering, pickups and readback cite the committed active-content revision.

@@ -1,114 +1,82 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T07-09-49-04-00`
-
-## Summary
-
-Implement one active-content materialization authority after patch activation/release admission. It must coalesce membership changes, budget work, prepare terrain/tree/grass/shard/collider consumers, atomically commit one revision and correlate gameplay, physics, rendering and readback with that revision.
+**Updated:** `2026-07-12T09-01-44-04-00`
 
 ## Plan ledger
 
-**Goal:** remove repeated full-set rebuilds from the streaming frame while preserving deterministic patch content and exact cross-consumer parity.
+**Goal:** finish the move to authoritative Nexus Engine transactions without creating parallel browser-host owners.
 
-- [ ] Define `ActiveContentRevision` and canonical patch-set digest.
-- [ ] Define aggregate `PatchContentDelta` with releases and activations.
-- [ ] Bind commands to runtime generation, run ID and stream epoch.
-- [ ] Coalesce release and activation observations before mutation.
-- [ ] Define elapsed-time and deterministic work-unit budgets.
-- [ ] Derive patch-local terrain slot changes.
-- [ ] Derive tree cell replace/release plans.
-- [ ] Derive grass matrix additions/removals and compaction policy.
-- [ ] Derive shard/pickup additions/removals using collection revision.
-- [ ] Derive fixed-collider additions/removals for Rapier and fallback collision.
-- [ ] Prepare required consumers without exposing partial state.
-- [ ] Validate capacity and overflow before commit.
-- [ ] Commit every required consumer under one content revision.
-- [ ] Roll back or preserve predecessor on failure.
-- [ ] Retire predecessor resources exactly once.
-- [ ] Reject stale runtime/run/stream/content plans.
-- [ ] Publish detached work, timing, parity and rollback observations.
-- [ ] Acknowledge the first visible frame using the committed content revision.
-- [ ] Execute deterministic, browser and Pages fixtures.
+### Gate 0: preserve the implemented outcome-policy baseline
+- [ ] Keep movement, pickups, goal and collision precedence inside `core-simulation`.
+- [ ] Add browser integration proof for the pure policy cases.
+- [ ] Correlate committed simulation, physics, state, transition and visible-frame revisions.
 
-## Required command
+### Gate 1: run start/restart authority
+- [ ] Add `RunStartCommand`, command ID and expected predecessor revisions.
+- [ ] Allocate one monotonic run epoch.
+- [ ] Prepare run-state and input reset without publishing them.
+- [ ] Prepare `core-simulation` resolution reset.
+- [ ] Prepare Rapier body pose/contact reset.
+- [ ] Prepare patch-controller/Worker adoption or reset.
+- [ ] Prepare active-content/shard/collider refresh under the new epoch.
+- [ ] Prepare camera reset and game-scene transition.
+- [ ] Commit every required participant atomically.
+- [ ] Roll back if a required participant fails.
+- [ ] Reject stale Worker, stream, physics and frame results.
+- [ ] Return a typed start result.
+- [ ] Acknowledge the first committed tick and visible frame.
+- [ ] Route initial boot, button, Enter and Space retry through the same command.
 
-```txt
-MaterializationCommand {
-  commandId
-  runtimeGeneration
-  runId
-  streamEpoch
-  controllerId
-  predecessorContentRevision
-  releasedPatchIds
-  activationCandidates
-  observedAt
-  workBudget
-}
-```
+### Gate 2: retained world/materialization authorities
+- [ ] Coalesce release and activation into one active-content commit.
+- [ ] Add stream cadence/work budgets and world-readiness admission.
+- [ ] Add exact collider/content revisions and frame parity.
+- [ ] Preserve creator/profile, render-surface, input, public-host and lifecycle plans.
 
-## Required result
+## Candidate kit order
 
 ```txt
-MaterializationResult {
-  status
-  reason
-  commandId
-  predecessorContentRevision
-  committedContentRevision
-  releasedPatchIds
-  activatedPatchIds
-  deferredPatchIds
-  workBudget
-  workConsumed
-  consumerResults
-  patchSetDigest
-  rollbackResult
-  visibleFrameId
-}
+prehistoric-rush-run-start-restart-authority-domain
+run-start-command-kit
+run-start-command-id-kit
+run-epoch-kit
+run-start-predecessor-admission-kit
+run-state-reset-plan-kit
+run-input-reset-plan-kit
+simulation-resolution-reset-plan-kit
+physics-body-reset-plan-kit
+stream-reset-adoption-plan-kit
+active-content-reset-plan-kit
+camera-reset-plan-kit
+scene-transition-reset-plan-kit
+run-start-prepare-kit
+run-start-participant-result-kit
+run-start-commit-kit
+run-start-rollback-kit
+stale-run-start-result-rejection-kit
+run-start-result-kit
+run-start-observation-kit
+run-start-journal-kit
+first-run-tick-ack-kit
+first-run-visible-frame-ack-kit
+initial-start-retry-parity-fixture-kit
+run-start-participant-failure-fixture-kit
+browser-authoritative-restart-smoke-kit
 ```
 
-## Ordered queue
+## Validation order
 
 ```txt
-0. Runtime Module Graph Admission and Source Provenance
-0a. Browser Input Command Admission and Edge/Hold Authority
-0b. Render Surface Resolution and Frame Correlation
-1. Route/Profile Artifact Proof
-2. Creator Draft/Commit/Preview Authority
-3. Patch Activation and Release Commit Authority
-3a. Active Content Materialization and Coalescing Authority
-3b. Shard Identity, Collection and Visible Removal Authority
-4. Collider Replacement and Admission
-5. Run-Step Outcome and Terminal Frame
-6. Stream Cadence and Time Budget
-7. World Readiness
-8. Committed Frame and Read Model
-8a. Public Host Gateway
-9. Coordinated Reset Epochs
-10. Lifecycle and Disposal
+npm test
+fixture:initial-start-retry-parity
+fixture:duplicate-start-idempotency
+fixture:start-participant-failure-rollback
+fixture:stale-worker-stream-rejection
+fixture:physics-body-run-epoch
+fixture:active-content-run-epoch
+fixture:first-run-tick-ack
+fixture:first-run-visible-frame-ack
+fixture:public-readback-no-mixed-epoch
+browser start/retry matrix
+Pages start/retry smoke
 ```
-
-## Required fixtures
-
-```txt
-single activation delta
-single release delta
-release plus activation coalescing
-multiple release coalescing
-no-op membership update
-capacity deferral before mutation
-full-rebuild fallback admission
-consumer prepare failure
-consumer commit failure and rollback
-stale runtime/run/stream/content rejection
-30/60/120 Hz work parity
-Worker/fallback generation parity
-Rapier/fallback collider digest parity
-controller/render/physics patch-set parity
-first visible-frame acknowledgement
-long traversal budget and retention stability
-browser and Pages stream materialization smoke
-```
-
-Do not create a second patch controller or independent render membership owner. Convert the current active-content adapter into a consumer of one aggregate controller delta.

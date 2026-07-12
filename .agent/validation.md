@@ -1,116 +1,83 @@
-# Validation: PrehistoricRush
+# Validation: PrehistoricRush Run Start/Restart Authority
 
-**Updated:** `2026-07-12T07-09-49-04-00`
+**Updated:** `2026-07-12T09-01-44-04-00`
 
-## Summary
+## Scope
 
-This documentation-only audit verifies the current controller release/activation, terrain, tree, grass, shard, pickup and collider materialization paths. It does not prove bounded work, coalescing, atomic commit, rollback, cross-consumer parity or visible-frame acknowledgement.
+Documentation-only review through repository revision `8bcd73f92990284819b8b4af07c385c978835d2b`.
 
 ## Plan ledger
 
-**Goal:** distinguish source-backed materialization findings from unexecuted runtime, browser and Pages proof.
+**Goal:** distinguish the implemented pure outcome-policy baseline from missing executable proof for authoritative initial start and restart.
 
-- [x] Confirm repository and `main` branch.
-- [x] Compare all Publish repositories with central tracking.
-- [x] Inspect `src/game.js`, the product domain and patch generator.
-- [x] Confirm release and activation each trigger complete consumer rebuild work.
-- [x] Confirm complete fixed-collider replacement occurs on every rebuild.
-- [x] Quantify active-set descriptor bounds from source constants.
-- [x] Inventory interaction loops, domains, kits and services.
-- [x] Create materialization contracts and fixture requirements.
-- [ ] Execute runtime, browser or Pages proof.
+- [x] Compare the Publish inventory and central ledger.
+- [x] Exclude `TheCavalryOfRome`.
+- [x] Select only `PrehistoricRush` after avoiding active AetherVale/TheOpenAbove documentation writes.
+- [x] Compare the previous documentation head with current `main`.
+- [x] Review the changed product domain, resolution policy, game host, runtime pins, package and test.
+- [x] Confirm `core-simulation` is required and installed.
+- [x] Confirm run/pickup/goal proposals and physics/fallback observations.
+- [x] Confirm collision/pickup/goal precedence in source and pure tests.
+- [x] Confirm start/retry still mutates outside the authoritative tick.
+- [x] Change no runtime source, dependencies or deployment configuration.
+- [x] Create no branch or pull request.
 
-## Source-backed findings
+## Executable proof currently present
 
 ```txt
-release-side full tree flush: present
-release-side full active-content rebuild: present
-activation-side full tree flush: present
-activation-side full active-content rebuild: present
-release plus activation double rebuild: possible in one frame
-maximum active patches: 25
-maximum grass descriptor visits per full rebuild: 1,750
-maximum shard descriptor visits per full rebuild: 50
-maximum generated fixed colliders per full set: 175
-aggregate patch delta: absent
-work/time budget: absent
-active-content revision: absent
-atomic commit/rollback: absent
-cross-consumer parity digest: absent
-first visible-frame receipt: absent
+npm test command exists
+pure resolution-policy test exists
+continue case
+win case
+fatal collision case
+collision beats goal
+collision rejects same-step pickups
+pickup then goal
+duplicate pickup idempotency
+fallback collision
+structured-clone output
 ```
 
-## Validation performed
+## Proof currently absent
 
 ```txt
-current organization inventory and central-ledger comparison
-current repository metadata and recent commit inspection
-controller release, pump and ready-delivery inspection
-terrain slot and tree batch mutation inspection
-grass, shard, pickup and collider rebuild inspection
-physics fixed-collider replacement inspection
-source-constant work-bound calculation
-interaction/domain/kit/service inventory
-contract and fixture derivation
-documentation updates on main
+real Nexus Engine tick integration fixture
+Rapier provider execution fixture
+initial start transaction fixture
+retry transaction fixture
+cross-consumer reset rollback fixture
+stale Worker/stream generation fixture
+first committed tick receipt
+first visible frame receipt
+public readback epoch-parity fixture
+browser/Pages start-retry smoke
 ```
 
-## Validation not performed
+## Commands not run in this pass
 
 ```txt
-local clone or dependency install
-Node materialization fixtures
-browser launch
-Worker execution
-fallback generation execution
-Rapier execution
-release/activation boundary traversal
-capacity pressure
-fault injection and rollback
-performance measurement
-render/physics parity readback
-GitHub Pages smoke or workflow review
+npm test
+browser smoke
+Pages smoke
 ```
 
-## Change classification
+The connector supplied current source and write access but no checked-out runtime. No new executable claim is made by this documentation pass.
+
+## Change-state validation
 
 ```txt
-runtime source changed: no
-HTML changed: no
-dependencies changed: no
-gameplay changed: no
-input behavior changed: no
-streaming changed: no
-physics changed: no
-rendering changed: no
-camera changed: no
-Worker behavior changed: no
-deployment changed: no
+runtime source changed by audit: no
+gameplay changed by audit: no
+physics changed by audit: no
+streaming changed by audit: no
+render behavior changed by audit: no
+package/dependencies changed by audit: no
+deployment changed by audit: no
 branch created: no
 pull request created: no
-target branch: main
+.agent documentation changed: yes
 ```
 
-## Missing executable gates
+## Completion boundary
 
-```txt
-single activation delta fixture
-single release delta fixture
-release-plus-activation coalescing fixture
-no-op materialization fixture
-bounded-work fixture
-capacity-deferral fixture
-consumer-failure rollback fixture
-stale-plan fixture
-30/60/120 Hz work-parity fixture
-Worker/fallback parity fixture
-Rapier/fallback collider parity fixture
-controller/render/physics patch-digest fixture
-long traversal retention fixture
-visible content-frame fixture
-local browser and Pages materialization smoke
-```
-
-## Claim boundary
-
-The audit proves how the inspected source currently rebuilds active content and the source-level maximum descriptors that may be revisited. It does not prove actual device cost, that every boundary frame performs maximum work, or that deployed traversal visibly stutters.
+Do not claim authoritative start/restart until initial boot and retry commit one run epoch across run/input state, simulation, physics, streaming, active content, camera, scene transition, public readback and first visible frame, with rollback and stale-result rejection.

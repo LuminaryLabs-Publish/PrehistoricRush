@@ -1,192 +1,148 @@
-# Current Audit: PrehistoricRush Active Content Materialization Authority
+# Current Audit: PrehistoricRush Run Start/Restart Authority
 
-**Updated:** `2026-07-12T07-09-49-04-00`
+**Updated:** `2026-07-12T09-01-44-04-00`
 
 ## Summary
 
-The active browser host performs mutation-first materialization. Any released patch set triggers a full tree flush and complete grass, shard, pickup and collider rebuild. Every activated ready patch then performs the same complete work again. There is no aggregate patch delta, bounded work plan, active-content revision, atomic cross-consumer commit or visible-frame proof.
+Since the previous audit, PrehistoricRush added `core-simulation`, a product resolution policy, proposal/observation-based outcome resolution, a pure policy test and corrected pinned Nexus Engine imports. Collision, pickup and goal precedence now commit through one authoritative engine tick.
+
+The remaining discontinuity is run creation. Initial start and retry call `game.start()` outside `engine.tick()`. That API directly replaces run/input resources, resets resolution, emits `RunStarted` and requests a scene transition. Content, streaming and camera are then reset by separate browser-host calls with no run-start result or first-frame proof.
 
 ## Plan ledger
 
-**Goal:** make one authority responsible for coalescing patch membership changes, budgeting work, preparing every consumer, atomically committing one active-content revision and correlating it with physics, gameplay, rendering and public readback.
+**Goal:** make run creation one atomic cross-consumer transaction whose epoch is shared by simulation, physics, streaming, content, camera, rendering, HUD and public observation.
 
-- [x] Trace controller membership and delivery.
-- [x] Trace terrain, tree, grass, shard, pickup and collider materialization.
-- [x] Confirm release and activation can each cause a complete rebuild in one frame.
-- [x] Quantify source-level descriptor and collider work bounds.
-- [x] Inventory interaction loops, domains, kits and services.
-- [x] Define parent domain, candidate kits and fixture gate.
-- [ ] Implement and execute the materialization transaction.
+- [x] Review the eleven commits after the previous documentation head.
+- [x] Trace `core-simulation` installation and product policy registration.
+- [x] Trace run proposals, motion requests, observations, resolution, state patch, events and transitions.
+- [x] Confirm the pure policy tests cover continue, win, collision precedence, pickup rejection, pickup+goal, duplicate pickup and fallback collision.
+- [x] Trace initial `game.start()` and browser retry handling.
+- [x] Inventory current domains, 41 kit/proof surfaces and their services.
+- [x] Define the missing start/restart authority and fixture boundary.
+- [ ] Implement and execute the transaction.
 
-## Complete interaction loop
+## Selection comparison
 
 ```txt
-menu/profile -> creator or game
-creator -> profile draft -> procedural preview -> persistence
+accessible Publish repositories: 10
+eligible non-Cavalry repositories: 9
+new or central-ledger-missing repositories: 0
+root-.agent-missing repositories: 0
 
-game startup
-  -> pinned modules -> engine graph -> Worker/fallback generator
-  -> patch controller -> physics -> camera -> Three renderer
-  -> game.start -> synchronous center prime -> camera reset
-
-frame
-  -> browser input and engine tick
-  -> controller focus/update
-  -> take released patch IDs
-  -> hide terrain and release tree cells
-  -> flush all tree batches
-  -> rebuild all active grass, shards, pickups and colliders
-  -> replace all fixed physics colliders
-  -> pump generation
-  -> take at most one ready patch
-  -> upload terrain and replace tree cells
-  -> flush all tree batches again
-  -> rebuild all active grass, shards, pickups and colliders again
-  -> replace all fixed physics colliders again
-  -> physics, fallback collision, shard scan, render and HUD
+AetherVale         active unsynchronized Vulkan-bootstrap audit, skipped
+TheOpenAbove       active unsynchronized parchment-map audit, skipped
+PrehistoricRush    selected: 11 runtime/test/pin commits after 07:09 audit
+TheCavalryOfRome   excluded
 ```
 
-## Source-backed findings
+Only `LuminaryLabs-Publish/PrehistoricRush` is modified in the Publish organization.
+
+## Implemented authoritative tick
 
 ```txt
-active radius: 2
-maximum active patches: 25
-maximum trees generated per patch: 7
-maximum grass descriptors generated per patch: 70
-maximum shards generated per patch: 2
+run proposal system
+  -> clone predecessor state
+  -> apply input/movement/jump/height
+  -> submit kinematic target
+  -> submit run-state, pickup and goal proposals
 
-one complete active-set upper bound:
-  25 patch scans
-  1,750 grass descriptor visits
-  50 shard descriptor visits
-  175 tree trunks and 175 crowns
-  175 fixed colliders
+observation phase
+  -> core physics step
+  -> fallback collision sample
 
-release plus activation upper bound in one frame:
-  3,500 grass descriptor visits
-  100 shard descriptor visits
-  two all-tree-batch flushes
-  two complete fixed-collider replacements
+resolution policy
+  -> fatal collision beats goal and pickups
+  -> otherwise accept unique pickups
+  -> then resolve goal
+  -> return one state patch, event list and optional transition
+
+cleanup
+  -> request scene transition once per committed step
 ```
 
-The bound excludes terrain attribute uploads, matrix-buffer uploads, bounds recomputation and Rapier work.
-
-## Missing authority
+## Remaining start/restart bypass
 
 ```txt
-active-content revision
-aggregate release/activation delta
-materialization command and idempotency
-elapsed-time and work-unit budget
-terrain/tree/grass/shard/collider prepare results
-atomic commit and predecessor rollback
-stale runtime/run/stream/content rejection
-controller/render/physics parity digest
-materialization duration and work diagnostics
-first visible-frame acknowledgement
+button, Enter or Space while terminal
+  -> start()
+  -> game.start()
+     -> resetResolution()
+     -> replace RunState
+     -> replace InputState
+     -> emit RunStarted
+     -> request direct game transition
+  -> refreshDynamicContent(new state)
+  -> updateStreaming(new state, primeCenter=true)
+  -> resetCamera(new state)
+  -> wait for next RAF/engine.tick
+```
+
+## Source-backed gaps
+
+```txt
+no RunStartCommand or command ID
+no expected predecessor run/tick/frame revision
+no run epoch shared across consumers
+no physics body reset result
+no patch-controller reset/adoption result
+no active-content revision reset result
+no camera reset receipt
+no scene-transition prepare/commit result
+no rollback if one reset participant fails
+no stale asynchronous Worker/generation rejection tied to new run epoch
+no first committed tick acknowledgement for the new run
+no first visible frame acknowledgement
+public readback can mix new RunState with predecessor committed-frame evidence
 ```
 
 ## Domains in use
 
 ```txt
-page routing and profile lifecycle
+page routes and profile lifecycle
 creator draft, preview, persistence and transition
-runtime source identity, import maps and module loading
-Nexus Engine composition and core capabilities
-browser input and lifecycle observation
-product run, movement, jump, route, surface, score, shards and outcomes
-Worker/fallback patch generation and request correlation
-patch controller focus, membership, queue, cache and delivery
-active patch set and terrain slot ownership
-tree-cell batch replacement, release, flush and overflow
-grass instance materialization and bounds
-shard/pickup projection and collection filtering
-fixed-collider materialization and Rapier replacement
-height sampling, collision and outcome admission
-camera follow and Three rendering
-HUD, transitions and public host observation
-runtime graph, input, surface, profile, creator, streaming, shard,
-  collision, cadence, readiness, outcome, frame, host, reset and lifecycle authorities
+pinned runtime graph and import-map parity
+Nexus Engine input, spatial, scene, physics, simulation, motion, camera, animation, graphics, skybox, UI, diagnostics and composition
+product run, route, surface, score, proposals, observations, outcome policy, events and transitions
+Worker/fallback patch generation and patch-controller scheduling
+active patch, terrain, tree, grass, shard, pickup and collider materialization
+Rapier provider, kinematic body, motion requests, contacts and fallback collision
+camera follow, creature pose, Three rendering and HUD
+public host, committed tick/simulation/physics/stream/camera readback
 validation, static deployment and Pages
-active-content coalescing, budget, revision, commit, rollback and frame authority: missing
+run-start/restart epoch, cross-consumer reset and first-frame authority: missing
 ```
 
-## Complete kit groups
+## Kit/service census
 
 ```txt
-Core: core-input, core-spatial, core-scene, core-physics, core-motion,
-  core-camera, core-animation, core-graphics, core-skybox, core-ui,
-  core-diagnostics, core-composition
-
-Official: seed-kit, procedural-creature-body-kit, instanced-render-batch-kit,
-  seeded-world-patch-controller-kit, camera-smooth-follow-kit
-
-Product/page/Worker: prehistoric-rush-domain-kit, player-character-schema-kit,
-  player-character-profile-store-kit, menu-page-kit, character-creator-page-kit,
-  character-preview-transition-kit, three-procedural-creature-adapter-kit,
-  game-page-entry-kit, drunk-route-generator, player-raptor-preset-kit,
-  prehistoric-patch-generator, prehistoric-patch-worker
-
-External/host: Three, rapier-physics-domain-kit, Rapier, message Worker executor,
-  active-content consumer, creator viewport framing, creator persistence scheduler,
-  browser input adapter, creature/camera/render host adapters
+13 Nexus Engine core kits
+5 official NexusEngine-Kits
+13 product/page/Worker kits
+9 external/host adapters
+1 outcome-policy proof kit
+41 implemented/adapted/proof surfaces total
 ```
 
-Detailed services are retained in `.agent/kit-registry.json` and the timestamped tracker.
+The exact names and services are in the timestamped tracker and `.agent/kit-registry.json`.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-active-content-materialization-authority-domain
-```
-
-```txt
-controller membership observation
-  -> aggregate release and activation delta
-  -> runtime/run/stream/content revision admission
-  -> deterministic per-consumer plans
-  -> elapsed-time and work-unit budget admission
-  -> detached prepare results
-  -> atomic commit or predecessor rollback
-  -> exact resource retirement
-  -> controller/render/physics parity digest
-  -> visible-frame acknowledgement
-  -> detached observation and bounded journal
+prehistoric-rush-run-start-restart-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-release and activation in one frame produce one materialization commit
-all required consumers cite one active-content revision and patch digest
-no partial terrain/tree/grass/shard/collider state becomes public
-work admission is independent of display refresh rate
-failed required consumers preserve the predecessor revision
-stale runtime, run, stream or content plans cannot commit
-physics and fallback collision consume the committed collider revision
-rendering and HUD cite the committed content revision
-one visible frame acknowledges each successful commit
+one accepted start command creates exactly one run epoch
+all required reset participants cite that epoch
+no new run becomes public before required participants prepare successfully
+failure preserves or restores the predecessor committed state
+stale Worker, stream, physics or frame results cannot attach to the new run
+first committed tick and first visible frame cite the same run epoch
+repeated Enter/button/Space starts are idempotent
+initial boot and retry use the same transaction
+public readback never pairs a new run with predecessor frame evidence
 ```
 
-## Ordered safe ledges
-
-```txt
-0 runtime module graph admission
-0a browser input command authority
-0b render-surface resolution/frame correlation
-1 route/profile proof
-2 creator authority
-3 patch activation/release authority
-3a active-content materialization/coalescing authority
-3b shard identity/collection/visible removal authority
-4 collider replacement/admission
-5 run-step outcome authority
-6 stream cadence/time budget
-7 world readiness
-8 committed frame/read model
-8a public host gateway
-9 coordinated reset epochs
-10 lifecycle/disposal
-```
-
-No runtime behavior changed and no materialization-correctness, performance or deployment-readiness claim is made.
+Documentation only. No runtime behavior changed by this pass.
