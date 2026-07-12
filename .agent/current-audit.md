@@ -1,85 +1,92 @@
-# Current Audit: PrehistoricRush Shard Collection Authority
+# Current Audit: PrehistoricRush Browser Input Command Authority
 
-**Updated:** `2026-07-12T03-51-15-04-00`
+**Updated:** `2026-07-12T05-21-52-04-00`
 
 ## Summary
 
-The current shard loop trusts a mutable browser-side pickup projection and passes only a shard ID into `collectShard()`. The service checks duplicate ID membership but does not validate gameplay phase, run identity, active patch membership, descriptor provenance, spatial evidence or state revision. Gameplay mutation, event publication, instance removal and HUD projection have no shared result or visible-frame receipt.
+The active browser game bypasses the installed `core-input-kit` capability. Global listeners mutate a host-side held-state object, call `game.start()` or `game.setInput()` directly, and copy steering/boost into the product domain every RAF. Enter is not phase-gated, browser repeat is not classified, and Space mixes press-edge and repeated pulse semantics.
 
 ## Plan ledger
 
-**Goal:** make one shard authority responsible for canonical identity, active membership, 3D evidence, exactly-once state/event commit and visible presentation proof.
+**Goal:** make one input authority responsible for normalized observation, edge/hold state, phase/run admission, duplicate handling, lifecycle retirement, simulation-step consumption and visible-frame proof.
 
-- [x] Trace shard descriptors from patch generation through active presentation.
-- [x] Trace proximity detection, `collectShard`, event, refresh, render and HUD ordering.
+- [x] Trace button, keydown, keyup and blur ingress.
+- [x] Trace host-side state and product `InputState` mutation.
+- [x] Confirm active-run Enter replacement and repeat gaps.
+- [x] Confirm the installed core input capability is not the browser owner.
 - [x] Inventory interaction loops, domains, kits and services.
 - [x] Define parent domain, candidate kits and fixture gate.
-- [ ] Implement and execute the shard transaction.
+- [ ] Implement and execute the input transaction.
 
 ## Complete interaction loop
 
 ```txt
 menu/profile -> creator or game
-creator -> profile draft -> procedural preview -> commit and synchronization
+creator -> profile draft -> procedural preview -> persistence
 
 game startup
-  -> pinned runtime graph -> engine -> Worker/fallback generator
+  -> pinned modules -> engine graph -> Worker/fallback generator
   -> patch controller -> physics -> camera -> Three renderer
-  -> initial patch activation -> RAF
+  -> game.start -> stream prime -> camera reset
+
+button
+  -> game status: jump
+  -> non-game status: start
+
+keyboard
+  -> Enter: start in every phase
+  -> Space: jump during game, start otherwise
+  -> A/D/arrows/W: mutate host held flags
+  -> keyup: clear held flags
+  -> blur: clear host and product input
 
 frame
-  -> input -> engine tick -> movement and possible terminal outcome
-  -> patch focus/release/generation/activation
-  -> active-content rebuild creates mutable view.pickups and shard instances
-  -> physics/fallback hazard test
-  -> XZ-only shard overlap test
-  -> collectShard(id) boolean mutation and event
-  -> full active-content rebuild
-  -> world render -> HUD -> public host observation
+  -> copy host steer/boost to product InputState
+  -> engine tick consumes steer/boost/jump
+  -> product system clears jump pulse
+  -> streaming, collision, shards, render, HUD and host readback
 ```
 
 ## Source-backed findings
 
 ```txt
-shard descriptor ID: `${chunkX}:${chunkZ}:${index}`
-identity source fingerprint: absent
-active shard set revision: absent
-collection command ID: absent
-run/status admission inside collectShard: absent
-known active descriptor lookup: absent
-expected state revision: absent
-horizontal evidence: browser-side mutable values
-vertical evidence: absent
-unknown ID rejection: absent
-accepted duplicate receipt: absent
-collection result: boolean only
-state/event revision: absent
-projection result: absent
+core-input-kit installed: yes
+browser input routed through core input: no
+parallel host held-state owner: yes
+button/keyboard policy parity: no
+Enter active-game admission: absent
+explicit restart command: absent
+browser repeat inspection: absent
+physical press/release edge state: absent
+input command ID: absent
+input revision: absent
+run/state revision admission: absent
+simulation-step consumption result: absent
 first visible-frame acknowledgement: absent
 ```
 
-`collectShard()` can accept any first-time value because it only tests `collectedShardIds.includes(shardId)`. The normal browser loop gates on `status === "game"`, but the service itself does not, and the raw engine remains exposed through `PrehistoricRushHost`.
+The button path checks status before choosing jump or start. The Enter path calls `start()` unconditionally, so it can replace an active run. `start()` increments `runId`, replaces run and input resources, emits `RunStarted`, primes streaming and resets the camera.
 
-Patch release and activation happen before collection detection in the same RAF. The detector consumes the resulting mutable `view.pickups` array without capturing a patch activation or shard-set revision. The overlap test uses XZ distance only, so jump height and shard Y do not contribute.
+The product simulation clears `input.jump` after consumption. Because key repeat is not rejected and no physical edge state exists, a later Space repeat can set jump again without a release.
 
 ## Domains in use
 
 ```txt
 page routing and profile lifecycle
-creator draft, procedural preview and persistence
-runtime source identity, import maps and CDN loading
-Nexus Engine composition and 12 core kits
-five official NexusEngine-Kits
-run, route, movement, surface, score, shards and outcomes
+creator draft, preview, transition and persistence
+runtime source identity, import maps and module loading
+Nexus Engine composition and core capabilities
+browser keyboard, button, focus and resize observation
+host-side held input state
+product run, input, movement, jump, shards and outcomes
 Worker patch generation, queue, cache and membership
-terrain, trees, grass, shard descriptors, colliders and height
-active-content projection and instance rebuilding
+terrain, vegetation, colliders, shards and height
 Rapier and fallback collision
 camera follow and Three rendering
 HUD, transitions and public host observation
-runtime graph, surface, outcome, frame, host, reset and lifecycle authorities
+runtime graph, surface, shard, outcome, frame, host, reset and lifecycle authorities
 validation, static deployment and Pages
-shard identity, evidence, commit and frame correlation: missing
+input command, edge/hold, retirement, step and frame authority: missing
 ```
 
 ## Complete kit groups
@@ -100,7 +107,7 @@ Product/page/Worker: prehistoric-rush-domain-kit, player-character-schema-kit,
 
 External/host: Three, rapier-physics-domain-kit, Rapier, message Worker executor,
   active-content consumer, creator viewport framing, creator persistence scheduler,
-  creature/camera/render host adapters
+  browser input adapter, creature/camera/render host adapters
 ```
 
 Detailed services are retained in `.agent/kit-registry.json` and the timestamped tracker.
@@ -108,41 +115,42 @@ Detailed services are retained in `.agent/kit-registry.json` and the timestamped
 ## Required domain
 
 ```txt
-prehistoric-rush-shard-collection-authority-domain
+prehistoric-rush-input-command-authority-domain
 ```
 
 ```txt
-committed patch activation
-  -> canonical active shard index and set revision
-  -> shard command admission against run phase and state revision
-  -> canonical descriptor/source lookup
-  -> authoritative player/shard transform capture
-  -> 3D spatial policy
-  -> command and identity idempotency
-  -> atomic collected-ledger, count, revision and event commit
-  -> shard and HUD projection results
-  -> first visible-frame acknowledgement
+browser observation
+  -> normalized sample with source/code/repeat evidence
+  -> edge or hold classification
+  -> runtime/run/phase/revision admission
+  -> command identity and idempotency
+  -> authoritative core input state
+  -> focus/visibility/reset/disposal retirement
+  -> immutable simulation-step input snapshot
+  -> consumption result
+  -> visible-frame acknowledgement
   -> detached observation and bounded journal
 ```
 
 ## Required invariants
 
 ```txt
-unknown, stale or inactive IDs never award
-collection is closed outside active gameplay
-one identity awards once per run
-same command returns the same receipt
-vertical collection policy is explicit
-patch/source provenance is verifiable
-state, event and result share one revision
-shard disappearance and HUD count share one collection/frame receipt
+Enter cannot replace an active run without explicit restart admission
+one physical press produces at most one edge action
+browser repeat never creates a new edge
+held controls retire on release, blur, visibility loss, reset and disposal
+button and keyboard adapters use the same semantic policy
+core-input-kit is the engine-facing input owner
+one simulation step consumes one immutable input revision
+visible readback cites the input revision and command IDs consumed
 ```
 
 ## Ordered safe ledges
 
 ```txt
 0 runtime module graph admission
-0a render-surface resolution/frame correlation
+0a browser input command admission and edge/hold authority
+0b render-surface resolution/frame correlation
 1 route/profile proof
 2 creator authority
 3 patch activation/release
@@ -157,4 +165,4 @@ shard disappearance and HUD count share one collection/frame receipt
 10 lifecycle/disposal
 ```
 
-No runtime behavior changed and no shard-correctness, visible-removal or deployment-readiness claim is made.
+No runtime behavior changed and no input-correctness, gameplay or deployment-readiness claim is made.
