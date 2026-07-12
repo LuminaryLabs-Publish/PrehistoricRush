@@ -118,7 +118,7 @@ product/page/Worker kits:         14
 external/host adapters:            9
 proof kits:                        2
 total surfaces:                   45
-candidate profile-authority kits: 31
+candidate profile-authority kits: 32 including parent
 ```
 
 ## Validation boundary
