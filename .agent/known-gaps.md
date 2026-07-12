@@ -1,62 +1,78 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T02-21-55-04-00`
+**Updated:** `2026-07-12T03-51-15-04-00`
 
 ## Summary
 
-The current leading presentation gap is render-surface authority. Creator and gameplay use separate size-observation rules, both sample DPR only at startup, and neither publishes an accepted physical-size result or first-frame acknowledgement.
+The current leading gameplay gap is shard collection authority. The shipped loop can award any first-time ID through an API that does not validate active gameplay, run identity, patch membership, descriptor provenance, state revision or 3D spatial evidence. Gameplay mutation, event publication, shard removal and HUD projection are not correlated.
 
 ## Plan ledger
 
-**Goal:** close surface policy and frame-correlation gaps through existing renderer, camera, diagnostics and lifecycle owners while preserving every prior product authority gap.
+**Goal:** close shard identity, admission, idempotency and visible-presentation gaps while preserving every prior product authority gap.
 
-- [x] Add CSS-size, DPR, physical-buffer, revision and frame gaps.
-- [x] Preserve runtime graph, route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
+- [x] Add shard identity, evidence, phase, result and frame gaps.
+- [x] Preserve runtime graph, surface, route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
 - [ ] Implement in dependency order.
 
-## Render-surface gaps
+## Shard identity and membership gaps
 
 ```txt
-no shared creator/game surface policy
-no stable surface ID
-no monotonic surface revision
-no coherent CSS-size and DPR observation
-no named quality tier
-no maximum physical-pixel budget
-gameplay does not observe actual host bounds
-gameplay does not resample DPR after startup
-creator does not resample DPR after startup
-no stale or duplicate resize rejection
-no renderer/camera atomic commit result
-no actual drawing-buffer receipt
-no creator/game parity result
-no first post-resize frame acknowledgement
-no detached public surface observation
+shard ID omits world seed and generator version
+shard ID omits generator settings fingerprint
+shard ID omits patch cache key and activation revision
+shard ID omits runtime generation and run ID
+no canonical descriptor fingerprint
+no immutable active-shard index
+no monotonic active-shard-set revision
+no committed patch membership receipt consumed by collection
 ```
 
-## Frame and diagnostics gaps
+## Collection admission gaps
 
 ```txt
-committed gameplay frames do not cite a surface revision
-HUD state does not cite physical render dimensions
-PrehistoricRushHost exposes mutable renderer ownership
-host readback contains no surface policy, revision or actual size
-no proof the latest simulation state was visibly presented through the latest surface commit
+collectShard accepts any first-time value
+collectShard does not require status === game
+no command ID or sequence
+no expected run-state revision
+no run-generation admission
+no active descriptor lookup
+no stale patch rejection
+no unknown/malformed identity rejection
+no capability boundary around raw host access
 ```
 
-## Lifecycle gaps
+## Spatial and ordering gaps
 
 ```txt
-gameplay global resize listener is not leased through a runtime session owner
-late resize observations are not generation-fenced
-surface observers/listeners have no retirement receipt
-surface state has no reset or clean-restart baseline
+proximity test uses XZ only
+player jump height and shard Y are ignored
+collection volume is not versioned
+stream release/activation mutates candidates before detection
+no stable candidate-set snapshot
+one-pickup-per-frame break is undocumented
+no stable tie result or collection budget receipt
+pickup, collision and terminal outcome are not arbitrated in one step result
+```
+
+## Commit, event and frame gaps
+
+```txt
+result is boolean only
+no accepted duplicate receipt
+collected ledger and count have no state revision
+ShardCollected event lacks patch/source/spatial evidence
+state/event commit precedes visual rebuild
+shard projection has no typed result
+HUD projection has no typed result
+no first visible-frame acknowledgement
+no proof shard absence and HUD count share one collection result
 ```
 
 ## Preserved gaps
 
 ```txt
 runtime module graph admission and source fingerprint
+render-surface policy and physical-buffer frame correlation
 route/profile artifact handoff
 creator draft/commit/preview convergence
 patch activation/release acknowledgement
@@ -73,18 +89,20 @@ startup rollback and ordered disposal
 ## Missing proof matrix
 
 ```txt
-surface policy fixtures
-creator container resize fixture
-gameplay host resize fixture
-DPR change fixture
-pixel-budget fixture
-zero-area policy fixture
-stale/duplicate observation fixtures
-actual renderer/camera readback fixture
-creator/game parity fixture
-surface/frame acknowledgement fixture
-late observation after disposal fixture
-browser and Pages surface smoke
+shard identity canonicalization
+Worker/fallback identity parity
+unknown and malformed ID rejection
+wrong phase/run rejection
+inactive and stale patch rejection
+3D horizontal/vertical evidence
+command and identity idempotency
+stable tie and per-step budget
+state/event/result parity
+visual removal/HUD/frame parity
+run-reset ledger isolation
+late collection after reset/disposal
+public-host bypass rejection
+browser and Pages shard smoke
 all previously documented runtime/gameplay fixtures
 ```
 
@@ -96,6 +114,7 @@ all previously documented runtime/gameplay fixtures
 1 route/profile
 2 creator
 3 patch activation/release
+3a shard collection authority
 4 collider admission
 5 run-step outcome
 6 cadence/readiness
@@ -105,4 +124,4 @@ all previously documented runtime/gameplay fixtures
 9 lifecycle/disposal
 ```
 
-Do not treat requested CSS dimensions or a successful `renderer.setSize()` call as proof of physical resolution or visible-frame commitment.
+Do not treat a boolean `true`, a changed count or a hidden instance as proof of an admitted, exactly-once and visibly presented collection.
