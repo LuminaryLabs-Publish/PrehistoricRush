@@ -1,4 +1,5 @@
 import { createDrunkRouteGenerator } from "./kits/drunk-route-generator.js";
+import { createPrehistoricRushResolutionPolicy } from "./prehistoric-rush-resolution-policy.js";
 import { PLAYER_RAPTOR_ID, PLAYER_RAPTOR_PRESET } from "../../presets/player-raptor.js";
 
 const DEFAULT_SURFACE_MULTIPLIERS = Object.freeze({ path: 1, edge: 0.88, verge: 0.68, forest: 0.42 });
@@ -8,12 +9,21 @@ function requireFactories(source, names, label) {
   if (missing.length) throw new TypeError(`${label} is missing required factories: ${missing.join(", ")}`);
 }
 
+function cloneRunState(state) {
+  return {
+    ...state,
+    collectedShardIds: [...(state?.collectedShardIds ?? [])],
+    lastCollision: state?.lastCollision ? { ...state.lastCollision } : null
+  };
+}
+
 export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, config = {}) {
   requireFactories(NexusEngine, [
     "createCoreInputKit",
     "createCoreSpatialKit",
     "createCoreSceneKit",
     "createCorePhysicsKit",
+    "createCoreSimulationKit",
     "createCoreMotionKit",
     "createCoreCameraKit",
     "createCoreAnimationKit",
@@ -39,6 +49,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createCoreSpatialKit,
     createCoreSceneKit,
     createCorePhysicsKit,
+    createCoreSimulationKit,
     createCoreMotionKit,
     createCoreCameraKit,
     createCoreAnimationKit,
@@ -72,6 +83,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
       ]
     }),
     createCorePhysicsKit(),
+    createCoreSimulationKit({ resolution: true }),
     createCoreMotionKit(),
     createCoreCameraKit(),
     createCoreAnimationKit(),
@@ -108,6 +120,10 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   const jumpImpulse = Number(config.jumpImpulse ?? 13.5);
   let engineRef = null;
   let heightSampler = () => 0;
+  let pickupSampler = () => [];
+  let collisionSampler = () => null;
+  let lastTransitionStepId = null;
+  let playerCollisionCenterY = Number(config.playerCollisionCenterY ?? 0);
   const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
   const playerCreatureId = String(config.playerCreatureId ?? playerCreature.id ?? PLAYER_RAPTOR_ID);
 
@@ -150,56 +166,103 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     engineRef?.coreScene?.requestTransition?.({ transitionId, toSceneId, direct: true, payload });
   }
 
-  function system(world) {
+  function runSystem(world, tickContext) {
     const state = world.getResource(resources.RunState);
     const input = world.getResource(resources.InputState);
     if (!state || !input || state.status !== "game") return;
-    const dt = Math.max(0, Math.min(0.05, world.__nexusClock?.delta ?? 1 / 60));
-    state.elapsed += dt;
-    state.yaw += Number(input.steer ?? 0) * turnRate * dt;
-    const nearest = route.nearest(state.x, state.z, state.routeIndex, 120);
-    state.routeIndex = nearest.index;
-    state.routeProgress = nearest.progress;
-    state.region = route.classify(nearest.distance, nearest.width);
-    const targetMultiplier = multipliers[state.region] ?? multipliers.forest;
-    state.surfaceMultiplier += (targetMultiplier - state.surfaceMultiplier) * (1 - Math.exp(-4.8 * dt));
-    const desiredSpeed = (input.boost ? boostSpeed : maxSpeed) * state.surfaceMultiplier;
-    state.speed += (desiredSpeed - state.speed) * Math.min(1, dt * 2.6);
-    if (input.jump && state.grounded) {
-      state.verticalVelocity = jumpImpulse;
-      state.grounded = false;
+    const tick = tickContext ?? world.__nexusTickContext;
+    if (!tick?.tickId) throw new Error("PrehistoricRush simulation requires TickContext.");
+
+    const next = cloneRunState(state);
+    const dt = Math.max(0, Math.min(0.05, tick.delta ?? 1 / 60));
+    next.elapsed += dt;
+    next.yaw += Number(input.steer ?? 0) * turnRate * dt;
+    const nearest = route.nearest(next.x, next.z, next.routeIndex, 120);
+    next.routeIndex = nearest.index;
+    next.routeProgress = nearest.progress;
+    next.region = route.classify(nearest.distance, nearest.width);
+    const targetMultiplier = multipliers[next.region] ?? multipliers.forest;
+    next.surfaceMultiplier += (targetMultiplier - next.surfaceMultiplier) * (1 - Math.exp(-4.8 * dt));
+    const desiredSpeed = (input.boost ? boostSpeed : maxSpeed) * next.surfaceMultiplier;
+    next.speed += (desiredSpeed - next.speed) * Math.min(1, dt * 2.6);
+    if (input.jump && next.grounded) {
+      next.verticalVelocity = jumpImpulse;
+      next.grounded = false;
     }
-    state.verticalVelocity -= gravity * dt;
-    state.jumpHeight = Math.max(0, state.jumpHeight + state.verticalVelocity * dt);
-    if (state.jumpHeight === 0) {
-      state.verticalVelocity = 0;
-      state.grounded = true;
+    next.verticalVelocity -= gravity * dt;
+    next.jumpHeight = Math.max(0, next.jumpHeight + next.verticalVelocity * dt);
+    if (next.jumpHeight === 0) {
+      next.verticalVelocity = 0;
+      next.grounded = true;
     }
-    const dx = Math.sin(state.yaw) * state.speed * dt;
-    const dz = Math.cos(state.yaw) * state.speed * dt;
-    state.x += dx;
-    state.z += dz;
-    state.distance += Math.hypot(dx, dz);
-    state.y = heightSampler(state.x, state.z);
+    const dx = Math.sin(next.yaw) * next.speed * dt;
+    const dz = Math.cos(next.yaw) * next.speed * dt;
+    next.x += dx;
+    next.z += dz;
+    next.distance += Math.hypot(dx, dz);
+    next.y = heightSampler(next.x, next.z);
     input.jump = false;
-    if (state.distance >= goalDistance) {
-      state.status = "win";
-      world.emit(events.RunWon, { runId: state.runId, distance: state.distance });
-      transition("win", `run:${state.runId}:win`, { distance: state.distance, shards: state.shards });
-    }
+
+    const pickupIds = Array.from(new Set((pickupSampler(next) ?? []).map(String)));
+    engineRef.corePhysics.submitMotionRequests([{
+      id: `${tick.tickId}:dino-motion`,
+      bodyId: "dino",
+      kind: "kinematic-target",
+      position: {
+        x: next.x,
+        y: next.y + next.jumpHeight + playerCollisionCenterY,
+        z: next.z
+      },
+      linearVelocity: { x: dx / Math.max(dt, 0.000001), y: next.verticalVelocity, z: dz / Math.max(dt, 0.000001) }
+    }]);
+    engineRef.coreSimulation.submitProposal({
+      id: `${tick.tickId}:run-state`,
+      source: "prehistoric-rush",
+      type: "prehistoric-rush.run-state",
+      order: 10,
+      value: {
+        previousState: cloneRunState(state),
+        nextState: next,
+        displacement: { x: dx, z: dz }
+      }
+    });
+    engineRef.coreSimulation.submitProposal({
+      id: `${tick.tickId}:pickups`,
+      source: "prehistoric-rush",
+      type: "prehistoric-rush.pickups",
+      order: 20,
+      value: { pickupIds }
+    });
+    engineRef.coreSimulation.submitProposal({
+      id: `${tick.tickId}:goal`,
+      source: "prehistoric-rush",
+      type: "prehistoric-rush.goal",
+      order: 30,
+      value: { goalId: "finish-distance", reached: next.distance >= goalDistance }
+    });
+  }
+
+  function cleanupSystem() {
+    const frame = engineRef?.coreSimulation?.getCommittedFrame?.();
+    if (!frame?.transition || frame.stepId === lastTransitionStepId) return;
+    lastTransitionStepId = frame.stepId;
+    transition(frame.transition.toSceneId, frame.transition.transitionId, frame.transition.payload ?? {});
   }
 
   return defineDomainServiceKit({
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.5.0",
+    version: "0.6.0",
     stability: "game",
-    services: ["run", "route", "surface", "score", "outcome", "player-creature"],
-    requires: ["n:procedural-creatures:body", "world:seeded-patch-controller"],
+    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature"],
+    requires: ["n:core-physics", "n:core-simulation", "n:procedural-creatures:body", "world:seeded-patch-controller"],
     resources,
     events,
-    systems: [{ phase: "simulate", name: "PrehistoricRushRunSystem", system }],
+    systems: [
+      { phase: "simulate", name: "PrehistoricRushRunProposalSystem", system: runSystem },
+      { phase: "cleanup", name: "PrehistoricRushCommittedTransitionSystem", system: cleanupSystem }
+    ],
     initWorld({ world }) {
       world.setResource(resources.RunState, initialRunState());
       world.setResource(resources.InputState, { steer: 0, boost: false, jump: false });
@@ -208,8 +271,46 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       engineRef = engine;
       const creatureBody = engine.n.proceduralCreatureBody;
       if (!creatureBody?.has?.(playerCreatureId)) creatureBody?.create?.(playerCreature);
+      playerCollisionCenterY = Number(creatureBody.get(playerCreatureId)?.collision?.centerY ?? playerCollisionCenterY);
       const getState = () => world.getResource(resources.RunState);
       const getInput = () => world.getResource(resources.InputState);
+
+      engine.coreSimulation.setResolutionPolicy(createPrehistoricRushResolutionPolicy({
+        runStateResource: resources.RunState,
+        events
+      }));
+      engine.coreSimulation.registerObservationSource({
+        id: "core-physics",
+        order: 100,
+        observe({ tick }) {
+          if (!engine.corePhysics.getProvider()) return [];
+          return {
+            id: `${tick.tickId}:physics`,
+            source: "core-physics",
+            type: "physics.frame",
+            order: 100,
+            value: engine.corePhysics.step(tick)
+          };
+        }
+      });
+      engine.coreSimulation.registerObservationSource({
+        id: "prehistoric-rush-fallback-collision",
+        order: 110,
+        observe({ proposals, tick }) {
+          const nextState = proposals.find((entry) => entry.type === "prehistoric-rush.run-state")?.value?.nextState;
+          if (!nextState) return [];
+          const collision = collisionSampler(nextState);
+          if (!collision) return [];
+          return {
+            id: `${tick.tickId}:fallback-collision`,
+            source: "prehistoric-rush-fallback-collision",
+            type: "prehistoric-rush.fallback-collision",
+            order: 110,
+            value: { hit: true, ...collision }
+          };
+        }
+      });
+
       return {
         route,
         config: {
@@ -228,6 +329,14 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           if (typeof nextSampler !== "function") throw new TypeError("setHeightSampler expects a function.");
           heightSampler = nextSampler;
         },
+        setPickupSampler(nextSampler) {
+          if (typeof nextSampler !== "function") throw new TypeError("setPickupSampler expects a function.");
+          pickupSampler = nextSampler;
+        },
+        setCollisionSampler(nextSampler) {
+          if (typeof nextSampler !== "function") throw new TypeError("setCollisionSampler expects a function.");
+          collisionSampler = nextSampler;
+        },
         setInput(patch = {}) {
           Object.assign(getInput(), patch);
         },
@@ -236,34 +345,21 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           const next = initialRunState();
           next.runId = Number(previous?.runId ?? 0) + 1;
           next.status = "game";
+          lastTransitionStepId = null;
+          engine.coreSimulation.resetResolution();
           world.setResource(resources.RunState, next);
           world.setResource(resources.InputState, { steer: 0, boost: false, jump: false });
           world.emit(events.RunStarted, { runId: next.runId });
           transition("game", `run:${next.runId}:start`);
-          return { ...next, collectedShardIds: [] };
+          return cloneRunState(next);
         },
-        fail(collision = {}) {
-          const state = getState();
-          if (!state || state.status !== "game") return state;
-          state.status = "run-over";
-          state.lastCollision = { ...collision };
-          world.emit(events.RunFailed, { runId: state.runId, collision: state.lastCollision });
-          transition("run-over", `run:${state.runId}:fail`, { collision: state.lastCollision });
-          return state;
-        },
-        collectShard(shardId) {
-          const state = getState();
-          if (!state || state.collectedShardIds.includes(shardId)) return false;
-          state.collectedShardIds.push(shardId);
-          state.shards += 1;
-          world.emit(events.ShardCollected, { runId: state.runId, shardId, shards: state.shards });
-          return true;
-        },
-        getState: () => ({ ...getState(), collectedShardIds: [...getState().collectedShardIds] }),
+        getState: () => cloneRunState(getState()),
         getInput: () => ({ ...getInput() }),
+        getCommittedFrame: () => engine.coreSimulation.getCommittedFrame(),
         snapshot: () => ({
-          run: { ...getState(), collectedShardIds: [...getState().collectedShardIds] },
+          run: cloneRunState(getState()),
           route: route.snapshot(),
+          simulation: engine.coreSimulation.getCommittedFrame(),
           playerCreature: creatureBody.getSnapshot(),
           patchStreaming: engine.n.seededWorldPatchController?.getSnapshot?.()
         })
@@ -276,6 +372,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "core-spatial",
         "core-scene",
         "core-physics",
+        "core-simulation",
         "core-motion",
         "core-camera",
         "core-animation",
@@ -290,7 +387,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "seeded-world-patch-controller-kit",
         "camera-smooth-follow-kit"
       ],
-      nestedKits: ["drunk-route-generator"]
+      nestedKits: ["drunk-route-generator", "prehistoric-rush-resolution-policy"],
+      rendererAgnosticOutcome: true
     }
   });
 }
