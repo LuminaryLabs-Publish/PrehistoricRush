@@ -1,24 +1,23 @@
-# Validation: PrehistoricRush Run Start/Restart Authority
+# Validation: PrehistoricRush Streamed Content / Outcome Parity
 
-**Updated:** `2026-07-12T09-01-44-04-00`
+**Updated:** `2026-07-12T11-11-34-04-00`
 
 ## Scope
 
-Documentation-only review through repository revision `8bcd73f92990284819b8b4af07c385c978835d2b`.
+Documentation-only review through repository revision `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`, using the pinned Nexus Engine revision `c5548de504072bf09eb68986b98aca0292903803` and pinned Rapier ProtoKit revision `ae0f42fea49be7887c4646ed803bd4886e8db631`.
 
 ## Plan ledger
 
-**Goal:** distinguish the implemented pure outcome-policy baseline from missing executable proof for authoritative initial start and restart.
+**Goal:** distinguish the implemented outcome-policy baseline from missing executable proof that simulation observations and the rendered streamed-content set share one revision.
 
 - [x] Compare the Publish inventory and central ledger.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Select only `PrehistoricRush` after avoiding active AetherVale/TheOpenAbove documentation writes.
-- [x] Compare the previous documentation head with current `main`.
-- [x] Review the changed product domain, resolution policy, game host, runtime pins, package and test.
-- [x] Confirm `core-simulation` is required and installed.
-- [x] Confirm run/pickup/goal proposals and physics/fallback observations.
-- [x] Confirm collision/pickup/goal precedence in source and pure tests.
-- [x] Confirm start/retry still mutates outside the authoritative tick.
+- [x] Select only `PrehistoricRush`.
+- [x] Review the current product domain, resolution policy, game host and runtime versions.
+- [x] Review Nexus Engine `core-simulation` proposal/observation/commit behavior.
+- [x] Review the pinned Rapier provider's collider synchronization, motion request and step behavior.
+- [x] Confirm streaming release/activation runs after `engine.tick()` and before render.
+- [x] Confirm no shared content revision is present.
 - [x] Change no runtime source, dependencies or deployment configuration.
 - [x] Create no branch or pull request.
 
@@ -26,31 +25,24 @@ Documentation-only review through repository revision `8bcd73f92990284819b8b4af0
 
 ```txt
 npm test command exists
-pure resolution-policy test exists
-continue case
-win case
-fatal collision case
-collision beats goal
-collision rejects same-step pickups
-pickup then goal
-duplicate pickup idempotency
-fallback collision
-structured-clone output
+pure outcome-policy tests exist
+collision/goal/pickup precedence cases exist
+runtime module preflight reports the first failure
 ```
 
 ## Proof currently absent
 
 ```txt
-real Nexus Engine tick integration fixture
-Rapier provider execution fixture
-initial start transaction fixture
-retry transaction fixture
-cross-consumer reset rollback fixture
-stale Worker/stream generation fixture
-first committed tick receipt
-first visible frame receipt
-public readback epoch-parity fixture
-browser/Pages start-retry smoke
+real browser Nexus Engine + Rapier integration fixture
+active-content revision fixture
+released-collider invisible-failure fixture
+activated-collider delayed-admission fixture
+activated-pickup delayed-admission fixture
+mixed proposal/observation revision rejection
+content/physics atomic commit and rollback
+stale Worker result rejection
+first visible content-frame acknowledgement
+browser/Pages stream traversal parity
 ```
 
 ## Commands not run in this pass
@@ -61,7 +53,7 @@ browser smoke
 Pages smoke
 ```
 
-The connector supplied current source and write access but no checked-out runtime. No new executable claim is made by this documentation pass.
+The connector supplied current source and write access but no checked-out runtime. No new executable correctness claim is made.
 
 ## Change-state validation
 
@@ -80,4 +72,4 @@ pull request created: no
 
 ## Completion boundary
 
-Do not claim authoritative start/restart until initial boot and retry commit one run epoch across run/input state, simulation, physics, streaming, active content, camera, scene transition, public readback and first visible frame, with rollback and stale-result rejection.
+Do not claim stream/outcome parity until one admitted content revision is shared by physics, fallback collision, pickup sampling, outcome resolution, active-content/physics commit, public readback and the first visible frame, with rollback and stale-result rejection.
