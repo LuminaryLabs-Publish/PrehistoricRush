@@ -1,6 +1,6 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T12-01-04-04-00`  
+**Last aligned:** `2026-07-12T12-08-05-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
@@ -8,7 +8,7 @@
 
 PrehistoricRush now composes the full Core Motion and Core Physics domains. Gameplay records Core Motion intent and frames, sends kinematic requests to Core Physics, registers an articulated raptor rig and exposes articulated solving.
 
-The visible game and creator raptors still use the legacy procedural pose path. Neither renderer consumes the articulated-motion result, and physics requests do not cite the Core Motion frame that authorized them. The current audit defines the missing motion/articulation/presentation parity boundary.
+The visible game and creator raptors still use the legacy procedural pose path. Neither renderer consumes the articulated-motion result, and physics requests do not cite the Core Motion frame that authorized them. The current audit defines and centrally reconciles the missing motion/articulation/presentation parity boundary.
 
 ## Plan ledger
 
@@ -22,24 +22,25 @@ The visible game and creator raptors still use the legacy procedural pose path. 
 - [x] Identify all interaction loops, domains, 45 implemented/adapted/proof surfaces and services.
 - [x] Add a fresh tracker and complete architecture/system audit family.
 - [x] Refresh required root `.agent` state and the machine registry.
+- [x] Synchronize the central repository ledger and internal change log.
 - [x] Push only to `main`; create no branch or pull request.
 - [ ] Runtime consumption and executable parity fixtures remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T12-01-04-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T12-08-05-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T12-01-04-04-00-motion-presentation-parity-dsk-map.md
-.agent/render-audit/2026-07-12T12-01-04-04-00-legacy-pose-articulated-frame-gap.md
-.agent/gameplay-audit/2026-07-12T12-01-04-04-00-run-motion-physics-pose-loop.md
-.agent/interaction-audit/2026-07-12T12-01-04-04-00-motion-intent-pose-frame-result-map.md
-.agent/motion-system-audit/2026-07-12T12-01-04-04-00-core-motion-articulation-consumption-contract.md
-.agent/deploy-audit/2026-07-12T12-01-04-04-00-motion-presentation-fixture-gate.md
-.agent/turn-ledger/2026-07-12T12-01-04-04-00.md
+.agent/architecture-audit/2026-07-12T12-08-05-04-00-motion-presentation-parity-dsk-map.md
+.agent/render-audit/2026-07-12T12-08-05-04-00-legacy-pose-motion-frame-visible-gap.md
+.agent/gameplay-audit/2026-07-12T12-08-05-04-00-motion-physics-articulation-pose-loop.md
+.agent/interaction-audit/2026-07-12T12-08-05-04-00-motion-intent-articulation-result-map.md
+.agent/motion-system-audit/2026-07-12T12-08-05-04-00-core-motion-articulation-render-contract.md
+.agent/deploy-audit/2026-07-12T12-08-05-04-00-motion-presentation-fixture-gate.md
+.agent/turn-ledger/2026-07-12T12-08-05-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -88,7 +89,7 @@ renderer bone-application result: absent
 visible pose-frame acknowledgement: absent
 ```
 
-`solvePlayerArticulatedPose()` is implemented but unused by the game and creator render paths. The visible raptor is still driven by `createPlayerPose()` or `creatureApi.createPose()`.
+`solvePlayerArticulatedPose()` is implemented but unused by the game and creator render paths. The visible raptor is still driven by `createPlayerPose()` or the procedural creature API.
 
 ## Domains and kit groups
 
