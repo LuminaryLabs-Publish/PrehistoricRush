@@ -3,128 +3,178 @@
 ## Last aligned
 
 ```txt
-2026-07-11T22-29-24-04-00
+2026-07-11T22-38-54-04-00
 ```
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a saved procedural raptor, Three.js character creator, deterministic patch streaming, Rapier collision, gameplay rendering, HUD projection and Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with a saved procedural raptor, Three.js creator and gameplay renderers, deterministic patch streaming, Rapier collision, pickups, terminal transitions, HUD projection and Pages deployment.
 
-The current documentation ledge is the public browser host. `globalThis.PrehistoricRushHost` exposes the live engine, physics service, Three adapter, patch controller and camera-follow service. Its `getState()` function also samples mutable owners independently, so the host is neither mutation-safe nor a coherent committed-frame read model.
+The latest audit isolates **run-step outcome arbitration**. Movement and goal completion occur inside the Nexus simulation system, while collision and pickups occur afterward in the browser host. A goal can therefore suppress same-step collision checks, and a collision failure can still be followed by a shard pickup before the terminal frame renders.
+
+The immediately preceding public-host capability audit remains valid and is preserved as a dependent read-model and command-gateway ledge.
 
 ## Plan ledger
 
-**Goal:** replace raw public owner exposure with one immutable committed-state API and one typed, capability-scoped, epoch-fenced command gateway.
+**Goal:** make movement, collision, pickups, goal completion, terminal events, transitions and the visible frame one deterministic run-step commit.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all eligible repositories have central ledgers and root `.agent` state.
-- [x] Select only `PrehistoricRush` as the oldest eligible repository.
-- [x] Trace menu, creator, gameplay, streaming, physics, render, HUD and public-host loops.
+- [x] Select only `PrehistoricRush` as the oldest eligible central entry.
+- [x] Trace run simulation, physics, fallback collision, pickups, goal, transitions, rendering and HUD.
 - [x] Identify all domains, kits and offered services.
-- [x] Confirm raw mutable runtime owners are publicly reachable.
-- [x] Confirm `getState()` independently samples mutable owners.
-- [x] Define host capability, command admission, read-model and fixture contracts.
+- [x] Preserve the preceding host-capability audit and integrate its dependency placement.
 - [x] Add timestamped architecture and system audits.
 - [x] Change documentation only on `main`.
-- [ ] Implement host quarantine and executable fixtures.
+- [ ] Implement outcome authority and executable fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-11T22-29-24-04-00/project-breakdown.md
+.agent/trackers/2026-07-11T22-38-54-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-11T22-29-24-04-00-public-host-capability-authority-dsk-map.md
-.agent/render-audit/2026-07-11T22-29-24-04-00-raw-render-adapter-host-exposure-gap.md
-.agent/gameplay-audit/2026-07-11T22-29-24-04-00-public-owner-bypass-loop.md
-.agent/interaction-audit/2026-07-11T22-29-24-04-00-window-host-command-admission-map.md
-.agent/host-capability-audit/2026-07-11T22-29-24-04-00-read-model-command-gateway-contract.md
-.agent/deploy-audit/2026-07-11T22-29-24-04-00-public-host-isolation-fixture-gate.md
-.agent/turn-ledger/2026-07-11T22-29-24-04-00.md
+.agent/architecture-audit/2026-07-11T22-38-54-04-00-run-step-outcome-arbitration-dsk-map.md
+.agent/render-audit/2026-07-11T22-38-54-04-00-terminal-event-frame-correlation-gap.md
+.agent/gameplay-audit/2026-07-11T22-38-54-04-00-win-collision-pickup-precedence-loop.md
+.agent/interaction-audit/2026-07-11T22-38-54-04-00-movement-collision-pickup-outcome-admission-map.md
+.agent/terminal-outcome-audit/2026-07-11T22-38-54-04-00-single-step-outcome-commit-contract.md
+.agent/deploy-audit/2026-07-11T22-38-54-04-00-outcome-precedence-fixture-gate.md
+.agent/turn-ledger/2026-07-11T22-38-54-04-00.md
 .agent/kit-registry.json
 ```
 
-Retain the prior creator, streaming, collider, cadence, readiness, committed-frame, reset and lifecycle audits.
-
-## Runtime loop
+Preserved preceding audit:
 
 ```txt
-page boot
-  -> load profile and pinned modules
-  -> create Nexus Engine game and domain services
-  -> create Worker-backed patch controller
-  -> create Rapier and Three adapters
-  -> start gameplay
-
-RAF
-  -> input
-  -> engine tick
-  -> patch release, generation and activation
-  -> physics transform, contacts and collision
-  -> pickup/outcome mutation
-  -> Three render
-  -> HUD projection
-
-public host
-  -> publishes raw internal owners
-  -> independently samples game, stream, camera, scene and composition state
+.agent/trackers/2026-07-11T22-29-24-04-00/project-breakdown.md
+.agent/host-capability-audit/2026-07-11T22-29-24-04-00-read-model-command-gateway-contract.md
+.agent/deploy-audit/2026-07-11T22-29-24-04-00-public-host-isolation-fixture-gate.md
 ```
 
-## Main finding
+## Current run-step loop
 
 ```txt
-window.PrehistoricRushHost.engine
-window.PrehistoricRushHost.physics
-window.PrehistoricRushHost.adapter
-window.PrehistoricRushHost.patchController
-window.PrehistoricRushHost.cameraFollow
+input
+  -> game.setInput
+  -> engine.tick(dt)
+     -> movement, distance and height mutate
+     -> goal check may set win and request transition
+  -> update patch streaming
+  -> only while status remains game
+       set Rapier actor transform
+       step Rapier
+       combine Rapier and fallback collision
+       collision may set run-over
+       pickup loop still executes
+  -> render final mutable state and HUD
+  -> public host exposes raw owners and independently sampled snapshots
 ```
 
-These are live mutable services. A same-page script can bypass normal gameplay, stream, collider, render and lifecycle ordering. `getState()` has no shared committed frame or epoch set proving its samples are coherent.
+## Main findings
+
+### Goal can skip collision admission
+
+```txt
+movement reaches goal and intersects an obstacle
+  -> domain commits win
+  -> host sees status != game
+  -> collision checks are skipped
+  -> win renders without same-step collision evidence
+```
+
+### Pickup can mutate a failed run
+
+```txt
+collision -> game.fail -> RunFailed
+same host block continues
+pickup overlap -> game.collectShard -> ShardCollected
+run-over frame can show the post-failure shard
+```
+
+### Movement commits before outcome validation
+
+Position, route progress, distance and sampled height mutate before collision. Failure has no explicit safe-pose, contact-pose or proposed-pose policy.
+
+### Public host remains a bypass surface
+
+The preceding audit established that `PrehistoricRushHost` exposes live engine, physics, render, streaming and camera owners. The future command gateway must route through the same committed run-step authority instead of providing an alternate terminal mutation path.
+
+## Domains in use
+
+```txt
+page routes and player profile lifecycle
+creator draft, preview and shared creature rendering
+Nexus Engine composition and scene routing
+run input, movement, route, surface, score and outcomes
+seeded patch generation, Worker execution and controller
+terrain, tree, grass, pickup, collider and height consumers
+Rapier actor, fixed colliders, step and contacts
+fallback collision and pickup projection
+terminal event and transition publication
+camera follow, Three rendering, HUD and host readback
+public host capability and committed read model
+validation and Pages deployment
+run-step outcome arbitration: missing
+```
+
+## Implemented kit groups
+
+```txt
+12 Nexus Engine core kits
+5 official NexusEngine-Kits
+12 product/page/Worker kits
+8 external or host adapter boundaries
+```
+
+See `.agent/current-audit.md` and `.agent/kit-registry.json` for every kit and service.
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-public-host-capability-authority-domain
+prehistoric-rush-run-step-outcome-authority-domain
 ```
 
-It must provide:
+It must coordinate:
 
 ```txt
-versioned capability descriptor
-immutable last-committed read model
-typed host command envelope
-run and subsystem epoch admission
-owner-routed command results
-raw owner quarantine
-bounded host journal
-legacy safe compatibility adapter
-host mutation-isolation and coherence fixtures
+run-step command and predecessor identity
+movement proposal without early terminal mutation
+world and collider revision admission
+Rapier/fallback collision observations
+pickup and goal candidates
+versioned precedence policy
+exactly one continue, fail or win result
+atomic movement/reward/status/transition commit
+ordered event bundle
+terminal frame acknowledgement
+public command/read-model correlation
 ```
 
 ## Ordered implementation queue
 
 ```txt
-1. Route Artifact + Game Profile Handoff Final Proof
-2. Character Creator Draft + Commit + Preview Frame Authority
+1. Route Artifact and Game Profile Handoff final proof
+2. Character Creator Draft, Commit and Preview Frame Authority
 3. Patch Activation / Release Commit Authority
-4. Exact Collider Replacement + Collision Admission
-5. Stream Cadence + Time Budget Authority
-6. World Readiness + Movement Admission
-7. Committed Gameplay Frame Authority
-7a. Public Host Capability Gateway + Committed Read Model
-8. Run / Stream / Collider / Worker / Frame Epoch Reset
-9. Runtime Lifecycle + Ordered Disposal
+4. Exact Collider Replacement and Collision Admission
+5. Run-Step Outcome Arbitration and Terminal Frame Authority
+6. Stream Cadence and Time Budget Authority
+7. World Readiness and Movement Admission
+8. Committed Gameplay Frame and Host Read Model
+8a. Public Host Capability Gateway
+9. Run / Stream / Collider / Worker / Frame Epoch Reset
+10. Runtime Lifecycle and Ordered Disposal
 ```
 
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Public Host Capability Authority
-+ Raw Owner Isolation / Typed Commands / Committed Read Model Fixture Gate
+PrehistoricRush Run-Step Outcome Arbitration
++ Goal/Collision/Pickup Precedence and Terminal-Frame Fixture Gate
 ```
 
-Extend the existing committed gameplay-frame and diagnostics owners. Do not add a second simulation, patch controller, physics world, camera loop or render adapter.
+Extend the existing `prehistoric-rush-domain-kit`, Rapier adapter, active-content adapter and render/HUD projection. Do not add a second run-state store, physics world, pickup inventory, command gateway or render loop.
