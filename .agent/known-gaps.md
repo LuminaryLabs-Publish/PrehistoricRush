@@ -1,6 +1,6 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T11-11-34-04-00`
+**Updated:** `2026-07-12T11-21-01-04-00`
 
 ## Implemented advance
 
@@ -12,6 +12,8 @@ one product policy commits state, events and optional transition
 collision beats goal and same-step pickups
 pure outcome-policy test exists
 runtime import pins and failure reporting improved
+complete streamed-content audit family now exists
+central ledger now tracks the current audit
 ```
 
 ## Primary current gap
