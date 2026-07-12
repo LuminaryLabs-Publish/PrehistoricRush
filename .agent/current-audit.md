@@ -1,11 +1,14 @@
 # Current Audit: PrehistoricRush Streamed Content / Outcome Parity
 
-**Updated:** `2026-07-12T11-11-34-04-00`  
-**Repository revision reviewed:** `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`
+**Updated:** `2026-07-12T11-21-01-04-00`  
+**Runtime revision reviewed:** `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`  
+**Documentation head observed before completion:** `057785f0d492e5f57d234017b532e88fd55a309c`
 
 ## Summary
 
-The product outcome policy now executes inside Nexus Engine `core-simulation`, but its collision and pickup evidence is sourced from browser-host materialization state that is updated after the tick. The committed outcome and the subsequently rendered frame therefore lack a shared active-content revision.
+The product outcome policy executes inside Nexus Engine `core-simulation`, but collision and pickup evidence comes from browser-host materialization state that is updated after the tick. The committed outcome and the subsequently rendered frame therefore lack a shared active-content revision.
+
+The previous documentation head had advanced root files to this audit but had not published the timestamped tracker and audit files referenced by those roots. This run completes the audit family and central synchronization.
 
 ## Plan ledger
 
@@ -14,10 +17,12 @@ The product outcome policy now executes inside Nexus Engine `core-simulation`, b
 - [x] Review post-audit runtime, test, import-pin and module-admission commits.
 - [x] Confirm the pinned Nexus Engine revision and `core-simulation` committed-frame behavior.
 - [x] Trace run proposals, physics observations, fallback observations, outcome policy and cleanup transition.
-- [x] Trace `updateStreaming()`, release, activation, full content rebuild, collider sync and render.
+- [x] Trace patch release, generation, activation, full content rebuild, collider sync and render.
 - [x] Inventory all active domains, 41 implemented/adapted/proof surfaces and services.
 - [x] Define the missing content revision, parity digest and fixture boundary.
-- [ ] Implement and execute the authority.
+- [x] Publish the complete timestamped tracker and audit family.
+- [x] Synchronize the central repository ledger and internal change log.
+- [ ] Implement and execute the runtime authority.
 
 ## Source-backed ordering
 
@@ -25,14 +30,14 @@ The product outcome policy now executes inside Nexus Engine `core-simulation`, b
 engine.tick(dt)
   -> run proposal samples pickupSampler(next)
   -> physics observation steps current provider collider set
-  -> fallback observation samples current adapter.view.colliders
+  -> fallback observation samples current adapter collider set
   -> policy commits state/events/transition
 
 after tick
-  -> accepted pickups trigger visible-content rebuild
-  -> controller focus/update
+  -> accepted pickups can trigger visible-content rebuild
+  -> controller focus and membership update
   -> released patches rebuild visible content and sync colliders
-  -> generated ready patch can activate
+  -> ready patch can activate
   -> activation rebuilds visible content and syncs colliders
   -> renderer draws the resulting content set
 ```
@@ -51,14 +56,14 @@ no stale Worker result rejection against the committed observation revision
 no visible frame receipt citing simulation and content revisions
 ```
 
-Nexus Engine's committed frame records step/tick/frame, policy, outcome, accepted/rejected values, events and transition. It intentionally does not preserve the product's proposal and observation payloads or a product content revision. PrehistoricRush must project the required provenance into typed result fields and a product read model rather than treating the generic frame as sufficient.
+Nexus Engine's committed frame records step/tick/frame, policy, outcome, accepted/rejected values, events and transition. PrehistoricRush must project product content provenance into typed results and its public read model rather than treating the generic committed frame as sufficient.
 
 ## Concrete mismatch paths
 
 ### False positive from released content
 
 ```txt
-tick observes collider C in previous active set
+tick observes collider C
   -> collision commits failure
   -> updateStreaming releases C's patch
   -> collider set is replaced
@@ -70,7 +75,7 @@ tick observes collider C in previous active set
 ```txt
 tick resolves without ready patch P
   -> updateStreaming activates P
-  -> tree/pickup from P becomes visible
+  -> tree collider or pickup from P becomes visible
   -> physics and pickup resolution did not include P until the next tick
 ```
 
@@ -80,7 +85,7 @@ tick resolves without ready patch P
 page routes and profile lifecycle
 creator draft, preview, persistence and transition
 runtime preflight, source identity and pinned imports
-core input/spatial/scene/physics/simulation/motion/camera/animation/graphics/skybox/ui/diagnostics/composition
+core input/spatial/scene/physics/simulation/motion/camera/animation/graphics/skybox/UI/diagnostics/composition
 product run/input/movement/proposals/observations/policy/events/transitions
 Worker/fallback patch generation and patch-controller scheduling
 active patch, terrain, tree, grass, shard, pickup and collider materialization
@@ -119,7 +124,7 @@ content release/activation cannot silently change the set between observation an
 state, event and transition results cite patch/collider/pickup digests
 failed content or collider commit preserves the predecessor set
 stale Worker and patch results cannot attach to a newer revision
-the first visible frame after commit cites the same simulation and content revisions
+the first visible frame cites the same simulation and content revisions
 public readback never combines committed outcome with an unrelated content set
 ```
 
