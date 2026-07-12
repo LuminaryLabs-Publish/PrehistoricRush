@@ -1,60 +1,49 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T09-01-44-04-00`
+**Updated:** `2026-07-12T11-11-34-04-00`
 
 ## Implemented advance
 
 ```txt
-core-simulation installed
-run state, pickups and goal submitted as proposals
+Nexus Engine core-simulation installed
+run movement, pickups and goal submitted as proposals
 Rapier and fallback collision submitted as observations
-one product resolution policy selects continue/fail/win
-collision beats goal and rejects pickups
-unique pickups commit before a non-collision goal
-state patch, events and transition commit together
-pure Node policy test exists
-Nexus Engine runtime pins corrected across game and creator hosts
+one product policy commits state, events and optional transition
+collision beats goal and same-step pickups
+pure outcome-policy test exists
+runtime import pins and failure reporting improved
 ```
 
 ## Primary current gap
 
 ```txt
-game.start mutates outside authoritative TickContext
-no start command ID or run epoch
-no predecessor commit admission
-no cross-consumer prepare/commit/rollback
-no physics reset result
-no stream/Worker reset or adoption result
-no active-content/collider reset revision
-no first committed tick or visible-frame receipt
-public readback can temporarily mix new run state with predecessor evidence
+engine tick observes the previous host-frame content set
+stream release and activation occur after the tick
+visible content and physics colliders are replaced before render
+no active-content revision links observations, committed outcome and visible frame
 ```
 
-## Concrete bypass
+## Concrete consequences
 
 ```txt
-browser button/Enter/Space
-  -> game.start()
-  -> resetResolution()
-  -> replace RunState/InputState
-  -> emit RunStarted
-  -> direct scene transition
-  -> host content refresh
-  -> host streaming update/prime
-  -> host camera reset
-  -> next engine tick later
+released collider may commit failure but be absent from rendered frame
+newly activated collider may be visible before collision admission
+newly activated pickup may be visible before collection admission
+accepted pickup visible removal is host-managed after commit
+physics/content synchronization failure has no transaction rollback
+public readback exposes independent simulation, physics, patch and renderer snapshots without parity admission
 ```
 
 ## Retained gaps
 
 ```txt
+run start/restart still bypasses authoritative TickContext
 runtime-module admission fingerprint incomplete
 browser input command authority incomplete
 render-surface/frame correlation incomplete
 profile/creator commit proof incomplete
-release/activation materialization still rebuilds complete active content
+release/activation still rebuilds complete active content
 stream cadence and world readiness remain host-managed
-collider/content revisions and rollback remain absent
 raw PrehistoricRushHost exposes mutable owners
 coordinated Worker/stream/physics/frame reset remains absent
 ordered runtime disposal remains absent
@@ -63,14 +52,14 @@ ordered runtime disposal remains absent
 ## Required fixtures
 
 ```txt
-initial boot and retry use the same start transaction
-duplicate start commands are idempotent
-participant failure rolls back
-stale Worker/stream results are rejected
-physics body, content, camera and scene cite one run epoch
-first committed tick and visible frame cite the epoch
-public readback never mixes epochs
+released collider cannot produce invisible failure
+activated collider is not rendered before outcome admission
+activated pickup is not rendered before pickup admission
+mixed content revisions are rejected
+content/physics participant failure rolls back
+stale Worker result cannot mutate newer content revision
+committed outcome and first visible frame share one content revision
 browser and deployed Pages behavior match
 ```
 
-Do not treat the pure resolution-policy test as proof that initial start, restart, physics, streaming, rendering or public readback are transactionally coherent.
+Do not treat the pure resolution-policy test as proof of stream/content/collider/pickup parity.
