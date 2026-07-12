@@ -1,31 +1,32 @@
 {
-  "schemaVersion": 75,
+  "schemaVersion": 76,
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
   "branch": "main",
-  "updated": "2026-07-12T11-11-34-04-00",
+  "updated": "2026-07-12T11-21-01-04-00",
   "status": "streamed-content-outcome-parity-authority-audited",
   "repositoryRevisionReviewed": "6430c623d4e1fa5afb7ed460d5d1624799fbe65d",
-  "latestTracker": ".agent/trackers/2026-07-12T11-11-34-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T11-11-34-04-00.md",
+  "documentationRevisionObserved": "057785f0d492e5f57d234017b532e88fd55a309c",
+  "latestTracker": ".agent/trackers/2026-07-12T11-21-01-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T11-21-01-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-12T11-11-34-04-00-streamed-content-outcome-parity-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-12T11-11-34-04-00-post-tick-stream-visible-collider-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-12T11-11-34-04-00-stale-collider-pickup-resolution-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-12T11-11-34-04-00-stream-revision-outcome-result-map.md",
-    "streamingAuthority": ".agent/streaming-authority-audit/2026-07-12T11-11-34-04-00-content-revision-observation-commit-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-12T11-11-34-04-00-stream-outcome-parity-fixture-gate.md",
+    "architecture": ".agent/architecture-audit/2026-07-12T11-21-01-04-00-streamed-content-outcome-parity-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-12T11-21-01-04-00-post-tick-stream-visible-content-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-12T11-21-01-04-00-stale-collider-pickup-resolution-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-12T11-21-01-04-00-stream-revision-outcome-result-map.md",
+    "streamingAuthority": ".agent/streaming-authority-audit/2026-07-12T11-21-01-04-00-content-revision-observation-commit-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-12T11-21-01-04-00-stream-outcome-parity-fixture-gate.md",
     "previousRunStart": ".agent/run-start-audit/2026-07-12T09-01-44-04-00-run-epoch-reset-first-frame-contract.md",
     "previousMaterialization": ".agent/content-materialization-audit/2026-07-12T07-09-49-04-00-coalescing-budget-commit-contract.md"
   },
   "selection": {
-    "rule": "new/missing/undocumented first, otherwise oldest eligible central entry; prioritize runtime changes after audit",
+    "rule": "new/missing/undocumented first, otherwise oldest eligible central entry; repo-local state newer than central takes priority",
     "accessibleRepoCount": 10,
     "eligibleRepoCount": 9,
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush was the oldest central entry and had runtime, pin and module-admission commits after that audit"
+    "reason": "PrehistoricRush had the oldest eligible central timestamp and newer root documentation whose referenced timestamped audit family was incomplete"
   },
   "sourceGraph": {
     "nexusEngine": "c5548de504072bf09eb68986b98aca0292903803",
@@ -68,6 +69,7 @@
     "terrain-tree-grass-shard-pickup-collider-materialization",
     "camera-creature-pose-three-render-hud-host-readback",
     "node-policy-proof-static-pages-deployment",
+    "repo-local-central-audit-tracking",
     "streamed-content-outcome-visible-frame-parity-authority-missing"
   ],
   "coreKits": [
@@ -149,8 +151,9 @@
     "activated-content-false-negative-fixture-kit",
     "browser-stream-outcome-parity-smoke-kit"
   ],
-  "implementedAdvance": "Movement, physics/fallback collision, pickup, goal, events and terminal transition now resolve through core-simulation.",
+  "implementedAdvance": "Movement, physics/fallback collision, pickup, goal, events and terminal transition resolve through core-simulation.",
   "mainFinding": "The tick observes the previous host-frame content set, then streaming changes visible content and physics colliders before render without a shared revision.",
+  "documentationRepair": "The previous root docs referenced a timestamped streamed-content audit family that was not present; this run published the complete family and synchronized central tracking.",
   "validation": {
     "runtimeChangedByAudit": false,
     "testsRunByAudit": false,
