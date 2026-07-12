@@ -3,150 +3,119 @@
 ## Last aligned
 
 ```txt
-2026-07-11T21-00-00-04-00
+2026-07-11T22-29-24-04-00
 ```
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a saved procedural raptor, a real Three.js character creator, deterministic patch streaming, Rapier collision, gameplay rendering, HUD projection and Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with a saved procedural raptor, Three.js character creator, deterministic patch streaming, Rapier collision, gameplay rendering, HUD projection and Pages deployment.
 
-The latest runtime now includes `game.html`, `charactercreator.html`, shared creature rendering, a condensed centered creator UI, damped live morphing and automatic camera reframing. The current documentation ledge is the missing **character creator draft, commit and preview-frame authority**.
+The current documentation ledge is the public browser host. `globalThis.PrehistoricRushHost` exposes the live engine, physics service, Three adapter, patch controller and camera-follow service. Its `getState()` function also samples mutable owners independently, so the host is neither mutation-safe nor a coherent committed-frame read model.
 
 ## Plan ledger
 
-**Goal:** preserve every creator edit and make Saved, Ready, camera framing and game handoff refer to one committed profile and one acknowledged visible frame.
+**Goal:** replace raw public owner exposure with one immutable committed-state API and one typed, capability-scoped, epoch-fenced command gateway.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all eligible repositories have central ledgers and root `.agent` state.
-- [x] Select only `PrehistoricRush` because new creator runtime work postdated its previous audit.
-- [x] Trace edit, draft, debounce, profile write, preview transition, viewport fit, rendering and game handoff.
+- [x] Select only `PrehistoricRush` as the oldest eligible repository.
+- [x] Trace menu, creator, gameplay, streaming, physics, render, HUD and public-host loops.
 - [x] Identify all domains, kits and offered services.
+- [x] Confirm raw mutable runtime owners are publicly reachable.
+- [x] Confirm `getState()` independently samples mutable owners.
+- [x] Define host capability, command admission, read-model and fixture contracts.
 - [x] Add timestamped architecture and system audits.
 - [x] Change documentation only on `main`.
-- [ ] Implement creator authority and executable fixtures.
+- [ ] Implement host quarantine and executable fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-11T21-00-00-04-00/project-breakdown.md
+.agent/trackers/2026-07-11T22-29-24-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-11T21-00-00-04-00-character-creator-draft-frame-dsk-map.md
-.agent/render-audit/2026-07-11T21-00-00-04-00-projection-correct-preview-framing-gap.md
-.agent/gameplay-audit/2026-07-11T21-00-00-04-00-edit-preview-save-play-loop.md
-.agent/interaction-audit/2026-07-11T21-00-00-04-00-control-draft-save-profile-result-map.md
-.agent/character-creator-audit/2026-07-11T21-00-00-04-00-draft-commit-preview-frame-contract.md
-.agent/deploy-audit/2026-07-11T21-00-00-04-00-character-creator-fixture-gate.md
-.agent/turn-ledger/2026-07-11T21-00-00-04-00.md
+.agent/architecture-audit/2026-07-11T22-29-24-04-00-public-host-capability-authority-dsk-map.md
+.agent/render-audit/2026-07-11T22-29-24-04-00-raw-render-adapter-host-exposure-gap.md
+.agent/gameplay-audit/2026-07-11T22-29-24-04-00-public-owner-bypass-loop.md
+.agent/interaction-audit/2026-07-11T22-29-24-04-00-window-host-command-admission-map.md
+.agent/host-capability-audit/2026-07-11T22-29-24-04-00-read-model-command-gateway-contract.md
+.agent/deploy-audit/2026-07-11T22-29-24-04-00-public-host-isolation-fixture-gate.md
+.agent/turn-ledger/2026-07-11T22-29-24-04-00.md
 .agent/kit-registry.json
 ```
 
-## Current creator loop
+Retain the prior creator, streaming, collider, cadence, readiness, committed-frame, reset and lifecycle audits.
+
+## Runtime loop
 
 ```txt
-control edit
-  -> merge partial patch into local draft
-  -> update generator-backed preview immediately
-  -> cancel previous 160 ms save timer
-  -> schedule final timer with only the latest partial patch
+page boot
+  -> load profile and pinned modules
+  -> create Nexus Engine game and domain services
+  -> create Worker-backed patch controller
+  -> create Rapier and Three adapters
+  -> start gameplay
 
-preview frame
-  -> damp geometry, color, scale and pose
-  -> compute local bind-pose geometry bounds
-  -> choose camera distance from max span * 1.9
-  -> render
-  -> infer Ready from stored profile revision equality
+RAF
+  -> input
+  -> engine tick
+  -> patch release, generation and activation
+  -> physics transform, contacts and collision
+  -> pickup/outcome mutation
+  -> Three render
+  -> HUD projection
 
-save timer
-  -> reload stored profile
-  -> merge only latest captured patch
-  -> write and broadcast new profile revision
-  -> replace local draft with stored result
+public host
+  -> publishes raw internal owners
+  -> independently samples game, stream, camera, scene and composition state
 ```
 
-## Main findings
-
-### Rapid edits can be lost
+## Main finding
 
 ```txt
-Size edit schedules proportions patch
-Skin edit cancels it and schedules material patch
-material patch commits against old stored proportions
-returned stored profile replaces draft
-Size edit reverts
+window.PrehistoricRushHost.engine
+window.PrehistoricRushHost.physics
+window.PrehistoricRushHost.adapter
+window.PrehistoricRushHost.patchController
+window.PrehistoricRushHost.cameraFollow
 ```
 
-### Ready can be premature
-
-Unsaved draft edits retain the stored profile revision. `targetRevision` can therefore equal `appliedRevision` while mesh vertices are still damping toward a different descriptor.
-
-### Framing is not projection-correct
-
-The camera uses a local geometry box and scalar span heuristic. It does not account for viewport aspect, horizontal FOV, skinned pose extents, world rotation, topology-crossfade union bounds or screen-space margins.
-
-## Domains in use
-
-```txt
-page routes and static hosts
-player profile schema, storage and cross-context sync
-creator local draft, controls and debounce scheduler
-procedural creature descriptor generation
-shared Three.js creature mesh, pose, damping and disposal
-preview morph/crossfade transition
-preview viewport, resize, camera fit and render loop
-run simulation and scene transitions
-seeded world patch streaming and Worker generation
-terrain, trees, grass, pickups, colliders and height projection
-Rapier physics, collision and terminal admission
-camera follow, gameplay rendering, HUD and diagnostics
-validation and Pages deployment
-```
-
-## Implemented kit groups
-
-```txt
-12 Nexus Engine core kits
-5 official NexusEngine-Kits
-12 product/page/Worker kits
-8 external or host adapter boundaries
-```
-
-See `.agent/current-audit.md` and `.agent/kit-registry.json` for every kit and service.
+These are live mutable services. A same-page script can bypass normal gameplay, stream, collider, render and lifecycle ordering. `getState()` has no shared committed frame or epoch set proving its samples are coherent.
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-character-creator-authority-domain
+prehistoric-rush-public-host-capability-authority-domain
 ```
 
-It must coordinate:
+It must provide:
 
 ```txt
-draft identity and revision
-dirty-field accumulation and full-draft flush
-profile predecessor validation and write result
-descriptor fingerprint and transition result
-posed/world-space bounds
-horizontal and vertical projection fit
-viewport revision and camera margin
-preview frame commit
-Saved/Ready visible parity
-creator/game profile fingerprint parity
+versioned capability descriptor
+immutable last-committed read model
+typed host command envelope
+run and subsystem epoch admission
+owner-routed command results
+raw owner quarantine
+bounded host journal
+legacy safe compatibility adapter
+host mutation-isolation and coherence fixtures
 ```
 
 ## Ordered implementation queue
 
 ```txt
-1. Route Artifact and Game Profile Handoff final proof
-2. Character Creator Draft, Commit and Preview Frame Authority
+1. Route Artifact + Game Profile Handoff Final Proof
+2. Character Creator Draft + Commit + Preview Frame Authority
 3. Patch Activation / Release Commit Authority
 4. Exact Collider Replacement + Collision Admission
 5. Stream Cadence + Time Budget Authority
 6. World Readiness + Movement Admission
-7. Committed Gameplay Frame + Host Read Model
+7. Committed Gameplay Frame Authority
+7a. Public Host Capability Gateway + Committed Read Model
 8. Run / Stream / Collider / Worker / Frame Epoch Reset
 9. Runtime Lifecycle + Ordered Disposal
 ```
@@ -154,8 +123,8 @@ creator/game profile fingerprint parity
 ## Next safe ledge
 
 ```txt
-PrehistoricRush Character Creator Authority
-+ Rapid Multi-Group Edit, Saved/Ready and Viewport-Fit Fixture Gate
+PrehistoricRush Public Host Capability Authority
++ Raw Owner Isolation / Typed Commands / Committed Read Model Fixture Gate
 ```
 
-Extend the existing profile store, preview transition and shared Three adapter. Do not add a second profile store, creature generator, preview RAF or rendering adapter.
+Extend the existing committed gameplay-frame and diagnostics owners. Do not add a second simulation, patch controller, physics world, camera loop or render adapter.
