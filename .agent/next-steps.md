@@ -1,156 +1,187 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-11T19-09-25-04-00`
+**Updated:** `2026-07-11T21-00-00-04-00`
 
 ## Summary
 
-Complete route/profile, patch activation and collider authority first. Then normalize stream work against elapsed time and visibility before world-readiness admission depends on that evidence. Committed-frame, reset-epoch and lifecycle work should consume the same clock and cadence revision.
+Finish the route/profile proof, then make creator edits transactional and preview framing projection-correct before returning to patch, collider, cadence, readiness, frame, reset and lifecycle gates.
 
 ## Plan ledger
 
-**Goal:** produce a route-safe, patch-consistent, cadence-stable, collision-provable, frame-coherent and atomically restartable game.
+**Goal:** produce one creator path where every control edit survives debounce, every saved revision reaches the game, and every Ready/Saved status is backed by a visible correctly framed creature frame.
 
-- [ ] Complete P0 route/page/profile authority.
-- [ ] Complete P1 patch activation and release transactions.
-- [ ] Complete P1a exact collider retirement and collision admission.
-- [ ] Implement P1b stream cadence and time-budget authority.
-- [ ] Implement P1c world readiness and movement admission.
-- [ ] Complete P2 committed-frame observation and detached host readback.
-- [ ] Implement P3 run/stream/collider/Worker/frame epoch reset authority.
-- [ ] Complete P4 startup rollback, resource ownership and disposal.
-- [ ] Gate deployment on Node, browser and Pages fixtures.
+- [ ] Complete route and deployed-page artifact proof.
+- [ ] Implement creator draft identity and dirty-field accumulation.
+- [ ] Replace partial-patch debounce commits with full canonical-draft flushes.
+- [ ] Add profile predecessor validation and typed conflict results.
+- [ ] Add descriptor fingerprints and transition identities.
+- [ ] Replace heuristic local-box framing with projection-correct fit.
+- [ ] Commit preview frames carrying draft, profile, descriptor and viewport revisions.
+- [ ] Gate Saved and Ready on durable-write and visible-frame receipts.
+- [ ] Prove creator/game profile fingerprint parity.
+- [ ] Continue patch, collider, cadence, readiness, frame, reset and lifecycle work afterward.
 
 ## Ordered implementation queue
 
 ```txt
-1. Route Manifest + Profile Handoff Authority
-2. Patch Activation / Release Commit Authority
-3. Exact Collider Replacement + Collision Admission
-4. Stream Cadence + Time Budget Authority
-5. World Readiness + Movement Admission Authority
-6. Committed Frame Observation + Host Read Model
-7. Run / Stream / Collider / Worker / Frame Epoch Reset Authority
-8. Runtime Lifecycle + Ordered Disposal
+1. Route Artifact + Game Profile Handoff Final Proof
+2. Character Creator Draft + Commit + Preview Frame Authority
+3. Patch Activation / Release Commit Authority
+4. Exact Collider Replacement + Collision Admission
+5. Stream Cadence + Time Budget Authority
+6. World Readiness + Movement Admission
+7. Committed Gameplay Frame + Host Read Model
+8. Run / Stream / Collider / Worker / Frame Epoch Reset
+9. Runtime Lifecycle + Ordered Disposal
 ```
 
-## P1b implementation sequence
+## Creator implementation sequence
 
-### 1. Define one runtime clock observation
+### 1. Introduce draft identity
 
 ```txt
-RuntimeClockSample {
-  runtimeSessionId
-  frameId
-  wallNow
-  wallDelta
-  simulationDelta
-  visibilityState
-  visibilityRevision
-  cadenceRevision
+CreatorDraftState {
+  draftId
+  draftRevision
+  baseProfileRevision
+  dirtyPaths
+  profile
+  descriptorFingerprint
+  status
 }
 ```
 
-### 2. Replace raw per-frame stream budgets
+Every input event must increment `draftRevision`, merge into the same canonical draft and add its path to `dirtyPaths`.
 
-Current behavior:
+### 2. Flush the complete draft
 
-```txt
-pump maximum: 2 with Worker, 1 with fallback, per RAF
-activation maximum: 1 per RAF
-```
-
-Target behavior:
+Current behavior captures one final partial patch. Replace it with:
 
 ```txt
-generation work admitted from an elapsed-time budget
-activation work admitted from an elapsed-time budget
-hard per-frame ceilings retained to prevent long stalls
-unused credit bounded so hidden tabs cannot bank unlimited work
+debounce expires
+  -> snapshot complete canonical draft
+  -> capture baseProfileRevision
+  -> submit one profile write command
+  -> retain dirty fields until accepted
 ```
 
-### 3. Add backlog age and fairness
+A later input may cancel the timer, but it must not delete dirty fields already represented in the canonical draft.
 
-Each queued, inflight and ready item should expose:
+### 3. Add typed profile results
 
 ```txt
-request identity
-patch identity
-queued timestamp
-started timestamp
-ready timestamp
-oldest age
-priority class
-admission reason
-cadence revision
+ProfileWriteResult {
+  commandId
+  draftId
+  draftRevision
+  predecessorRevision
+  accepted
+  committedProfileRevision
+  profileFingerprint
+  conflict
+  error
+}
 ```
 
-- [ ] Prevent starvation of required-route patches.
-- [ ] Keep prefetch work subordinate to required active work.
-- [ ] Bound catch-up after throttling or visibility restore.
-- [ ] Reject obsolete work through the planned stream epoch.
+Cross-tab writes must either merge by an explicit policy or reject with the observed and current revisions. Silent last-writer replacement is not sufficient.
 
-### 4. Define simulation-step policy
+### 4. Separate revision classes
 
-Choose and document one policy:
+Do not reuse one profile revision for every preview stage.
 
 ```txt
-fixed-step accumulator with bounded substeps
-or
-normalized variable step with cadence parity proof
+draftRevision
+profileRevision
+descriptorRevision
+meshRevision
+poseRevision
+viewportRevision
+previewFrameId
 ```
 
-The policy must cover run movement, jump integration, Rapier timestep, camera update and animation time. It must state what happens when wall delta exceeds the maximum admitted simulation interval.
+`Ready` requires the rendered mesh and camera to acknowledge the current descriptor and viewport. `Saved` requires durable profile write success. `Saved + Ready` requires both conditions for the same profile fingerprint.
 
-### 5. Define suspension and resume
+### 5. Implement projection-correct framing
+
+For the active mesh or crossfade pair:
 
 ```txt
-visible -> hidden
-  freeze new gameplay command admission
-  stop or sharply limit nonessential stream work
-  retain bounded required state
-
-hidden -> visible
-  advance visibility revision
-  reject stale results
-  prepare bounded catch-up plan
-  commit one coherent world/frame revision
-  resume input after first visible-frame acknowledgement
+update skeleton matrices
+compute conservative posed world bounds
+union previous and next bounds during crossfade
+transform bounds into camera-facing fit space
+calculate vertical fit from camera fov
+calculate horizontal fit from fov and aspect
+apply declared screen-space margin
+clamp only after fit distance is known
+commit camera target and distance against viewportRevision
 ```
 
-### 6. Connect cadence to world readiness
+Use a stable conservative descriptor bound if per-frame skinned bounds are too expensive. The fallback must be documented and tested.
 
-- [ ] Required-corridor readiness must include cadence revision.
-- [ ] Speed cap/defer policy must distinguish world latency from browser throttling.
-- [ ] HUD diagnostics must report backlog age and actual admitted work.
-- [ ] Frame commit must cite clock, cadence and world revisions.
+### 6. Commit a preview frame receipt
+
+```txt
+PreviewFrameReceipt {
+  frameId
+  draftRevision
+  profileRevision
+  profileFingerprint
+  descriptorRevision
+  descriptorFingerprint
+  meshRevision
+  viewportRevision
+  cameraFitRevision
+  transitionMode
+  saved
+  ready
+  bounds
+  screenMargins
+}
+```
+
+The DOM status should project this receipt rather than infer state from revision equality alone.
+
+### 7. Preserve shared generator and adapter ownership
+
+- [ ] Keep `procedural-creature-body-kit` as descriptor authority.
+- [ ] Keep `three-procedural-creature.js` as the shared mesh/pose/disposal adapter.
+- [ ] Extend `character-preview-transition.js`; do not duplicate it in the page.
+- [ ] Move inline viewport fitting into one testable adapter or kit.
+- [ ] Keep one preview RAF and one ResizeObserver.
 
 ## Required fixtures
 
 ```bash
-node scripts/prehistoric-rush-cadence-30-60-120-fixture.mjs
-node scripts/prehistoric-rush-stream-time-budget-fixture.mjs
-node scripts/prehistoric-rush-generation-start-rate-fixture.mjs
-node scripts/prehistoric-rush-activation-rate-fixture.mjs
-node scripts/prehistoric-rush-throttled-frame-fixture.mjs
-node scripts/prehistoric-rush-hidden-tab-resume-fixture.mjs
-node scripts/prehistoric-rush-backlog-starvation-fixture.mjs
-node scripts/prehistoric-rush-cadence-world-readiness-fixture.mjs
-node scripts/prehistoric-rush-browser-refresh-parity-smoke.mjs
-node scripts/prehistoric-rush-pages-refresh-parity-smoke.mjs
+node scripts/prehistoric-rush-creator-rapid-multigroup-edit-fixture.mjs
+node scripts/prehistoric-rush-creator-debounce-flush-fixture.mjs
+node scripts/prehistoric-rush-profile-write-conflict-fixture.mjs
+node scripts/prehistoric-rush-preview-revision-state-fixture.mjs
+node scripts/prehistoric-rush-preview-topology-crossfade-fixture.mjs
+node scripts/prehistoric-rush-preview-portrait-fit-fixture.mjs
+node scripts/prehistoric-rush-preview-square-fit-fixture.mjs
+node scripts/prehistoric-rush-preview-wide-fit-fixture.mjs
+node scripts/prehistoric-rush-preview-saved-ready-frame-fixture.mjs
+node scripts/prehistoric-rush-creator-game-profile-parity-fixture.mjs
+node scripts/prehistoric-rush-character-creator-browser-smoke.mjs
+node scripts/prehistoric-rush-character-creator-pages-smoke.mjs
 ```
 
 ## Acceptance conditions
 
 ```txt
-equal wall time at 30, 60 and 120 Hz yields equivalent simulation and stream readiness
-per-second generation and activation remain within declared tolerances
-low-refresh behavior is explicit and bounded
-hidden-tab suspension cannot bank unlimited credits or stale completions
-resume cannot publish a mixed pre-suspend and post-resume frame
-world readiness and movement admission consume the same cadence revision
-HUD and host report actual time budgets, backlog age and first-visible-frame result
+rapid Size then Skin edits persist together
+rapid edits in all six visible controls persist together
+cancelled debounce timers cannot remove dirty paths
+cross-tab predecessor conflicts return typed results
+preview cannot report Ready while descriptor damping remains above threshold
+Saved cannot appear before durable write success
+Saved + Ready identifies one profile fingerprint and one preview frame
+portrait, square and wide viewports preserve declared margins
+animated tail, legs and topology crossfade remain in frame
+opening game.html produces the same committed creature fingerprint
 ```
 
 ## Do not do next
 
-Do not create a second RAF, patch controller, Worker queue or movement clock. Do not convert per-frame limits into unbounded catch-up. Do not let prefetch work consume the required-route budget. Do not claim cadence parity from average FPS alone.
+Do not add a second profile store, generator, creature adapter, preview RAF or persistence channel. Do not solve framing with another fixed distance multiplier. Do not clear dirty fields when a timer is cancelled. Do not treat stored revision equality as mesh or frame completion.
