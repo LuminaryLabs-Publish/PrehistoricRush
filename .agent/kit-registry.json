@@ -1,22 +1,21 @@
 {
-  "schemaVersion": 77,
+  "schemaVersion": 78,
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
   "branch": "main",
-  "updated": "2026-07-12T12-08-05-04-00",
-  "status": "motion-presentation-parity-central-sync-reconciled",
-  "repositoryRevisionReviewed": "68c821a4864b6ad0edc12bc51514752e4ada750c",
-  "documentationRevisionObserved": "6d5f52b7c697ad37678ba02345057d600a752c86",
-  "latestTracker": ".agent/trackers/2026-07-12T12-08-05-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T12-08-05-04-00.md",
+  "updated": "2026-07-12T14-10-22-04-00",
+  "status": "pose-contract-rig-binding-authority-audited",
+  "repositoryRevisionReviewed": "e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28",
+  "latestTracker": ".agent/trackers/2026-07-12T14-10-22-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T14-10-22-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-12T12-08-05-04-00-motion-presentation-parity-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-12T12-08-05-04-00-legacy-pose-motion-frame-visible-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-12T12-08-05-04-00-motion-physics-articulation-pose-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-12T12-08-05-04-00-motion-intent-articulation-result-map.md",
-    "motionSystem": ".agent/motion-system-audit/2026-07-12T12-08-05-04-00-core-motion-articulation-render-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-12T12-08-05-04-00-motion-presentation-fixture-gate.md",
-    "previousStreamingParity": ".agent/streaming-authority-audit/2026-07-12T11-21-01-04-00-content-revision-observation-commit-contract.md",
-    "previousRunStart": ".agent/run-start-audit/2026-07-12T09-01-44-04-00-run-epoch-reset-first-frame-contract.md"
+    "architecture": ".agent/architecture-audit/2026-07-12T14-10-22-04-00-pose-contract-rig-binding-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-12T14-10-22-04-00-quaternion-pose-visible-bone-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-12T14-10-22-04-00-legacy-articulated-pose-format-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-12T14-10-22-04-00-pose-submit-admit-apply-result-map.md",
+    "poseSystem": ".agent/pose-system-audit/2026-07-12T14-10-22-04-00-schema-space-rig-application-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-12T14-10-22-04-00-pose-contract-browser-fixture-gate.md",
+    "previousMotionParity": ".agent/motion-system-audit/2026-07-12T12-08-05-04-00-core-motion-articulation-render-contract.md",
+    "previousStreamingParity": ".agent/streaming-authority-audit/2026-07-12T11-21-01-04-00-content-revision-observation-commit-contract.md"
   },
   "selection": {
     "rule": "new, missing or undocumented first; otherwise oldest eligible central entry; recent undocumented runtime changes take priority",
@@ -26,7 +25,7 @@
     "rootAgentMissingCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush received a composed Core Motion and Core Physics articulated-domain cutover plus newer repo-local motion-presentation documentation after the previous central audit"
+    "reason": "PrehistoricRush received quaternion pose application support after its previous central audit, widening renderer input formats without a pose schema or rig-binding contract"
   },
   "sourceGraph": {
     "nexusEngine": "cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1",
@@ -43,7 +42,7 @@
     "externalHostAdapters": 9,
     "proofKits": 2,
     "implementedAdaptedProofTotal": 45,
-    "candidateParityKitsIncludingParent": 24
+    "candidatePoseContractKitsIncludingParent": 25
   },
   "interactionLoops": [
     "menu-profile-route-to-creator-or-game",
@@ -57,7 +56,7 @@
     "simulation-outcome-resolution",
     "post-tick-stream-release-generation-activation",
     "legacy-game-pose-three-bone-application-render-hud-readback",
-    "direct-retry-reset-before-next-tick"
+    "quaternion-compatible-articulated-pose-api-without-production-consumer"
   ],
   "domainsInUse": [
     "routes-profile-creator",
@@ -68,13 +67,16 @@
     "core-camera-animation-graphics-skybox-ui-diagnostics-composition",
     "seed-creature-instanced-batch-patch-controller-camera-follow",
     "product-run-route-surface-score-outcome-player-articulation",
+    "procedural-and-articulated-pose-construction",
+    "pose-schema-transform-space-quaternion-admission",
+    "rig-binding-skeleton-fingerprint-bone-membership",
     "rapier-provider-body-motion-contact-fallback-collision",
     "worker-fallback-patch-generation-controller-scheduling",
     "terrain-tree-grass-shard-pickup-collider-materialization",
-    "camera-creature-legacy-pose-three-render-hud-host-readback",
+    "three-creature-pose-application-camera-render-hud-host-readback",
     "node-proof-static-pages-deployment",
     "repo-local-central-audit-tracking",
-    "motion-articulation-presentation-parity-authority-missing"
+    "pose-contract-rig-binding-authority-missing"
   ],
   "coreKits": [
     {"id":"core-input-kit","services":["actions","bindings","input-state"]},
@@ -109,7 +111,7 @@
     {"id":"menu-page-kit","services":["menu-shell","profile-projection","routes"]},
     {"id":"character-creator-page-kit","services":["controls","draft","persistence","legacy-preview-pose","raf"]},
     {"id":"character-preview-transition-kit","services":["morph","crossfade","legacy-pose-damping","revision","disposal"]},
-    {"id":"three-procedural-creature-adapter-kit","services":["skinned-mesh","materials","bone-application","disposal"]},
+    {"id":"three-procedural-creature-adapter-kit","services":["skinned-mesh","materials","bone-lookup","position-array-object-coercion","euler-application","quaternion-application","damped-quaternion-slerp","disposal"]},
     {"id":"game-page-entry-kit","services":["module-preflight","failure-projection","game-import"]},
     {"id":"drunk-route-generator","services":["samples","nearest","progress","classification","snapshot"]},
     {"id":"player-raptor-preset-kit","services":["creature-recipe","collision-capsule"]},
@@ -125,40 +127,41 @@
     {"id":"creator-viewport-framing-adapter","services":["bounds","target","distance"]},
     {"id":"creator-persistence-scheduler","services":["timer-replacement","profile-commit"]},
     {"id":"browser-input-adapter","services":["keyboard","buttons","keyup","blur","product-input-patch"]},
-    {"id":"creature-camera-render-host-adapters","services":["legacy-pose","collision-sample","pickup-scan","camera","hud","readback"]}
+    {"id":"creature-camera-render-host-adapters","services":["pose-application","collision-sample","pickup-scan","camera","hud","readback"]}
   ],
   "proofKits": [
     {"id":"prehistoric-rush-resolution-policy-test-kit","services":["continue","win","collision","precedence","pickup-idempotency","fallback","serialization"]},
     {"id":"player-articulation-test-kit","services":["rig-chain-adaptation","euler-quaternion-conversion","cloneability"]}
   ],
-  "candidateParityKits": [
-    "prehistoric-rush-motion-presentation-parity-authority-domain",
-    "motion-source-revision-kit",
-    "motion-intent-sequence-kit",
-    "motion-frame-provenance-kit",
-    "physics-motion-request-link-kit",
-    "articulated-rig-adoption-kit",
-    "articulated-target-plan-kit",
-    "articulated-pose-result-kit",
-    "presentation-pose-selection-kit",
-    "legacy-pose-fallback-policy-kit",
-    "creator-motion-profile-kit",
-    "game-motion-profile-kit",
-    "creator-game-motion-parity-kit",
-    "renderer-bone-application-result-kit",
-    "motion-presentation-frame-ack-kit",
-    "stale-pose-result-rejection-kit",
-    "motion-presentation-observation-kit",
-    "motion-presentation-journal-kit",
-    "game-core-motion-to-render-fixture-kit",
-    "articulated-solve-consumption-fixture-kit",
-    "creator-game-pose-parity-fixture-kit",
-    "physics-motion-frame-parity-fixture-kit",
-    "browser-motion-presentation-smoke-kit",
-    "pages-motion-presentation-smoke-kit"
+  "candidatePoseContractKits": [
+    "prehistoric-rush-pose-contract-rig-binding-authority-domain",
+    "pose-schema-version-kit",
+    "pose-id-revision-kit",
+    "pose-source-kind-kit",
+    "pose-mode-kit",
+    "pose-transform-space-kit",
+    "quaternion-convention-kit",
+    "pose-rig-binding-kit",
+    "skeleton-fingerprint-kit",
+    "bone-membership-policy-kit",
+    "pose-transform-admission-kit",
+    "quaternion-admission-kit",
+    "absolute-pose-completeness-kit",
+    "partial-pose-predecessor-kit",
+    "rest-pose-reconstruction-kit",
+    "pose-application-command-kit",
+    "pose-application-plan-kit",
+    "pose-application-result-kit",
+    "stale-pose-rejection-kit",
+    "pose-application-observation-kit",
+    "pose-application-journal-kit",
+    "visible-pose-frame-ack-kit",
+    "pose-contract-fixture-kit",
+    "browser-pose-contract-smoke-kit",
+    "pages-pose-contract-smoke-kit"
   ],
-  "implementedAdvance": "Core Motion and Core Physics parent domains plus articulated subdomains are composed; gameplay records intent and motion frames, registers the raptor rig and exposes articulated solving.",
-  "mainFinding": "The game and creator renderers still apply legacy procedural poses and do not consume or acknowledge an articulated-motion result; physics requests also do not cite the authorizing Core Motion frame.",
+  "implementedAdvance": "The Three.js creature adapter now accepts position arrays/objects and quaternion arrays/objects, applies normalized quaternion rotations directly, and uses quaternion slerp in the damped path while retaining Euler fallback.",
+  "mainFinding": "Pose-format compatibility advanced without a versioned schema, transform-space convention, full/partial semantics, rig/skeleton binding, typed bone-application result or visible-frame acknowledgement; production game and creator paths still submit legacy poses.",
   "validation": {
     "runtimeChangedByAudit": false,
     "testsRunByAudit": false,
