@@ -1,22 +1,22 @@
-# Current Audit: PrehistoricRush Browser Input Command Authority
+# Current Audit: PrehistoricRush Active Content Materialization Authority
 
-**Updated:** `2026-07-12T05-21-52-04-00`
+**Updated:** `2026-07-12T07-09-49-04-00`
 
 ## Summary
 
-The active browser game bypasses the installed `core-input-kit` capability. Global listeners mutate a host-side held-state object, call `game.start()` or `game.setInput()` directly, and copy steering/boost into the product domain every RAF. Enter is not phase-gated, browser repeat is not classified, and Space mixes press-edge and repeated pulse semantics.
+The active browser host performs mutation-first materialization. Any released patch set triggers a full tree flush and complete grass, shard, pickup and collider rebuild. Every activated ready patch then performs the same complete work again. There is no aggregate patch delta, bounded work plan, active-content revision, atomic cross-consumer commit or visible-frame proof.
 
 ## Plan ledger
 
-**Goal:** make one input authority responsible for normalized observation, edge/hold state, phase/run admission, duplicate handling, lifecycle retirement, simulation-step consumption and visible-frame proof.
+**Goal:** make one authority responsible for coalescing patch membership changes, budgeting work, preparing every consumer, atomically committing one active-content revision and correlating it with physics, gameplay, rendering and public readback.
 
-- [x] Trace button, keydown, keyup and blur ingress.
-- [x] Trace host-side state and product `InputState` mutation.
-- [x] Confirm active-run Enter replacement and repeat gaps.
-- [x] Confirm the installed core input capability is not the browser owner.
+- [x] Trace controller membership and delivery.
+- [x] Trace terrain, tree, grass, shard, pickup and collider materialization.
+- [x] Confirm release and activation can each cause a complete rebuild in one frame.
+- [x] Quantify source-level descriptor and collider work bounds.
 - [x] Inventory interaction loops, domains, kits and services.
 - [x] Define parent domain, candidate kits and fixture gate.
-- [ ] Implement and execute the input transaction.
+- [ ] Implement and execute the materialization transaction.
 
 ## Complete interaction loop
 
@@ -27,66 +27,88 @@ creator -> profile draft -> procedural preview -> persistence
 game startup
   -> pinned modules -> engine graph -> Worker/fallback generator
   -> patch controller -> physics -> camera -> Three renderer
-  -> game.start -> stream prime -> camera reset
-
-button
-  -> game status: jump
-  -> non-game status: start
-
-keyboard
-  -> Enter: start in every phase
-  -> Space: jump during game, start otherwise
-  -> A/D/arrows/W: mutate host held flags
-  -> keyup: clear held flags
-  -> blur: clear host and product input
+  -> game.start -> synchronous center prime -> camera reset
 
 frame
-  -> copy host steer/boost to product InputState
-  -> engine tick consumes steer/boost/jump
-  -> product system clears jump pulse
-  -> streaming, collision, shards, render, HUD and host readback
+  -> browser input and engine tick
+  -> controller focus/update
+  -> take released patch IDs
+  -> hide terrain and release tree cells
+  -> flush all tree batches
+  -> rebuild all active grass, shards, pickups and colliders
+  -> replace all fixed physics colliders
+  -> pump generation
+  -> take at most one ready patch
+  -> upload terrain and replace tree cells
+  -> flush all tree batches again
+  -> rebuild all active grass, shards, pickups and colliders again
+  -> replace all fixed physics colliders again
+  -> physics, fallback collision, shard scan, render and HUD
 ```
 
 ## Source-backed findings
 
 ```txt
-core-input-kit installed: yes
-browser input routed through core input: no
-parallel host held-state owner: yes
-button/keyboard policy parity: no
-Enter active-game admission: absent
-explicit restart command: absent
-browser repeat inspection: absent
-physical press/release edge state: absent
-input command ID: absent
-input revision: absent
-run/state revision admission: absent
-simulation-step consumption result: absent
-first visible-frame acknowledgement: absent
+active radius: 2
+maximum active patches: 25
+maximum trees generated per patch: 7
+maximum grass descriptors generated per patch: 70
+maximum shards generated per patch: 2
+
+one complete active-set upper bound:
+  25 patch scans
+  1,750 grass descriptor visits
+  50 shard descriptor visits
+  175 tree trunks and 175 crowns
+  175 fixed colliders
+
+release plus activation upper bound in one frame:
+  3,500 grass descriptor visits
+  100 shard descriptor visits
+  two all-tree-batch flushes
+  two complete fixed-collider replacements
 ```
 
-The button path checks status before choosing jump or start. The Enter path calls `start()` unconditionally, so it can replace an active run. `start()` increments `runId`, replaces run and input resources, emits `RunStarted`, primes streaming and resets the camera.
+The bound excludes terrain attribute uploads, matrix-buffer uploads, bounds recomputation and Rapier work.
 
-The product simulation clears `input.jump` after consumption. Because key repeat is not rejected and no physical edge state exists, a later Space repeat can set jump again without a release.
+## Missing authority
+
+```txt
+active-content revision
+aggregate release/activation delta
+materialization command and idempotency
+elapsed-time and work-unit budget
+terrain/tree/grass/shard/collider prepare results
+atomic commit and predecessor rollback
+stale runtime/run/stream/content rejection
+controller/render/physics parity digest
+materialization duration and work diagnostics
+first visible-frame acknowledgement
+```
 
 ## Domains in use
 
 ```txt
 page routing and profile lifecycle
-creator draft, preview, transition and persistence
+creator draft, preview, persistence and transition
 runtime source identity, import maps and module loading
 Nexus Engine composition and core capabilities
-browser keyboard, button, focus and resize observation
-host-side held input state
-product run, input, movement, jump, shards and outcomes
-Worker patch generation, queue, cache and membership
-terrain, vegetation, colliders, shards and height
-Rapier and fallback collision
+browser input and lifecycle observation
+product run, movement, jump, route, surface, score, shards and outcomes
+Worker/fallback patch generation and request correlation
+patch controller focus, membership, queue, cache and delivery
+active patch set and terrain slot ownership
+tree-cell batch replacement, release, flush and overflow
+grass instance materialization and bounds
+shard/pickup projection and collection filtering
+fixed-collider materialization and Rapier replacement
+height sampling, collision and outcome admission
 camera follow and Three rendering
 HUD, transitions and public host observation
-runtime graph, surface, shard, outcome, frame, host, reset and lifecycle authorities
+runtime graph, input, surface, profile, creator, streaming, shard,
+  collision, cadence, readiness, outcome, frame, host, reset and lifecycle authorities
 validation, static deployment and Pages
-input command, edge/hold, retirement, step and frame authority: missing
+active-content coalescing, budget, revision, commit, rollback and frame authority: missing
 ```
 
 ## Complete kit groups
@@ -115,19 +137,19 @@ Detailed services are retained in `.agent/kit-registry.json` and the timestamped
 ## Required domain
 
 ```txt
-prehistoric-rush-input-command-authority-domain
+prehistoric-rush-active-content-materialization-authority-domain
 ```
 
 ```txt
-browser observation
-  -> normalized sample with source/code/repeat evidence
-  -> edge or hold classification
-  -> runtime/run/phase/revision admission
-  -> command identity and idempotency
-  -> authoritative core input state
-  -> focus/visibility/reset/disposal retirement
-  -> immutable simulation-step input snapshot
-  -> consumption result
+controller membership observation
+  -> aggregate release and activation delta
+  -> runtime/run/stream/content revision admission
+  -> deterministic per-consumer plans
+  -> elapsed-time and work-unit budget admission
+  -> detached prepare results
+  -> atomic commit or predecessor rollback
+  -> exact resource retirement
+  -> controller/render/physics parity digest
   -> visible-frame acknowledgement
   -> detached observation and bounded journal
 ```
@@ -135,34 +157,36 @@ browser observation
 ## Required invariants
 
 ```txt
-Enter cannot replace an active run without explicit restart admission
-one physical press produces at most one edge action
-browser repeat never creates a new edge
-held controls retire on release, blur, visibility loss, reset and disposal
-button and keyboard adapters use the same semantic policy
-core-input-kit is the engine-facing input owner
-one simulation step consumes one immutable input revision
-visible readback cites the input revision and command IDs consumed
+release and activation in one frame produce one materialization commit
+all required consumers cite one active-content revision and patch digest
+no partial terrain/tree/grass/shard/collider state becomes public
+work admission is independent of display refresh rate
+failed required consumers preserve the predecessor revision
+stale runtime, run, stream or content plans cannot commit
+physics and fallback collision consume the committed collider revision
+rendering and HUD cite the committed content revision
+one visible frame acknowledges each successful commit
 ```
 
 ## Ordered safe ledges
 
 ```txt
 0 runtime module graph admission
-0a browser input command admission and edge/hold authority
+0a browser input command authority
 0b render-surface resolution/frame correlation
 1 route/profile proof
 2 creator authority
-3 patch activation/release
-3a shard identity/collection/visible removal
+3 patch activation/release authority
+3a active-content materialization/coalescing authority
+3b shard identity/collection/visible removal authority
 4 collider replacement/admission
 5 run-step outcome authority
 6 stream cadence/time budget
 7 world readiness
 8 committed frame/read model
 8a public host gateway
-9 coordinated epochs/reset
+9 coordinated reset epochs
 10 lifecycle/disposal
 ```
 
-No runtime behavior changed and no input-correctness, gameplay or deployment-readiness claim is made.
+No runtime behavior changed and no materialization-correctness, performance or deployment-readiness claim is made.
