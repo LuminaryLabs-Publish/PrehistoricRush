@@ -55,30 +55,6 @@ function shell() {
   return { host, status, button };
 }
 
-async function createRapierAdapter(collision) {
-  const [Rapier, RapierKit] = await Promise.all([load(CDN.rapier), load(CDN.rapierKit)]);
-  const store = new Map();
-  const world = {
-    getResource: (resource) => store.get(resource?.name ?? resource),
-    setResource: (resource, value) => store.set(resource?.name ?? resource, value),
-    emit() {}
-  };
-  const engine = { n: {} };
-  const kit = RapierKit?.createRapierPhysicsKit?.({}, {});
-  kit?.initWorld?.({ world, engine });
-  kit?.install?.({ world, engine });
-  if (Rapier?.init) await Rapier.init();
-  const api = engine.n.rapierPhysics;
-  api?.configure?.({ rapier: Rapier, gravity: { x: 0, y: -34, z: 0 } });
-  api?.registerKinematicActor?.({
-    id: "dino",
-    shape: collision?.shape ?? "capsule",
-    halfHeight: collision?.halfHeight ?? 0.42,
-    radius: collision?.radius ?? 0.32
-  });
-  return api ?? null;
-}
-
 function grassGeometry(THREE, planes) {
   const positions = [];
   const uvs = [];
@@ -113,7 +89,7 @@ function grassMaterial(THREE, color) {
   });
 }
 
-function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow) {
+function createThreeAdapter(THREE, game, corePhysics, ui, instanceBatches, cameraFollow) {
   const route = game.route;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x15251b);
@@ -348,7 +324,7 @@ function createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFol
     shards.instanceMatrix.needsUpdate = true;
     shards.computeBoundingBox?.();
     shards.computeBoundingSphere?.();
-    physics?.setFixedColliders?.(view.colliders);
+    corePhysics.syncColliders(view.colliders);
   }
 
   function activatePatch(entry, state) {
@@ -476,34 +452,61 @@ function createWorkerExecutor(PatchModule, generatorOptions) {
 async function main() {
   const ui = shell();
   const playerProfile = loadPlayerCharacterProfile();
-  const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, CameraModule, THREE] = await Promise.all([
+  const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, CameraModule, THREE, Rapier, RapierKit] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
     load(CDN.creatureKit),
     load(CDN.batchKit),
     load(CDN.patchKit),
     load(CDN.cameraKit),
-    load(CDN.three)
+    load(CDN.three),
+    load(CDN.rapier),
+    load(CDN.rapierKit)
   ]);
-  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !CameraModule || !THREE) {
+  if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !CameraModule || !THREE || !Rapier || !RapierKit) {
     throw new Error("Required pinned runtime module failed to load.");
   }
+  if (Rapier.init) await Rapier.init();
+  if (typeof RapierKit.createRapierPhysicsProvider !== "function") {
+    throw new Error("Pinned Rapier ProtoKit does not expose createRapierPhysicsProvider().");
+  }
+
   const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule, ...CameraModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, {
-    seed: cfg.seed,
-    goalDistance: cfg.goal,
-    playerCreature: playerProfile.creature
-  })
+      seed: cfg.seed,
+      goalDistance: cfg.goal,
+      playerCreature: playerProfile.creature
+    })
   });
   const game = engine.n.prehistoricRush;
   const instanceBatches = engine.n.instancedRenderBatch;
   const patchControllers = engine.n.seededWorldPatchController;
   const cameraFollows = engine.n.cameraSmoothFollow;
-  if (!game || !instanceBatches || !patchControllers || !cameraFollows) throw new Error("PrehistoricRush composition did not install.");
+  if (!game || !instanceBatches || !patchControllers || !cameraFollows || !engine.corePhysics || !engine.coreSimulation) {
+    throw new Error("PrehistoricRush composition did not install.");
+  }
+
+  engine.corePhysics.setProvider(RapierKit.createRapierPhysicsProvider({
+    rapier: Rapier,
+    gravity: { x: 0, y: -34, z: 0 }
+  }));
 
   const playerBody = game.getPlayerBody();
-  const physics = await createRapierAdapter(playerBody.collision);
+  engine.corePhysics.syncBodies([{
+    id: "dino",
+    kind: "kinematic",
+    collision: playerBody.collision,
+    transform: {
+      position: {
+        x: 0,
+        y: Number(playerBody.collision?.centerY ?? 0),
+        z: 0
+      }
+    },
+    tags: ["player", "dino"]
+  }]);
+
   const generatorOptions = {
     config: { ...cfg, shardsPerPatch: 2 },
     treeTypes,
@@ -537,8 +540,19 @@ async function main() {
     maximumDeltaTime: 1 / 30,
     teleportThreshold: 24
   });
-  const adapter = createThreeAdapter(THREE, game, physics, ui, instanceBatches, cameraFollow);
+  const adapter = createThreeAdapter(THREE, game, engine.corePhysics, ui, instanceBatches, cameraFollow);
   const input = { left: false, right: false, boost: false };
+
+  game.setPickupSampler((state) => adapter.view.pickups
+    .filter((pickup) => Math.hypot(pickup.x - state.x, pickup.z - state.z) < pickup.radius + 0.4)
+    .map((pickup) => pickup.id));
+  game.setCollisionSampler((state) => {
+    if (state.jumpHeight >= 1.05) return null;
+    const collider = adapter.view.colliders.find((candidate) =>
+      Math.hypot(candidate.x - state.x, candidate.z - state.z) < candidate.radius + Number(playerBody.collision?.radius ?? 0.32)
+    );
+    return collider ? { kind: "tree-impact", colliderId: collider.id, source: "fallback-collision" } : null;
+  });
 
   function updateStreaming(state, primeCenter = false) {
     const forward = { x: Math.sin(state.yaw), z: Math.cos(state.yaw) };
@@ -565,6 +579,7 @@ async function main() {
 
   const start = () => {
     game.start();
+    adapter.refreshDynamicContent(game.getState());
     updateStreaming(game.getState(), true);
     adapter.resetCamera(game.getState(), "run-restart");
   };
@@ -596,51 +611,42 @@ async function main() {
 
   let last = performance.now();
   function loop(now) {
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
     last = now;
     game.setInput({ steer: (input.left ? 1 : 0) - (input.right ? 1 : 0), boost: input.boost });
     engine.tick(dt);
-    let state = game.getState();
+    const state = game.getState();
+    const committed = game.getCommittedFrame();
+    if ((committed?.accepted?.pickupIds?.length ?? 0) > 0) adapter.refreshDynamicContent(state);
     updateStreaming(state);
-
-    if (state.status === "game") {
-      physics?.setActorTransform?.("dino", { x: state.x, y: state.y + state.jumpHeight + playerBody.collision.centerY, z: state.z });
-      const contacts = physics?.step?.(dt)?.contacts ?? [];
-      const hit = contacts.some((contact) => contact.actorId === "dino") || adapter.view.colliders.some((collider) => Math.hypot(collider.x - state.x, collider.z - state.z) < collider.radius + playerBody.collision.radius && state.jumpHeight < 1.05);
-      if (hit) game.fail({ kind: "tree-impact", x: state.x, z: state.z });
-      for (const pickup of adapter.view.pickups) {
-        if (Math.hypot(pickup.x - state.x, pickup.z - state.z) < pickup.radius + 0.4 && game.collectShard(pickup.id)) {
-          adapter.refreshDynamicContent(game.getState());
-          break;
-        }
-      }
-      state = game.getState();
-    }
 
     adapter.render(state, dt);
     const progress = Math.min(1, state.distance / cfg.goal);
     const patchStats = adapter.view.patchStats;
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>patches ${patchStats.active}/${patchStats.desiredActive} · cache ${patchStats.cached} · queue ${patchStats.queued} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · cache ${patchStats.cached} · queue ${patchStats.queued} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
 
   globalThis.PrehistoricRushHost = {
     engine,
-    physics,
+    physics: engine.corePhysics,
     adapter,
     patchController: controller,
     cameraFollow,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
+      tick: engine.getLastTickCommit(),
+      simulation: engine.coreSimulation.getCommittedFrame(),
+      physics: engine.corePhysics.getFrame(),
       patchStreaming: controller.getSnapshot(),
       camera: cameraFollow.getSnapshot(),
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
       playerProfile: { profileId: playerProfile.profileId, revision: playerProfile.revision },
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
-      renderer: "three-seeded-patch-streaming-neck-shadow-grass-v7"
+      renderer: "three-seeded-patch-streaming-authoritative-tick-v8"
     })
   };
   requestAnimationFrame(loop);
