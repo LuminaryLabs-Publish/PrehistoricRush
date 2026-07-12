@@ -1,92 +1,90 @@
-# Validation: PrehistoricRush Motion / Articulation / Presentation Parity
+# Validation: PrehistoricRush Pose Contract and Rig Binding
 
-**Updated:** `2026-07-12T12-08-05-04-00`
+**Updated:** `2026-07-12T14-10-22-04-00`
 
 ## Scope
 
-Documentation-only review of PrehistoricRush runtime source through `68c821a4864b6ad0edc12bc51514752e4ada750c`, pinned Nexus Engine revision `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`, pinned NexusEngine-Kits revision `9673594de5669b4691737b91a9d56fa282e74370` and pinned NexusEngine-ProtoKits revision `534e249346d94351baa4cfce9f2d3cd837362920`.
+Documentation-only review of PrehistoricRush runtime source through `e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28`, including the new quaternion-capable Three.js creature-pose adapter. Pinned Nexus Engine remains `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`.
 
 ## Plan ledger
 
-**Goal:** distinguish installed Core Motion/articulation capability from executable proof that physics and the visible raptor consume the same committed motion result.
+**Goal:** distinguish transform-format compatibility from executable proof that an admitted pose belongs to the intended rig and produced the visible bone state.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Select only `PrehistoricRush`.
-- [x] Review recent articulation, composition, test and runtime-pin commits.
-- [x] Review the final Core Motion root API fix.
-- [x] Review Core Motion and articulated-motion domain contracts.
-- [x] Review Core Physics and articulated-dynamics domain contracts.
-- [x] Review product movement, intent, motion-frame and physics-request ordering.
-- [x] Review game and creator pose/render paths.
-- [x] Review the current Node articulation test.
-- [x] Confirm no end-to-end consumption or visible-frame proof exists.
-- [x] Publish and reconcile the complete `12-08-05` audit family.
+- [x] Select only `PrehistoricRush` due to the post-audit runtime commit.
+- [x] Review the quaternion adapter diff and current source.
+- [x] Review procedural pose creation and articulated pose conversion.
+- [x] Review game direct application and creator damped application.
+- [x] Review rig construction, bone IDs and articulated solve API.
+- [x] Confirm no pose schema, rig binding or application receipt exists.
+- [x] Confirm no end-to-end articulated renderer call exists.
+- [x] Publish the complete `14-10-22` audit family.
 - [x] Change no runtime source, dependencies or deployment configuration.
 - [x] Create no branch or pull request.
 
 ## Source-backed validation performed
 
 ```txt
-verified game and creator import maps pin Nexus Engine cf2fe3d...
-verified runtime-versions pins final Core Motion runtime
-verified createCoreMotionDomain installs root and articulated-motion domains
-verified createCorePhysicsDomain installs root and articulated-dynamics domains
-verified final engine.coreMotion alias preserves built-in and extension APIs
-verified runSystem submits intent and commits Core Motion frame
-verified same motion request is separately submitted to Core Physics
-verified player articulated rig is registered
-verified solvePlayerArticulatedPose API exists
-verified game renderer calls createPlayerPose instead of articulated solve
-verified creator preview calls creatureApi.createPose and installs no motion domain
-verified player-articulation test covers adapter conversion only
+verified the latest commit adds quaternion array/object decoding
+verified direct pose application normalizes quaternion rotations
+verified damped application uses quaternion slerp when rotation is present
+verified Euler fallback remains active
+verified position arrays and objects are accepted
+verified game renderer still calls game.createPlayerPose()
+verified creator still installs no motion/articulation domain
+verified solvePlayerArticulatedPose() remains unused by production render paths
+verified unknown bone IDs are skipped
+verified omitted bones are not restored automatically
+verified adapter returns no typed application result
+verified npm test covers outcome policy and player articulation adapter only
 ```
 
 ## Executable proof currently present
 
 ```txt
 npm test command exists
-pure outcome-policy test exists
+outcome-policy test exists
 player rig/pose adapter test exists
-runtime module preflight reports the first failed import
+runtime module preflight exists
 ```
 
 ## Proof currently absent
 
 ```txt
-exact pinned browser-module admission fixture
-headless composed Core Motion/Core Physics game tick
-Core Motion frame -> physics request linkage fixture
-articulated solve consumption fixture
-explicit legacy fallback fixture
-creator/game motion-profile parity fixture
-stale run/profile pose rejection fixture
-Three bone-application result fixture
-first visible motion/pose frame acknowledgement
-browser and Pages game/creator parity smoke
+Three.js pose-adapter unit test
+finite quaternion admission fixture
+zero quaternion policy fixture
+incomplete quaternion object fixture
+absolute versus partial pose fixture
+unknown and missing bone policy fixture
+rig and skeleton fingerprint fixture
+stale mesh generation rejection fixture
+typed pose-application result fixture
+articulated-result production-consumption fixture
+first visible pose-frame acknowledgement
+browser and Pages creator/game parity smoke
 ```
 
 ## Commands not run in this pass
 
 ```txt
 npm test
-headless composed runtime fixture
 browser game smoke
 browser creator smoke
 Pages game smoke
 Pages creator smoke
 ```
 
-The GitHub connector supplied current source and write access but no checked-out browser runtime. No executable result is claimed.
+The GitHub connector supplied current source and write access but no checked-out browser runtime. No executable renderer result is claimed.
 
 ## Change-state validation
 
 ```txt
 runtime source changed by audit: no
 gameplay changed by audit: no
-motion behavior changed by audit: no
-physics behavior changed by audit: no
-articulation behavior changed by audit: no
+motion or physics behavior changed by audit: no
+pose application behavior changed by audit: no
 render behavior changed by audit: no
 creator behavior changed by audit: no
 package/dependencies changed by audit: no
@@ -99,4 +97,4 @@ central ledger and internal change log synchronized: yes
 
 ## Completion boundary
 
-Do not claim motion/articulation/presentation parity until one admitted product motion revision links input, Core Motion frame, Core Physics request/frame, selected pose result, renderer bone application and the first visible raptor frame. Articulated motion must be either explicitly consumed or explicitly disabled through a typed legacy fallback policy.
+Do not claim pose-contract safety until one versioned pose envelope is admitted against the target rig and skeleton, transform-space and full/partial semantics are explicit, application returns a typed result, stale results are rejected and the first visible frame cites the accepted pose result. Quaternion-format support alone is insufficient.
