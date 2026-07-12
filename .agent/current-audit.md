@@ -1,144 +1,142 @@
-# Current Audit: PrehistoricRush Pose Contract and Rig Binding
+# Current Audit: PrehistoricRush Coordinated Run Reset
 
-**Updated:** `2026-07-12T14-10-22-04-00`  
-**Runtime revision reviewed:** `e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28`  
+**Updated:** `2026-07-12T16-11-48-04-00`  
+**Repository head reviewed before this audit:** `04c30a3803c294ef712f10eadabcb3779e26735f`  
+**Latest runtime revision reviewed:** `e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28`  
 **Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
 
 ## Summary
 
-The current renderer adapter accepts both legacy Euler transforms and articulated-style quaternion transforms. It also accepts array or object positions. This is a useful compatibility advance, but the accepted data is not an explicit product contract.
+PrehistoricRush creates a new product run by replacing `RunState` and `InputState`, incrementing `runId`, clearing the last transition marker and calling `coreSimulation.resetResolution()`. The browser wrapper then rebuilds current active content, moves stream focus to the origin, primes one center patch and resets camera follow.
 
-The adapter does not validate pose identity, schema version, transform space, quaternion order, full-versus-partial semantics, rig identity, bone-set fingerprint, finite numeric values or bone completeness. Unknown bones are skipped, omitted bones retain previous state and no application receipt is returned. The game and creator still render legacy procedural poses, so quaternion support remains unconsumed capability.
+That sequence is not a coordinated reset transaction. It does not reset or generation-bind Core Motion, Core Physics, articulated motion, articulated dynamics, patch-controller/Worker work, active-content state, renderer state or public readback. `Enter` calls the same path unconditionally during active gameplay, so reset can occur outside a terminal phase and outside authoritative TickContext.
 
 ## Plan ledger
 
-**Goal:** make every creature-pose application a deterministic transaction from admitted pose data to one compatible rig and one acknowledged visible frame.
+**Goal:** make run restart a typed, phase-admitted, generation-bound barrier that atomically commits all required participants and proves the first visible frame.
 
-- [x] Review the post-audit quaternion renderer commit.
-- [x] Trace procedural pose creation and articulated pose conversion.
-- [x] Trace game direct application and creator damped application.
-- [x] Trace rig construction, bone IDs and articulated solve output.
-- [x] Identify silent coercion, omission and unknown-bone behavior.
-- [x] Reconcile all domains, kits and offered services.
-- [x] Define the missing pose-contract and rig-binding authority.
-- [x] Publish a new timestamped tracker and audit family.
-- [x] Refresh root `.agent` routing and machine registry.
+- [x] Trace all start and restart sources.
+- [x] Trace product `start()` mutations.
+- [x] Trace Core Simulation, Motion, Physics and articulation state.
+- [x] Trace patch controller reset and Worker executor lifecycle.
+- [x] Trace active content, camera, renderer and public host state.
+- [x] Identify mixed-generation readback and visible-frame gaps.
+- [x] Reconcile all domains, kits and services.
+- [x] Define the parent domain and fixture boundary.
+- [x] Publish the timestamped audit family.
+- [x] Refresh root routing and machine registry.
 - [x] Synchronize central tracking.
-- [ ] Implement and execute pose-contract fixtures.
+- [ ] Implement and execute coordinated reset fixtures.
 
-## Source-backed ordering
+## Source-backed current behavior
 
 ```txt
-legacy gameplay path
-  -> run state and input state
-  -> game.createPlayerPose()
-  -> procedural-creature-body-kit createPose()
-  -> applyCreaturePose(mesh, pose)
-  -> position array/object coercion
-  -> quaternion rotation when present, otherwise Euler rotation
-  -> unknown bones skipped
-  -> omitted bones unchanged
-  -> renderer.render()
+product game.start()
+  -> previous = RunState
+  -> next = initialRunState()
+  -> next.runId = previous.runId + 1
+  -> next.status = game
+  -> lastTransitionStepId = null
+  -> coreSimulation.resetResolution()
+  -> replace RunState
+  -> replace InputState
+  -> emit RunStarted
+  -> request scene transition
 
-legacy creator path
-  -> preview state
-  -> creatureApi.createPose()
-  -> applyCreaturePoseDamped(mesh, pose)
-  -> position damping
-  -> quaternion slerp when present, otherwise Euler damping
-  -> renderer.render()
+browser start()
+  -> game.start()
+  -> adapter.refreshDynamicContent(newState)
+  -> updateStreaming(newState, primeCenter=true)
+  -> adapter.resetCamera(newState)
 
-articulated-compatible but unused path
-  -> createPlayerArticulatedPose(legacyPose)
-  -> Euler-to-quaternion conversion
-  -> articulatedMotion.solve()
-  -> quaternion bone transforms
-  -> no production application call
+browser keydown
+  -> Enter always calls start()
+  -> no status or expected-run admission
 ```
 
-## Source-backed gaps
+## Reset participant matrix
 
 ```txt
-no poseId or poseRevision required by renderer adapter
-no pose schema/version discriminator
-no coordinate-space or handedness declaration
-no quaternion component-order declaration
-no absolute/full versus partial/delta mode
-no finite-value or non-zero quaternion admission result
-no rigId comparison against the target mesh
-no skeleton or bone-set fingerprint comparison
-no required-bone completeness policy
-no unknown-bone rejection or observation policy
-no omitted-bone reset/rest-pose policy
-no stale run/profile/mesh generation rejection
-no typed application plan
-no applied/missing/rejected bone result
-no first-visible-frame acknowledgement
+product run/input: reset directly
+Core Simulation: resolution result reset only
+Core Motion: no reset call
+Core Physics: no explicit body/request/frame reset
+articulated motion: no reset call
+articulated dynamics: no reset call
+patch controller: reset API exists but is not called
+Worker executor: dispose API exists but no restart barrier is used
+active content: rebuilt from current active patch map
+camera follow: reset directly
+renderer animation time: preserved implicitly
+public host: exposes independently advancing participant snapshots
+visible frame: no reset transaction acknowledgement
 ```
 
 ## Concrete mismatch paths
 
-### Partial pose residue
+### Mid-run Enter
 
 ```txt
-pose A writes a leg and tail transform
-pose B omits the tail
-adapter applies pose B
-previous tail transform remains active
-no result classifies the omission as intended partial data or stale residue
+run N active
+  -> Enter
+  -> run N+1 product state commits immediately
+  -> terminal phase was not required
+  -> other participants have no prepare/commit barrier
 ```
 
-### Wrong rig with overlapping IDs
+### Split readback between event and next RAF
 
 ```txt
-pose was produced for rig generation A
-mesh now owns rig generation B
-several bone IDs overlap
-adapter applies those transforms silently
-unknown IDs are ignored
-no rig mismatch result is emitted
+game snapshot: run N+1
+Core Motion current/history: may still cite run N tick/frame
+Core Physics frame/body: may still cite run N
+patch controller: previous queue/cache/inflight work remains
+renderer: no new-run frame has been submitted
 ```
 
-### Malformed quaternion coercion
+### Asynchronous patch result crossing reset
 
 ```txt
-rotation object omits one or more components
-adapter defaults x/y/z to 0 and w to 1
-quaternion is normalized
-application succeeds without reporting input repair
+run N request is inflight
+  -> run N+1 starts
+  -> no workerRequestGeneration changes
+  -> response resolves into the same controller
+  -> no result classifies it as predecessor-run work
 ```
 
-### Capability without consumption
+### Partial presentation reset
 
 ```txt
-articulated solve can emit quaternion transforms
-renderer can now consume quaternion transforms
-production game still calls createPlayerPose()
-creator still calls creatureApi.createPose()
-no receipt proves an articulated result reached visible bones
+camera returns to new-run target
+active content changes through host rebuild and activation budget
+motion/physics/articulation/render participants return no reset receipts
+first visible frame has no compatible-generation proof
 ```
 
 ## Domains in use
 
 ```txt
-page routes, profile lifecycle and creator draft/preview
-runtime source identity, import map and module preflight
+page routes, profile lifecycle and creator
+runtime source identity, import map and module admission
+browser input, restart activation, RAF and public host
 Core Input, Spatial, Scene and Simulation
-Core Physics and articulated dynamics
 Core Motion and articulated motion
+Core Physics and articulated dynamics
 Core Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
 seed, procedural creature, instanced batch, patch controller and camera follow
-product run, route, surface, score, outcome and player articulation
-procedural pose and articulated pose construction
-pose-format decoding, transform-space convention and quaternion admission
-rig identity, skeleton fingerprints and bone membership
-Three mesh, skeleton, direct application, damped application and rendering
-Rapier, Worker streaming, active content, camera, HUD and public readback
+product run, route, surface, score, outcome and articulation
+run identity, phase admission and reset generation
+reset participant preparation, commit, rollback and observations
+Rapier body, collider, request, contact and frame state
+Worker/fallback generation, queues, cache and active membership
+terrain, tree, grass, shard, pickup and collider materialization
+Three creature, camera, lighting, rendering and HUD
+runtime lifecycle and terminal disposal
 Node proof, static Pages deployment and audit tracking
-pose-contract/rig-binding authority: missing
+coordinated run-reset authority: missing
 ```
 
-## Kit/service census
+## Kit and service census
 
 ```txt
 15 Nexus Engine root/subdomain kits
@@ -149,30 +147,27 @@ pose-contract/rig-binding authority: missing
 45 implemented/adapted/proof surfaces total
 ```
 
-The existing `three-procedural-creature-adapter-kit` now offers skinned-mesh construction, position array/object acceptance, Euler application, quaternion application, damped quaternion slerp, bone lookup and disposal. It still returns no pose-application result.
-
-Exact names and services are retained in `.agent/kit-registry.json` and the current tracker.
+The complete per-kit service inventory is retained in `.agent/kit-registry.json` and the current tracker.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-pose-contract-rig-binding-authority-domain
+prehistoric-rush-coordinated-run-reset-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-one declared pose schema and transform-space convention
-one explicit absolute or partial pose mode
-all admitted transform components are finite
-quaternion order and normalization policy are versioned
-pose rigId and skeleton fingerprint match the target mesh generation
-unknown and missing bones follow explicit typed policy
-full poses restore omitted bones to admitted rest state
-partial poses cite their predecessor pose revision
-application returns applied, missing, rejected and repaired bone IDs
-stale pose results cannot apply after run/profile/rig/mesh replacement
-first visible frame cites pose, rig, mesh and renderer revisions
+restart source and phase are admitted before mutation
+one reset transaction creates exactly one next run generation
+all required participants prepare before any public commit
+all participant commit results cite the same reset transaction and run generation
+failure produces rollback or an explicit terminal fault, never silent partial reset
+predecessor browser, Worker, motion, physics and articulation results are rejected
+patch cache preservation follows one declared policy
+public readback is marked reset-in-progress until generations align
+first visible frame cites the committed reset result
+runtime disposal remains separate from reusable run reset
 ```
 
-The previous motion/presentation parity audit remains active. Pose-contract authority is a narrower renderer-boundary dependency, not a replacement for Core Motion and Core Physics provenance.
+The previous pose-contract and motion/presentation audits remain active dependencies. Coordinated reset must clear or rebind their predecessor state rather than replacing those authorities.
