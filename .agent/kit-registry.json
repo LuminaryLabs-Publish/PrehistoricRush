@@ -1,18 +1,20 @@
 {
-  "schemaVersion": 69,
+  "schemaVersion": 70,
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
   "branch": "main",
-  "updated": "2026-07-12T00-30-49-04-00",
-  "status": "runtime-module-graph-admission-authority-audited",
-  "currentDocumentationLedge": "PrehistoricRush Runtime Module Graph Admission and Source Provenance",
-  "latestTracker": ".agent/trackers/2026-07-12T00-30-49-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T00-30-49-04-00.md",
+  "updated": "2026-07-12T02-21-55-04-00",
+  "status": "render-surface-resolution-frame-correlation-authority-audited",
+  "currentDocumentationLedge": "PrehistoricRush Render Surface Resolution and Frame Correlation Authority",
+  "latestTracker": ".agent/trackers/2026-07-12T02-21-55-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T02-21-55-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-12T00-30-49-04-00-runtime-module-graph-admission-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-12T00-30-49-04-00-first-frame-source-graph-provenance-gap.md",
-    "interaction": ".agent/interaction-audit/2026-07-12T00-30-49-04-00-import-map-loader-provider-admission-map.md",
-    "runtimeSourceGraph": ".agent/runtime-source-graph-audit/2026-07-12T00-30-49-04-00-version-import-map-capability-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-12T00-30-49-04-00-runtime-source-graph-fixture-gate.md",
+    "architecture": ".agent/architecture-audit/2026-07-12T02-21-55-04-00-render-surface-authority-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-12T02-21-55-04-00-game-creator-surface-policy-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-12T02-21-55-04-00-simulation-surface-frame-ack-gap.md",
+    "interaction": ".agent/interaction-audit/2026-07-12T02-21-55-04-00-resize-observation-commit-map.md",
+    "renderSurface": ".agent/render-surface-audit/2026-07-12T02-21-55-04-00-css-dpr-physical-frame-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-12T02-21-55-04-00-render-surface-fixture-gate.md",
+    "previousRuntimeSourceGraph": ".agent/runtime-source-graph-audit/2026-07-12T00-30-49-04-00-version-import-map-capability-contract.md",
     "previousOutcome": ".agent/terminal-outcome-audit/2026-07-11T22-38-54-04-00-single-step-outcome-commit-contract.md",
     "previousHostCapability": ".agent/host-capability-audit/2026-07-11T22-29-24-04-00-read-model-command-gateway-contract.md",
     "previousCreator": ".agent/character-creator-audit/2026-07-11T21-00-00-04-00-draft-commit-preview-frame-contract.md",
@@ -32,7 +34,8 @@
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome"
+    "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
+    "reason": "PrehistoricRush had the oldest eligible central Last updated timestamp."
   },
   "sourceGraph": {
     "nexusEngine": "d86188c66692d9c24815aa2b29612c70df8fde4e",
@@ -44,19 +47,30 @@
     "admissionFingerprintAvailable": false,
     "typedPhysicsProviderDecisionAvailable": false
   },
+  "surfaceState": {
+    "gameCssSizeSource": "window.innerWidth/window.innerHeight",
+    "gameResizeSource": "window-resize-listener",
+    "gameDprPolicy": "startup-min-devicePixelRatio-2",
+    "creatorCssSizeSource": "preview.clientWidth/preview.clientHeight",
+    "creatorResizeSource": "ResizeObserver",
+    "creatorDprPolicy": "startup-min-devicePixelRatio-2",
+    "sharedPolicyAvailable": false,
+    "surfaceRevisionAvailable": false,
+    "physicalSizeReceiptAvailable": false,
+    "firstFrameAcknowledgementAvailable": false
+  },
   "interactionLoops": [
     "menu loads profile and routes to creator or game",
-    "creator resolves import map, edits draft, updates preview and persists profile",
-    "game loads pinned runtime candidates and checks required module presence",
-    "domain verifies selected Nexus and Kits factories",
-    "Rapier may initialize or degrade to manual fallback collision",
-    "RAF runs simulation, streaming, collision, rendering and HUD",
-    "public host reports declared pins without graph admission proof"
+    "creator resolves pinned modules, edits draft, observes preview size and renders procedural creature",
+    "game loads and admits runtime candidates, constructs engine, Worker, physics, camera and renderer",
+    "game window resize directly mutates camera aspect and renderer size",
+    "RAF runs input, simulation, streaming, collision, pickups, rendering and HUD",
+    "public host reports subsystem snapshots without surface provenance"
   ],
   "domainsInUse": [
     "routes and static hosts",
     "profile schema persistence and synchronization",
-    "creator draft transition viewport and preview",
+    "creator draft transition viewport preview and persistence",
     "runtime module identity import maps and CDN loading",
     "Nexus Engine composition and core capabilities",
     "procedural creature generation skinning pose and collision",
@@ -66,8 +80,9 @@
     "Rapier and fallback collision",
     "camera and Three rendering",
     "HUD transitions and public observation",
-    "outcome frame host reset and lifecycle authorities",
-    "validation build and Pages deployment"
+    "runtime graph outcome frame host reset and lifecycle authorities",
+    "validation build and Pages deployment",
+    "render-surface resolution and frame correlation authority missing"
   ],
   "coreKits": [
     {"id":"core-input-kit","services":["actions","bindings","input state"]},
@@ -105,7 +120,7 @@
     {"id":"prehistoric-patch-worker","services":["initialization","generation","request/error protocol","transfer"]}
   ],
   "externalAndHostKits": [
-    {"id":"three-runtime-module","services":["scene","geometry","materials","camera","lighting","render"]},
+    {"id":"three-runtime-module","services":["scene","geometry","materials","camera","lighting","resize","render"]},
     {"id":"rapier-physics-domain-kit","services":["world bridge","actor","colliders","step","contacts","reset"]},
     {"id":"rapier-runtime-module","services":["bodies","colliders","queries","world step"]},
     {"id":"message-worker-executor-adapter-kit","services":["request correlation","async generation"]},
@@ -114,29 +129,39 @@
     {"id":"creator-persistence-scheduler","services":["timer replacement","profile patch commit"]},
     {"id":"creature-camera-render-host-adapters","services":["creature","fallback collision","pickup scan","camera","lighting","HUD","host readback"]}
   ],
-  "candidateRuntimeGraphKits": [
-    "runtime-module-manifest-kit",
-    "runtime-module-entry-kit",
-    "import-map-parity-kit",
-    "module-load-result-kit",
-    "module-export-contract-kit",
-    "module-compatibility-policy-kit",
-    "runtime-source-graph-fingerprint-kit",
-    "runtime-source-graph-admission-kit",
-    "optional-capability-policy-kit",
-    "physics-provider-admission-kit",
-    "runtime-source-graph-observation-kit",
-    "runtime-source-graph-journal-kit",
-    "runtime-source-graph-fixture-kit",
-    "browser-import-map-smoke-kit"
+  "candidateRenderSurfaceKits": [
+    "render-surface-policy-kit",
+    "render-surface-id-kit",
+    "render-surface-revision-kit",
+    "css-size-observation-kit",
+    "device-scale-observation-kit",
+    "resize-source-observation-kit",
+    "pixel-budget-kit",
+    "surface-resize-command-kit",
+    "surface-resize-admission-kit",
+    "surface-resize-plan-kit",
+    "surface-resize-coalescing-kit",
+    "renderer-buffer-commit-kit",
+    "camera-projection-commit-kit",
+    "creator-preview-surface-adapter-kit",
+    "gameplay-surface-adapter-kit",
+    "surface-commit-result-kit",
+    "surface-frame-acknowledgement-kit",
+    "surface-debug-projection-kit",
+    "surface-journal-kit",
+    "dpr-change-fixture-kit",
+    "container-resize-fixture-kit",
+    "game-creator-surface-parity-fixture-kit",
+    "browser-surface-smoke-kit"
   ],
   "validation": {
-    "runtimeSourceChangedByAudit": false,
+    "runtimeChangedByAudit": false,
+    "renderBehaviorChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
-    "moduleGraphFixturesAvailable": false,
-    "browserImportMapSmoke": "not run",
-    "pagesSourceGraphSmoke": "not run",
+    "surfaceFixturesAvailable": false,
+    "browserSurfaceSmoke": "not run",
+    "pagesSurfaceSmoke": "not run",
     "targetBranch": "main"
   }
 }
