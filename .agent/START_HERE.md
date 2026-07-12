@@ -1,46 +1,47 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T12-08-05-04-00`  
+**Last aligned:** `2026-07-12T14-10-22-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-PrehistoricRush now composes the full Core Motion and Core Physics domains. Gameplay records Core Motion intent and frames, sends kinematic requests to Core Physics, registers an articulated raptor rig and exposes articulated solving.
+PrehistoricRush composes Core Motion, Core Physics, articulated motion and articulated dynamics, while its creator and game renderers share a Three.js procedural-creature adapter.
 
-The visible game and creator raptors still use the legacy procedural pose path. Neither renderer consumes the articulated-motion result, and physics requests do not cite the Core Motion frame that authorized them. The current audit defines and centrally reconciles the missing motion/articulation/presentation parity boundary.
+A new runtime commit added quaternion pose application and damping to that adapter. The adapter now accepts Euler rotations, quaternion arrays and quaternion objects, but it has no pose schema, coordinate-space declaration, rig binding, full-versus-partial semantics, finite-value admission or typed application result. The game still submits legacy procedural poses, so the new articulated-compatible format support is capability without production consumption proof.
 
 ## Plan ledger
 
-**Goal:** make simulation movement, physical motion, articulated solving and the first visible raptor frame cite one authoritative motion/presentation revision.
+**Goal:** make every pose applied to a Three.js creature an admitted, revisioned transform contract bound to the intended rig, bone set, coordinate convention and visible frame.
 
-- [x] Compare the complete Publish inventory with central tracking.
+- [x] Compare the full Publish repository inventory with the central ledger.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Select only `PrehistoricRush` because new motion/physics architecture landed after its previous audit.
-- [x] Review the final Core Motion runtime pin and compatibility fix.
-- [x] Trace game and creator pose paths, Core Motion, Core Physics and articulated subdomains.
-- [x] Identify all interaction loops, domains, 45 implemented/adapted/proof surfaces and services.
-- [x] Add a fresh tracker and complete architecture/system audit family.
+- [x] Confirm all nine eligible repositories remain tracked and root-documented.
+- [x] Select only `PrehistoricRush` because a new renderer-format runtime commit landed after its central audit.
+- [x] Trace game, creator, procedural-pose, articulated-pose and Three.js bone-application paths.
+- [x] Identify the interaction loop, all active domains, all 45 implemented/adapted/proof surfaces and their services.
+- [x] Define the missing pose-contract and rig-binding authority.
+- [x] Add a new timestamped tracker, turn ledger and system-audit family.
 - [x] Refresh required root `.agent` state and the machine registry.
-- [x] Synchronize the central repository ledger and internal change log.
+- [x] Synchronize the central ledger and internal change log.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Runtime consumption and executable parity fixtures remain future work.
+- [ ] Runtime pose admission, renderer receipts and executable browser proof remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T12-08-05-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T14-10-22-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T12-08-05-04-00-motion-presentation-parity-dsk-map.md
-.agent/render-audit/2026-07-12T12-08-05-04-00-legacy-pose-motion-frame-visible-gap.md
-.agent/gameplay-audit/2026-07-12T12-08-05-04-00-motion-physics-articulation-pose-loop.md
-.agent/interaction-audit/2026-07-12T12-08-05-04-00-motion-intent-articulation-result-map.md
-.agent/motion-system-audit/2026-07-12T12-08-05-04-00-core-motion-articulation-render-contract.md
-.agent/deploy-audit/2026-07-12T12-08-05-04-00-motion-presentation-fixture-gate.md
-.agent/turn-ledger/2026-07-12T12-08-05-04-00.md
+.agent/architecture-audit/2026-07-12T14-10-22-04-00-pose-contract-rig-binding-dsk-map.md
+.agent/render-audit/2026-07-12T14-10-22-04-00-quaternion-pose-visible-bone-gap.md
+.agent/gameplay-audit/2026-07-12T14-10-22-04-00-legacy-articulated-pose-format-loop.md
+.agent/interaction-audit/2026-07-12T14-10-22-04-00-pose-submit-admit-apply-result-map.md
+.agent/pose-system-audit/2026-07-12T14-10-22-04-00-schema-space-rig-application-contract.md
+.agent/deploy-audit/2026-07-12T14-10-22-04-00-pose-contract-browser-fixture-gate.md
+.agent/turn-ledger/2026-07-12T14-10-22-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -50,46 +51,55 @@ The visible game and creator raptors still use the legacy procedural pose path. 
 creator
   -> install seed and procedural-creature kits
   -> create legacy procedural pose
-  -> damp/morph Three mesh
+  -> adapter accepts position arrays and Euler rotation
+  -> damp transforms into Three.js bones
   -> render preview
 
 game boot
-  -> compose Core Physics + articulated dynamics
-  -> compose Core Motion + articulated motion
-  -> register player rig
-  -> install Rapier and stream world
+  -> compose Core Motion and Core Physics parent/subdomains
+  -> register articulated player rig
+  -> install Rapier, streaming, camera and renderer
 
 game tick
   -> integrate run state
-  -> submit Core Motion intent
-  -> commit Core Motion frame
-  -> submit raw motion request to Core Physics
+  -> submit Core Motion intent and frame
+  -> submit kinematic request to Core Physics
   -> resolve simulation outcome
 
 game render
-  -> derive legacy pose from run state again
-  -> apply legacy pose to Three skeleton
-  -> render without articulated-frame consumption receipt
+  -> call game.createPlayerPose()
+  -> pass legacy pose to applyCreaturePose()
+  -> adapter can now also decode quaternion arrays or objects
+  -> silently skip unknown bones and preserve omitted bone state
+  -> return no application result
+  -> render without pose-schema, rig or visible-frame acknowledgement
+
+optional API
+  -> solvePlayerArticulatedPose() can emit quaternion transforms
+  -> no production game or creator renderer calls it
 ```
 
 ## Main finding
 
 ```txt
-Core Motion frame: present
-Core Physics request: present
-articulated rig: present
-articulated solver API: present
-articulated dynamics domain: present
+quaternion transform support: present
+Euler fallback support: present
+array/object position support: present
+articulated solve API: present
 
-physics request -> Core Motion frame reference: absent
-articulated solve in game frame: absent
-articulated solve in creator frame: absent
-selected pose result: absent
-renderer bone-application result: absent
-visible pose-frame acknowledgement: absent
+pose schema/version: absent
+coordinate space and quaternion convention: absent
+full-pose versus partial-pose mode: absent
+finite and unit-quaternion admission result: absent
+pose-to-rig fingerprint binding: absent
+bone membership/completeness policy: absent
+rest-pose reconstruction policy: absent
+typed applied/missing/rejected bone result: absent
+first visible pose-frame acknowledgement: absent
+production articulated-pose call site: absent
 ```
 
-`solvePlayerArticulatedPose()` is implemented but unused by the game and creator render paths. The visible raptor is still driven by `createPlayerPose()` or the procedural creature API.
+Unknown bone IDs are ignored. Omitted bones retain their prior transform. Quaternion objects default missing components to identity-like values before normalization. None of those decisions is represented as a typed result.
 
 ## Domains and kit groups
 
@@ -103,18 +113,20 @@ runtime source identity, import maps and module admission
 2 proof kits
 Core Motion and articulated motion
 Core Physics and articulated dynamics
-product run/simulation/outcome
-Rapier, streaming, Three rendering and HUD
-motion/articulation/presentation parity authority: missing
+procedural and articulated pose construction
+pose schema, coordinate-space and rig binding
+Three.js bone application, damping and visible-frame projection
+Rapier, streaming, terrain, vegetation, pickups and HUD
+pose-contract/rig-binding authority: missing
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-motion-presentation-parity-authority-domain
+prehistoric-rush-pose-contract-rig-binding-authority-domain
 ```
 
-It coordinates motion source revision, intent sequence, Core Motion frame provenance, physics linkage, articulated solve admission, explicit legacy fallback, creator/game motion profiles, renderer bone-application receipts, stale-result rejection and first-visible-frame acknowledgement.
+It coordinates pose identity, schema version, absolute/partial mode, coordinate convention, rig and bone-set fingerprints, quaternion admission, missing/unknown bone policy, rest-pose reconstruction, application plans, typed application results, stale-result rejection and first-visible-frame acknowledgement.
 
 ## Ordered implementation queue
 
@@ -125,6 +137,7 @@ It coordinates motion source revision, intent sequence, Core Motion frame proven
 1. Route Artifact and Game Profile Handoff Proof
 2. Character Creator Draft, Commit and Preview Frame Authority
 2a. Motion / Articulation / Presentation Parity Authority
+2b. Pose Contract and Rig Binding Authority
 3. Patch Activation and Release Commit Authority
 3a. Active Content Materialization and Coalescing Authority
 3b. Streamed Content / Outcome Observation Parity Authority
@@ -132,8 +145,8 @@ It coordinates motion source revision, intent sequence, Core Motion frame proven
 5. Run-Step Outcome Arbitration and Committed Frames
 6. Stream Cadence and World Readiness
 7. Public Host Capability Gateway
-8. Coordinated Run/Stream/Motion/Physics/Frame Reset
+8. Coordinated Run/Stream/Motion/Physics/Pose/Frame Reset
 9. Runtime Lifecycle and Ordered Disposal
 ```
 
-Do not treat domain installation or snapshot visibility as proof that the visible raptor consumes articulated motion. Completion requires typed consumption results and real browser/Pages evidence.
+Do not treat quaternion-compatible adapter code as proof that articulated motion drives visible bones. Completion requires admitted pose contracts, explicit application results and browser/Pages evidence.
