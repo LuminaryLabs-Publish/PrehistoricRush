@@ -1,82 +1,92 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T09-01-44-04-00`
+**Updated:** `2026-07-12T11-11-34-04-00`
 
 ## Plan ledger
 
-**Goal:** finish the move to authoritative Nexus Engine transactions without creating parallel browser-host owners.
+**Goal:** close the stream/content parity gap without creating a second simulation or renderer owner in the browser host.
 
-### Gate 0: preserve the implemented outcome-policy baseline
-- [ ] Keep movement, pickups, goal and collision precedence inside `core-simulation`.
-- [ ] Add browser integration proof for the pure policy cases.
-- [ ] Correlate committed simulation, physics, state, transition and visible-frame revisions.
+### Gate 0: preserve implemented outcome authority
+- [ ] Keep movement, collision, pickup and goal arbitration in Nexus Engine `core-simulation`.
+- [ ] Preserve collision-over-goal precedence and duplicate-pickup rejection.
+- [ ] Keep the product policy renderer-agnostic.
 
-### Gate 1: run start/restart authority
-- [ ] Add `RunStartCommand`, command ID and expected predecessor revisions.
-- [ ] Allocate one monotonic run epoch.
-- [ ] Prepare run-state and input reset without publishing them.
-- [ ] Prepare `core-simulation` resolution reset.
-- [ ] Prepare Rapier body pose/contact reset.
-- [ ] Prepare patch-controller/Worker adoption or reset.
-- [ ] Prepare active-content/shard/collider refresh under the new epoch.
-- [ ] Prepare camera reset and game-scene transition.
-- [ ] Commit every required participant atomically.
-- [ ] Roll back if a required participant fails.
-- [ ] Reject stale Worker, stream, physics and frame results.
-- [ ] Return a typed start result.
-- [ ] Acknowledge the first committed tick and visible frame.
-- [ ] Route initial boot, button, Enter and Space retry through the same command.
+### Gate 1: content snapshot identity
+- [ ] Add monotonic `activeContentRevision`.
+- [ ] Add deterministic active patch-set digest.
+- [ ] Add collider-set and pickup-set digests.
+- [ ] Include stream/controller generation and run epoch.
+- [ ] Publish an immutable `ActiveContentSnapshot`.
 
-### Gate 2: retained world/materialization authorities
-- [ ] Coalesce release and activation into one active-content commit.
-- [ ] Add stream cadence/work budgets and world-readiness admission.
-- [ ] Add exact collider/content revisions and frame parity.
-- [ ] Preserve creator/profile, render-surface, input, public-host and lifecycle plans.
+### Gate 2: pre-tick admission
+- [ ] Decide release/activation deltas before outcome observation.
+- [ ] Prepare terrain/tree/grass/shard/pickup/collider changes without publishing them.
+- [ ] Admit one content snapshot for pickup and collision sampling.
+- [ ] Reject stale Worker and patch results.
+- [ ] Bound activation/materialization work.
+
+### Gate 3: outcome provenance
+- [ ] Add content revision to run, pickup and goal proposal context.
+- [ ] Add content revision to physics and fallback observations.
+- [ ] Reject mixed-revision proposals/observations.
+- [ ] Return typed content provenance in the product outcome result.
+- [ ] Project the provenance into the public committed read model.
+
+### Gate 4: atomic content and physics commit
+- [ ] Commit active patches, visible instances and physics colliders together.
+- [ ] Roll back all consumers when one participant fails.
+- [ ] Retire predecessor tree cells, terrain slots and colliders exactly once.
+- [ ] Coalesce release and activation into one materialization pass.
+
+### Gate 5: visible-frame proof
+- [ ] Add first-visible-frame acknowledgement with tick, simulation and content revisions.
+- [ ] Prove released colliders cannot cause invisible failures.
+- [ ] Prove newly visible colliders/pickups are not rendered before admission.
+- [ ] Prove browser and deployed Pages behavior match.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-run-start-restart-authority-domain
-run-start-command-kit
-run-start-command-id-kit
-run-epoch-kit
-run-start-predecessor-admission-kit
-run-state-reset-plan-kit
-run-input-reset-plan-kit
-simulation-resolution-reset-plan-kit
-physics-body-reset-plan-kit
-stream-reset-adoption-plan-kit
-active-content-reset-plan-kit
-camera-reset-plan-kit
-scene-transition-reset-plan-kit
-run-start-prepare-kit
-run-start-participant-result-kit
-run-start-commit-kit
-run-start-rollback-kit
-stale-run-start-result-rejection-kit
-run-start-result-kit
-run-start-observation-kit
-run-start-journal-kit
-first-run-tick-ack-kit
-first-run-visible-frame-ack-kit
-initial-start-retry-parity-fixture-kit
-run-start-participant-failure-fixture-kit
-browser-authoritative-restart-smoke-kit
+prehistoric-rush-streamed-content-outcome-parity-authority-domain
+active-content-revision-kit
+active-patch-set-digest-kit
+collider-set-digest-kit
+pickup-set-digest-kit
+stream-generation-kit
+active-content-snapshot-kit
+stream-delta-command-kit
+stream-delta-admission-kit
+content-prepare-plan-kit
+content-participant-result-kit
+content-observation-context-kit
+physics-content-observation-kit
+fallback-content-observation-kit
+pickup-content-observation-kit
+mixed-content-revision-rejection-kit
+outcome-content-provenance-kit
+content-physics-commit-kit
+content-physics-rollback-kit
+stale-worker-content-rejection-kit
+content-parity-observation-kit
+content-parity-journal-kit
+visible-content-frame-ack-kit
+released-collider-false-positive-fixture-kit
+activated-content-false-negative-fixture-kit
+browser-stream-outcome-parity-smoke-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:initial-start-retry-parity
-fixture:duplicate-start-idempotency
-fixture:start-participant-failure-rollback
-fixture:stale-worker-stream-rejection
-fixture:physics-body-run-epoch
-fixture:active-content-run-epoch
-fixture:first-run-tick-ack
-fixture:first-run-visible-frame-ack
-fixture:public-readback-no-mixed-epoch
-browser start/retry matrix
-Pages start/retry smoke
+fixture:policy-baseline
+fixture:released-collider-no-invisible-failure
+fixture:activated-tree-not-visible-before-admission
+fixture:activated-pickup-not-visible-before-admission
+fixture:mixed-revision-rejection
+fixture:content-physics-rollback
+fixture:stale-worker-result-rejection
+fixture:first-visible-content-frame
+browser stream traversal matrix
+Pages stream traversal smoke
 ```
