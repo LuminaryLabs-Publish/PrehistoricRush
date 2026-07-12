@@ -1,93 +1,98 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T12-08-05-04-00`
+**Updated:** `2026-07-12T14-10-22-04-00`
 
 ## Implemented advance
 
 ```txt
 Core Motion and articulated-motion domains are composed
 Core Physics and articulated-dynamics domains are composed
-player movement intent is submitted to Core Motion
-one Core Motion frame is committed per active run tick
-the same kinematic request data is submitted to Core Physics
 player articulated rig conversion and registration exist
 articulated solve API exists
-Core Motion root API is preserved by the pinned Nexus Engine revision
-player articulation adapter test exists
-streamed-content/outcome parity audit remains active
-motion-presentation audit family is complete
-central reconciliation is part of this run
+legacy Euler pose application exists
+position arrays and position objects are accepted
+quaternion arrays and quaternion objects are accepted
+quaternion direct application and damped slerp exist
+Euler fallback remains available
+player articulation adapter tests exist
 ```
 
 ## Primary current gap
 
 ```txt
-visible gameplay pose is created through game.createPlayerPose()
-visible creator pose is created through the procedural creature API
-solvePlayerArticulatedPose() has no production render call site
-articulated-motion result is not selected or applied
-physics request does not cite its authorizing Core Motion frame
-no visible pose-frame acknowledgement joins the domains
+renderer adapter accepts multiple pose representations without a versioned pose contract
+pose data is not bound to the intended rig or skeleton fingerprint
+full versus partial pose semantics are not declared
+unknown bones are skipped silently
+omitted bones retain prior transforms silently
+malformed quaternion objects can be repaired through default values silently
+application returns no typed result
+production game and creator still submit legacy procedural poses
 ```
 
 ## Concrete consequences
 
 ```txt
-Core Motion can advance while presentation ignores its frame
-articulated rig can be registered while the articulated frame is empty or older
-public snapshots can show articulation capability without renderer consumption
-physics and motion histories rely on field comparison instead of shared IDs
-creator and game can diverge in pose policy while sharing one creature profile
-legacy procedural pose use is ambient rather than an explicit fallback result
-restart or profile replacement produces no typed prior-generation rejection trail
+a pose from an earlier rig generation can partially apply to a replacement mesh
+an omitted bone can preserve stale animation state across pose changes
+an unknown bone typo can disappear without failing validation
+an incomplete quaternion object can become a normalized but unintended rotation
+creator and game can interpret the same pose shape differently without a parity result
+articulated-compatible adapter code can be mistaken for articulated product consumption
+public diagnostics cannot prove which pose changed which bones
 ```
 
-## Domain-state ambiguity
+## Contract ambiguity
 
-The current product cannot classify each installed motion surface as:
+The current adapter cannot classify a submitted pose as:
 
 ```txt
-inactive
-configured
-active
-consumed
-superseded
-failed
+schema-valid or schema-invalid
+absolute or partial
+rig-compatible or rig-incompatible
+complete or incomplete
+clean or repaired
+current or stale
+applied, partially applied or rejected
+visible or not yet visible
 ```
 
-Installation and snapshot availability are therefore easy to mistake for active product consumption.
-
-## Retained gaps
+## Retained architecture gaps
 
 ```txt
-streamed content and committed outcome still lack a shared active-content revision
-run start and restart still bypass authoritative TickContext
-runtime-module admission fingerprint remains incomplete
+Core Physics requests still do not cite the authorizing Core Motion frame
+articulated solving is not called by game or creator render paths
+streamed content and committed outcomes lack one shared active-content revision
+run start and restart bypass authoritative TickContext
 browser input command authority remains incomplete
 render-surface and frame correlation remains incomplete
 creator draft, commit and frame proof remains incomplete
 stream cadence and world readiness remain host-managed
 raw PrehistoricRushHost exposes mutable owners
-coordinated Worker, stream, motion, physics and frame reset remains absent
+coordinated Worker, stream, motion, physics, pose and frame reset remains absent
 ordered runtime disposal remains absent
 ```
 
 ## Required fixtures
 
 ```txt
-final pinned Core Motion root API imports and composes
-one game tick correlates input, motion frame and physics request
-legacy presentation emits an explicit fallback result
-articulated solve result is consumed by the intended Three.js mesh
-creator and game resolve matching profile, skeleton and rig fingerprints
-prior run or profile pose result is rejected
-renderer reports applied, missing and rejected bones
-first visible frame shares run, motion, physics and pose identities
+valid Euler pose produces a typed application result
+valid quaternion array and object poses produce equivalent results
+non-finite and zero-length quaternion cases follow explicit policy
+incomplete quaternion object is rejected or records a repair
+unknown bone follows explicit reject/ignore policy
+absolute pose omission restores required bone rest state
+partial pose cites and merges from one predecessor revision
+wrong rig and skeleton fingerprint are rejected
+stale run/profile/mesh pose is rejected
+articulated solve result reaches the intended Three.js skeleton
+renderer reports applied, missing, rejected and repaired bone IDs
+first visible frame cites pose, rig, mesh and renderer identities
 browser and deployed Pages behavior match
 ```
 
 ## Proof warning
 
-The existing player-articulation test proves rig and pose conversion plus cloning. It does not prove that the composed domains drive physics or either visible raptor.
+The latest runtime commit proves only that the adapter can parse and apply quaternion-shaped rotations. It does not prove that the data is valid for the target rig, that omissions are intentional, that the articulated solver produced it, or that a visible frame consumed it.
 
-Do not describe articulated motion as product-consumed until a result is selected, applied and acknowledged by a visible renderer frame.
+Do not describe quaternion support as pose-contract safety or articulated presentation completion until admission, binding, typed application and visible-frame proof exist.
