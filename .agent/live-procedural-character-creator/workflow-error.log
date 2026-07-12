@@ -1,0 +1,9 @@
+  <script type="importmap">
+import { createCharacterPreviewTransition } from "../character-creator/character-preview-transition.js";
+  previewTransition = createCharacterPreviewTransition({
+      CreatureModule.createProceduralCreatureBodyKit({ creatures: [draft.creature] })
+    playerCreature: playerProfile.creature
+    createProceduralCreatureBodyKit({ creatures: [playerCreature] }),
+import { applyCreaturePose, createCreatureMesh } from "./render/three-procedural-creature.js";
+  preview.innerHTML = `<p style="padding:24px;color:#ffb6a9">Could not start procedural showcase: ${error.message}</p>`;
+CSS creature preview remains
