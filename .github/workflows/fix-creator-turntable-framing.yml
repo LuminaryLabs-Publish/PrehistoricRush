@@ -1,0 +1,50 @@
+name: Fix creator turntable framing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .agent/fix-creator-turntable-framing
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Center rotated creature bounds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/pages/character-creator.js')
+          text = path.read_text()
+          old = '''    desiredTarget.set(
+              localCenter.x * mesh.scale.x + mesh.position.x,
+              localCenter.y * mesh.scale.y + mesh.position.y,
+              localCenter.z * mesh.scale.z + mesh.position.z
+            );'''
+          new = '''    mesh.updateMatrixWorld(true);
+            desiredTarget.copy(localCenter);
+            mesh.localToWorld(desiredTarget);'''
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one unrotated target block, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          node --check src/pages/character-creator.js
+          grep -F 'mesh.localToWorld(desiredTarget);' src/pages/character-creator.js
+      - name: Commit framing correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/character-creator.js
+          git commit -m "Keep creator preview centered while rotating"
+          git push origin HEAD:main
