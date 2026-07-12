@@ -1,40 +1,42 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-12T00-30-49-04-00`
+**Updated:** `2026-07-12T02-21-55-04-00`
 
 ## Summary
 
-This documentation-only audit verifies current source pins, HTML import-map alignment, dynamic load behavior, selected factory checks, silent Rapier-to-fallback degradation and stale internal source-graph records. It does not prove runtime compatibility, startup safety, physics parity, frame provenance or deployment readiness.
+This documentation-only audit verifies the current creator and gameplay size-observation, DPR, renderer, camera, resize, RAF and public-readback paths. It does not prove physical-buffer correctness, DPR-change handling, creator/game parity, frame acknowledgement or deployment readiness.
 
 ## Plan ledger
 
-**Goal:** distinguish source-backed graph findings from unexecuted module, browser, rendering and Pages proof.
+**Goal:** distinguish source-backed surface findings from unexecuted browser, rendering and Pages proof.
 
 - [x] Confirm repository and `main` branch.
 - [x] Compare all Publish repositories with central tracking.
-- [x] Inspect `runtime-versions.js`, `game.html`, `charactercreator.html`, `src/game.js` and the product domain.
-- [x] Confirm current pins and previous internal drift.
-- [x] Confirm presence/factory checks and optional Rapier fallback behavior.
+- [x] Inspect `src/game.js`, `src/pages/game.js`, `src/pages/character-creator.js` and `game.html`.
+- [x] Confirm gameplay and creator size/DPR policies.
+- [x] Confirm resize ingress, direct camera/renderer mutation and missing public surface state.
 - [x] Inventory interaction loops, domains, kits and services.
-- [x] Create source-graph contracts and fixture requirements.
-- [ ] Execute module, browser or Pages proof.
+- [x] Create surface contracts and fixture requirements.
+- [ ] Execute browser or Pages proof.
 
 ## Source-backed findings
 
 ```txt
-Nexus pin: d86188c66692d9c24815aa2b29612c70df8fde4e
-Kits pin: 9673594de5669b4691737b91a9d56fa282e74370
-ProtoKits pin: 11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5
-Three: 0.179.1
-Rapier: 0.15.0
-HTML import-map Nexus parity: observed
-previous .agent Nexus/Kits sourceGraph drift: observed
-required module aggregate presence check: observed
-selected Nexus/Kits factory checks: observed
-graph-wide admission result: absent
-sourceGraphFingerprint: absent
-Rapier/fallback typed provider decision: absent
-first-frame graph receipt: absent
+gameplay initial size: innerWidth × innerHeight
+gameplay initial DPR: min(devicePixelRatio, 2)
+gameplay resize ingress: global window resize
+gameplay DPR resampling: absent
+gameplay host ResizeObserver: absent
+creator initial DPR: min(devicePixelRatio, 2)
+creator size source: preview.clientWidth × preview.clientHeight
+creator ResizeObserver: present
+creator DPR resampling: absent
+shared surface policy: absent
+surface commit result: absent
+surface revision: absent
+physical drawing-buffer readback: absent
+first post-resize frame acknowledgement: absent
+public surface observation: absent
 ```
 
 ## Validation performed
@@ -42,10 +44,10 @@ first-frame graph receipt: absent
 ```txt
 current organization inventory and central-ledger comparison
 current repository metadata and recent commit inspection
-runtime pin and import-map inspection
-loader and adapter inspection
-product domain factory-contract inspection
-current .agent sourceGraph comparison
+gameplay renderer/camera construction inspection
+gameplay resize-listener inspection
+creator renderer/camera and ResizeObserver inspection
+RAF and public-host inspection
 interaction/domain/kit/service inventory
 contract and fixture derivation
 documentation updates on main
@@ -55,13 +57,14 @@ documentation updates on main
 
 ```txt
 local clone or dependency install
-module fetch execution
-CDN response/hash verification
-import-map browser instrumentation
-Nexus/Kits/ProtoKits compatibility execution
-Rapier initialization or fallback parity execution
-Worker, WebGL or gameplay smoke
-first-frame source receipt
+browser launch
+window or container resize execution
+DPR change or browser-zoom execution
+cross-display scale execution
+renderer drawing-buffer readback
+camera projection readback
+creator/game parity comparison
+first-frame surface acknowledgement
 GitHub Pages smoke or workflow review
 ```
 
@@ -69,11 +72,13 @@ GitHub Pages smoke or workflow review
 
 ```txt
 runtime source changed: no
-HTML/import maps changed: no
+HTML changed: no
 dependencies changed: no
 gameplay changed: no
 physics changed: no
 rendering changed: no
+camera changed: no
+input changed: no
 Worker behavior changed: no
 deployment changed: no
 branch created: no
@@ -84,17 +89,20 @@ target branch: main
 ## Missing executable gates
 
 ```txt
-manifest/fingerprint fixture
-import-map parity fixture
-module-load and export-contract rejection fixtures
-compatibility-policy fixture
-Rapier/fallback provider fixture
-rejected-startup quiescence fixture
-first-frame provenance fixture
-public admission read-model fixture
-local browser and Pages source-graph smoke
+surface policy fixture
+creator container-resize fixture
+gameplay host-resize fixture
+DPR change fixture
+physical-pixel budget fixture
+invalid/zero-area observation fixture
+stale and duplicate observation fixtures
+renderer/camera actual-value readback
+creator/game surface parity fixture
+surface/frame acknowledgement fixture
+late resize after disposal fixture
+local browser and Pages surface smoke
 ```
 
 ## Claim boundary
 
-The audit proves what the inspected source declares and which admission evidence is absent. It does not prove that all CDN modules are mutually compatible, that fallback collision is equivalent to Rapier, or that a deployed visible frame came from the declared source graph.
+The audit proves what the inspected source currently observes and mutates, and which surface evidence is absent. It does not prove that current visual output is incorrect, that DPR changes fail on every browser, or that the deployed pages violate a specific physical-resolution target.
