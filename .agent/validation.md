@@ -1,78 +1,101 @@
-# Validation: PrehistoricRush Streamed Content / Outcome Parity
+# Validation: PrehistoricRush Motion / Articulation / Presentation Parity
 
-**Updated:** `2026-07-12T11-21-01-04-00`
+**Updated:** `2026-07-12T12-01-04-04-00`
 
 ## Scope
 
-Documentation-only review of runtime source through `6430c623d4e1fa5afb7ed460d5d1624799fbe65d`, repo-local documentation through `057785f0d492e5f57d234017b532e88fd55a309c`, pinned Nexus Engine revision `c5548de504072bf09eb68986b98aca0292903803` and pinned Rapier ProtoKit revision `ae0f42fea49be7887c4646ed803bd4886e8db631`.
+Documentation-only review of PrehistoricRush runtime source through `68c821a4864b6ad0edc12bc51514752e4ada750c`, pinned Nexus Engine revision `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`, pinned NexusEngine-Kits revision `9673594de5669b4691737b91a9d56fa282e74370` and pinned NexusEngine-ProtoKits revision `534e249346d94351baa4cfce9f2d3cd837362920`.
 
 ## Plan ledger
 
-**Goal:** distinguish the implemented outcome-policy baseline from missing executable proof that simulation observations and the rendered streamed-content set share one revision.
+**Goal:** distinguish installed Core Motion/articulation capability from executable proof that physics and the visible raptor consume the same committed motion result.
 
-- [x] Compare the Publish inventory and central ledger.
+- [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Select only `PrehistoricRush`.
-- [x] Review the product domain, resolution policy, game host and runtime versions.
-- [x] Review Nexus Engine `core-simulation` proposal/observation/commit behavior.
-- [x] Review the pinned Rapier provider's collider synchronization, motion request and step behavior.
-- [x] Confirm streaming release/activation runs after `engine.tick()` and before render.
-- [x] Confirm no shared content revision is present.
-- [x] Confirm root docs referenced a timestamped audit family that was absent before this run.
-- [x] Publish the complete audit family and central tracking.
+- [x] Review recent articulation, composition, test and runtime-pin commits.
+- [x] Review the final Core Motion root API fix.
+- [x] Review Core Motion and articulated-motion domain contracts.
+- [x] Review Core Physics and articulated-dynamics domain contracts.
+- [x] Review product movement, intent, motion-frame and physics-request ordering.
+- [x] Review game and creator pose/render paths.
+- [x] Review the current Node articulation test.
+- [x] Confirm no end-to-end consumption or visible-frame proof exists.
 - [x] Change no runtime source, dependencies or deployment configuration.
 - [x] Create no branch or pull request.
+
+## Source-backed validation performed
+
+```txt
+verified game and creator import maps pin Nexus Engine cf2fe3d...
+verified runtime-versions pins final Core Motion runtime
+verified createCoreMotionDomain installs root and articulated-motion domains
+verified createCorePhysicsDomain composition is required by product graph
+verified final engine.coreMotion alias preserves built-in and extension APIs
+verified runSystem submits intent and commits Core Motion frame
+verified same motion request is separately submitted to Core Physics
+verified player articulated rig is registered
+verified solvePlayerArticulatedPose API exists
+verified game renderer calls createPlayerPose instead of articulated solve
+verified creator preview calls creatureApi.createPose and installs no motion domain
+verified player-articulation test covers adapter conversion only
+```
 
 ## Executable proof currently present
 
 ```txt
 npm test command exists
-pure outcome-policy tests exist
-collision/goal/pickup precedence cases exist
-runtime module preflight reports the first failure
+pure outcome-policy test exists
+player rig/pose adapter test exists
+runtime module preflight reports the first failed import
 ```
 
 ## Proof currently absent
 
 ```txt
-real browser Nexus Engine + Rapier integration fixture
-active-content revision fixture
-released-collider invisible-failure fixture
-activated-collider delayed-admission fixture
-activated-pickup delayed-admission fixture
-mixed proposal/observation revision rejection
-content/physics atomic commit and rollback
-stale Worker result rejection
-first visible content-frame acknowledgement
-browser/Pages stream traversal parity
+exact pinned browser-module admission fixture
+headless composed Core Motion/Core Physics game tick
+Core Motion frame -> physics request linkage fixture
+articulated solve consumption fixture
+explicit legacy fallback fixture
+creator/game motion-profile parity fixture
+stale run/profile pose rejection fixture
+Three bone-application result fixture
+first visible motion/pose frame acknowledgement
+browser and Pages game/creator parity smoke
 ```
 
 ## Commands not run in this pass
 
 ```txt
 npm test
-browser smoke
-Pages smoke
+headless composed runtime fixture
+browser game smoke
+browser creator smoke
+Pages game smoke
+Pages creator smoke
 ```
 
-The GitHub connector supplied current source and write access but no checked-out runtime. Direct container access to `github.com` was unavailable, so no executable result is claimed.
+The GitHub connector supplied current source and write access but no checked-out browser runtime. No executable result is claimed.
 
 ## Change-state validation
 
 ```txt
 runtime source changed by audit: no
 gameplay changed by audit: no
-physics changed by audit: no
-streaming changed by audit: no
+motion behavior changed by audit: no
+physics behavior changed by audit: no
+articulation behavior changed by audit: no
 render behavior changed by audit: no
+creator behavior changed by audit: no
 package/dependencies changed by audit: no
 deployment changed by audit: no
 branch created: no
 pull request created: no
 .agent documentation changed: yes
-central ledger changed: yes
+central ledger change: pending at repo-local validation time
 ```
 
 ## Completion boundary
 
-Do not claim stream/outcome parity until one admitted content revision is shared by physics, fallback collision, pickup sampling, outcome resolution, active-content/physics commit, public readback and the first visible frame, with rollback and stale-result rejection.
+Do not claim motion/articulation/presentation parity until one admitted product motion revision links input, Core Motion frame, Core Physics request/frame, selected pose result, renderer bone application and the first visible raptor frame. Articulated motion must be either explicitly consumed or explicitly disabled through a typed legacy fallback policy.
