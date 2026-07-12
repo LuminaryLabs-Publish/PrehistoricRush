@@ -1,139 +1,142 @@
-# Current Audit: PrehistoricRush Coordinated Run Reset
+# Current Audit: PrehistoricRush Player Character Profile Commit and Convergence
 
-**Updated:** `2026-07-12T16-11-48-04-00`  
-**Repository head reviewed before this audit:** `04c30a3803c294ef712f10eadabcb3779e26735f`  
-**Latest runtime revision reviewed:** `e6ee17024ec3f3f1f4de80ea520b5cd7d6ba7c28`  
+**Updated:** `2026-07-12T18-18-59-04-00`  
+**Repository head reviewed before documentation writes:** `4b5b34b7610b7f428696a9e0bcd5a7b4868307f8`  
 **Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
 
 ## Summary
 
-PrehistoricRush creates a new product run by replacing `RunState` and `InputState`, incrementing `runId`, clearing the last transition marker and calling `coreSimulation.resetResolution()`. The browser wrapper then rebuilds current active content, moves stream focus to the origin, primes one center patch and resets camera follow.
+PrehistoricRush has a normalized versioned player-character profile and distributes it across menu, creator and game routes. The storage helper assigns `revision` by reading the previous complete snapshot and writing a new complete snapshot, while creator persistence is deferred through a 160 ms timeout and cross-tab events are accepted without monotonic ordering or duplicate suppression.
 
-That sequence is not a coordinated reset transaction. It does not reset or generation-bind Core Motion, Core Physics, articulated motion, articulated dynamics, patch-controller/Worker work, active-content state, renderer state or public readback. `Enter` calls the same path unconditionally during active gameplay, so reset can occur outside a terminal phase and outside authoritative TickContext.
+This is not a profile commit or convergence protocol. Two writers can produce conflicting snapshots with the same revision, a stale event can regress a projection, a pending creator timer can overwrite a remote update, and navigation can enter the game before the visible draft is durable.
 
 ## Plan ledger
 
-**Goal:** make run restart a typed, phase-admitted, generation-bound barrier that atomically commits all required participants and proves the first visible frame.
+**Goal:** make every profile mutation a typed, expected-predecessor command that commits one durable successor or returns zero-mutation rejection, then converge all projections and bind game boot to the accepted commit.
 
-- [x] Trace all start and restart sources.
-- [x] Trace product `start()` mutations.
-- [x] Trace Core Simulation, Motion, Physics and articulation state.
-- [x] Trace patch controller reset and Worker executor lifecycle.
-- [x] Trace active content, camera, renderer and public host state.
-- [x] Identify mixed-generation readback and visible-frame gaps.
-- [x] Reconcile all domains, kits and services.
-- [x] Define the parent domain and fixture boundary.
+- [x] Trace schema defaults, normalization and merge behavior.
+- [x] Trace storage capability, read, save, patch and reset.
+- [x] Trace BroadcastChannel, storage events and listener lifecycle.
+- [x] Trace creator draft, debounce, external updates, reset and navigation.
+- [x] Trace menu projection and game profile binding.
+- [x] Inventory all domains, kits and services.
+- [x] Define commit, conflict, delivery, navigation and visible-frame contracts.
 - [x] Publish the timestamped audit family.
 - [x] Refresh root routing and machine registry.
 - [x] Synchronize central tracking.
-- [ ] Implement and execute coordinated reset fixtures.
+- [ ] Implement and execute convergence fixtures.
 
 ## Source-backed current behavior
 
 ```txt
-product game.start()
-  -> previous = RunState
-  -> next = initialRunState()
-  -> next.runId = previous.runId + 1
-  -> next.status = game
-  -> lastTransitionStepId = null
-  -> coreSimulation.resetResolution()
-  -> replace RunState
-  -> replace InputState
-  -> emit RunStarted
-  -> request scene transition
+load
+  -> get localStorage if available
+  -> read one key
+  -> JSON.parse
+  -> normalize or return defaults
 
-browser start()
-  -> game.start()
-  -> adapter.refreshDynamicContent(newState)
-  -> updateStreaming(newState, primeCenter=true)
-  -> adapter.resetCamera(newState)
+save
+  -> load previous
+  -> successor revision = max(previous + 1, input revision)
+  -> normalize full snapshot
+  -> localStorage.setItem
+  -> BroadcastChannel post
+  -> local listeners
+  -> return profile object
 
-browser keydown
-  -> Enter always calls start()
-  -> no status or expected-run admission
+patch
+  -> load current profile
+  -> recursively merge patch
+  -> save complete snapshot
+
+subscribe
+  -> BroadcastChannel payload normalized and emitted
+  -> storage-event payload normalized and emitted
+  -> no revision/fingerprint/event admission
+
+creator
+  -> mutate draft and preview immediately
+  -> schedule 160 ms patch save
+  -> replace draft on external event
+  -> keep pending timer alive
+  -> navigate without save flush
+
+game
+  -> load profile once before composition
+  -> use profile creature descriptor for the run
+  -> expose profileId and revision only
 ```
 
-## Reset participant matrix
+## Concrete race paths
+
+### Same-predecessor writers
 
 ```txt
-product run/input: reset directly
-Core Simulation: resolution result reset only
-Core Motion: no reset call
-Core Physics: no explicit body/request/frame reset
-articulated motion: no reset call
-articulated dynamics: no reset call
-patch controller: reset API exists but is not called
-Worker executor: dispose API exists but no restart barrier is used
-active content: rebuilt from current active patch map
-camera follow: reset directly
-renderer animation time: preserved implicitly
-public host: exposes independently advancing participant snapshots
-visible frame: no reset transaction acknowledgement
+Tab A reads revision R
+Tab B reads revision R
+Tab A writes snapshot A as R+1
+Tab B writes snapshot B as R+1
+last complete snapshot wins
+no conflict or same-revision divergence is reported
 ```
 
-## Concrete mismatch paths
-
-### Mid-run Enter
+### Remote update during local debounce
 
 ```txt
-run N active
-  -> Enter
-  -> run N+1 product state commits immediately
-  -> terminal phase was not required
-  -> other participants have no prepare/commit barrier
+creator A schedules patch from draft R
+creator B commits R+1
+A receives R+1 and replaces visible draft
+A's old timer still fires
+A merges predecessor-derived nested patch and writes R+2
+an overlapping B field can be silently replaced
 ```
 
-### Split readback between event and next RAF
+### Duplicate or stale delivery
 
 ```txt
-game snapshot: run N+1
-Core Motion current/history: may still cite run N tick/frame
-Core Physics frame/body: may still cite run N
-patch controller: previous queue/cache/inflight work remains
-renderer: no new-run frame has been submitted
+one commit is delivered through BroadcastChannel and storage event
+both are accepted
+or an older cross-writer event arrives after a newer event
+projection is replaced without monotonic admission
 ```
 
-### Asynchronous patch result crossing reset
+### Immediate navigation
 
 ```txt
-run N request is inflight
-  -> run N+1 starts
-  -> no workerRequestGeneration changes
-  -> response resolves into the same controller
-  -> no result classifies it as predecessor-run work
+creator shows Saving and updated preview
+player clicks Play or Menu before 160 ms
+beforeunload disposes preview only
+pending commit is not flushed or acknowledged
+game/menu can load predecessor profile
 ```
 
-### Partial presentation reset
+### Storage failure
 
 ```txt
-camera returns to new-run target
-active content changes through host rebuild and activation budget
-motion/physics/articulation/render participants return no reset receipts
-first visible frame has no compatible-generation proof
+UI and preview already show new draft
+localStorage.setItem throws
+no typed durable/volatile result
+no rollback or navigation policy
 ```
 
 ## Domains in use
 
 ```txt
-page routes, profile lifecycle and creator
-runtime source identity, import map and module admission
-browser input, restart activation, RAF and public host
-Core Input, Spatial, Scene and Simulation
-Core Motion and articulated motion
-Core Physics and articulated dynamics
-Core Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
-seed, procedural creature, instanced batch, patch controller and camera follow
-product run, route, surface, score, outcome and articulation
-run identity, phase admission and reset generation
-reset participant preparation, commit, rollback and observations
-Rapier body, collider, request, contact and frame state
-Worker/fallback generation, queues, cache and active membership
-terrain, tree, grass, shard, pickup and collider materialization
-Three creature, camera, lighting, rendering and HUD
-runtime lifecycle and terminal disposal
-Node proof, static Pages deployment and audit tracking
-coordinated run-reset authority: missing
+route shells and browser lifecycle
+profile schema/defaults/normalization/deep merge
+profile identity/revision/time metadata
+localStorage capability/read/write/reset
+BroadcastChannel and storage-event distribution
+listener lifecycle
+creator draft/debounce/status/reset/navigation
+creator procedural preview and render lifecycle
+menu profile projection
+runtime module admission and game composition
+procedural creature generation and Three rendering
+public runtime readback
+Node tests, Pages deployment and audit tracking
+
+missing profile commit/convergence authority
 ```
 
 ## Kit and service census
@@ -147,27 +150,27 @@ coordinated run-reset authority: missing
 45 implemented/adapted/proof surfaces total
 ```
 
-The complete per-kit service inventory is retained in `.agent/kit-registry.json` and the current tracker.
+The full names and service lists are retained in `.agent/kit-registry.json` and the current tracker.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-coordinated-run-reset-authority-domain
+prehistoric-rush-player-character-profile-commit-convergence-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-restart source and phase are admitted before mutation
-one reset transaction creates exactly one next run generation
-all required participants prepare before any public commit
-all participant commit results cite the same reset transaction and run generation
-failure produces rollback or an explicit terminal fault, never silent partial reset
-predecessor browser, Worker, motion, physics and articulation results are rejected
-patch cache preservation follows one declared policy
-public readback is marked reset-in-progress until generations align
-first visible frame cites the committed reset result
-runtime disposal remains separate from reusable run reset
+one profile command ID produces at most one terminal result
+successor commit cites one expected predecessor revision and fingerprint
+conflicting writers cannot both claim the same successor history
+stale and duplicate delivery performs zero projection mutation
+remote commit rebases, conflicts or cancels every pending local save lease
+Saved is projected only from verified durable commit result
+navigation resolves pending save policy before route change
+reset invalidates predecessor drafts through an explicit barrier
+runtime binds one profile commit/fingerprint for the run
+first visible profile-dependent frame cites that binding
 ```
 
-The previous pose-contract and motion/presentation audits remain active dependencies. Coordinated reset must clear or rebind their predecessor state rather than replacing those authorities.
+The previous coordinated-reset, pose, motion and streamed-content audits remain active. Profile authority feeds them an immutable runtime binding rather than changing their ownership.
