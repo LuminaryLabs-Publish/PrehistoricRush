@@ -1,142 +1,210 @@
-# Current Audit: PrehistoricRush Stream Cadence and Time Budget
+# Current Audit: PrehistoricRush Character Creator Draft and Preview Frame Authority
 
-**Updated:** `2026-07-11T19-09-25-04-00`
+**Updated:** `2026-07-11T21-00-00-04-00`
 
 ## Summary
 
-`PrehistoricRush` advances movement from elapsed seconds but advances streaming work from frame counts. Each RAF calls `controller.pump()` with a fixed maximum and calls `takeReadyPatches()` with a fixed activation maximum. The same route speed therefore receives different generation and activation throughput at different display refresh rates.
+`PrehistoricRush` now has working `game.html` and `charactercreator.html` hosts, a saved profile handoff into gameplay, one shared Three.js procedural-creature adapter, a real skinned-mesh showcase, damped compatible-topology morphing, topology crossfades, and a condensed centered creator UI.
 
-The source also clamps simulation delta to `0.05` seconds. Below 20 rendered frames per second, gameplay time slows relative to wall time while stream pump and activation still run once per rendered frame. Hidden-tab and throttled-frame behavior has no explicit suspension, catch-up or backlog-age contract.
+The current gap is no longer route existence or generator parity. The gap is authority across **draft edits, debounced persistence, preview transition, camera framing, and the first visible saved frame**.
+
+Two concrete defects remain:
+
+1. The debounce callback persists only the final captured partial patch. Rapid edits across different groups can cancel an earlier unsaved patch and then replace the in-memory draft with a stored profile that lacks that earlier edit.
+2. Draft edits reuse the last stored profile revision. The preview transition can therefore report `settled` while geometry is still morphing, because `appliedRevision` and `targetRevision` are numerically equal even though the descriptor changed.
+
+The new viewport framing pass also uses a local bind-pose geometry box and a scalar `span * 1.9` heuristic. It does not prove that the animated skinned creature fits the current horizontal and vertical field of view.
 
 ## Plan ledger
 
-**Goal:** define one clock, visibility and time-budget authority for simulation, patch generation, activation, physics, rendering and observation.
+**Goal:** establish one creator transaction that preserves every edit, commits one canonical profile revision, applies the exact descriptor to the preview, computes projection-correct framing, and acknowledges the first rendered frame carrying that committed profile.
 
-- [x] Compare Publish inventory against central tracking.
-- [x] Exclude `TheCavalryOfRome`.
-- [x] Detect current documentation writes in nominal-oldest `IntoTheMeadow` and recent `AetherVale` work.
-- [x] Select only `PrehistoricRush` as the oldest stable fallback.
-- [x] Trace RAF delta, engine tick, stream pump, activation, Worker completion, physics and render order.
-- [x] Identify the interaction loop, domains, complete kit inventory and services.
-- [x] Define time-budget, suspension, backlog, cadence-result and parity-fixture contracts.
-- [x] Add required root `.agent` outputs.
-- [ ] Implement and validate the authority.
+- [x] Compare the full ten-repository Publish inventory against central tracking.
+- [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
+- [x] Confirm all nine eligible repositories have central ledgers and root `.agent` state.
+- [x] Prioritize `PrehistoricRush` because substantive creator runtime changes landed after its previous audit.
+- [x] Trace creator controls, draft mutation, debounce save, profile store, cross-context updates, generator, morph/crossfade, framing, render and game handoff.
+- [x] Identify the interaction loop, domains, kits and offered services.
+- [x] Define draft, commit, transition, viewport-fit and visible-frame authority.
+- [x] Add timestamped architecture and system audits.
+- [ ] Implement the authority and executable fixtures.
 
 ## Repository selection
 
 ```txt
-accessible Publish repositories: 10
+accessible LuminaryLabs-Publish repositories: 10
 eligible non-Cavalry repositories: 9
-new or central-ledger-missing repositories: 0
-root-.agent-missing repositories: 0
-IntoTheMeadow: same-window fatal-runtime recovery documentation
-AetherVale: recent safe-entry progression documentation
-selected stable repository: PrehistoricRush
-excluded repository: TheCavalryOfRome
+central-ledger-missing eligible repositories: 0
+root-.agent-missing eligible repositories: 0
+
+selected: LuminaryLabs-Publish/PrehistoricRush
+reason: character creator UX, framing and workflow commits landed after the
+        previous 2026-07-11T19-09-25-04-00 audit
+excluded: LuminaryLabs-Publish/TheCavalryOfRome
+other Publish repositories changed: none
 ```
 
-Only `LuminaryLabs-Publish/PrehistoricRush` is changed in the Publish organization.
+## Complete interaction loops
 
-## Complete interaction loop
+### Menu and page routing
 
 ```txt
-module boot
-  -> load pinned Nexus Engine, Kits, ProtoKits, Three and Rapier
-  -> create engine, run domain, route and creature body
-  -> create Rapier runtime and actor
-  -> create patch generator, Worker executor and controller
-  -> create active-content and Three adapters
-  -> generate center patch synchronously
-  -> queue surrounding desired patches
-  -> install listeners, host and RAF
-
-RAF
-  -> sample wall-clock delta
-  -> clamp dt to 0.05 seconds
-  -> project browser booleans into game input
-  -> engine.tick(dt)
-  -> updateStreaming(state)
-     -> update focus and desired membership
-     -> release delivered patch IDs
-     -> start up to 2 Worker requests or 1 fallback request
-     -> activate at most 1 ready patch
-  -> set actor transform and step Rapier with dt
-  -> inspect collision and pickups
-  -> update camera and animation
-  -> render Three scene and HUD
-  -> request next RAF
+index.html / menu.html
+  -> load saved character profile
+  -> render active raptor summary
+  -> Character Creator -> charactercreator.html
+  -> Start Run -> game.html
 ```
 
-## Concrete cadence defect
+### Creator edit, preview and save
 
 ```txt
-refresh rate   activation budget/second   Worker-start budget/second   fallback-start budget/second
-30 Hz          30                         60                           30
-60 Hz          60                         120                          60
-120 Hz         120                        240                          120
+charactercreator.html
+  -> load profile into local draft
+  -> load pinned Nexus Engine, seed kit, creature kit and Three.js
+  -> create generator-backed creature descriptor
+  -> create shared-adapter SkinnedMesh
+  -> start preview RAF
+
+control input
+  -> merge a partial group patch into local draft
+  -> render controls
+  -> set preview target from draft
+  -> mark Saving
+  -> cancel previous 160 ms timer
+  -> schedule a timer that captures only this partial patch
+
+preview RAF
+  -> generate pose from current target descriptor
+  -> damp compatible geometry/material/scale or crossfade topology
+  -> compute local geometry bounding box
+  -> damp camera target and scalar distance
+  -> render
+  -> map transition mode to Ready or Updating
+
+debounce completion
+  -> reload stored profile
+  -> merge only the captured final partial patch
+  -> increment stored revision
+  -> write localStorage
+  -> broadcast profile
+  -> replace local draft with returned stored profile
+  -> set preview target again
+  -> mark Saved
 ```
 
-These are maximum admission rates before Worker latency and queue availability are considered. Player movement remains expressed in meters per second. The stream-work-to-distance ratio is therefore refresh-rate dependent.
-
-At less than 20 Hz, `dt` remains capped at `0.05`. Simulation advances at less than real time, but generation and activation continue once per rendered frame. On a hidden or heavily throttled tab, asynchronous Worker results can accumulate in controller state while activation remains limited to one patch on each later RAF.
-
-## Missing identities and results
+### Game handoff
 
 ```txt
-runtimeClockRevision
-visibilityRevision
-cadenceRevision
-frameSampleId
-simulationStepResult
-streamWorkBudget
-streamWorkSpent
-activationTimeBudget
-backlogOldestAge
-suspensionResult
-resumePlan
-cadenceAdmissionResult
-streamCadenceCommitResult
-firstVisibleCadenceFrameReceipt
-cadence journal
+game.html
+  -> load saved profile
+  -> pass profile.creature into createPrehistoricRushKitGraph
+  -> procedural-creature-body-kit creates game descriptor
+  -> shared Three adapter creates the player SkinnedMesh
+  -> Rapier uses the descriptor collision recommendation
+  -> gameplay pose and rendering consume the saved creature
 ```
+
+## Concrete draft-loss defect
+
+```txt
+stored profile: proportions A, material A
+
+edit Size
+  -> local draft becomes proportions B, material A
+  -> timer captures { proportions: B }
+
+within 160 ms edit Skin
+  -> local draft becomes proportions B, material B
+  -> first timer is cancelled
+  -> second timer captures { material: B }
+
+second timer commits
+  -> store reloads proportions A, material A
+  -> merges only { material: B }
+  -> stored result becomes proportions A, material B
+  -> returned profile replaces local draft
+  -> Size silently reverts to A
+```
+
+The preview can temporarily show both edits while the durable profile receives only the last group.
+
+## Concrete preview-state defect
+
+```txt
+stored revision: 12
+applied preview revision: 12
+
+unsaved slider edit
+  -> descriptor changes
+  -> draft revision remains 12
+  -> targetRevision remains 12
+  -> appliedRevision is already 12
+  -> getState() may report settled while vertices are still damping
+```
+
+Revision equality is therefore not sufficient to identify descriptor equality or visible-frame completion.
+
+## Concrete framing defect
+
+The creator currently computes framing from `mesh.geometry.boundingBox`, multiplies its center and size by mesh scale, and selects:
+
+```txt
+desiredDistance = clamp(max(sizeX, sizeY * 1.35, sizeZ) * 1.9, 4.4, 11)
+```
+
+This does not account for:
+
+```txt
+current viewport aspect ratio
+horizontal field of view
+animated skin deformation
+bone pose extents
+mesh rotation and complete world transform
+topology-crossfade union bounds
+screen-space margin
+near/far plane safety
+profile/descriptor/frame revision correlation
+```
+
+A centered local bind-pose box is useful as a fallback, but it is not proof that the visible animated creature is centered and unclipped.
 
 ## Domains in use
 
 ```txt
-route/page/profile authority
-module graph identity and pinned CDN loading
-Nexus Engine kit composition
-run simulation and scene transitions
-runtime clock, RAF and browser visibility
-route, surface and terrain height
-procedural creature body and animation
-seeded patch generation and Worker execution
-patch scheduling, cache, membership and frame-count budgets
-terrain, tree, grass, pickup, collider and height projection
-Rapier actor, fixed-collider and variable-step contact runtime
-collision and terminal-outcome admission
-camera reset and smooth follow
-Three scene/resources/rendering
-HUD, buttons and public diagnostics
-stream cadence and time-budget authority: missing
-world-readiness, committed-frame and reset-epoch authority: missing
-runtime lifecycle and disposal: missing
-fixtures and Pages deployment
+page routing and static host artifacts
+player-profile schema, normalization and persistence
+local draft editing and dirty-field accumulation
+cross-tab BroadcastChannel and storage synchronization
+pinned module/dependency identity
+Nexus Engine composition and scene routing
+procedural creature recipe, geometry, topology, skeleton, skinning and pose
+shared Three.js creature creation, damping, posing, opacity and disposal
+preview morph/crossfade transition
+preview viewport, camera fit, lighting, platform and render loop
+run simulation, input, route, score and outcomes
+seeded patch generation, Worker execution and controller
+terrain, tree, grass, pickup, collider and height consumers
+Rapier actor, fixed colliders, step and contacts
+camera smoothing and Three gameplay rendering
+HUD, host diagnostics and Pages deployment
+creator draft/commit/frame authority: missing
+stream cadence, readiness, frame, reset and lifecycle authorities: missing
 ```
 
 ## Complete kit inventory and services
 
-### Nexus Engine core
+### Nexus Engine core kits
 
 ```txt
 core-input-kit
   actions, bindings and input state
 core-spatial-kit
-  transforms and spatial query contract
+  transforms and spatial queries
 core-scene-kit
   scene registry, transitions and host descriptor
 core-physics-kit
-  physics-provider capability
+  physics-provider contract
 core-motion-kit
   motion capability
 core-camera-kit
@@ -161,13 +229,13 @@ core-composition-kit
 seed-kit
   deterministic seed and random streams
 procedural-creature-body-kit
-  recipe normalization, geometry, topology, skeleton, skinning,
-  collision recommendation, content hash, poses and snapshots
+  recipe normalization, descriptor generation, topology, geometry, skeleton,
+  skinning, collision recommendation, content hash, poses and snapshots
 instanced-render-batch-kit
   cell replace/release, flush, overflow, bounds, statistics and snapshots
 seeded-world-patch-controller-kit
   patch identity, focus, desired membership, cache, queue, executor,
-  ready/release delivery, per-call budgets, eviction, reset and snapshots
+  ready/release delivery, budgets, eviction, reset and snapshots
 camera-smooth-follow-kit
   position/look/quaternion damping, reset, teleport handling and snapshots
 ```
@@ -179,111 +247,128 @@ prehistoric-rush-domain-kit
   run lifecycle, input, route, surface, score, outcomes, events,
   scene transitions, player creature and snapshot
 player-character-schema-kit
-  defaults, normalization, clamps, color validation and merge
+  defaults, normalization, clamps, color validation and deep merge
 player-character-profile-store-kit
-  load, save, patch, reset, subscription, storage sync,
-  BroadcastChannel sync and close
+  load, save, patch, reset, revision increment, localStorage,
+  subscriptions, storage events, BroadcastChannel and close
 menu-page-kit
-  menu shell, profile projection and route links
+  menu shell, active-profile projection and route links
 character-creator-page-kit
-  draft editing, controls, preview, debounce save, reset and remote projection
+  condensed responsive layout, controls, local draft, debounce save,
+  reset, remote projection, showcase startup, resize and RAF
+character-preview-transition-kit
+  descriptor targeting, compatible morph, topology crossfade,
+  pose damping, revision observation and disposal
+three-procedural-creature-adapter-kit
+  SkinnedMesh creation, pose application, pose damping, topology comparison,
+  geometry/material/scale damping, opacity and disposal
 game-page-entry-kit
   3D runtime loading
 drunk-route-generator
-  samples, nearest query, progress, region classification and snapshot
+  samples, nearest query, progress, classification and snapshot
 player-raptor-preset-kit
-  creature recipe and capsule collision descriptor
+  default creature recipe and capsule collision descriptor
 prehistoric-patch-generator
   terrain, trees, grass, pickups, colliders, bounds and transferables
 prehistoric-patch-worker
-  initialization, generation, error protocol and transferable delivery
+  initialization, generation, request/error protocol and transferable delivery
 ```
 
 ### External and host adapter boundaries
 
 ```txt
-rapier-physics-domain-kit
-  Rapier world bridge, kinematic actor, fixed colliders, transforms,
-  variable timestep, contacts, snapshot and reset
 Three runtime module
-  scene graph, geometry, materials, instancing, skinning, camera,
-  lighting, fog, shadows and rendering
-Rapier runtime module
-  rigid bodies, colliders, queries and world stepping
+  scene graph, geometry, materials, skeletons, skinning, cameras, lighting,
+  fog, shadows, resizing and rendering
+Rapier runtime and rapier-physics-domain-kit
+  world bridge, actor, fixed colliders, transforms, step, contacts and reset
 message Worker executor adapter
   request correlation and asynchronous generation
 active-content consumer adapter
   patch render membership, pickup/collider projection and height sampling
-collision fallback adapter
-  descriptor XZ overlap and jump-height gate
-run failure adapter
-  contact/overlap to terminal game failure
+creator viewport framing adapter, currently inline
+  local bounds, damped camera target and heuristic distance
+creator persistence scheduler, currently inline
+  timer cancellation and partial-patch commit
 creature/camera/render host adapters
-  creature binding, pose, camera, light, shadows, HUD and host readback
+  gameplay creature binding, pose, camera, lighting, HUD and readback
 ```
 
 ## Required authority domain
 
 ```txt
-prehistoric-rush-stream-cadence-time-budget-authority-domain
-  -> runtime-clock-state-kit
-  -> frame-sample-kit
-  -> browser-visibility-state-kit
-  -> cadence-revision-kit
-  -> simulation-step-policy-kit
-  -> stream-work-time-budget-kit
-  -> generation-start-budget-kit
-  -> activation-time-budget-kit
-  -> stream-backlog-age-kit
-  -> stream-starvation-policy-kit
-  -> suspension-admission-kit
-  -> resume-catchup-plan-kit
-  -> cadence-admission-result-kit
-  -> stream-cadence-commit-kit
-  -> cadence-observation-kit
-  -> cadence-journal-kit
-  -> cadence-parity-fixture-kit
-  -> throttled-frame-fixture-kit
-  -> hidden-tab-resume-fixture-kit
+prehistoric-rush-character-creator-authority-domain
+  -> creator-edit-command-kit
+  -> creator-draft-id-kit
+  -> creator-draft-revision-kit
+  -> creator-dirty-field-set-kit
+  -> creator-debounce-policy-kit
+  -> creator-flush-command-kit
+  -> canonical-profile-write-kit
+  -> profile-write-result-kit
+  -> profile-conflict-result-kit
+  -> creature-descriptor-revision-kit
+  -> preview-transition-plan-kit
+  -> preview-transition-result-kit
+  -> posed-creature-bounds-kit
+  -> viewport-revision-kit
+  -> projection-correct-fit-kit
+  -> preview-frame-commit-kit
+  -> saved-visible-parity-kit
+  -> creator-observation-kit
+  -> creator-journal-kit
+  -> creator-draft-frame-fixture-kit
 ```
 
 ## Required transaction
 
 ```txt
-wall-clock and visibility observation
-  -> normalize frame sample
-  -> classify active, throttled, hidden or resumed state
-  -> derive bounded simulation-step policy
-  -> derive elapsed-time stream-work budget
-  -> admit generation starts by remaining budget and backlog age
-  -> admit ready activation by remaining budget and fairness policy
-  -> advance simulation and physics against the admitted clock revision
-  -> render world carrying cadence and world revisions
-  -> publish first-visible-frame cadence receipt
+control edit
+  -> allocate draft revision
+  -> merge into one canonical local draft
+  -> record dirty fields
+  -> generate descriptor with descriptor fingerprint
+  -> prepare morph or topology transition
+  -> compute posed/world-space bounds or declared conservative bounds
+  -> solve camera distance from vertical and horizontal FOV plus margin
+  -> render frame carrying draft/descriptor/viewport revisions
+  -> publish preview-frame receipt
+
+flush
+  -> capture the complete canonical draft, not one final partial patch
+  -> validate predecessor profile revision
+  -> commit one new profile revision or return conflict
+  -> broadcast committed result
+  -> require a preview frame carrying the committed profile revision
+  -> only then project Saved and Ready
 ```
 
 ## Acceptance conditions
 
 ```txt
-30, 60 and 120 Hz fixtures produce equivalent route progress and patch readiness over equal wall time
-stream starts and activation are bounded by elapsed time, not raw RAF count
-low-refresh clients receive a declared degradation policy instead of silent throughput loss
-hidden tabs do not accumulate unbounded stale work
-resume uses a bounded catch-up plan and rejects obsolete results
-simulation, Rapier, camera and render cite the same clock/cadence revision
-HUD and host expose actual backlog age, budget spent and cadence state
+rapid edits across Size, Body, Tail, Legs, Skin and Belly persist together
+cancelled timers never discard dirty fields
+remote writes return an explicit conflict or deterministic merge result
+preview state distinguishes draft, descriptor, applied-mesh and rendered-frame revisions
+Ready is impossible while a descriptor is still morphing
+Saved is impossible before durable write success
+Saved + Ready cites the same committed profile and visible frame
+portrait, square and wide viewports retain declared screen-space margins
+posed limbs, tail and topology crossfades remain inside the fitted frame
+creator and gameplay descriptors share the committed profile fingerprint
 ```
 
 ## Priority placement
 
 ```txt
-P0   route artifact and profile handoff
+P0   route artifacts and game profile handoff: substantially implemented
+P0a  character creator draft, commit and preview-frame authority: next
 P1   patch activation/release transaction
 P1a  exact collider retirement and collision admission
 P1b  stream cadence and time-budget authority
 P1c  world readiness and movement admission
-P2   committed-frame observation and host read model
-P3   run/stream/collider/worker/frame epoch reset authority
+P2   committed gameplay-frame observation and host read model
+P3   run/stream/collider/Worker/frame epoch reset
 P4   startup rollback, resource ownership and disposal
 ```
 
