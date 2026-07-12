@@ -1,6 +1,6 @@
 # Validation: PrehistoricRush Motion / Articulation / Presentation Parity
 
-**Updated:** `2026-07-12T12-01-04-04-00`
+**Updated:** `2026-07-12T12-08-05-04-00`
 
 ## Scope
 
@@ -21,6 +21,7 @@ Documentation-only review of PrehistoricRush runtime source through `68c821a4864
 - [x] Review game and creator pose/render paths.
 - [x] Review the current Node articulation test.
 - [x] Confirm no end-to-end consumption or visible-frame proof exists.
+- [x] Publish and reconcile the complete `12-08-05` audit family.
 - [x] Change no runtime source, dependencies or deployment configuration.
 - [x] Create no branch or pull request.
 
@@ -30,7 +31,7 @@ Documentation-only review of PrehistoricRush runtime source through `68c821a4864
 verified game and creator import maps pin Nexus Engine cf2fe3d...
 verified runtime-versions pins final Core Motion runtime
 verified createCoreMotionDomain installs root and articulated-motion domains
-verified createCorePhysicsDomain composition is required by product graph
+verified createCorePhysicsDomain installs root and articulated-dynamics domains
 verified final engine.coreMotion alias preserves built-in and extension APIs
 verified runSystem submits intent and commits Core Motion frame
 verified same motion request is separately submitted to Core Physics
@@ -93,7 +94,7 @@ deployment changed by audit: no
 branch created: no
 pull request created: no
 .agent documentation changed: yes
-central ledger change: pending at repo-local validation time
+central ledger and internal change log synchronized: yes
 ```
 
 ## Completion boundary
