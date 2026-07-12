@@ -1,58 +1,62 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T00-30-49-04-00`
+**Updated:** `2026-07-12T02-21-55-04-00`
 
 ## Summary
 
-The leading startup gap is runtime module graph admission. Current source pins and HTML import maps are aligned, but loaded modules, export contracts, optional-provider selection, public diagnostics and visible frames do not share one admitted graph fingerprint.
+The current leading presentation gap is render-surface authority. Creator and gameplay use separate size-observation rules, both sample DPR only at startup, and neither publishes an accepted physical-size result or first-frame acknowledgement.
 
 ## Plan ledger
 
-**Goal:** close source-identity and compatibility gaps through the existing startup and lifecycle owners while preserving every prior product authority gap.
+**Goal:** close surface policy and frame-correlation gaps through existing renderer, camera, diagnostics and lifecycle owners while preserving every prior product authority gap.
 
-- [x] Reconcile current source pins with internal records.
-- [x] Add graph, provider, frame and fixture gaps.
-- [x] Preserve route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
+- [x] Add CSS-size, DPR, physical-buffer, revision and frame gaps.
+- [x] Preserve runtime graph, route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
 - [ ] Implement in dependency order.
 
-## Runtime module graph gaps
+## Render-surface gaps
 
 ```txt
-no canonical runtime module manifest result
-no graph-wide compatibility policy result
-no sourceGraphFingerprint
-no typed per-module load result
-selected factory checks do not cover the complete graph
-no runtime proof that loaded URL equals declared immutable ref/version
-no explicit import-map parity receipt
-no admitted active-capability set
-Rapier null fallback is not a typed provider decision
-no graph admission journal
-no public immutable admission read model
+no shared creator/game surface policy
+no stable surface ID
+no monotonic surface revision
+no coherent CSS-size and DPR observation
+no named quality tier
+no maximum physical-pixel budget
+gameplay does not observe actual host bounds
+gameplay does not resample DPR after startup
+creator does not resample DPR after startup
+no stale or duplicate resize rejection
+no renderer/camera atomic commit result
+no actual drawing-buffer receipt
+no creator/game parity result
+no first post-resize frame acknowledgement
+no detached public surface observation
 ```
 
 ## Frame and diagnostics gaps
 
 ```txt
-HUD and canvas carry no sourceGraphFingerprint
-first visible frame does not cite graph admission
-PrehistoricRushHost.versions repeats constants only
-host readback does not prove import-map resolution or loaded exports
-physics provider is not identified in committed frame evidence
+committed gameplay frames do not cite a surface revision
+HUD state does not cite physical render dimensions
+PrehistoricRushHost exposes mutable renderer ownership
+host readback contains no surface policy, revision or actual size
+no proof the latest simulation state was visibly presented through the latest surface commit
 ```
 
-## Startup failure gaps
+## Lifecycle gaps
 
 ```txt
-required imports collapse to null before aggregate failure
-no graph-level rejection reason bundle
-no proof rejected startup leaves no Worker, renderer, listeners, RAF or host
-no retry generation or admission revision
+gameplay global resize listener is not leased through a runtime session owner
+late resize observations are not generation-fenced
+surface observers/listeners have no retirement receipt
+surface state has no reset or clean-restart baseline
 ```
 
 ## Preserved gaps
 
 ```txt
+runtime module graph admission and source fingerprint
 route/profile artifact handoff
 creator draft/commit/preview convergence
 patch activation/release acknowledgement
@@ -69,22 +73,26 @@ startup rollback and ordered disposal
 ## Missing proof matrix
 
 ```txt
-module manifest and fingerprint fixtures
-import-map parity fixtures
-required module/export rejection fixtures
-compatibility-policy fixtures
-Rapier/fallback provider fixtures
-rejected-startup quiescence fixture
-first-frame source provenance fixture
-public admission read-model fixture
-browser and Pages source-graph smoke
-all previously documented gameplay/runtime fixtures
+surface policy fixtures
+creator container resize fixture
+gameplay host resize fixture
+DPR change fixture
+pixel-budget fixture
+zero-area policy fixture
+stale/duplicate observation fixtures
+actual renderer/camera readback fixture
+creator/game parity fixture
+surface/frame acknowledgement fixture
+late observation after disposal fixture
+browser and Pages surface smoke
+all previously documented runtime/gameplay fixtures
 ```
 
 ## Priority
 
 ```txt
 0 runtime module graph admission
+0a render-surface authority
 1 route/profile
 2 creator
 3 patch activation/release
@@ -97,4 +105,4 @@ all previously documented gameplay/runtime fixtures
 9 lifecycle/disposal
 ```
 
-Do not treat declared constants, successful import, factory presence or a visible frame as graph-admission proof by themselves.
+Do not treat requested CSS dimensions or a successful `renderer.setSize()` call as proof of physical resolution or visible-frame commitment.
