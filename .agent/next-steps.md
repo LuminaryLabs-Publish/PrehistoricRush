@@ -1,92 +1,111 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T11-21-01-04-00`
+**Updated:** `2026-07-12T12-01-04-04-00`
 
 ## Plan ledger
 
-**Goal:** close the stream/content parity gap without creating a second simulation or renderer owner in the browser host.
+**Goal:** turn the installed Core Motion, articulated-motion, Core Physics and articulated-dynamics domains into one consumed, revisioned player-motion result without moving renderer ownership into the engine core.
 
-### Gate 0: preserve implemented outcome authority
-- [ ] Keep movement, collision, pickup and goal arbitration in Nexus Engine `core-simulation`.
+### Gate 0: preserve existing authorities
+- [ ] Keep run movement and outcome arbitration inside the current product/Core Simulation boundary.
 - [ ] Preserve collision-over-goal precedence and duplicate-pickup rejection.
-- [ ] Keep the product policy renderer-agnostic.
+- [ ] Preserve the current streamed-content parity work as an independent active dependency.
+- [ ] Keep Core Motion and articulated motion renderer-neutral.
 
-### Gate 1: content snapshot identity
-- [ ] Add monotonic `activeContentRevision`.
-- [ ] Add deterministic active patch-set digest.
-- [ ] Add collider-set and pickup-set digests.
-- [ ] Include stream/controller generation and run epoch.
-- [ ] Publish an immutable `ActiveContentSnapshot`.
+### Gate 1: motion identity and physics linkage
+- [ ] Add monotonic `motionSourceRevision` per admitted run step.
+- [ ] Add browser input sequence and run-generation identity.
+- [ ] Include `coreMotionFrameId` on every product physics motion request.
+- [ ] Return a typed physics-consumption result with request and physics-frame IDs.
+- [ ] Reject physics requests that cite a retired or unknown Core Motion frame.
 
-### Gate 2: pre-tick admission
-- [ ] Decide release/activation deltas before outcome observation.
-- [ ] Prepare terrain/tree/grass/shard/pickup/collider changes without publishing them.
-- [ ] Admit one content snapshot for pickup and collision sampling.
-- [ ] Reject stale Worker and patch results.
-- [ ] Bound activation/materialization work.
+### Gate 2: explicit presentation policy
+- [ ] Add a versioned player motion/presentation profile.
+- [ ] Declare gameplay pose mode: `articulated-motion` or `legacy-procedural`.
+- [ ] Declare creator pose mode independently but comparably.
+- [ ] Convert legacy use into a typed fallback result with a reason.
+- [ ] Include creature profile, skeleton and rig fingerprints.
 
-### Gate 3: outcome provenance
-- [ ] Add content revision to run, pickup and goal proposal context.
-- [ ] Add content revision to physics and fallback observations.
-- [ ] Reject mixed-revision proposals/observations.
-- [ ] Return typed content provenance in the product outcome result.
-- [ ] Project provenance into the public committed read model.
+### Gate 3: articulated result consumption
+- [ ] Adopt the player rig through one revisioned receipt.
+- [ ] Build a target plan from committed gameplay and terrain state.
+- [ ] Call articulated solving against the admitted motion revision.
+- [ ] Return typed articulated pose/frame results.
+- [ ] Reject results from a predecessor run, profile or rig generation.
+- [ ] Keep articulated dynamics explicitly inactive until physical joints/motors are configured.
 
-### Gate 4: atomic content and physics commit
-- [ ] Commit active patches, visible instances and physics colliders together.
-- [ ] Roll back all consumers when one participant fails.
-- [ ] Retire predecessor tree cells, terrain slots and colliders exactly once.
-- [ ] Coalesce release and activation into one materialization pass.
+### Gate 4: renderer and visible-frame proof
+- [ ] Select exactly one pose result per player frame.
+- [ ] Apply only the selected result to the Three.js skeleton.
+- [ ] Record applied, missing and rejected bone IDs.
+- [ ] Commit a renderer bone-application receipt.
+- [ ] Add first-visible-frame acknowledgement containing run, motion, physics, pose and renderer IDs.
+- [ ] Project a detached parity result through the public host.
 
-### Gate 5: visible-frame proof
-- [ ] Add first-visible-frame acknowledgement with tick, simulation and content revisions.
-- [ ] Prove released colliders cannot cause invisible failures.
-- [ ] Prove newly visible colliders/pickups are not rendered before admission.
-- [ ] Prove browser and deployed Pages behavior match.
+### Gate 5: creator/game parity
+- [ ] Install or explicitly emulate the same motion profile in the creator.
+- [ ] Prove creator and game use the same profile, skeleton and rig fingerprints.
+- [ ] Separate preview-only turntable motion from gameplay locomotion semantics.
+- [ ] Reject stale preview pose work after profile replacement or teardown.
+
+### Gate 6: reset and lifecycle
+- [ ] Retire predecessor input, intent, motion-frame and pose results on run restart.
+- [ ] Reset Core Motion, articulated motion and optional articulated dynamics in one transaction.
+- [ ] Revoke renderer consumers before disposing or replacing the player mesh.
+- [ ] Prove creator teardown retires preview RAF and pose consumers.
+
+### Gate 7: executable proof
+- [ ] Add exact pinned-module admission fixtures.
+- [ ] Add headless composed-tick motion/physics linkage fixture.
+- [ ] Add legacy fallback and articulated solve selection fixtures.
+- [ ] Add stale run/profile pose rejection fixtures.
+- [ ] Add Three bone-application and first-visible-frame fixtures.
+- [ ] Add browser and deployed Pages parity smokes.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-streamed-content-outcome-parity-authority-domain
-active-content-revision-kit
-active-patch-set-digest-kit
-collider-set-digest-kit
-pickup-set-digest-kit
-stream-generation-kit
-active-content-snapshot-kit
-stream-delta-command-kit
-stream-delta-admission-kit
-content-prepare-plan-kit
-content-participant-result-kit
-content-observation-context-kit
-physics-content-observation-kit
-fallback-content-observation-kit
-pickup-content-observation-kit
-mixed-content-revision-rejection-kit
-outcome-content-provenance-kit
-content-physics-commit-kit
-content-physics-rollback-kit
-stale-worker-content-rejection-kit
-content-parity-observation-kit
-content-parity-journal-kit
-visible-content-frame-ack-kit
-released-collider-false-positive-fixture-kit
-activated-content-false-negative-fixture-kit
-browser-stream-outcome-parity-smoke-kit
+prehistoric-rush-motion-presentation-parity-authority-domain
+motion-source-revision-kit
+motion-intent-sequence-kit
+motion-frame-provenance-kit
+physics-motion-request-link-kit
+articulated-rig-adoption-kit
+articulated-target-plan-kit
+articulated-pose-result-kit
+presentation-pose-selection-kit
+legacy-pose-fallback-policy-kit
+creator-motion-profile-kit
+game-motion-profile-kit
+creator-game-motion-parity-kit
+renderer-bone-application-result-kit
+motion-presentation-frame-ack-kit
+stale-pose-result-rejection-kit
+motion-presentation-observation-kit
+motion-presentation-journal-kit
+game-core-motion-to-render-fixture-kit
+articulated-solve-consumption-fixture-kit
+creator-game-pose-parity-fixture-kit
+physics-motion-frame-parity-fixture-kit
+browser-motion-presentation-smoke-kit
+pages-motion-presentation-smoke-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:policy-baseline
-fixture:released-collider-no-invisible-failure
-fixture:activated-tree-not-visible-before-admission
-fixture:activated-pickup-not-visible-before-admission
-fixture:mixed-revision-rejection
-fixture:content-physics-rollback
-fixture:stale-worker-result-rejection
-fixture:first-visible-content-frame
-browser stream traversal matrix
-Pages stream traversal smoke
+fixture:pinned-core-motion-source
+fixture:composed-motion-physics-tick
+fixture:physics-motion-frame-link
+fixture:typed-legacy-pose-fallback
+fixture:articulated-zero-target-consumption
+fixture:stale-run-pose-rejection
+fixture:creator-game-motion-profile-parity
+fixture:renderer-bone-application
+fixture:first-visible-motion-pose-frame
+browser game/creator matrix
+Pages game/creator smoke
 ```
+
+Do not remove the legacy pose path until an explicit articulated result has equivalent or better deterministic, visual and reset proof.
