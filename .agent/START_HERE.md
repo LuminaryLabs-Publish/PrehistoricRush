@@ -1,48 +1,48 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T11-11-34-04-00`  
+**Last aligned:** `2026-07-12T11-21-01-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-PrehistoricRush now resolves movement, physics/fallback collision, pickup admission, goal evaluation, events and terminal transitions through Nexus Engine `core-simulation`.
+PrehistoricRush resolves movement, physics/fallback collision, pickup admission, goal evaluation, events and terminal transitions through Nexus Engine `core-simulation`.
 
-The current audit isolates the next authority gap: the tick resolves against the previous host-frame collider and pickup set, then the browser releases and activates streamed patches, rebuilds visible content, replaces physics colliders and renders. The committed simulation frame and visible frame therefore do not prove that they used the same streamed-content revision.
+The current audit isolates streamed-content parity. The tick samples the previous host-frame collider and pickup set. After outcome commit, the browser may release or activate patches, rebuild visible content, replace physics colliders and render a different world set. No shared content revision or visible-frame receipt proves that simulation and rendering used the same snapshot.
 
 ## Plan ledger
 
-**Goal:** make each run outcome cite the exact active patch, collider, pickup and visible-content revision used for simulation and rendering.
+**Goal:** make every committed gameplay outcome and its first visible frame cite one immutable active-content revision.
 
 - [x] Compare all ten accessible Publish repositories with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all nine eligible repositories have central ledger and root `.agent` coverage.
-- [x] Select only `PrehistoricRush` because runtime, pin and module-admission commits postdate its central audit.
-- [x] Trace Nexus Engine proposal, observation, resolution and committed-frame behavior at the pinned runtime revision.
-- [x] Trace patch release, generation, activation, content rebuild, physics collider replacement and render ordering.
-- [x] Identify the full interaction loop, domains, 41 implemented/adapted/proof surfaces and services.
-- [x] Define streamed-content revision, observation admission, atomic commit and visible-frame proof contracts.
-- [x] Refresh required root `.agent` files and add a timestamped audit family.
+- [x] Select only `PrehistoricRush` because it had the oldest eligible central entry and newer repo-local audit state.
+- [x] Trace engine tick, patch release/activation, content rebuild, collider synchronization, rendering and public readback.
+- [x] Identify the interaction loop, domains, 41 kit/proof surfaces and services.
+- [x] Define streamed-content revision, observation admission, atomic commit, rollback and visible-frame proof.
+- [x] Add a complete timestamped tracker and audit family.
+- [x] Refresh required root `.agent` state and machine registry.
 - [x] Push `LuminaryLabs-Publish/PrehistoricRush` directly to `main`.
 - [x] Synchronize `LuminaryLabs-Dev/LuminaryLabs` directly to `main`.
 - [x] Create no branch or pull request.
-- [ ] Runtime implementation and executable stream/outcome parity fixtures remain future work.
+- [ ] Runtime implementation and executable parity fixtures remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T11-11-34-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T11-21-01-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T11-11-34-04-00-streamed-content-outcome-parity-dsk-map.md
-.agent/render-audit/2026-07-12T11-11-34-04-00-post-tick-stream-visible-collider-gap.md
-.agent/gameplay-audit/2026-07-12T11-11-34-04-00-stale-collider-pickup-resolution-loop.md
-.agent/interaction-audit/2026-07-12T11-11-34-04-00-stream-revision-outcome-result-map.md
-.agent/streaming-authority-audit/2026-07-12T11-11-34-04-00-content-revision-observation-commit-contract.md
-.agent/deploy-audit/2026-07-12T11-11-34-04-00-stream-outcome-parity-fixture-gate.md
-.agent/turn-ledger/2026-07-12T11-11-34-04-00.md
+.agent/architecture-audit/2026-07-12T11-21-01-04-00-streamed-content-outcome-parity-dsk-map.md
+.agent/render-audit/2026-07-12T11-21-01-04-00-post-tick-stream-visible-content-gap.md
+.agent/gameplay-audit/2026-07-12T11-21-01-04-00-stale-collider-pickup-resolution-loop.md
+.agent/interaction-audit/2026-07-12T11-21-01-04-00-stream-revision-outcome-result-map.md
+.agent/streaming-authority-audit/2026-07-12T11-21-01-04-00-content-revision-observation-commit-contract.md
+.agent/deploy-audit/2026-07-12T11-21-01-04-00-stream-outcome-parity-fixture-gate.md
+.agent/turn-ledger/2026-07-12T11-21-01-04-00.md
 .agent/kit-registry.json
 ```
 
@@ -50,71 +50,58 @@ The current audit isolates the next authority gap: the tick resolves against the
 
 ```txt
 boot
-  -> preload and import pinned Nexus Engine, kits, Rapier and Three modules
-  -> compose 13 core kits, 5 official kits and product domain
-  -> install Rapier provider, dino body, patch controller, camera and renderer
-  -> start run, prime center patch and reset camera
+  -> import pinned Nexus Engine, Kits, ProtoKits, Three and Rapier modules
+  -> compose engine, product, physics, streaming, camera and render owners
+  -> direct game.start()
+  -> prime center patch and reset camera
 
 frame
   -> patch browser input into product input state
   -> engine.tick(dt)
-     -> derive next movement state
-     -> sample adapter.view.pickups from the previous host frame
-     -> submit kinematic motion request
-     -> step physics against the previous synced collider set
-     -> sample fallback collision against the previous adapter collider set
-     -> resolve collision, pickups and goal
-     -> commit run state, events and optional terminal transition
-  -> read committed run state
-  -> remove accepted pickups from visible content
-  -> update patch-controller focus
-  -> release patches and rebuild all active content
-  -> pump generation
-  -> activate at most one ready patch and rebuild all active content
-  -> sync the new collider set to core physics
-  -> render the new visible content set
-  -> publish HUD and host readback
+     -> movement/run proposal
+     -> pickup sampling from previous adapter view
+     -> Rapier and fallback collision observations from previous collider set
+     -> product outcome resolution and commit
+  -> rebuild accepted pickup visibility
+  -> release patches and rebuild content/colliders
+  -> generate and activate ready patches
+  -> rebuild content/colliders again
+  -> render resulting world
+  -> update HUD and public host readback
 ```
 
 ## Main finding
 
 ```txt
 simulation observation set: previous host-frame content
-post-tick rendered set:      newly released/activated content
-shared content revision:     absent
-shared active patch digest:  absent
-shared collider digest:      absent
-shared pickup digest:        absent
+post-tick rendered set: newly released/activated content
+shared active-content revision: absent
+shared active patch digest: absent
+shared collider digest: absent
+shared pickup digest: absent
 visible-frame acknowledgement: absent
 ```
 
-This permits two opposite failures:
-
-```txt
-released-after-tick collider
-  -> may cause a committed failure
-  -> is absent from the frame rendered after streaming
-
-activated-after-tick collider or pickup
-  -> can be visible in the rendered frame
-  -> was not admitted to that tick's collision or pickup resolution
-```
+This permits a released collider to commit a failure while being absent from the displayed frame, and a newly activated collider or pickup to appear before it participates in outcome resolution.
 
 ## Domains and kit groups
 
 ```txt
 routes, profile and character creator
 runtime source identity, import preflight and pinned module graph
-Nexus Engine input, spatial, scene, physics, simulation, motion, camera, animation, graphics, skybox, UI, diagnostics and composition
-seed, procedural creature, instanced batch, patch controller and camera follow
-product run, route, surface, proposals, observations, resolution, events and transitions
+13 Nexus Engine core kits
+5 official NexusEngine-Kits
+13 product/page/Worker kits
+9 external/host adapters
+1 outcome-policy proof kit
+product run, proposal, observation, resolution, event and transition
 Worker/fallback patch generation, queue, cache, release and activation
-terrain slots, tree cells, grass instances, shards, pickups and colliders
-Rapier provider, kinematic body, motion request, step and contacts
+terrain, trees, grass, shards, pickups and colliders
+Rapier provider, body, motion, contacts and fallback collision
 Three scene, creature pose, camera, lighting, rendering and HUD
 public host and committed tick/simulation/physics/stream/camera readback
 validation, static build and Pages deployment
-stream/content revision admission and simulation/render parity: missing
+streamed-content/outcome parity authority: missing
 ```
 
 ## Required parent domain
@@ -123,7 +110,7 @@ stream/content revision admission and simulation/render parity: missing
 prehistoric-rush-streamed-content-outcome-parity-authority-domain
 ```
 
-It coordinates active-content revisions, patch-set and collider/pickup digests, pre-tick stream admission, immutable observation context, stale-result rejection, atomic content/physics commit, outcome provenance and first-visible-frame acknowledgement.
+It coordinates active-content identity, patch/collider/pickup digests, stream-delta admission, immutable observation context, mixed-revision rejection, atomic content/physics commit, rollback, stale Worker rejection, outcome provenance and first-visible-frame acknowledgement.
 
 ## Ordered implementation queue
 
