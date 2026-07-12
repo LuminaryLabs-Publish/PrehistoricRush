@@ -1,0 +1,38 @@
+name: Repair live creator workflow guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .agent/repair-live-creator-workflow
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Narrow obsolete preview guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/apply-live-procedural-character-creator.yml')
+          text = path.read_text()
+          old = "          if grep -F 'preview.innerHTML = `' src/pages/character-creator.js; then\n            echo 'CSS creature preview remains' >&2\n            exit 1\n          fi"
+          new = "          if grep -F 'border-radius:55% 48% 45% 55%' src/pages/character-creator.js; then\n            echo 'CSS creature preview remains' >&2\n            exit 1\n          fi"
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one broad preview guard, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/apply-live-procedural-character-creator.yml
+          git commit -m "Narrow live creator obsolete preview guard"
+          git push origin HEAD:main
