@@ -1,69 +1,69 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T05-21-52-04-00`
+**Updated:** `2026-07-12T07-09-49-04-00`
 
 ## Summary
 
-Implement one browser-input command authority before further gameplay expansion. It must route button and keyboard observations through the installed core input capability, distinguish edges from holds, reject repeat/stale commands, retire state at lifecycle barriers and correlate accepted input with simulation and visible frames.
+Implement one active-content materialization authority after patch activation/release admission. It must coalesce membership changes, budget work, prepare terrain/tree/grass/shard/collider consumers, atomically commit one revision and correlate gameplay, physics, rendering and readback with that revision.
 
 ## Plan ledger
 
-**Goal:** prevent active-run replacement, repeat-generated start/jump edges and parallel input ownership while preserving responsive steering, boost and jump controls.
+**Goal:** remove repeated full-set rebuilds from the streaming frame while preserving deterministic patch content and exact cross-consumer parity.
 
-- [ ] Define normalized input source, code, modality and repeat descriptors.
-- [ ] Add monotonic sample IDs and command IDs.
-- [ ] Define edge actions: start, retry, jump and optional explicit restart.
-- [ ] Define held actions: steer-left, steer-right and boost.
-- [ ] Reject browser repeat as a source of new edge commands.
-- [ ] Require release before a second edge from the same source/code.
-- [ ] Gate start/retry/restart against current phase and run revision.
-- [ ] Route the button through the same semantic command adapters as keyboard input.
-- [ ] Replace the browser-local held-state owner with a core-input adapter.
-- [ ] Produce one immutable input snapshot per simulation step.
-- [ ] Return typed command and step-consumption results.
-- [ ] Retire held state on keyup, blur, visibility hidden, reset and disposal.
-- [ ] Reject predecessor-run and stale-generation commands.
-- [ ] Project detached input observations through diagnostics and host readback.
-- [ ] Acknowledge the first frame consuming each accepted input revision.
+- [ ] Define `ActiveContentRevision` and canonical patch-set digest.
+- [ ] Define aggregate `PatchContentDelta` with releases and activations.
+- [ ] Bind commands to runtime generation, run ID and stream epoch.
+- [ ] Coalesce release and activation observations before mutation.
+- [ ] Define elapsed-time and deterministic work-unit budgets.
+- [ ] Derive patch-local terrain slot changes.
+- [ ] Derive tree cell replace/release plans.
+- [ ] Derive grass matrix additions/removals and compaction policy.
+- [ ] Derive shard/pickup additions/removals using collection revision.
+- [ ] Derive fixed-collider additions/removals for Rapier and fallback collision.
+- [ ] Prepare required consumers without exposing partial state.
+- [ ] Validate capacity and overflow before commit.
+- [ ] Commit every required consumer under one content revision.
+- [ ] Roll back or preserve predecessor on failure.
+- [ ] Retire predecessor resources exactly once.
+- [ ] Reject stale runtime/run/stream/content plans.
+- [ ] Publish detached work, timing, parity and rollback observations.
+- [ ] Acknowledge the first visible frame using the committed content revision.
 - [ ] Execute deterministic, browser and Pages fixtures.
 
 ## Required command
 
 ```txt
-InputCommand {
+MaterializationCommand {
   commandId
   runtimeGeneration
   runId
-  expectedRunRevision
-  sampleId
-  source
-  code
-  action
-  semanticKind
-  phase
-  repeat
+  streamEpoch
+  controllerId
+  predecessorContentRevision
+  releasedPatchIds
+  activationCandidates
   observedAt
+  workBudget
 }
 ```
 
 ## Required result
 
 ```txt
-InputCommandResult {
+MaterializationResult {
   status
   reason
   commandId
-  sampleId
-  runtimeGeneration
-  runId
-  action
-  semanticKind
-  beforeInputRevision
-  afterInputRevision
-  edgeAccepted
-  holdState
-  idempotentReplay
-  consumedSimulationStepId
+  predecessorContentRevision
+  committedContentRevision
+  releasedPatchIds
+  activatedPatchIds
+  deferredPatchIds
+  workBudget
+  workConsumed
+  consumerResults
+  patchSetDigest
+  rollbackResult
   visibleFrameId
 }
 ```
@@ -77,7 +77,8 @@ InputCommandResult {
 1. Route/Profile Artifact Proof
 2. Creator Draft/Commit/Preview Authority
 3. Patch Activation and Release Commit Authority
-3a. Shard Identity, Collection Commit and Visible Removal Authority
+3a. Active Content Materialization and Coalescing Authority
+3b. Shard Identity, Collection and Visible Removal Authority
 4. Collider Replacement and Admission
 5. Run-Step Outcome and Terminal Frame
 6. Stream Cadence and Time Budget
@@ -91,22 +92,23 @@ InputCommandResult {
 ## Required fixtures
 
 ```txt
-active-run Enter rejection
-single accepted start under held Enter
-single jump edge under held Space
-release/press second jump edge
-button/keyboard start parity
-button/keyboard jump parity
-wrong phase/run/revision rejection
-duplicate command receipt
-held steer/boost press-repeat-release
-blur retirement
-visibility retirement
-run reset retirement
-runtime disposal retirement
-immutable per-step input snapshot
-input/state/frame correlation
-browser and Pages input smoke
+single activation delta
+single release delta
+release plus activation coalescing
+multiple release coalescing
+no-op membership update
+capacity deferral before mutation
+full-rebuild fallback admission
+consumer prepare failure
+consumer commit failure and rollback
+stale runtime/run/stream/content rejection
+30/60/120 Hz work parity
+Worker/fallback generation parity
+Rapier/fallback collider digest parity
+controller/render/physics patch-set parity
+first visible-frame acknowledgement
+long traversal budget and retention stability
+browser and Pages stream materialization smoke
 ```
 
-Do not create another keyboard state owner. Adapt the existing listeners and button into `core-input-kit`, then make `prehistoric-rush-domain-kit` consume the resulting per-step snapshot.
+Do not create a second patch controller or independent render membership owner. Convert the current active-content adapter into a consumer of one aggregate controller delta.
