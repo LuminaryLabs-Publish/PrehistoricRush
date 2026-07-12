@@ -5,6 +5,18 @@ function materialsOf(mesh) {
   return Array.isArray(mesh?.material) ? mesh.material : mesh?.material ? [mesh.material] : [];
 }
 
+function quaternionComponents(value) {
+  if (Array.isArray(value)) return value.length >= 4 ? value : null;
+  if (value && typeof value === "object") return [value.x ?? 0, value.y ?? 0, value.z ?? 0, value.w ?? 1];
+  return null;
+}
+
+function applyBoneRotation(bone, transform) {
+  const rotation = quaternionComponents(transform?.rotation);
+  if (rotation) bone.quaternion.set(...rotation).normalize();
+  else if (transform?.rotationEuler) bone.rotation.set(...transform.rotationEuler);
+}
+
 export function createCreatureMesh(THREE, descriptor, options = {}) {
   if (!descriptor?.geometry || !descriptor?.skeleton) throw new TypeError("A procedural creature descriptor is required.");
   const geometry = new THREE.BufferGeometry();
@@ -58,8 +70,13 @@ export function applyCreaturePose(mesh, pose) {
   for (const [boneId, transform] of Object.entries(pose?.bones ?? {})) {
     const bone = boneById[boneId];
     if (!bone) continue;
-    if (transform.position) bone.position.set(...transform.position);
-    if (transform.rotationEuler) bone.rotation.set(...transform.rotationEuler);
+    if (transform.position) {
+      const position = Array.isArray(transform.position)
+        ? transform.position
+        : [transform.position.x ?? 0, transform.position.y ?? 0, transform.position.z ?? 0];
+      bone.position.set(...position);
+    }
+    applyBoneRotation(bone, transform);
   }
   mesh?.skeleton?.update();
 }
@@ -78,11 +95,19 @@ export function applyCreaturePoseDamped(mesh, pose, dt, sharpness = 14) {
     const bone = boneById[boneId];
     if (!bone) continue;
     if (transform.position) {
-      bone.position.x += (transform.position[0] - bone.position.x) * alpha;
-      bone.position.y += (transform.position[1] - bone.position.y) * alpha;
-      bone.position.z += (transform.position[2] - bone.position.z) * alpha;
+      const position = Array.isArray(transform.position)
+        ? transform.position
+        : [transform.position.x ?? 0, transform.position.y ?? 0, transform.position.z ?? 0];
+      bone.position.x += (position[0] - bone.position.x) * alpha;
+      bone.position.y += (position[1] - bone.position.y) * alpha;
+      bone.position.z += (position[2] - bone.position.z) * alpha;
     }
-    if (transform.rotationEuler) {
+    const rotation = quaternionComponents(transform.rotation);
+    if (rotation) {
+      mesh.userData.__targetQuaternion ??= new bone.quaternion.constructor();
+      mesh.userData.__targetQuaternion.set(...rotation).normalize();
+      bone.quaternion.slerp(mesh.userData.__targetQuaternion, alpha);
+    } else if (transform.rotationEuler) {
       bone.rotation.x = dampAngle(bone.rotation.x, transform.rotationEuler[0], alpha);
       bone.rotation.y = dampAngle(bone.rotation.y, transform.rotationEuler[1], alpha);
       bone.rotation.z = dampAngle(bone.rotation.z, transform.rotationEuler[2], alpha);
