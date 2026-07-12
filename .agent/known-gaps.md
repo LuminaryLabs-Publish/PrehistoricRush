@@ -1,98 +1,117 @@
-# Known Gaps: PrehistoricRush
+# Known Gaps: PrehistoricRush Coordinated Run Reset
 
-**Updated:** `2026-07-12T14-10-22-04-00`
+**Updated:** `2026-07-12T16-11-48-04-00`
 
-## Implemented advance
+## Implemented reset pieces
 
 ```txt
-Core Motion and articulated-motion domains are composed
-Core Physics and articulated-dynamics domains are composed
-player articulated rig conversion and registration exist
-articulated solve API exists
-legacy Euler pose application exists
-position arrays and position objects are accepted
-quaternion arrays and quaternion objects are accepted
-quaternion direct application and damped slerp exist
-Euler fallback remains available
-player articulation adapter tests exist
+product RunState replacement and runId increment
+product InputState replacement
+Core Simulation resolution reset
+RunStarted event and direct scene transition
+camera-follow reset
+active-content rebuild from current active patch map
+patch-controller reset API
+Core capability reset APIs
+Worker-executor disposal API
+public snapshots for game, simulation, motion, physics, stream and camera
 ```
 
 ## Primary current gap
 
 ```txt
-renderer adapter accepts multiple pose representations without a versioned pose contract
-pose data is not bound to the intended rig or skeleton fingerprint
-full versus partial pose semantics are not declared
-unknown bones are skipped silently
-omitted bones retain prior transforms silently
-malformed quaternion objects can be repaired through default values silently
-application returns no typed result
-production game and creator still submit legacy procedural poses
+no restart command envelope or expected-run admission
+Enter restarts even during active gameplay
+no reset transaction ID
+no cross-domain run generation
+no required-participant prepare barrier
+no atomic commit or rollback
+no Core Motion reset call
+no Core Physics body/request/frame reset result
+no articulated-motion or articulated-dynamics reset result
+no patch-controller preserve/clear policy result
+no Worker request generation barrier
+no active-content/collider reset revision
+no renderer reset policy or receipt
+no coherent public reset result
+no first-visible-new-run frame acknowledgement
 ```
 
 ## Concrete consequences
 
 ```txt
-a pose from an earlier rig generation can partially apply to a replacement mesh
-an omitted bone can preserve stale animation state across pose changes
-an unknown bone typo can disappear without failing validation
-an incomplete quaternion object can become a normalized but unintended rotation
-creator and game can interpret the same pose shape differently without a parity result
-articulated-compatible adapter code can be mistaken for articulated product consumption
-public diagnostics cannot prove which pose changed which bones
+an active run can be erased by pressing Enter
+rapid Enter events can advance multiple runIds between visible frames
+new product state can coexist with predecessor motion and physics frames
+old asynchronous patch work can resolve after a new run begins
+camera can reset before all simulation and content participants align
+public readback can combine multiple run generations
+partial participant failure has no rollback boundary
+restart and terminal disposal responsibilities remain interleaved in the browser host
 ```
 
-## Contract ambiguity
+## Policy ambiguity
 
-The current adapter cannot classify a submitted pose as:
+The current implementation does not classify restart behavior as:
 
 ```txt
-schema-valid or schema-invalid
-absolute or partial
-rig-compatible or rig-incompatible
-complete or incomplete
-clean or repaired
-current or stale
-applied, partially applied or rejected
-visible or not yet visible
+phase-admitted or phase-rejected
+initial start, terminal retry, run-again or quick restart
+idempotent or duplicate
+cache-clearing or cache-preserving
+inflight-work-cancelling or generation-fencing
+renderer-time-resetting or renderer-time-preserving
+fully committed, partially committed or rolled back
+visible or awaiting first frame
+```
+
+## Reset participant ambiguity
+
+```txt
+Core Simulation resetResolution() does not prove complete simulation reset
+Core Motion retains current intent/frame history unless explicitly reset
+Core Physics has no product-level restart receipt for body and frame state
+articulation state is not tied to the new run generation
+patch-controller reset() exists but is not invoked
+Worker executor dispose() exists but is terminal and not a reusable restart policy
+active content is rebuilt before one committed stream/content revision exists
+camera reset is explicit but not linked to other participant revisions
+renderer and HUD expose no reset transaction or visible-frame result
 ```
 
 ## Retained architecture gaps
 
 ```txt
 Core Physics requests still do not cite the authorizing Core Motion frame
-articulated solving is not called by game or creator render paths
+articulated solving is not called by production game or creator render paths
+pose schema and rig binding remain unimplemented
 streamed content and committed outcomes lack one shared active-content revision
-run start and restart bypass authoritative TickContext
 browser input command authority remains incomplete
 render-surface and frame correlation remains incomplete
 creator draft, commit and frame proof remains incomplete
 stream cadence and world readiness remain host-managed
 raw PrehistoricRushHost exposes mutable owners
-coordinated Worker, stream, motion, physics, pose and frame reset remains absent
 ordered runtime disposal remains absent
 ```
 
 ## Required fixtures
 
 ```txt
-valid Euler pose produces a typed application result
-valid quaternion array and object poses produce equivalent results
-non-finite and zero-length quaternion cases follow explicit policy
-incomplete quaternion object is rejected or records a repair
-unknown bone follows explicit reject/ignore policy
-absolute pose omission restores required bone rest state
-partial pose cites and merges from one predecessor revision
-wrong rig and skeleton fingerprint are rejected
-stale run/profile/mesh pose is rejected
-articulated solve result reaches the intended Three.js skeleton
-renderer reports applied, missing, rejected and repaired bone IDs
-first visible frame cites pose, rig, mesh and renderer identities
+Enter during active run returns a typed zero-mutation rejection
+terminal retry creates exactly one new run generation
+rapid repeat produces at most one reset transaction
+all required participant results cite one reset transaction
+simulation, motion, physics and articulation reach compatible revisions
+patch-controller clear/preserve policy is explicit and deterministic
+predecessor Worker response is rejected or admitted only to immutable cache
+active content and collider sets share the new run generation
+failed prepare produces zero public commit
+failed commit rolls back or reports a terminal fault
+public readback never presents a mixed generation as committed
+first visible frame cites the committed RunRestartResult
 browser and deployed Pages behavior match
 ```
 
 ## Proof warning
 
-The latest runtime commit proves only that the adapter can parse and apply quaternion-shaped rotations. It does not prove that the data is valid for the target rig, that omissions are intentional, that the articulated solver produced it, or that a visible frame consumed it.
-
-Do not describe quaternion support as pose-contract safety or articulated presentation completion until admission, binding, typed application and visible-frame proof exist.
+A new `runId`, reset camera or origin-position frame does not prove coordinated reset. Completion requires phase admission, participant prepare/commit results, stale-work rejection, coherent readback and a visible-frame acknowledgement for one shared run generation.
