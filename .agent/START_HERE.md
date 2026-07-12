@@ -3,61 +3,61 @@
 ## Last aligned
 
 ```txt
-2026-07-12T02-21-55-04-00
+2026-07-12T03-51-15-04-00
 ```
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a persisted procedural raptor, Three.js creator and gameplay renderers, deterministic Worker patch streaming, Rapier/fallback collision, pickups, terminal transitions, HUD projection and Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with a persisted procedural raptor, Three.js creator and gameplay renderers, deterministic Worker patch streaming, Rapier/fallback collision, streamed shards, terminal transitions, HUD projection and Pages deployment.
 
-The current audit isolates **render-surface authority**. Gameplay sizes its camera and renderer from global window dimensions and samples device pixel ratio only during startup. Creator uses a local `ResizeObserver` with a separate sizing policy. Neither path publishes a surface identity, revision, physical-size receipt or first-frame acknowledgement.
+The current audit isolates **shard collection authority**. Shards are generated inside streamed patches, mirrored into a mutable active-content view, detected through an XZ-only browser-loop test, awarded through an ID-only boolean API, then removed from presentation by a separate rebuild. No command proves run phase, active descriptor membership, source identity, 3D proximity, state revision, visual removal or first visible-frame correlation.
 
-The prior runtime-module graph, outcome, host, creator, streaming, collision, cadence, readiness, frame, reset and lifecycle audits remain active dependencies.
+All prior runtime-module, surface, profile, creator, streaming, collision, cadence, readiness, outcome, frame, host, reset and lifecycle audits remain active dependencies.
 
 ## Plan ledger
 
-**Goal:** establish one surface policy and transaction from CSS-size and device-scale observation through renderer/camera commit, physical readback, visible-frame acknowledgement and detached diagnostics.
+**Goal:** establish one exactly-once shard transaction from committed patch identity and authoritative player evidence through state/event commit, visible removal, HUD projection and first-frame proof.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Select only `PrehistoricRush` as the oldest eligible ledger entry.
-- [x] Trace creator and gameplay resize, DPR, camera, renderer, RAF and host paths.
-- [x] Identify interaction loops, domains, kits and offered services.
+- [x] Trace shard generation, identity, active projection, detection, mutation, event, refresh, rendering and HUD.
+- [x] Identify all interaction loops, domains, kits and services.
 - [x] Add timestamped architecture and system audits.
 - [x] Update documentation on `main`; create no branch or pull request.
-- [ ] Implement the surface authority and executable fixtures.
+- [ ] Implement shard authority and executable fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T02-21-55-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T03-51-15-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T02-21-55-04-00-render-surface-authority-dsk-map.md
-.agent/render-audit/2026-07-12T02-21-55-04-00-game-creator-surface-policy-gap.md
-.agent/gameplay-audit/2026-07-12T02-21-55-04-00-simulation-surface-frame-ack-gap.md
-.agent/interaction-audit/2026-07-12T02-21-55-04-00-resize-observation-commit-map.md
-.agent/render-surface-audit/2026-07-12T02-21-55-04-00-css-dpr-physical-frame-contract.md
-.agent/deploy-audit/2026-07-12T02-21-55-04-00-render-surface-fixture-gate.md
-.agent/turn-ledger/2026-07-12T02-21-55-04-00.md
+.agent/architecture-audit/2026-07-12T03-51-15-04-00-shard-collection-authority-dsk-map.md
+.agent/render-audit/2026-07-12T03-51-15-04-00-pickup-disappearance-hud-frame-provenance-gap.md
+.agent/gameplay-audit/2026-07-12T03-51-15-04-00-shard-detection-collection-refresh-loop.md
+.agent/interaction-audit/2026-07-12T03-51-15-04-00-pickup-evidence-admission-result-map.md
+.agent/pickup-authority-audit/2026-07-12T03-51-15-04-00-identity-evidence-idempotency-contract.md
+.agent/deploy-audit/2026-07-12T03-51-15-04-00-shard-collection-fixture-gate.md
+.agent/turn-ledger/2026-07-12T03-51-15-04-00.md
 .agent/kit-registry.json
 ```
 
 ## Main findings
 
 ```txt
-gameplay dimensions come from innerWidth / innerHeight
-gameplay DPR is sampled only during renderer construction
-gameplay listens to window resize, not actual host bounds
-creator observes its local preview container
-creator DPR is also sampled only during construction
-no named quality tier or physical-pixel budget exists
-no surface ID or monotonic revision exists
-no actual drawing-buffer receipt exists
-no first frame after resize acknowledgement exists
-public host exposes no surface provenance
+collectShard checks only duplicate ID membership
+collectShard does not require active gameplay status
+unknown or malformed first-time IDs can increment the shard count
+normal detection consumes a mutable active-patch projection
+shard identity omits generator/source/run revisions
+proximity uses XZ only and ignores vertical separation
+one-pickup-per-frame ordering is undocumented
+state/event commit happens before unacknowledged visual rebuild
+HUD and shard disappearance cite no shared collection result
+raw engine exposure leaves the weak API reachable
 ```
 
 ## Domains and kit groups
@@ -71,7 +71,7 @@ runtime module graph and import maps
 8 external and host adapter boundaries
 run, streaming, physics, camera, Three render, HUD and host readback
 outcome, frame, host capability, reset, lifecycle, validation and deployment
-render-surface resolution and frame correlation: missing
+shard identity, evidence, exactly-once commit and frame proof: missing
 ```
 
 See the tracker and kit registry for every kit and service.
@@ -79,19 +79,20 @@ See the tracker and kit registry for every kit and service.
 ## Required parent domain
 
 ```txt
-prehistoric-rush-render-surface-authority-domain
+prehistoric-rush-shard-collection-authority-domain
 ```
 
-It coordinates surface policy, CSS-size and DPR observations, resize admission, pixel budget, renderer and camera commits, creator/game adapters, surface revisions, frame acknowledgement, diagnostics, journals and browser fixtures.
+It coordinates canonical shard identity, active-shard indexing, patch and run admission, authoritative 3D evidence, command/identity idempotency, state/event commit, presentation projection, first visible-frame acknowledgement, observations, journals and fixtures.
 
 ## Ordered implementation queue
 
 ```txt
 0. Runtime Module Graph Admission and Source Provenance
 0a. Render Surface Resolution and Frame Correlation
-1. Route Artifact and Game Profile Handoff proof
+1. Route Artifact and Game Profile Handoff Proof
 2. Character Creator Draft, Commit and Preview Frame Authority
 3. Patch Activation and Release Commit Authority
+3a. Shard Identity, Collection Commit and Visible Removal Authority
 4. Exact Collider Replacement and Collision Admission
 5. Run-Step Outcome Arbitration and Terminal Frame Authority
 6. Stream Cadence and Time Budget Authority
@@ -102,4 +103,4 @@ It coordinates surface policy, CSS-size and DPR observations, resize admission, 
 10. Runtime Lifecycle and Ordered Disposal
 ```
 
-Do not add another renderer, camera, resize loop or RAF. Route the existing creator and gameplay owners through one surface contract.
+Do not add a second pickup owner or scan loop. Route the existing generator, patch membership, product domain, Three adapter, HUD and host through one collection contract.
