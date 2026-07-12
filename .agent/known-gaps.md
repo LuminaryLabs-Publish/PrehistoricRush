@@ -1,71 +1,78 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-12T03-51-15-04-00`
+**Updated:** `2026-07-12T05-21-52-04-00`
 
 ## Summary
 
-The current leading gameplay gap is shard collection authority. The shipped loop can award any first-time ID through an API that does not validate active gameplay, run identity, patch membership, descriptor provenance, state revision or 3D spatial evidence. Gameplay mutation, event publication, shard removal and HUD projection are not correlated.
+The current leading host/gameplay gap is browser input command authority. Keyboard, button and RAF ingress do not share one policy, the browser bypasses the installed core input capability, Enter can replace an active run and repeat events can synthesize repeated start or jump edges.
 
 ## Plan ledger
 
-**Goal:** close shard identity, admission, idempotency and visible-presentation gaps while preserving every prior product authority gap.
+**Goal:** close input observation, edge/hold, admission, retirement, step-consumption and frame-correlation gaps while preserving every prior product authority gap.
 
-- [x] Add shard identity, evidence, phase, result and frame gaps.
-- [x] Preserve runtime graph, surface, route, creator, streaming, collision, outcome, frame, host, reset and lifecycle gaps.
+- [x] Add browser input source, repeat, phase, ownership, retirement and frame gaps.
+- [x] Preserve runtime graph, surface, profile, creator, streaming, shard, collision, outcome, frame, host, reset and lifecycle gaps.
 - [ ] Implement in dependency order.
 
-## Shard identity and membership gaps
+## Input ownership gaps
 
 ```txt
-shard ID omits world seed and generator version
-shard ID omits generator settings fingerprint
-shard ID omits patch cache key and activation revision
-shard ID omits runtime generation and run ID
-no canonical descriptor fingerprint
-no immutable active-shard index
-no monotonic active-shard-set revision
-no committed patch membership receipt consumed by collection
+core-input-kit is installed but not used by browser ingress
+browser-local held state is a parallel owner
+product-domain InputState is mutated directly
+RAF copies host held state into product state
+button and keyboard use separate policy branches
+raw game API remains reachable through public host owners
 ```
 
-## Collection admission gaps
+## Observation and command gaps
 
 ```txt
-collectShard accepts any first-time value
-collectShard does not require status === game
-no command ID or sequence
-no expected run-state revision
-no run-generation admission
-no active descriptor lookup
-no stale patch rejection
-no unknown/malformed identity rejection
-no capability boundary around raw host access
+no input sample ID
+no source/modality descriptor
+no normalized semantic action result
+no browser repeat classification
+no physical press/release edge state
+no input command ID
+no command idempotency receipt
+no input revision
+no expected run/state revision
 ```
 
-## Spatial and ordering gaps
+## Admission gaps
 
 ```txt
-proximity test uses XZ only
-player jump height and shard Y are ignored
-collection volume is not versioned
-stream release/activation mutates candidates before detection
-no stable candidate-set snapshot
-one-pickup-per-frame break is undocumented
-no stable tie result or collection budget receipt
-pickup, collision and terminal outcome are not arbitrated in one step result
+Enter calls start in active gameplay
+no explicit restart command or policy
+start/retry phase admission is outside a shared authority
+button and keyboard parity is not enforced
+predecessor-run input is not rejected by command identity
+stale runtime generation input is not represented
 ```
 
-## Commit, event and frame gaps
+## Edge, hold and retirement gaps
 
 ```txt
-result is boolean only
-no accepted duplicate receipt
-collected ledger and count have no state revision
-ShardCollected event lacks patch/source/spatial evidence
-state/event commit precedes visual rebuild
-shard projection has no typed result
-HUD projection has no typed result
-no first visible-frame acknowledgement
-no proof shard absence and HUD count share one collection result
+jump is a mutable pulse rather than an admitted edge result
+simulation clearing jump is conflated with physical key release
+browser repeat can re-arm jump
+held steer/boost state has no typed revision
+blur clearing has no retirement result
+visibility hidden retirement is absent
+run reset retirement result is absent
+runtime disposal retirement result is absent
+```
+
+## Step and frame gaps
+
+```txt
+no immutable input snapshot per simulation step
+no consumed edge command list
+no simulation step ID in input result
+no player/camera/HUD acknowledgement of input revision
+no first visible-frame receipt
+no public detached input observation
+no bounded input journal
 ```
 
 ## Preserved gaps
@@ -76,6 +83,7 @@ render-surface policy and physical-buffer frame correlation
 route/profile artifact handoff
 creator draft/commit/preview convergence
 patch activation/release acknowledgement
+shard identity, collection and visible removal authority
 exact collider retirement and contact provenance
 run-step collision/goal/pickup arbitration
 stream cadence and hidden-tab policy
@@ -89,20 +97,19 @@ startup rollback and ordered disposal
 ## Missing proof matrix
 
 ```txt
-shard identity canonicalization
-Worker/fallback identity parity
-unknown and malformed ID rejection
-wrong phase/run rejection
-inactive and stale patch rejection
-3D horizontal/vertical evidence
-command and identity idempotency
-stable tie and per-step budget
-state/event/result parity
-visual removal/HUD/frame parity
-run-reset ledger isolation
-late collection after reset/disposal
-public-host bypass rejection
-browser and Pages shard smoke
+active-run Enter rejection
+held Enter single start
+held Space single jump edge
+release/press second jump edge
+button/keyboard semantic parity
+wrong phase/run/revision rejection
+repeat-edge rejection
+held-state revision
+focus/visibility/reset/disposal retirement
+immutable per-step input snapshot
+input command/state/frame parity
+public host bypass rejection
+browser and Pages input smoke
 all previously documented runtime/gameplay fixtures
 ```
 
@@ -110,7 +117,8 @@ all previously documented runtime/gameplay fixtures
 
 ```txt
 0 runtime module graph admission
-0a render-surface authority
+0a browser input command authority
+0b render-surface authority
 1 route/profile
 2 creator
 3 patch activation/release
@@ -124,4 +132,4 @@ all previously documented runtime/gameplay fixtures
 9 lifecycle/disposal
 ```
 
-Do not treat a boolean `true`, a changed count or a hidden instance as proof of an admitted, exactly-once and visibly presented collection.
+Do not treat movement, a jump animation or a changed `runId` as proof of a valid input command. Require typed admission and consumption results.
