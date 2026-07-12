@@ -1,123 +1,153 @@
-# Next Steps: PrehistoricRush
+# Next Steps: PrehistoricRush Coordinated Run Reset
 
-**Updated:** `2026-07-12T14-10-22-04-00`
+**Updated:** `2026-07-12T16-11-48-04-00`
 
 ## Plan ledger
 
-**Goal:** preserve current creature animation while replacing ambient transform coercion with an explicit, testable pose contract bound to the intended rig and visible frame.
+**Goal:** replace the browser-composed partial restart with one admitted reset transaction that advances every required participant to the same run generation or commits nothing.
 
-### Gate 0: preserve current behavior
-- [ ] Keep procedural poses as the active production path until articulated consumption is proven.
-- [ ] Preserve current creator morph/crossfade behavior.
-- [ ] Preserve gameplay movement, collision, outcome and stream ordering.
-- [ ] Keep pose admission renderer-side and renderer-neutral upstream.
+### Gate 0: preserve current gameplay
 
-### Gate 1: define the pose envelope
-- [ ] Add `poseId`, `poseRevision`, `schemaVersion` and `sourceKind`.
-- [ ] Add `rigId`, `skeletonFingerprint`, `profileRevision` and `meshGeneration`.
-- [ ] Declare `mode: absolute | partial`.
-- [ ] Declare transform space, handedness, units and quaternion component order.
-- [ ] Include predecessor pose revision for partial updates.
+- [ ] Preserve deterministic route, profile, creature descriptor and outcome policy behavior.
+- [ ] Keep normal jump, steering, boost, collision, pickup and stream behavior unchanged.
+- [ ] Declare whether immutable patch cache is preserved or cleared on restart.
+- [ ] Keep terminal runtime disposal separate from reusable run reset.
 
-### Gate 2: admit transforms
-- [ ] Reject non-finite position and rotation components.
-- [ ] Version quaternion normalization and zero-length handling.
-- [ ] Reject or explicitly repair incomplete quaternion objects.
-- [ ] Reject unsupported array lengths and transform representations.
-- [ ] Return typed admission warnings and failures.
+### Gate 1: define restart commands and phase policy
 
-### Gate 3: bind to the rig
-- [ ] Compare pose `rigId` with the mesh rig identity.
-- [ ] Compare skeleton and bone-set fingerprints.
-- [ ] Define required, optional and ignored bone sets.
-- [ ] Reject unknown bones or record them through explicit policy.
-- [ ] Prevent earlier profile, rig or mesh generations from applying.
+- [ ] Add `RunRestartCommand` with command ID, source, sequence and expected run identity.
+- [ ] Admit start from menu, retry from run-over and run-again from win.
+- [ ] Reject active-run Enter restart by default.
+- [ ] Treat intentional quick restart as a distinct product command.
+- [ ] Return typed zero-mutation rejection results.
+- [ ] Deduplicate browser key repeat and repeated activation.
 
-### Gate 4: define full and partial semantics
-- [ ] Absolute poses must provide all required bones or restore omissions to rest state.
-- [ ] Partial poses must cite a predecessor pose revision.
-- [ ] Partial merge must be deterministic and bounded.
-- [ ] Restart/profile replacement must clear predecessor pose state.
-- [ ] Creator crossfade must declare whether it consumes absolute or partial poses.
+### Gate 2: establish reset identity
 
-### Gate 5: return application results
-- [ ] Build a detached pose-application plan before mutating Three.js bones.
-- [ ] Return applied, missing, ignored, rejected and repaired bone IDs.
-- [ ] Include source pose, rig, mesh and renderer frame identities.
-- [ ] Commit no bone changes when admission fails.
-- [ ] Project the result through diagnostics without exposing mutable owners.
+- [ ] Add `resetTransactionId`.
+- [ ] Add cross-domain `runGeneration` separate from product `runId`.
+- [ ] Add participant revision and fingerprint fields.
+- [ ] Add reset lifecycle states: admitting, preparing, committing, rolling back and awaiting visible frame.
+- [ ] Mark public readback `reset-in-progress` until all required participants align.
 
-### Gate 6: integrate articulated presentation
-- [ ] Call `solvePlayerArticulatedPose()` from one admitted gameplay presentation path.
-- [ ] Select one articulated or typed legacy fallback result.
-- [ ] Apply the selected result through the same pose contract.
-- [ ] Keep the creator on an explicit preview profile until equivalent proof exists.
-- [ ] Preserve the broader motion/presentation parity authority.
+### Gate 3: define participant protocol
 
-### Gate 7: visible-frame proof
-- [ ] Publish one visible-pose-frame acknowledgement after render submission.
-- [ ] Include run, tick, pose, rig, mesh and renderer revisions.
-- [ ] Record the pose-application result ID used by that frame.
-- [ ] Reject acknowledgements for stale or failed application results.
+- [ ] Register required and optional reset participants.
+- [ ] Add `prepareReset`, `commitReset` and `rollbackReset` contracts.
+- [ ] Require every result to cite the same reset transaction and run generation.
+- [ ] Reject commit when any required prepare result fails.
+- [ ] Produce an explicit terminal fault if rollback cannot restore parity.
 
-### Gate 8: executable proof
-- [ ] Add valid Euler and quaternion adapter fixtures.
-- [ ] Add malformed, zero and non-finite quaternion fixtures.
-- [ ] Add unknown, missing and omitted bone fixtures.
-- [ ] Add absolute rest-reset and partial predecessor fixtures.
-- [ ] Add wrong-rig and stale-mesh-generation fixtures.
-- [ ] Add creator/game adapter parity fixtures.
-- [ ] Add articulated-result application fixture.
-- [ ] Add browser and deployed Pages visible-frame smokes.
+### Gate 4: reset simulation, motion, physics and articulation
+
+- [ ] Prepare and commit product RunState and InputState together.
+- [ ] Reset Core Simulation resolution and committed-frame generation.
+- [ ] Clear or rebind Core Motion intents, trajectories and frame history.
+- [ ] Reset the player physics body to the admitted origin.
+- [ ] Clear predecessor motion requests and physics-frame provenance.
+- [ ] Reset or rebind articulated-motion pose/target state.
+- [ ] Reset or rebind articulated-dynamics joint/body state.
+- [ ] Reject predecessor tick, frame and request results.
+
+### Gate 5: reset streaming, Worker and active content
+
+- [ ] Choose `clear-all`, `preserve-cache-clear-active` or generation-fenced preservation.
+- [ ] Apply the selected policy through a typed patch-controller result.
+- [ ] Attach runtime session and run generation to Worker requests and responses.
+- [ ] Reject or explicitly cache predecessor-generation Worker results.
+- [ ] Rebuild terrain, trees, grass, shards, pickups and colliders from one committed active-content revision.
+- [ ] Return content and collider parity digests.
+
+### Gate 6: reset input, camera, renderer and public projection
+
+- [ ] Clear browser key state under the reset transaction.
+- [ ] Reject stale browser events from the predecessor run.
+- [ ] Bind camera reset to the same transaction and generation.
+- [ ] Declare whether renderer animation time resets or is preserved.
+- [ ] Publish one immutable `RunRestartResult`.
+- [ ] Prevent raw public readback from combining participant generations.
+- [ ] Publish the first visible new-run frame acknowledgement.
+
+### Gate 7: rollback and failure handling
+
+- [ ] Add participant prepare-failure fixtures.
+- [ ] Add commit-failure rollback fixtures.
+- [ ] Verify zero public mutation before successful commit.
+- [ ] Verify no stale Worker, motion, physics or input result crosses rollback.
+- [ ] Record bounded observations and a reset journal.
+
+### Gate 8: terminal lifecycle remains separate
+
+- [ ] Cancel RAF on page stop.
+- [ ] Remove browser listeners.
+- [ ] Dispose the Worker executor and terminate its Worker.
+- [ ] Dispose Three.js geometry, materials and renderer resources.
+- [ ] Release engine/provider ownership.
+- [ ] Remove `PrehistoricRushHost` during terminal disposal.
+
+### Gate 9: executable proof
+
+- [ ] Add active-run Enter rejection fixture.
+- [ ] Add terminal retry and run-again admission fixtures.
+- [ ] Add rapid-repeat idempotency fixture.
+- [ ] Add simulation/motion/physics/articulation reset parity fixture.
+- [ ] Add stale Worker completion after reset fixture.
+- [ ] Add active-content/collider reset parity fixture.
+- [ ] Add failed-prepare zero-commit fixture.
+- [ ] Add rollback fixture.
+- [ ] Add coherent public-readback fixture.
+- [ ] Add browser and deployed Pages first-visible-frame smokes.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-pose-contract-rig-binding-authority-domain
-pose-schema-version-kit
-pose-id-revision-kit
-pose-source-kind-kit
-pose-mode-kit
-pose-transform-space-kit
-quaternion-convention-kit
-pose-rig-binding-kit
-skeleton-fingerprint-kit
-bone-membership-policy-kit
-pose-transform-admission-kit
-quaternion-admission-kit
-absolute-pose-completeness-kit
-partial-pose-predecessor-kit
-rest-pose-reconstruction-kit
-pose-application-command-kit
-pose-application-plan-kit
-pose-application-result-kit
-stale-pose-rejection-kit
-pose-application-observation-kit
-pose-application-journal-kit
-visible-pose-frame-ack-kit
-pose-contract-fixture-kit
-browser-pose-contract-smoke-kit
-pages-pose-contract-smoke-kit
+prehistoric-rush-coordinated-run-reset-authority-domain
+run-restart-command-kit
+run-restart-admission-kit
+run-generation-kit
+reset-transaction-id-kit
+reset-participant-registry-kit
+reset-prepare-result-kit
+reset-commit-result-kit
+reset-rollback-kit
+stale-run-command-rejection-kit
+core-simulation-reset-participant-kit
+core-motion-reset-participant-kit
+core-physics-reset-participant-kit
+articulated-motion-reset-participant-kit
+articulated-dynamics-reset-participant-kit
+patch-controller-reset-participant-kit
+active-content-reset-participant-kit
+worker-generation-barrier-kit
+camera-reset-participant-kit
+renderer-reset-participant-kit
+input-reset-participant-kit
+public-host-reset-receipt-kit
+first-visible-run-frame-ack-kit
+run-reset-observation-kit
+run-reset-journal-kit
+mid-run-enter-restart-fixture-kit
+stale-worker-after-reset-fixture-kit
+browser-pages-reset-parity-smoke-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:valid-euler-pose
-fixture:valid-quaternion-array-pose
-fixture:valid-quaternion-object-pose
-fixture:malformed-quaternion-rejection
-fixture:unknown-bone-policy
-fixture:absolute-omitted-bone-restoration
-fixture:partial-pose-predecessor
-fixture:wrong-rig-rejection
-fixture:stale-mesh-generation-rejection
-fixture:articulated-result-application
-fixture:renderer-pose-application-result
-fixture:first-visible-pose-frame
-browser creator/game matrix
-Pages creator/game smoke
+fixture:active-run-enter-rejection
+fixture:terminal-restart-admission
+fixture:rapid-restart-idempotency
+fixture:simulation-motion-physics-articulation-reset-parity
+fixture:patch-controller-reset-policy
+fixture:stale-worker-generation-rejection
+fixture:active-content-collider-reset-parity
+fixture:prepare-failure-zero-commit
+fixture:commit-failure-rollback
+fixture:public-readback-single-generation
+fixture:first-visible-new-run-frame
+browser restart matrix
+Pages restart matrix
 ```
 
-Do not remove the legacy pose path until the contract, articulated selection and visible-frame proofs are deterministic and equivalent.
+Do not remove current restart behavior until the replacement proves equivalent gameplay, explicit cache policy, stale-work rejection and first-visible-frame parity.
