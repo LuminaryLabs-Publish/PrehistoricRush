@@ -1,132 +1,130 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T14-10-22-04-00`  
+**Last aligned:** `2026-07-12T16-11-48-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`
 
 ## Summary
 
-PrehistoricRush composes Core Motion, Core Physics, articulated motion and articulated dynamics, while its creator and game renderers share a Three.js procedural-creature adapter.
+PrehistoricRush has a product-level `start()` operation, but not a coordinated run-reset transaction. The product replaces `RunState` and `InputState` and resets Core Simulation resolution; the browser then refreshes current content, moves stream focus and resets the camera. Core Motion, Core Physics, articulation, patch-controller/Worker work, renderer state and public readback do not commit under one new run generation.
 
-A new runtime commit added quaternion pose application and damping to that adapter. The adapter now accepts Euler rotations, quaternion arrays and quaternion objects, but it has no pose schema, coordinate-space declaration, rig binding, full-versus-partial semantics, finite-value admission or typed application result. The game still submits legacy procedural poses, so the new articulated-compatible format support is capability without production consumption proof.
+The keyboard handler also calls `start()` on every `Enter`, including during active gameplay. A new `runId` can therefore appear while other stateful participants still expose predecessor-run frames, histories, work or content provenance.
 
 ## Plan ledger
 
-**Goal:** make every pose applied to a Three.js creature an admitted, revisioned transform contract bound to the intended rig, bone set, coordinate convention and visible frame.
+**Goal:** make every start or restart an admitted, generation-bound transaction that either commits all required participants together or produces zero partial reset.
 
-- [x] Compare the full Publish repository inventory with the central ledger.
+- [x] Compare all ten accessible Publish repositories with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm all nine eligible repositories remain tracked and root-documented.
-- [x] Select only `PrehistoricRush` because a new renderer-format runtime commit landed after its central audit.
-- [x] Trace game, creator, procedural-pose, articulated-pose and Three.js bone-application paths.
-- [x] Identify the interaction loop, all active domains, all 45 implemented/adapted/proof surfaces and their services.
-- [x] Define the missing pose-contract and rig-binding authority.
-- [x] Add a new timestamped tracker, turn ledger and system-audit family.
-- [x] Refresh required root `.agent` state and the machine registry.
-- [x] Synchronize the central ledger and internal change log.
-- [x] Push only to `main`; create no branch or pull request.
-- [ ] Runtime pose admission, renderer receipts and executable browser proof remain future work.
+- [x] Confirm all nine eligible repositories remain centrally tracked and root-documented.
+- [x] Select only `PrehistoricRush` as the oldest eligible synchronized repository.
+- [x] Trace initial start, terminal retry, Space and Enter activation.
+- [x] Trace product, simulation, motion, physics, articulation, stream, Worker, content, camera, render and readback state.
+- [x] Preserve the complete 45-surface kit/service inventory.
+- [x] Define the missing coordinated run-reset authority.
+- [x] Add a timestamped tracker, turn ledger and complete system-audit family.
+- [x] Refresh required root `.agent` documents and machine registry.
+- [x] Synchronize central tracking on `main`.
+- [x] Create no branch or pull request.
+- [ ] Runtime implementation and executable reset fixtures remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T14-10-22-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T16-11-48-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T14-10-22-04-00-pose-contract-rig-binding-dsk-map.md
-.agent/render-audit/2026-07-12T14-10-22-04-00-quaternion-pose-visible-bone-gap.md
-.agent/gameplay-audit/2026-07-12T14-10-22-04-00-legacy-articulated-pose-format-loop.md
-.agent/interaction-audit/2026-07-12T14-10-22-04-00-pose-submit-admit-apply-result-map.md
-.agent/pose-system-audit/2026-07-12T14-10-22-04-00-schema-space-rig-application-contract.md
-.agent/deploy-audit/2026-07-12T14-10-22-04-00-pose-contract-browser-fixture-gate.md
-.agent/turn-ledger/2026-07-12T14-10-22-04-00.md
+.agent/architecture-audit/2026-07-12T16-11-48-04-00-coordinated-run-reset-dsk-map.md
+.agent/render-audit/2026-07-12T16-11-48-04-00-mixed-generation-first-run-frame-gap.md
+.agent/gameplay-audit/2026-07-12T16-11-48-04-00-mid-run-enter-restart-loop.md
+.agent/interaction-audit/2026-07-12T16-11-48-04-00-restart-command-prepare-commit-result-map.md
+.agent/reset-lifecycle-audit/2026-07-12T16-11-48-04-00-run-generation-participant-barrier-contract.md
+.agent/deploy-audit/2026-07-12T16-11-48-04-00-coordinated-reset-fixture-gate.md
+.agent/turn-ledger/2026-07-12T16-11-48-04-00.md
 .agent/kit-registry.json
 ```
 
 ## Current interaction loop
 
 ```txt
-creator
-  -> install seed and procedural-creature kits
-  -> create legacy procedural pose
-  -> adapter accepts position arrays and Euler rotation
-  -> damp transforms into Three.js bones
-  -> render preview
+boot
+  -> compose Nexus Engine, Rapier, stream controller, Worker and Three renderer
+  -> game.start()
+  -> prime center patch
+  -> reset camera
+  -> start RAF
 
-game boot
-  -> compose Core Motion and Core Physics parent/subdomains
-  -> register articulated player rig
-  -> install Rapier, streaming, camera and renderer
+run
+  -> browser input
+  -> engine tick
+  -> Core Motion frame and Core Physics request
+  -> Core Simulation outcome
+  -> streaming release/generation/activation
+  -> Three render, HUD and public readback
 
-game tick
-  -> integrate run state
-  -> submit Core Motion intent and frame
-  -> submit kinematic request to Core Physics
-  -> resolve simulation outcome
-
-game render
-  -> call game.createPlayerPose()
-  -> pass legacy pose to applyCreaturePose()
-  -> adapter can now also decode quaternion arrays or objects
-  -> silently skip unknown bones and preserve omitted bone state
-  -> return no application result
-  -> render without pose-schema, rig or visible-frame acknowledgement
-
-optional API
-  -> solvePlayerArticulatedPose() can emit quaternion transforms
-  -> no production game or creator renderer calls it
+restart
+  -> button outside game, Space outside game or Enter in any phase
+  -> game.start() increments runId
+  -> replace product state and reset resolution result
+  -> rebuild existing active content
+  -> update stream focus and prime center
+  -> reset camera
+  -> no shared reset generation or participant receipt
+  -> next RAF renders later
 ```
 
 ## Main finding
 
 ```txt
-quaternion transform support: present
-Euler fallback support: present
-array/object position support: present
-articulated solve API: present
+product RunState reset: present
+product InputState reset: present
+Core Simulation resolution reset: present
+camera reset: present
 
-pose schema/version: absent
-coordinate space and quaternion convention: absent
-full-pose versus partial-pose mode: absent
-finite and unit-quaternion admission result: absent
-pose-to-rig fingerprint binding: absent
-bone membership/completeness policy: absent
-rest-pose reconstruction policy: absent
-typed applied/missing/rejected bone result: absent
-first visible pose-frame acknowledgement: absent
-production articulated-pose call site: absent
+restart phase admission: absent
+reset transaction ID: absent
+cross-domain run generation: absent
+Core Motion reset call: absent
+Core Physics body/request/frame reset: absent
+articulated motion/dynamics reset: absent
+patch-controller reset policy/result: absent
+Worker request cancellation/generation barrier: absent
+active-content reset revision: absent
+renderer reset policy/result: absent
+coherent public reset receipt: absent
+first visible new-run frame acknowledgement: absent
 ```
 
-Unknown bone IDs are ignored. Omitted bones retain their prior transform. Quaternion objects default missing components to identity-like values before normalization. None of those decisions is represented as a typed result.
+`Enter` invokes restart without checking the current game status. Immediately after `game.start()`, public state can describe the new run while motion, physics, stream and renderer participants retain predecessor provenance.
 
 ## Domains and kit groups
 
 ```txt
-routes, profile and creator
-runtime source identity, import maps and module admission
+routes, profiles and creator
+runtime source identity and module admission
+browser input, restart activation and RAF
 15 Nexus Engine root/subdomain kits
 5 official NexusEngine-Kits
 14 product/page/Worker kits
 9 external/host adapters
 2 proof kits
-Core Motion and articulated motion
-Core Physics and articulated dynamics
-procedural and articulated pose construction
-pose schema, coordinate-space and rig binding
-Three.js bone application, damping and visible-frame projection
-Rapier, streaming, terrain, vegetation, pickups and HUD
-pose-contract/rig-binding authority: missing
+Core Simulation, Motion, Physics and articulation
+patch controller, Worker and active content
+Three creature, camera, renderer, HUD and public host
+run identity, reset admission, participant barrier and rollback
+first-visible-run-frame proof
+coordinated run-reset authority: missing
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-pose-contract-rig-binding-authority-domain
+prehistoric-rush-coordinated-run-reset-authority-domain
 ```
 
-It coordinates pose identity, schema version, absolute/partial mode, coordinate convention, rig and bone-set fingerprints, quaternion admission, missing/unknown bone policy, rest-pose reconstruction, application plans, typed application results, stale-result rejection and first-visible-frame acknowledgement.
+It coordinates restart command admission, run generation, participant preparation, atomic commit/rollback, stale input/Worker rejection, coherent public readback and first-visible-frame acknowledgement. Participant domains retain ownership of their own reset mechanics.
 
 ## Ordered implementation queue
 
@@ -145,8 +143,8 @@ It coordinates pose identity, schema version, absolute/partial mode, coordinate 
 5. Run-Step Outcome Arbitration and Committed Frames
 6. Stream Cadence and World Readiness
 7. Public Host Capability Gateway
-8. Coordinated Run/Stream/Motion/Physics/Pose/Frame Reset
+8. Coordinated Run Reset and Participant Barrier Authority
 9. Runtime Lifecycle and Ordered Disposal
 ```
 
-Do not treat quaternion-compatible adapter code as proof that articulated motion drives visible bones. Completion requires admitted pose contracts, explicit application results and browser/Pages evidence.
+Do not treat a new product `runId` or camera reset as proof that the engine, stream, Worker, renderer and visible frame entered the same new generation.
