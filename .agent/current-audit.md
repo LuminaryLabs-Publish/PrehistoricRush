@@ -1,6 +1,6 @@
 # Current Audit: PrehistoricRush Motion / Articulation / Presentation Parity
 
-**Updated:** `2026-07-12T12-01-04-04-00`  
+**Updated:** `2026-07-12T12-08-05-04-00`  
 **Runtime revision reviewed:** `68c821a4864b6ad0edc12bc51514752e4ada750c`  
 **Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
 
@@ -21,7 +21,9 @@ The game renderer still derives a legacy procedural pose directly from run state
 - [x] Trace rig registration, articulated solving, legacy pose creation and Three bone application.
 - [x] Trace creator preview composition and pose behavior.
 - [x] Reconcile the kit census to 45 implemented/adapted/proof surfaces.
-- [x] Define the missing product authority and fixture boundary.
+- [x] Publish a fresh timestamped tracker and complete audit family.
+- [x] Refresh required root `.agent` state and machine registry.
+- [x] Synchronize central tracking.
 - [ ] Implement and execute the runtime authority.
 
 ## Source-backed ordering
@@ -93,7 +95,7 @@ consumer must infer equality from request fields
 
 ```txt
 creator installs seed + procedural creature only
-creator uses creatureApi.createPose()
+creator uses creature API pose generation
 game installs Core Motion/Physics domains but still uses createPlayerPose()
 no shared motion profile or selected-pose fingerprint proves parity
 ```
