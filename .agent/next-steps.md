@@ -1,6 +1,6 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T11-11-34-04-00`
+**Updated:** `2026-07-12T11-21-01-04-00`
 
 ## Plan ledger
 
@@ -30,7 +30,7 @@
 - [ ] Add content revision to physics and fallback observations.
 - [ ] Reject mixed-revision proposals/observations.
 - [ ] Return typed content provenance in the product outcome result.
-- [ ] Project the provenance into the public committed read model.
+- [ ] Project provenance into the public committed read model.
 
 ### Gate 4: atomic content and physics commit
 - [ ] Commit active patches, visible instances and physics colliders together.
