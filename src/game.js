@@ -1,20 +1,15 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
+import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
+import {
+  KITS_COMMIT,
+  NEXUS_COMMIT,
+  PROTOKITS_COMMIT,
+  RUNTIME_URLS
+} from "./shared/runtime-versions.js";
+import { applyCreaturePose, createCreatureMesh } from "./render/three-procedural-creature.js";
 
-const NEXUS_COMMIT = "e8252e51878a08eeef46f54b1aae9e8349a2442b";
-const KITS_COMMIT = "d6630367d557782d9ec965947aeb1c197d37ea15";
-const PROTOKITS_COMMIT = "11d245913ba4d30f3ce950eb5a17e1cc6e4aa1f5";
-const CDN = {
-  nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src/index.js`,
-  seedKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/foundation/seed-kit/index.js`,
-  creatureKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/procedural-creatures/procedural-creature-body-kit/index.js`,
-  batchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/render-descriptors/instanced-render-batch-kit/index.js`,
-  patchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/simulation/seeded-world-patch-controller-kit/index.js`,
-  cameraKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/camera-feedback/camera-smooth-follow-kit/index.js`,
-  three: "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js",
-  rapier: "https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.15.0/rapier.es.js",
-  rapierKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/index.js`
-};
+const CDN = RUNTIME_URLS;
 
 const cfg = { seed: 238991, chunk: 56, segments: 30, trees: 7, grass: 70, goal: 3600 };
 const STREAM = {
@@ -82,59 +77,6 @@ async function createRapierAdapter(collision) {
     radius: collision?.radius ?? 0.32
   });
   return api ?? null;
-}
-
-function createCreatureMesh(THREE, descriptor) {
-  const geometry = new THREE.BufferGeometry();
-  geometry.setIndex(descriptor.geometry.indices);
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(descriptor.geometry.positions, 3));
-  geometry.setAttribute("normal", new THREE.Float32BufferAttribute(descriptor.geometry.normals, 3));
-  geometry.setAttribute("color", new THREE.Float32BufferAttribute(descriptor.geometry.colors, 3));
-  geometry.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(descriptor.geometry.skinIndices, 4));
-  geometry.setAttribute("skinWeight", new THREE.Float32BufferAttribute(descriptor.geometry.skinWeights, 4));
-  geometry.computeBoundingSphere();
-
-  const boneById = {};
-  const orderedBones = descriptor.skeleton.bones.map((definition) => {
-    const bone = new THREE.Bone();
-    bone.name = definition.id;
-    bone.position.set(...definition.position);
-    bone.quaternion.set(...definition.rotation);
-    boneById[definition.id] = bone;
-    return bone;
-  });
-  descriptor.skeleton.bones.forEach((definition) => {
-    if (definition.parentId) boneById[definition.parentId].add(boneById[definition.id]);
-  });
-
-  const material = new THREE.MeshStandardMaterial({
-    vertexColors: true,
-    roughness: descriptor.material.roughness,
-    metalness: descriptor.material.metalness
-  });
-  const mesh = new THREE.SkinnedMesh(geometry, material);
-  const root = boneById[descriptor.skeleton.rootBoneId];
-  mesh.add(root);
-  root.updateMatrixWorld(true);
-  const skeleton = new THREE.Skeleton(orderedBones);
-  mesh.bind(skeleton);
-  mesh.normalizeSkinWeights();
-  mesh.scale.set(...descriptor.transform.scale);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  mesh.userData = { bodyDescriptor: descriptor, boneById };
-  return mesh;
-}
-
-function applyCreaturePose(mesh, pose) {
-  const boneById = mesh.userData.boneById;
-  for (const [boneId, transform] of Object.entries(pose.bones ?? {})) {
-    const bone = boneById[boneId];
-    if (!bone) continue;
-    if (transform.position) bone.position.set(...transform.position);
-    if (transform.rotationEuler) bone.rotation.set(...transform.rotationEuler);
-  }
-  mesh.skeleton.update();
 }
 
 function grassGeometry(THREE, planes) {
@@ -533,6 +475,7 @@ function createWorkerExecutor(PatchModule, generatorOptions) {
 
 async function main() {
   const ui = shell();
+  const playerProfile = loadPlayerCharacterProfile();
   const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, CameraModule, THREE] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
@@ -547,7 +490,11 @@ async function main() {
   }
   const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule, ...CameraModule };
   const engine = NexusEngine.createRealtimeGame({
-    kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, { seed: cfg.seed, goalDistance: cfg.goal })
+    kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, {
+    seed: cfg.seed,
+    goalDistance: cfg.goal,
+    playerCreature: playerProfile.creature
+  })
   });
   const game = engine.n.prehistoricRush;
   const instanceBatches = engine.n.instancedRenderBatch;
@@ -691,6 +638,7 @@ async function main() {
       camera: cameraFollow.getSnapshot(),
       composition: engine.gameComposer,
       scene: engine.coreScene?.getSceneHostDescriptor?.(),
+      playerProfile: { profileId: playerProfile.profileId, revision: playerProfile.revision },
       playerBody: { id: playerBody.id, contentHash: playerBody.contentHash, topology: playerBody.topology },
       renderer: "three-seeded-patch-streaming-neck-shadow-grass-v7"
     })

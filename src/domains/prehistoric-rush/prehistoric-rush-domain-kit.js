@@ -55,6 +55,8 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createSeededWorldPatchControllerKit,
     createCameraSmoothFollowKit
   } = NexusEngineKits;
+  const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
+  const playerCreatureId = String(playerCreature.id ?? PLAYER_RAPTOR_ID);
 
   return [
     createCoreInputKit({ actions: { jump: {}, boost: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
@@ -79,11 +81,11 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createCoreDiagnosticsKit(),
     createCoreCompositionKit(),
     createSeedKit({ seed: config.seed ?? 238991 }),
-    createProceduralCreatureBodyKit({ creatures: [PLAYER_RAPTOR_PRESET] }),
+    createProceduralCreatureBodyKit({ creatures: [playerCreature] }),
     createInstancedRenderBatchKit(),
     createSeededWorldPatchControllerKit(),
     createCameraSmoothFollowKit(),
-    createPrehistoricRushDomainKit(NexusEngine, config)
+    createPrehistoricRushDomainKit(NexusEngine, { ...config, playerCreature, playerCreatureId })
   ];
 }
 
@@ -106,6 +108,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   const jumpImpulse = Number(config.jumpImpulse ?? 13.5);
   let engineRef = null;
   let heightSampler = () => 0;
+  const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
+  const playerCreatureId = String(config.playerCreatureId ?? playerCreature.id ?? PLAYER_RAPTOR_ID);
 
   const resources = {
     RunState: defineResource("prehistoric-rush.run-state"),
@@ -203,7 +207,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     createApi({ engine, world }) {
       engineRef = engine;
       const creatureBody = engine.n.proceduralCreatureBody;
-      if (!creatureBody?.has?.(PLAYER_RAPTOR_ID)) creatureBody?.create?.(PLAYER_RAPTOR_PRESET);
+      if (!creatureBody?.has?.(playerCreatureId)) creatureBody?.create?.(playerCreature);
       const getState = () => world.getResource(resources.RunState);
       const getInput = () => world.getResource(resources.InputState);
       return {
@@ -218,8 +222,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           jumpImpulse,
           surfaceMultipliers: { ...multipliers }
         },
-        getPlayerBody: () => creatureBody.get(PLAYER_RAPTOR_ID),
-        createPlayerPose: (state = {}) => creatureBody.createPose(PLAYER_RAPTOR_ID, state),
+        getPlayerBody: () => creatureBody.get(playerCreatureId),
+        createPlayerPose: (state = {}) => creatureBody.createPose(playerCreatureId, state),
         setHeightSampler(nextSampler) {
           if (typeof nextSampler !== "function") throw new TypeError("setHeightSampler expects a function.");
           heightSampler = nextSampler;
