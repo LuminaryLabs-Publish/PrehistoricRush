@@ -1,0 +1,8 @@
+{
+  "name": "prehistoric-rush",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/prehistoric-rush-resolution-policy.mjs"
+  }
+}
