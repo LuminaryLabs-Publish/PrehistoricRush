@@ -1,4 +1,4 @@
-export const NEXUS_COMMIT = "3b1f2429a0bb4aa4992094a37930b1f8035acb20";
+export const NEXUS_COMMIT = "cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1";
 export const KITS_COMMIT = "9673594de5669b4691737b91a9d56fa282e74370";
 export const PROTOKITS_COMMIT = "534e249346d94351baa4cfce9f2d3cd837362920";
 export const THREE_VERSION = "0.179.1";
