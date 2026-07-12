@@ -1,112 +1,78 @@
 # Validation: PrehistoricRush
 
-**Updated:** `2026-07-11T21-00-00-04-00`
+**Updated:** `2026-07-11T22-29-24-04-00`
 
 ## Summary
 
-This was a documentation-only audit. Source was inspected through the GitHub connector. No runtime, dependency, profile, route, rendering, physics, Worker or deployment behavior was changed.
+Documentation-only audit of the public browser host, raw runtime-owner exposure, independently sampled diagnostics, command admission and committed read-model requirements.
 
 ## Plan ledger
 
-**Goal:** record exactly what source analysis proves about creator draft persistence, preview transition state and viewport framing, and separate that from unexecuted runtime proof.
+**Goal:** separate source-backed proof of the current mutable host from unimplemented host isolation and coherence guarantees.
 
 - [x] Confirm selected repository and `main` branch.
 - [x] Confirm no branch or pull request was created.
-- [x] Read the current creator page, profile schema/store, preview transition and shared Three adapter.
-- [x] Read `game.html`, `charactercreator.html`, runtime versions and game profile admission.
-- [x] Confirm the current routes and saved-profile handoff exist.
-- [x] Trace rapid multi-group edit behavior through the debounce closure.
-- [x] Trace preview revision state and Ready projection.
-- [x] Trace local bounds and camera-distance calculation.
-- [x] Identify interaction loops, domains, kits and services.
-- [ ] Execute browser or Pages tests.
-- [ ] Implement creator authority and fixtures.
+- [x] Read current root `.agent` state and central ledger.
+- [x] Read `game.html`, `src/pages/game.js` and `src/game.js`.
+- [x] Trace engine, patch, physics, camera, render, HUD and host construction.
+- [x] Confirm public raw owner exposure.
+- [x] Confirm `getState()` independently samples mutable owners.
+- [x] Identify complete interaction, domain, kit and service inventory.
+- [x] Define authority and fixtures.
+- [ ] Execute browser or Pages host-isolation tests.
+- [ ] Implement the host gateway.
 
 ## Source-backed findings
 
 ```txt
-creator persistence:
-  each input merges into local draft
-  each input cancels the prior timer
-  each new timer captures only that input's partial patch
-  timer commit reloads storage and merges only the captured patch
-  returned stored profile replaces local draft
-
-preview state:
-  unsaved draft retains stored profile revision
-  setTargetProfile assigns that unchanged revision to targetRevision
-  compatible geometry still damps over subsequent frames
-  getState can report settled from revision equality before convergence
-
-framing:
-  mesh.geometry.computeBoundingBox runs each frame
-  local center and size are multiplied by mesh scale
-  desired distance is max dimension times 1.9, clamped to 4.4..11
-  horizontal FOV, viewport aspect and skinned pose bounds are not used
-
-handoff:
-  game.html and charactercreator.html exist
-  game loads saved profile
-  profile.creature enters the product kit graph
-  creator and game use the same pinned generator and Three adapter
+PrehistoricRushHost exists: yes
+raw engine exposed: yes
+raw physics service exposed: yes
+raw Three adapter exposed: yes
+raw patch controller exposed: yes
+raw camera-follow service exposed: yes
+adapter includes scene/camera/renderer references: yes
+adapter includes activate/release/render/reset mutation services: yes
+getState samples multiple mutable owners: yes
+committedFrameId in host state: no
+shared subsystem epoch set in host state: no
+owner quarantine: no
+typed public command gateway: no
 ```
 
-## Static reasoning proof: rapid edit loss
+## Static reasoning proof
 
 ```txt
-1. storage contains old proportions and old material
-2. proportions edit updates only local draft and schedules proportions patch
-3. material edit arrives before 160 ms and cancels first timer
-4. second timer contains only material patch
-5. store reloads old profile and merges only material patch
-6. returned profile overwrites local draft
-7. proportions edit is absent from durable state and UI reverts
-```
-
-This conclusion follows directly from the current closure capture and store reload order. It was not measured in a browser during this audit.
-
-## Static reasoning proof: premature Ready
-
-```txt
-1. appliedRevision equals current stored profile revision
-2. local draft descriptor changes without revision increment
-3. targetRevision remains equal to appliedRevision
-4. mesh damping still has nonzero geometric difference
-5. getState compares revisions and may return settled
-6. DOM maps settled to Ready
+1. same-page consumer obtains PrehistoricRushHost.adapter
+2. consumer invokes activatePatch, releasePatches, resetCamera or render
+3. mutation occurs outside normal RAF and subsystem admission
+4. no host command or epoch result is journaled
+5. getState samples current owners independently
+6. returned diagnostics cannot prove one coherent committed frame
 ```
 
 ## Validation performed
 
 ```txt
-GitHub organization inventory comparison
-central ledger and repo-local audit comparison
-recent commit inspection
-root .agent presence confirmation
-HTML route inspection
-creator source inspection
-profile schema and storage inspection
-preview transition inspection
-shared Three adapter inspection
-game profile admission inspection
+GitHub organization and central-ledger comparison
+root .agent presence check
+current source inspection
+public object and adapter surface inspection
 interaction/domain/kit/service inventory
-contract and fixture derivation
+authority and fixture derivation
 documentation consistency review
 ```
 
 ## Validation not performed
 
 ```txt
-local clone, blocked by container DNS resolution
-npm install
+local clone
 Node fixtures
 browser automation
-rapid-slider input execution
-cross-tab profile conflict execution
-SkinnedMesh posed-bound measurement
-portrait/square/wide viewport screenshots
-Three render smoke
-Rapier execution
+public-host property traversal
+mutation bypass execution
+committed-frame coherence execution
+Rapier or Worker execution
 GitHub Pages smoke
 deployment workflow run
 ```
@@ -130,20 +96,17 @@ target branch: main
 ## Missing executable gates
 
 ```txt
-rapid multi-group edit persistence fixture
-full-draft debounce flush fixture
-profile conflict fixture
-preview revision/convergence fixture
-topology-crossfade bounds fixture
-portrait viewport-fit fixture
-square viewport-fit fixture
-wide viewport-fit fixture
-Saved/Ready visible-frame receipt fixture
-creator/game profile fingerprint parity fixture
-creator browser smoke
-creator Pages smoke
+raw owner isolation fixture
+prototype/returned-value traversal fixture
+unsupported-command zero-mutation fixture
+stale-run/epoch fixture
+duplicate command fixture
+committed read-model coherence fixture
+read-model clone/freeze fixture
+host browser smoke
+host Pages smoke
 ```
 
 ## Claim boundary
 
-This audit proves the current source order and identifies deterministic failure paths. It does not claim that every browser reproduces the same visual clipping, that the deployed Pages site currently fails, or that the proposed authority has been implemented.
+This audit proves that live mutable owners are publicly exposed and that host state is independently sampled. It does not claim the public host has been isolated, that commands are safe, that readback is frame-coherent or that Pages deployment currently passes the proposed gates.
