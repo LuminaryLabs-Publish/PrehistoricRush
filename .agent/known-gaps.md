@@ -1,19 +1,64 @@
 # Known Gaps: PrehistoricRush
 
-**Updated:** `2026-07-11T22-29-24-04-00`
+**Updated:** `2026-07-11T22-38-54-04-00`
 
 ## Summary
 
-The current leading observation gap is the public browser host. It exposes live mutable subsystem owners and independently samples them for `getState()`. Existing creator, streaming, collision, cadence, readiness, frame, reset and lifecycle gaps remain open.
+The leading gameplay gap is run-step outcome arbitration. Movement, collision, pickups and goal completion mutate through different owners, allowing a same-step goal to skip collision checks and a collision failure to be followed by reward mutation. The public-host capability, creator, streaming, collider, cadence, readiness, frame, reset and lifecycle gaps remain open.
 
 ## Plan ledger
 
-**Goal:** make public diagnostics immutable and coherent, and require every public mutation to pass through typed capability and epoch admission.
+**Goal:** keep every unresolved outcome, host, creator and runtime dependency explicit and close them through existing owners in dependency order.
 
 - [x] Preserve creator and runtime gap history.
-- [x] Add raw-owner exposure and independently sampled read-model gaps.
-- [x] Add host command, epoch and fixture requirements.
+- [x] Preserve the public-host capability and read-model gaps.
+- [x] Add goal/collision/pickup precedence and terminal-frame gaps.
+- [x] Add outcome-policy, event-order and idempotency fixtures.
 - [ ] Close gaps through existing subsystem owners in dependency order.
+
+## Run-step outcome gaps
+
+```txt
+movement and distance commit before collision admission
+goal is checked inside engine tick before host physics
+same-step goal can suppress Rapier and fallback collision checks
+no explicit collision-versus-goal policy
+collision failure does not stop the same host block
+collectShard has no active-run status guard
+ShardCollected can emit after RunFailed
+no collision-versus-pickup policy
+no goal-versus-pickup policy
+no failed-movement retention policy
+no frozen terminal reward set
+no runStepId or predecessor revision
+no immutable candidate set
+no typed continue/fail/win arbitration result
+no atomic movement/reward/status/transition commit
+no ordered terminal event bundle
+no outcome policy version or outcomeRevision
+```
+
+## Collision-source gaps
+
+```txt
+Rapier contacts and XZ fallback reduce immediately to boolean OR
+source disagreement is not recorded
+fallback descriptors lack committed membership revision
+contacts lack patch, run-step and outcome identity
+query failure can be indistinguishable from no collision
+```
+
+## Terminal-frame gaps
+
+```txt
+renderer samples final mutable run state
+HUD independently formats the same mutable state
+no terminal frame receipt
+no runStepId or outcomeRevision in scene/HUD output
+win frame does not prove collision arbitration completed
+run-over frame does not prove reward set was frozen
+transition request is not visible-frame acknowledgement
+```
 
 ## Public host capability gaps
 
@@ -24,40 +69,29 @@ live Three adapter exposed
 live patch controller exposed
 live camera-follow service exposed
 scene, renderer, camera and Object3D references reachable
-active patch and collider mutations reachable
+active patch, collider and run mutations reachable
 no capability descriptor
 no command envelope or command ID
 no expected run/epoch admission
 no duplicate or stale-command result
 no raw-owner quarantine
+future host commands could bypass run-step outcome authority
 ```
 
 ## Public read-model gaps
 
 ```txt
 getState independently samples mutable owners
-no committedFrameId
+no committedFrameId or runStepId
 no runtimeSessionId or hostGeneration
 no shared run/stream/Worker/collider/frame epoch set
 no profile or world-content fingerprint correlation
-no render/HUD commit results
+no outcome/event/transition/render/HUD commit correlation
 no immutable deep-detached read model
 no bounded command/read journal
 ```
 
-## Consequences
-
-```txt
-same-page scripts can tick the engine outside RAF
-streaming can mutate outside activation authority
-colliders and physics can mutate outside patch/frame admission
-camera and renderer can mutate outside frame ownership
-public diagnostics can combine values from different moments
-browser validation can create states the product loop never admits
-stale automation can mutate a replacement run
-```
-
-## Retained gaps
+## Retained creator and runtime gaps
 
 ```txt
 creator draft dirty-field and durable commit authority
@@ -75,15 +109,20 @@ startup rollback and ordered disposal
 ## Missing proof matrix
 
 ```txt
+goal-only, collision-only and pickup-only fixtures
+goal + collision precedence fixture
+collision + pickup terminal reward fixture
+goal + pickup fixture
+all-three candidate fixture
+Rapier/fallback disagreement fixture
+terminal event ordering fixture
+outcome idempotency fixture
+terminal scene/HUD frame parity fixture
 public owner isolation fixture
-prototype and returned-value traversal fixture
-unsupported-command zero-mutation fixture
-stale-run and stale-epoch command fixtures
-duplicate command fixture
-committed read-model coherence fixture
-deep clone and immutability fixture
-browser public-host smoke
-Pages public-host smoke
+unsupported/stale/duplicate host command fixtures
+committed read-model coherence and immutability fixtures
+creator, streaming, collider, cadence, readiness, reset and lifecycle fixtures
+browser and Pages terminal-outcome smoke
 ```
 
 ## Priority
@@ -93,11 +132,12 @@ Pages public-host smoke
 2. creator draft/commit/preview authority
 3. patch activation/release
 4. collider replacement/collision admission
-5. cadence and readiness
-6. committed gameplay frame
-6a. public host gateway and committed read model
-7. coordinated reset epochs
-8. lifecycle and disposal
+5. run-step outcome arbitration and terminal frame
+6. cadence and world readiness
+7. committed gameplay frame/read model
+7a. public host gateway
+8. coordinated reset epochs
+9. lifecycle and disposal
 ```
 
 ## Do not do next
@@ -105,9 +145,10 @@ Pages public-host smoke
 ```txt
 do not work on TheCavalryOfRome
 do not create a branch
-do not expose a second diagnostics object with the same raw owners
-do not wrap raw owners in shallow proxies and call them safe
-do not let host commands bypass existing domain owners
+do not encode outcome precedence through source placement
+do not allow direct fail, win or reward mutation outside the step commit
+do not add a second run-state store, physics world or pickup inventory
+do not let the public host bypass the outcome authority
 do not build a read model by independently sampling mutable owners
-do not treat a command result as a committed visible frame
+do not treat transition submission or mutable state as visible-frame proof
 ```
