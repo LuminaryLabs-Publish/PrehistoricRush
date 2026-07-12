@@ -1,109 +1,123 @@
 # Next Steps: PrehistoricRush
 
-**Updated:** `2026-07-12T12-08-05-04-00`
+**Updated:** `2026-07-12T14-10-22-04-00`
 
 ## Plan ledger
 
-**Goal:** connect the installed motion, physics, articulation and rendering capabilities through one product-owned result without moving rendering responsibilities into Nexus Engine core.
+**Goal:** preserve current creature animation while replacing ambient transform coercion with an explicit, testable pose contract bound to the intended rig and visible frame.
 
 ### Gate 0: preserve current behavior
-- [ ] Keep movement and outcome arbitration in the current product and Core Simulation boundary.
-- [ ] Preserve collision, goal and pickup precedence.
-- [ ] Keep the streamed-content parity audit active as a separate dependency.
-- [ ] Keep Core Motion and articulated motion renderer-neutral.
+- [ ] Keep procedural poses as the active production path until articulated consumption is proven.
+- [ ] Preserve current creator morph/crossfade behavior.
+- [ ] Preserve gameplay movement, collision, outcome and stream ordering.
+- [ ] Keep pose admission renderer-side and renderer-neutral upstream.
 
-### Gate 1: establish shared identity
-- [ ] Add one motion-source revision for each admitted run step.
-- [ ] Record input sequence, run generation and actor identity.
-- [ ] Add the authorizing Core Motion frame ID to each Core Physics motion request.
-- [ ] Return a physics-consumption result containing request and physics-frame IDs.
+### Gate 1: define the pose envelope
+- [ ] Add `poseId`, `poseRevision`, `schemaVersion` and `sourceKind`.
+- [ ] Add `rigId`, `skeletonFingerprint`, `profileRevision` and `meshGeneration`.
+- [ ] Declare `mode: absolute | partial`.
+- [ ] Declare transform space, handedness, units and quaternion component order.
+- [ ] Include predecessor pose revision for partial updates.
 
-### Gate 2: declare presentation policy
-- [ ] Add a versioned player motion and presentation profile.
-- [ ] Declare the gameplay pose mode.
-- [ ] Declare a comparable creator pose mode.
-- [ ] Represent legacy procedural posing as an explicit fallback result.
-- [ ] Include creature-profile, skeleton and rig fingerprints.
+### Gate 2: admit transforms
+- [ ] Reject non-finite position and rotation components.
+- [ ] Version quaternion normalization and zero-length handling.
+- [ ] Reject or explicitly repair incomplete quaternion objects.
+- [ ] Reject unsupported array lengths and transform representations.
+- [ ] Return typed admission warnings and failures.
 
-### Gate 3: consume articulated results
-- [ ] Adopt the player rig through one revisioned receipt.
-- [ ] Build pose targets from committed gameplay and terrain state.
-- [ ] Run articulated solving against the admitted motion revision.
-- [ ] Return a typed articulated pose result.
-- [ ] Reject results from an earlier run, profile or rig generation.
-- [ ] Keep physical articulation inactive until joints or motors are configured.
+### Gate 3: bind to the rig
+- [ ] Compare pose `rigId` with the mesh rig identity.
+- [ ] Compare skeleton and bone-set fingerprints.
+- [ ] Define required, optional and ignored bone sets.
+- [ ] Reject unknown bones or record them through explicit policy.
+- [ ] Prevent earlier profile, rig or mesh generations from applying.
 
-### Gate 4: prove renderer consumption
-- [ ] Select exactly one pose result for each player frame.
-- [ ] Apply only that result to the Three.js skeleton.
-- [ ] Record applied, missing and rejected bone IDs.
-- [ ] Commit a renderer pose-application receipt.
-- [ ] Publish a first-visible-frame acknowledgement containing run, motion, physics, pose and renderer IDs.
-- [ ] Project the detached parity result through the public host.
+### Gate 4: define full and partial semantics
+- [ ] Absolute poses must provide all required bones or restore omissions to rest state.
+- [ ] Partial poses must cite a predecessor pose revision.
+- [ ] Partial merge must be deterministic and bounded.
+- [ ] Restart/profile replacement must clear predecessor pose state.
+- [ ] Creator crossfade must declare whether it consumes absolute or partial poses.
 
-### Gate 5: align creator and game
-- [ ] Publish comparable motion-profile descriptors in both surfaces.
-- [ ] Prove both surfaces use the same profile, skeleton and rig fingerprints.
-- [ ] Separate preview-only turntable motion from gameplay locomotion.
-- [ ] Retire prior preview work after profile replacement or teardown.
+### Gate 5: return application results
+- [ ] Build a detached pose-application plan before mutating Three.js bones.
+- [ ] Return applied, missing, ignored, rejected and repaired bone IDs.
+- [ ] Include source pose, rig, mesh and renderer frame identities.
+- [ ] Commit no bone changes when admission fails.
+- [ ] Project the result through diagnostics without exposing mutable owners.
 
-### Gate 6: reset and lifecycle
-- [ ] Retire predecessor input, motion-frame and pose results on restart.
-- [ ] Reset Core Motion, articulated motion and optional articulated dynamics together.
-- [ ] Revoke pose consumers before replacing the player mesh.
-- [ ] Prove creator teardown stops preview animation and pose consumers.
+### Gate 6: integrate articulated presentation
+- [ ] Call `solvePlayerArticulatedPose()` from one admitted gameplay presentation path.
+- [ ] Select one articulated or typed legacy fallback result.
+- [ ] Apply the selected result through the same pose contract.
+- [ ] Keep the creator on an explicit preview profile until equivalent proof exists.
+- [ ] Preserve the broader motion/presentation parity authority.
 
-### Gate 7: executable proof
-- [ ] Add pinned-module admission fixtures.
-- [ ] Add a composed Core Motion and Core Physics tick fixture.
-- [ ] Add explicit fallback and articulated-result selection fixtures.
-- [ ] Add earlier-generation result rejection fixtures.
-- [ ] Add Three.js bone-application and first-visible-frame fixtures.
-- [ ] Add browser and deployed Pages parity smokes.
+### Gate 7: visible-frame proof
+- [ ] Publish one visible-pose-frame acknowledgement after render submission.
+- [ ] Include run, tick, pose, rig, mesh and renderer revisions.
+- [ ] Record the pose-application result ID used by that frame.
+- [ ] Reject acknowledgements for stale or failed application results.
+
+### Gate 8: executable proof
+- [ ] Add valid Euler and quaternion adapter fixtures.
+- [ ] Add malformed, zero and non-finite quaternion fixtures.
+- [ ] Add unknown, missing and omitted bone fixtures.
+- [ ] Add absolute rest-reset and partial predecessor fixtures.
+- [ ] Add wrong-rig and stale-mesh-generation fixtures.
+- [ ] Add creator/game adapter parity fixtures.
+- [ ] Add articulated-result application fixture.
+- [ ] Add browser and deployed Pages visible-frame smokes.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-motion-presentation-parity-authority-domain
-motion-source-policy-kit
-run-motion-revision-kit
-motion-intent-sequence-kit
-motion-frame-reference-kit
-physics-request-motion-link-kit
-player-rig-generation-kit
-player-pose-profile-kit
-creator-pose-profile-kit
-articulated-solve-command-kit
-articulated-solve-admission-kit
-articulated-solve-result-kit
-legacy-pose-fallback-policy-kit
-pose-source-selection-kit
-pose-result-generation-admission-kit
-renderer-pose-application-command-kit
-renderer-bone-application-result-kit
-motion-pose-observation-kit
-motion-pose-journal-kit
+prehistoric-rush-pose-contract-rig-binding-authority-domain
+pose-schema-version-kit
+pose-id-revision-kit
+pose-source-kind-kit
+pose-mode-kit
+pose-transform-space-kit
+quaternion-convention-kit
+pose-rig-binding-kit
+skeleton-fingerprint-kit
+bone-membership-policy-kit
+pose-transform-admission-kit
+quaternion-admission-kit
+absolute-pose-completeness-kit
+partial-pose-predecessor-kit
+rest-pose-reconstruction-kit
+pose-application-command-kit
+pose-application-plan-kit
+pose-application-result-kit
+stale-pose-rejection-kit
+pose-application-observation-kit
+pose-application-journal-kit
 visible-pose-frame-ack-kit
-motion-presentation-parity-fixture-kit
-browser-motion-presentation-smoke-kit
-pages-motion-presentation-smoke-kit
+pose-contract-fixture-kit
+browser-pose-contract-smoke-kit
+pages-pose-contract-smoke-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:pinned-core-motion-source
-fixture:composed-motion-physics-tick
-fixture:physics-motion-frame-link
-fixture:typed-legacy-pose-fallback
-fixture:articulated-result-consumption
-fixture:prior-generation-pose-rejection
-fixture:creator-game-motion-profile-parity
-fixture:renderer-bone-application
-fixture:first-visible-motion-pose-frame
-browser game/creator matrix
-Pages game/creator smoke
+fixture:valid-euler-pose
+fixture:valid-quaternion-array-pose
+fixture:valid-quaternion-object-pose
+fixture:malformed-quaternion-rejection
+fixture:unknown-bone-policy
+fixture:absolute-omitted-bone-restoration
+fixture:partial-pose-predecessor
+fixture:wrong-rig-rejection
+fixture:stale-mesh-generation-rejection
+fixture:articulated-result-application
+fixture:renderer-pose-application-result
+fixture:first-visible-pose-frame
+browser creator/game matrix
+Pages creator/game smoke
 ```
 
-Keep the legacy pose path until articulated presentation has equivalent or better deterministic, visual and reset proof.
+Do not remove the legacy pose path until the contract, articulated selection and visible-frame proofs are deterministic and equivalent.
