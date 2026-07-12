@@ -3,61 +3,64 @@
 ## Last aligned
 
 ```txt
-2026-07-12T05-21-52-04-00
+2026-07-12T07-09-49-04-00
 ```
 
 ## Summary
 
-`PrehistoricRush` is a multi-page Nexus Engine browser runner with a persisted procedural raptor, Three.js creator and gameplay renderers, deterministic Worker patch streaming, Rapier/fallback collision, streamed shards, terminal transitions, HUD projection and Pages deployment.
+`PrehistoricRush` is a multi-page Nexus Engine browser runner with a persisted procedural raptor, Three.js creator and gameplay renderers, deterministic Worker/fallback patch generation, streamed terrain and vegetation, Rapier/fallback collision, shards, HUD projection and Pages deployment.
 
-The current audit isolates **browser input command authority**. The engine installs `core-input-kit`, but the active browser host uses global listeners, a parallel mutable held-state object and direct `game.start()`/`game.setInput()` calls. Enter restarts even during active gameplay, browser repeat is not classified, and repeated Space observations can re-arm jump after the simulation clears the prior pulse.
+The current audit isolates **active content materialization authority**. Patch releases trigger a full tree flush plus complete grass, shard, pickup and collider rebuild. Activating one ready patch repeats that complete work in the same frame. One release-plus-activation frame can visit up to 3,500 grass descriptors, 100 shard descriptors and replace the full fixed-collider set twice before rendering one final state.
 
-All prior runtime-module, surface, profile, creator, streaming, shard, collision, cadence, readiness, outcome, frame, host, reset and lifecycle audits remain active dependencies.
+All prior runtime-module, input, render-surface, profile, creator, streaming, shard, collision, cadence, readiness, outcome, frame, host, reset and lifecycle audits remain active dependencies.
 
 ## Plan ledger
 
-**Goal:** establish one phase-safe input path that distinguishes physical press edges from held controls, rejects repeated/stale observations, retires state at lifecycle barriers and correlates accepted commands with simulation and visible frames.
+**Goal:** coalesce patch membership changes into one bounded transaction that commits terrain, trees, grass, shards and colliders under one active-content revision and proves the first frame rendered from it.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Select only `PrehistoricRush` as the oldest eligible ledger entry.
-- [x] Trace button, keyboard, keyup, blur, host-held state, product input and RAF consumption.
+- [x] Avoid overlapping newer unsynchronized `TheOpenAbove` repo-local work.
+- [x] Select only `PrehistoricRush` as the next-oldest stable eligible repository.
+- [x] Trace controller release/activation, terrain slots, tree batches, grass/shards, colliders, physics and rendering.
 - [x] Identify all interaction loops, domains, kits and services.
+- [x] Quantify the complete active-set rebuild bound.
 - [x] Add timestamped architecture and system audits.
-- [x] Update documentation on `main`; create no branch or pull request.
-- [ ] Implement input authority and executable fixtures.
+- [x] Update documentation directly on `main`; create no branch or pull request.
+- [ ] Implement materialization authority and executable fixtures.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T05-21-52-04-00/project-breakdown.md
+.agent/trackers/2026-07-12T07-09-49-04-00/project-breakdown.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
 .agent/validation.md
-.agent/architecture-audit/2026-07-12T05-21-52-04-00-input-command-authority-dsk-map.md
-.agent/render-audit/2026-07-12T05-21-52-04-00-input-step-visible-response-gap.md
-.agent/gameplay-audit/2026-07-12T05-21-52-04-00-enter-repeat-jump-loop.md
-.agent/interaction-audit/2026-07-12T05-21-52-04-00-browser-input-command-admission-map.md
-.agent/input-authority-audit/2026-07-12T05-21-52-04-00-edge-hold-repeat-retirement-contract.md
-.agent/deploy-audit/2026-07-12T05-21-52-04-00-browser-input-fixture-gate.md
-.agent/turn-ledger/2026-07-12T05-21-52-04-00.md
+.agent/architecture-audit/2026-07-12T07-09-49-04-00-active-content-materialization-dsk-map.md
+.agent/render-audit/2026-07-12T07-09-49-04-00-double-rebuild-visible-content-gap.md
+.agent/gameplay-audit/2026-07-12T07-09-49-04-00-release-activation-rebuild-loop.md
+.agent/interaction-audit/2026-07-12T07-09-49-04-00-patch-delta-materialization-result-map.md
+.agent/content-materialization-audit/2026-07-12T07-09-49-04-00-coalescing-budget-commit-contract.md
+.agent/deploy-audit/2026-07-12T07-09-49-04-00-materialization-fixture-gate.md
+.agent/turn-ledger/2026-07-12T07-09-49-04-00.md
 .agent/kit-registry.json
 ```
 
 ## Main findings
 
 ```txt
-core-input-kit is installed but is not the browser ingress owner
-button and keyboard use different start/jump policy branches
-Enter calls start() in every phase, including active gameplay
-keydown repeat is not inspected
-held Enter can repeatedly replace the run and increment runId
-jump is a mutable pulse cleared by simulation
-later Space repeat can re-arm jump without key release
-host held flags and product InputState are parallel owners
-blur retires input, but visibility/reset/disposal results are absent
-no input command, revision, step-consumption or visible-frame receipt exists
+releasePatches performs a complete active-content rebuild
+activatePatch performs another complete active-content rebuild
+release plus activation can therefore rebuild twice in one frame
+all active grass and uncollected shards are recopied on each rebuild
+all fixed colliders are reconstructed and replaced on each rebuild
+all tree batches are flushed after release and activation
+there is no aggregate patch delta or materialization command
+there is no elapsed-time or work-unit budget
+there is no prepare/commit/rollback boundary
+there is no active-content revision or cross-consumer parity digest
+there is no first visible-frame acknowledgement
 ```
 
 ## Domains and kit groups
@@ -68,10 +71,10 @@ runtime module graph and import maps
 12 Nexus Engine core kits
 5 official NexusEngine-Kits
 12 product/page/Worker kits
-9 external and host adapter boundaries, including browser input
-run, streaming, physics, camera, Three render, HUD and host readback
-outcome, frame, host capability, reset, lifecycle, validation and deployment
-input observation, edge/hold policy, admission, retirement, step and frame authority: missing
+9 external and host adapter boundaries
+run, streaming, terrain, trees, grass, shards, colliders and physics
+camera, Three rendering, HUD and public readback
+active-content delta, coalescing, budgeting, revision, commit, rollback and frame authority: missing
 ```
 
 See the tracker and kit registry for every kit and service.
@@ -79,10 +82,10 @@ See the tracker and kit registry for every kit and service.
 ## Required parent domain
 
 ```txt
-prehistoric-rush-input-command-authority-domain
+prehistoric-rush-active-content-materialization-authority-domain
 ```
 
-It coordinates normalized input observations, source and repeat evidence, edge/hold state, run and phase admission, command identity/idempotency, core-input ownership, focus/visibility/reset retirement, simulation-step consumption, visible-frame correlation, observations, journals and fixtures.
+It coordinates aggregate release/activation deltas, terrain/tree/grass/shard/collider plans, elapsed-time and work-unit budgets, detached preparation, atomic commit, rollback, stale-plan rejection, parity digests, observations, journals and first-visible-frame proof.
 
 ## Ordered implementation queue
 
@@ -93,7 +96,8 @@ It coordinates normalized input observations, source and repeat evidence, edge/h
 1. Route Artifact and Game Profile Handoff Proof
 2. Character Creator Draft, Commit and Preview Frame Authority
 3. Patch Activation and Release Commit Authority
-3a. Shard Identity, Collection Commit and Visible Removal Authority
+3a. Active Content Materialization and Coalescing Authority
+3b. Shard Identity, Collection Commit and Visible Removal Authority
 4. Exact Collider Replacement and Collision Admission
 5. Run-Step Outcome Arbitration and Terminal Frame Authority
 6. Stream Cadence and Time Budget Authority
@@ -104,4 +108,4 @@ It coordinates normalized input observations, source and repeat evidence, edge/h
 10. Runtime Lifecycle and Ordered Disposal
 ```
 
-Do not add a second input owner. Adapt the existing browser listeners and button into the installed core input capability, then make the product domain consume one immutable per-step input snapshot.
+Do not add a second streaming owner. Adapt the existing controller and product consumer into one materialization transaction, then make physics, rendering, pickups and readback cite the committed active-content revision.
