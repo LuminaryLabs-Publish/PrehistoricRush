@@ -7,6 +7,10 @@ import {
 import { RUNTIME_URLS } from "../shared/runtime-versions.js";
 import { createCharacterPreviewTransition } from "../character-creator/character-preview-transition.js";
 
+const PLATFORM_CENTER_Y = -0.25;
+const PLATFORM_HEIGHT = 0.22;
+const PLATFORM_TOP_Y = PLATFORM_CENTER_Y + PLATFORM_HEIGHT * 0.5;
+const REFERENCE_CHARACTER_HEIGHT = 1.4;
 const root = document.querySelector("#app") ?? document.body;
 let draft = loadPlayerCharacterProfile();
 let saveTimer = 0;
@@ -72,14 +76,12 @@ root.innerHTML = `
         <a class="button primary" href="./game.html">Play</a>
       </nav>
     </header>
-
     <section class="creator-card">
       <div class="preview-head">
         <h2>Preview</h2>
         <span id="preview-status" class="status">Loading</span>
       </div>
       <div id="preview" aria-label="Live procedural raptor preview"></div>
-
       <section class="settings">
         <h2 class="settings-title">Customize</h2>
         <div id="controls" class="controls"></div>
@@ -96,7 +98,6 @@ const controls = document.querySelector("#controls");
 const preview = document.querySelector("#preview");
 const previewStatus = document.querySelector("#preview-status");
 const saveStatus = document.querySelector("#save-status");
-
 const definitions = [
   ["Size", "proportions", "bodyScale", 0.55, 1.35, 0.01],
   ["Body", "proportions", "bodyLength", 0.85, 2.2, 0.01],
@@ -112,7 +113,6 @@ function controlMarkup() {
       <input data-group="${group}" data-key="${key}" type="range" min="${min}" max="${max}" step="${step}">
     </label>
   `).join("");
-
   return `
     ${sliders}
     <div class="colors">
@@ -136,9 +136,7 @@ function renderControls() {
     const output = controls.querySelector(`[data-output="${input.dataset.group}.${input.dataset.key}"]`);
     if (output) output.textContent = Number(value).toFixed(2);
   }
-  for (const input of controls.querySelectorAll("input[data-color]")) {
-    input.value = preset.material[input.dataset.color];
-  }
+  for (const input of controls.querySelectorAll("input[data-color]")) input.value = preset.material[input.dataset.color];
 }
 
 function updateDraft(patch) {
@@ -146,10 +144,7 @@ function updateDraft(patch) {
     ...draft,
     creature: {
       ...draft.creature,
-      preset: {
-        ...draft.creature.preset,
-        ...patch
-      }
+      preset: { ...draft.creature.preset, ...patch }
     }
   };
   renderControls();
@@ -199,6 +194,17 @@ subscribePlayerCharacterProfile(({ source, profile }) => {
   renderControls();
 });
 
+function stagedBounds(descriptor, mesh) {
+  const scale = [mesh.scale.x, mesh.scale.y, mesh.scale.z];
+  const position = [mesh.position.x, mesh.position.y, mesh.position.z];
+  const minimum = descriptor.bounds.min.map((value, index) => value * scale[index] + position[index]);
+  const maximum = descriptor.bounds.max.map((value, index) => value * scale[index] + position[index]);
+  return {
+    minimum: minimum.map((value, index) => Math.min(value, maximum[index])),
+    maximum: maximum.map((value, index) => Math.max(value, minimum[index]))
+  };
+}
+
 async function startShowcase() {
   const [NexusEngine, SeedModule, CreatureModule, THREE] = await Promise.all([
     import(RUNTIME_URLS.nexus),
@@ -206,29 +212,45 @@ async function startShowcase() {
     import(RUNTIME_URLS.creatureKit),
     import(RUNTIME_URLS.three)
   ]);
-  if (!NexusEngine?.createRealtimeGame || !SeedModule?.createSeedKit || !CreatureModule?.createProceduralCreatureBodyKit || !THREE?.WebGLRenderer) {
-    throw new Error("Preview modules did not load.");
-  }
+  const required = [
+    NexusEngine?.createRealtimeGame,
+    NexusEngine?.createCoreCreatureDomain,
+    NexusEngine?.createCoreCharacterDomain,
+    NexusEngine?.createCoreMotionDomain,
+    NexusEngine?.createCoreCameraFramingKit,
+    SeedModule?.createSeedKit,
+    CreatureModule?.createProceduralCreatureBodyKit,
+    THREE?.WebGLRenderer
+  ];
+  if (required.some((entry) => typeof entry !== "function")) throw new Error("Preview modules did not load.");
 
   const engine = NexusEngine.createRealtimeGame({
     kits: [
+      ...NexusEngine.createCoreCreatureDomain(),
+      ...NexusEngine.createCoreCharacterDomain(),
+      ...NexusEngine.createCoreMotionDomain(),
+      NexusEngine.createCoreCameraFramingKit(),
       SeedModule.createSeedKit({ seed: draft.creature.seed }),
       CreatureModule.createProceduralCreatureBodyKit({ creatures: [draft.creature] })
     ]
   });
   const creatureApi = engine.n.proceduralCreatureBody;
-  if (!creatureApi) throw new Error("Creature generator did not install.");
+  const cameraFraming = engine.n.cameraFraming;
+  if (!creatureApi || !cameraFraming) throw new Error("Character preview composition did not install.");
+  const framingController = cameraFraming.create({
+    id: "character-creator",
+    padding: 1.18,
+    smoothTime: 0.16,
+    minimumDistance: 2,
+    maximumDistance: 30,
+    teleportThreshold: 12
+  });
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x102318);
-  scene.fog = new THREE.Fog(0x102318, 10, 26);
-
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 70);
-  const cameraTarget = new THREE.Vector3(0, 0.7, 0);
-  const desiredTarget = new THREE.Vector3(0, 0.7, 0);
+  scene.fog = new THREE.Fog(0x102318, 10, 32);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.03, 70);
   const cameraDirection = new THREE.Vector3(0.72, 0.32, 1).normalize();
-  let cameraDistance = 6;
-
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
@@ -238,19 +260,18 @@ async function startShowcase() {
   preview.replaceChildren(renderer.domElement);
 
   const platform = new THREE.Mesh(
-    new THREE.CylinderGeometry(4.25, 4.45, 0.22, 64),
+    new THREE.CylinderGeometry(4.25, 4.45, PLATFORM_HEIGHT, 64),
     new THREE.MeshStandardMaterial({ color: 0x304d31, roughness: 0.9 })
   );
-  platform.position.y = -0.25;
+  platform.position.y = PLATFORM_CENTER_Y;
   platform.receiveShadow = true;
   scene.add(platform);
-
   const ring = new THREE.Mesh(
     new THREE.TorusGeometry(3.4, 0.025, 8, 96),
     new THREE.MeshBasicMaterial({ color: 0x9fbd73 })
   );
   ring.rotation.x = Math.PI / 2;
-  ring.position.y = -0.13;
+  ring.position.y = PLATFORM_TOP_Y + 0.01;
   scene.add(ring);
 
   scene.add(new THREE.HemisphereLight(0xc8dfc0, 0x162018, 2.1));
@@ -263,7 +284,6 @@ async function startShowcase() {
   key.shadow.camera.top = 6;
   key.shadow.camera.bottom = -6;
   scene.add(key);
-
   const rim = new THREE.DirectionalLight(0x76b8ff, 1.5);
   rim.position.set(-5, 4, -4);
   scene.add(rim);
@@ -271,8 +291,10 @@ async function startShowcase() {
   previewTransition = createCharacterPreviewTransition({
     THREE,
     scene,
+    engine,
     creatureApi,
-    initialProfile: draft
+    initialProfile: draft,
+    platformTopY: PLATFORM_TOP_Y
   });
 
   const resize = () => {
@@ -286,37 +308,43 @@ async function startShowcase() {
   observer.observe(preview);
   resize();
 
-  const localCenter = new THREE.Vector3();
-  const localSize = new THREE.Vector3();
   let running = true;
   let last = performance.now();
   let turn = 0;
 
   function updateCameraFrame(dt) {
     const mesh = previewTransition?.getMesh();
-    if (!mesh?.geometry) return;
-    mesh.geometry.computeBoundingBox();
-    const bounds = mesh.geometry.boundingBox;
-    if (!bounds || bounds.isEmpty()) return;
-
-    bounds.getCenter(localCenter);
-    bounds.getSize(localSize);
-    desiredTarget.set(
-      localCenter.x * mesh.scale.x + mesh.position.x,
-      localCenter.y * mesh.scale.y + mesh.position.y,
-      localCenter.z * mesh.scale.z + mesh.position.z
+    const descriptor = previewTransition?.getDescriptor();
+    const resolved = previewTransition?.getCharacter();
+    if (!mesh || !descriptor?.bounds || !resolved?.creature) return;
+    const bounds = stagedBounds(descriptor, mesh);
+    const height = Math.max(0.001, bounds.maximum[1] - bounds.minimum[1]);
+    const [minimumFov, maximumFov] = resolved.creature.presentation.fovRange;
+    const desiredFov = THREE.MathUtils.clamp(
+      42 - Math.log2(height / REFERENCE_CHARACTER_HEIGHT) * 5,
+      minimumFov,
+      maximumFov
     );
-    const span = Math.max(
-      localSize.x * Math.abs(mesh.scale.x),
-      localSize.y * Math.abs(mesh.scale.y) * 1.35,
-      localSize.z * Math.abs(mesh.scale.z)
-    );
-    const desiredDistance = Math.max(4.4, Math.min(11, span * 1.9));
-    const alpha = 1 - Math.exp(-5 * dt);
-    cameraTarget.lerp(desiredTarget, alpha);
-    cameraDistance += (desiredDistance - cameraDistance) * alpha;
-    camera.position.copy(cameraTarget).addScaledVector(cameraDirection, cameraDistance);
-    camera.lookAt(cameraTarget);
+    const alpha = 1 - Math.exp(-5 * Math.max(0, dt));
+    camera.fov += (desiredFov - camera.fov) * alpha;
+    const framing = framingController.update({
+      subjectBounds: bounds,
+      viewport: { width: Math.max(1, preview.clientWidth), height: Math.max(1, preview.clientHeight) },
+      camera: {
+        projection: "perspective",
+        verticalFov: camera.fov,
+        preferredDirection: cameraDirection.toArray(),
+        nearPadding: 0.25,
+        farPadding: 10
+      },
+      padding: resolved.creature.presentation.framingPadding,
+      deltaTime: dt
+    });
+    camera.position.fromArray(framing.position);
+    camera.near = framing.near;
+    camera.far = framing.far;
+    camera.lookAt(...framing.target);
+    camera.updateProjectionMatrix();
   }
 
   function frame(now) {
