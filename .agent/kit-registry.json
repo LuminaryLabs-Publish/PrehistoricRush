@@ -1,31 +1,37 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-12T21-51-38-04-00",
-  "status": "run-start-restart-admission-authority-audited",
-  "currentAuditedSlice": "Run Start / Restart Admission / Key Repeat / Participant Reset-Preserve Barrier / Run Generation / First Frame Proof",
-  "precedingAuditedSlice": "Browser Runtime Lifecycle and Resource Retirement at 2026-07-12T20-10-25-04-00",
-  "latestTracker": ".agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T21-51-38-04-00.md",
-  "latestArchitectureAudit": ".agent/architecture-audit/2026-07-12T21-51-38-04-00-run-start-restart-admission-dsk-map.md",
-  "latestRenderAudit": ".agent/render-audit/2026-07-12T21-51-38-04-00-first-run-generation-frame-gap.md",
-  "latestGameplayAudit": ".agent/gameplay-audit/2026-07-12T21-51-38-04-00-enter-repeat-active-run-reset-loop.md",
-  "latestInteractionAudit": ".agent/interaction-audit/2026-07-12T21-51-38-04-00-start-command-status-generation-map.md",
-  "latestRunLifecycleAudit": ".agent/run-lifecycle-audit/2026-07-12T21-51-38-04-00-participant-reset-start-result-contract.md",
-  "latestDeployAudit": ".agent/deploy-audit/2026-07-12T21-51-38-04-00-start-restart-fixture-gate.md",
-  "retainedAudits": {
+  "generatedAt": "2026-07-12T22-19-11-04-00",
+  "status": "run-start-restart-central-reconciled",
+  "repositoryRevisionReviewed": "44cb220388e2c664b95b170783be700cba7c50ff",
+  "currentAuditedSlice": "Run Start / Restart Admission / Key Repeat / Participant Reset-Rebuild-Preserve Barrier / Run Generation / First Frame / Central Reconciliation",
+  "precedingAuditedSlice": "Run Start / Restart Admission at 2026-07-12T21-51-38-04-00",
+  "latestTracker": ".agent/trackers/2026-07-12T22-19-11-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-12T22-19-11-04-00.md",
+  "audits": {
+    "architecture": ".agent/architecture-audit/2026-07-12T22-19-11-04-00-run-start-central-reconciliation-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-12T22-19-11-04-00-first-run-frame-central-reconciliation.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-12T22-19-11-04-00-start-repeat-participant-central-reconciliation.md",
+    "interaction": ".agent/interaction-audit/2026-07-12T22-19-11-04-00-start-command-central-admission-map.md",
+    "runLifecycle": ".agent/run-lifecycle-audit/2026-07-12T22-19-11-04-00-start-result-participant-central-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-12T22-19-11-04-00-start-restart-central-fixture-gate.md",
+    "previousRunStart": ".agent/run-lifecycle-audit/2026-07-12T21-51-38-04-00-participant-reset-start-result-contract.md",
     "browserRuntimeLifecycle": ".agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md"
   },
   "selection": {
+    "rule": "new, missing, root-agent-missing, or repo-local-newer-than-central first; otherwise oldest eligible central entry",
     "accessibleRepoCount": 10,
     "eligibleRepoCount": 9,
     "centralLedgerCount": 9,
     "rootAgentStateCount": 9,
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
+    "repoLocalNewerThanCentralCount": 1,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "No new, ledger-missing, or root-agent-missing eligible repository existed. After current repo-local audit state was considered, PrehistoricRush was the oldest eligible repository."
+    "priorCentralTimestamp": "2026-07-12T20-10-25-04-00",
+    "priorRepoLocalTimestamp": "2026-07-12T21-51-38-04-00",
+    "reason": "PrehistoricRush had a newer repo-local Run Start/Restart Admission audit than the central ledger. This run reconciles the complete source-backed breakdown and 45-surface inventory."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 15,
@@ -45,26 +51,83 @@
     "Enter always invokes Start and does not reject key repeat",
     "domain start increments runId resets RunState InputState and simulation resolution",
     "RunStarted and a direct game transition are emitted",
-    "host reuses patch Worker physics render camera and local-input participants",
-    "the next RAF resumes normal simulation and rendering"
+    "host reuses local input patch Worker physics content render camera and HUD participants",
+    "the next RAF resumes simulation and rendering without one participant manifest"
   ],
   "domainsInUse": [
     "page shell and pinned module admission",
     "player-profile boot binding",
-    "Core Input Spatial Scene Simulation Motion Physics Camera Animation Graphics UI Diagnostics Composition",
-    "articulated motion and dynamics",
-    "Rapier provider body collider and frame ownership",
-    "procedural creature generation rig pose skinning and presentation",
-    "seeded patch generation Worker queue cache activation release and colliders",
-    "browser start input key repeat focus and local held state",
-    "run start restart command admission and participant barrier",
+    "Core Input Spatial Scene Simulation Motion Physics Camera Animation Graphics Skybox UI Diagnostics Composition",
+    "articulated motion and articulated dynamics",
+    "Rapier provider body collider query and frame ownership",
+    "procedural creature generation rig pose skinning and Three presentation",
+    "seeded patch generation Worker queue cache activation release fallback and colliders",
+    "terrain trees grass shards pickups and dynamic content materialization",
+    "browser start input repeat blur resize focus and local held state",
+    "run start restart command admission generation participant barrier rollback and journal",
     "camera follow Three rendering HUD public host and first-frame proof",
-    "validation browser fixtures and Pages deployment"
+    "runtime lifecycle and resource retirement dependency",
+    "validation browser fixtures built-output parity and Pages deployment"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "previousInventory": ".agent/trackers/2026-07-12T20-10-25-04-00/project-breakdown.md#implemented-kits-and-offered-services"
+    "completeInventory": ".agent/trackers/2026-07-12T22-19-11-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "previousInventory": ".agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory"
   },
+  "coreKits": [
+    {"id":"core-input-kit","services":["actions","bindings","input-state"]},
+    {"id":"core-spatial-kit","services":["transforms","spatial-queries"]},
+    {"id":"core-scene-kit","services":["scene-registry","transitions","host-descriptor"]},
+    {"id":"core-physics-kit","services":["provider","bodies","colliders","motion-requests","step","frame"]},
+    {"id":"articulated-dynamics-domain-kit","services":["articulations","physical-joints","joint-motors","ragdoll-state","frames","snapshot","reset"]},
+    {"id":"core-simulation-kit","services":["tick-context","proposals","observations","resolution-policy","state-event-transition-commit","committed-frame"]},
+    {"id":"core-motion-kit","services":["movement-modes","intents","trajectories","motion-frames","validation","snapshot","reset"]},
+    {"id":"articulated-motion-domain-kit","services":["rig","pose","targets","inverse-kinematics","pose-resolution","frames","snapshot","reset"]},
+    {"id":"core-camera-kit","services":["camera-capability"]},
+    {"id":"core-animation-kit","services":["animation-capability"]},
+    {"id":"core-graphics-kit","services":["graphics","frame-capability"]},
+    {"id":"core-skybox-kit","services":["sky-descriptor"]},
+    {"id":"core-ui-kit","services":["ui-capability","projection"]},
+    {"id":"core-diagnostics-kit","services":["diagnostics","readback"]},
+    {"id":"core-composition-kit","services":["composition-metadata","capability-graph"]}
+  ],
+  "officialKits": [
+    {"id":"seed-kit","services":["deterministic-seed","random-streams"]},
+    {"id":"procedural-creature-body-kit","services":["descriptor","geometry","skeleton","skinning","collision","legacy-pose","snapshot"]},
+    {"id":"instanced-render-batch-kit","services":["cell-replace-release","flush","overflow","bounds","stats"]},
+    {"id":"seeded-world-patch-controller-kit","services":["focus","membership","queue","cache","generation","delivery","eviction","snapshot","reset"]},
+    {"id":"camera-smooth-follow-kit","services":["damping","reset","teleport-handling","snapshot"]}
+  ],
+  "productPageWorkerKits": [
+    {"id":"prehistoric-rush-domain-kit","services":["run-resources","input","movement-proposals","motion-intent-frame","observation-registration","events","transitions","player-articulation-api","snapshot"]},
+    {"id":"prehistoric-rush-resolution-policy","services":["collision-pickup-goal-precedence","state-patch","events","transition"]},
+    {"id":"player-articulation-adapter-kit","services":["skeleton-to-rig","legacy-pose-to-articulated-pose","quaternion-conversion"]},
+    {"id":"player-character-schema-kit","services":["defaults","normalization","clamps","merge"]},
+    {"id":"player-character-profile-store-kit","services":["load","save","patch","reset","revision","storage-sync","broadcast-distribution"]},
+    {"id":"menu-page-kit","services":["menu-shell","profile-projection","routes","profile-subscription"]},
+    {"id":"character-creator-page-kit","services":["controls","draft","persistence","reset","profile-subscription","legacy-preview-pose","raf","navigation"]},
+    {"id":"character-preview-transition-kit","services":["morph","crossfade","legacy-pose-damping","revision","disposal"]},
+    {"id":"three-procedural-creature-adapter-kit","services":["skinned-mesh","materials","bone-lookup","position-array-object-coercion","euler-application","quaternion-application","damped-quaternion-slerp","disposal"]},
+    {"id":"game-page-entry-kit","services":["module-preflight","failure-projection","game-import","profile-boot-binding"]},
+    {"id":"drunk-route-generator","services":["samples","nearest","progress","classification","snapshot"]},
+    {"id":"player-raptor-preset-kit","services":["creature-recipe","collision-capsule"]},
+    {"id":"prehistoric-patch-generator","services":["terrain","trees","grass","shards","colliders","bounds","transferables"]},
+    {"id":"prehistoric-patch-worker","services":["initialization","generation","request-error-protocol","transfer"]}
+  ],
+  "externalHostAdapters": [
+    {"id":"three-runtime-module","services":["scene","geometry","materials","instancing","camera","lighting","render"]},
+    {"id":"rapier-physics-domain-kit","services":["nexus-provider-bridge"]},
+    {"id":"rapier-runtime-module","services":["bodies","colliders","queries","world-step"]},
+    {"id":"message-worker-executor-adapter-kit","services":["request-correlation","async-generation","pending-rejection","listener-removal","worker-termination"]},
+    {"id":"active-content-consumer-adapter","services":["terrain","trees","grass","shards","pickups","colliders","height"]},
+    {"id":"creator-viewport-framing-adapter","services":["bounds","target","distance"]},
+    {"id":"creator-persistence-scheduler","services":["timer-replacement","delayed-profile-commit"]},
+    {"id":"browser-input-adapter","services":["keyboard","buttons","keyup","blur","product-input-patch","restart-activation"]},
+    {"id":"creature-camera-render-host-adapters","services":["pose-application","collision-sample","pickup-scan","camera","hud","profile-readback","frame-readback"]}
+  ],
+  "proofKits": [
+    {"id":"prehistoric-rush-resolution-policy-test-kit","services":["continue","win","collision","precedence","pickup-idempotency","fallback","serialization"]},
+    {"id":"player-articulation-test-kit","services":["rig-chain-adaptation","euler-quaternion-conversion","cloneability"]}
+  ],
   "runStartState": {
     "uiStatusGuard": "button-and-space-only",
     "enterStatusGuard": "absent",
@@ -84,46 +147,34 @@
   },
   "runStartAuthority": {
     "parentDomain": "prehistoric-rush-run-start-restart-admission-authority-domain",
-    "mainFinding": "Enter can restart an active run and repeat delivery can create multiple run generations. Domain start resets selected engine resources but retained browser, streaming, Worker, physics, camera and render participants have no coordinated reset-or-preserve transaction.",
+    "mainFinding": "Enter can restart an active run and repeat delivery can create multiple run generations. Domain start resets selected engine resources but retained browser, streaming, Worker, physics, content, camera, render, HUD, and public-observation participants have no coordinated reset-rebuild-preserve transaction.",
     "plannedKits": [
       "run-start-command-id-kit",
       "run-start-command-sequence-kit",
       "run-start-intent-kit",
+      "run-start-session-admission-kit",
       "run-start-scene-status-admission-kit",
       "run-start-key-repeat-rejection-kit",
-      "run-start-duplicate-rejection-kit",
+      "run-start-duplicate-stale-rejection-kit",
       "run-generation-kit",
       "run-predecessor-freeze-kit",
       "run-input-retirement-kit",
       "run-simulation-reset-plan-kit",
+      "run-scene-transition-plan-kit",
       "run-physics-reset-plan-kit",
       "run-patch-stream-reset-plan-kit",
       "run-worker-generation-fence-kit",
       "run-active-content-reset-plan-kit",
       "run-camera-reset-plan-kit",
       "run-render-reset-plan-kit",
+      "run-hud-observation-plan-kit",
       "run-participant-barrier-kit",
+      "run-participant-receipt-kit",
       "run-start-commit-result-kit",
       "run-start-rollback-result-kit",
       "run-start-journal-kit",
       "first-run-generation-frame-ack-kit",
-      "enter-repeat-fixture-kit",
-      "active-run-start-rejection-fixture-kit",
-      "held-input-restart-fixture-kit",
-      "stale-worker-run-fixture-kit",
-      "participant-reset-failure-fixture-kit",
       "pages-run-start-smoke-kit"
-    ],
-    "requiredProof": [
-      "one admitted command creates at most one run generation",
-      "key repeat duplicate stale and disallowed active-run commands cause zero effects",
-      "every run-scoped participant records reset rebuild or preserve status",
-      "host-local input cannot leak into the successor run",
-      "predecessor Worker and streaming results cannot mutate the successor generation",
-      "failed preparation preserves or truthfully classifies predecessor state",
-      "one RunStarted event and transition are emitted",
-      "the first visible frame cites the accepted run and participant generations",
-      "source build and Pages behavior agree"
     ]
   },
   "validation": {
@@ -138,6 +189,7 @@
     "npmTestRun": false,
     "browserStartSmokeRun": false,
     "pagesStartSmokeRun": false,
-    "startFixturesAvailable": false
+    "startFixturesAvailable": false,
+    "centralLedgerSynchronized": true
   }
 }
