@@ -1,98 +1,103 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-13T13-58-35-04-00`  
+**Last aligned:** `2026-07-13T16-41-10-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Runtime revision reviewed:** `0c181c308716eb4a143768a0c674177c33c2264c`  
-**Status:** `player-character-composition-transition-authority-central-reconciled`  
-**Technical status:** `player-character-composition-transition-authority-audited`  
-**Retained audits:** `terrain-aware-hind-leg-ik-central-reconciled`, `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
+**Runtime revision reviewed:** `66a219fea4bb886fb4fff41c9b31c67ba7e4eaee`  
+**Status:** `non-blocking-pause-menu-command-lifecycle-authority-central-reconciled`  
+**Technical status:** `non-blocking-pause-menu-command-lifecycle-authority-audited`  
+**Retained audits:** `player-character-composition-transition-authority-central-reconciled`, `terrain-aware-hind-leg-ik-central-reconciled`, `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
 
 ## Summary
 
-PrehistoricRush now composes the playable dinosaur and creator preview through Core Creature, Core Character and Core Player. Neutral creature definitions own body/rig references, support anchors and presentation hints; active characters own runtime bindings; players own possession and control authority.
+PrehistoricRush now installs Core Presentation and a renderer-agnostic pause-menu child DSK. The menu intentionally does not stop simulation and provides bounded state, commands, events, snapshots and Core UI/Presentation descriptors.
 
-The remaining boundary is atomic composition adoption. The product helper registers the rig, creature, character and optional player sequentially. The creator performs those mutations before topology validation, successor mesh preparation, crossfade completion and camera-framing adoption. Registry state can therefore identify a successor profile while the visible preview or durable profile still identifies the predecessor.
+The remaining gap is browser command and lifecycle ownership. Escape admission, runtime polling, the synchronization RAF, overlay DOM, retained gameplay input and immediate exit navigation live outside the DSK without command generations, terminal results, visible-frame evidence or cleanup receipts.
 
 ## Plan ledger
 
-**Goal:** preserve the new bounded Core composition and add one product transaction for participant preparation, typed conflict policy, atomic adoption, rollback and first-visible-frame proof.
+**Goal:** preserve the non-blocking menu while making input admission, semantic state, DOM projection, gameplay-input policy, exit settlement and host retirement one observable transaction.
 
 - [x] Compare all ten Publish repositories and exclude `TheCavalryOfRome`.
 - [x] Confirm nine eligible central ledger and root `.agent` entries.
-- [x] Select only PrehistoricRush because it had the oldest central timestamp and 18 newer source/test commits.
-- [x] Reconcile Core Creature/Character/Player, player-character composition, creator support placement, framing and tests.
-- [x] Preserve the full interaction loop, domain map and 52-surface service inventory.
-- [x] Add the `2026-07-13T13-58-35-04-00` tracker and audit family.
-- [x] Refresh every required root `.agent` file and machine registry.
+- [x] Select only PrehistoricRush because it was two commits ahead of central tracking.
+- [x] Reconcile Core Presentation, pause-menu DSK, browser host, preserved runtime and tests.
+- [x] Preserve the complete interaction loop, domain map and 58-surface inventory.
+- [x] Add the `2026-07-13T16-41-10-04-00` tracker and audit family.
+- [x] Refresh all required root `.agent` files and registry.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement atomic composition and executable failure/browser fixtures later.
+- [ ] Implement the lifecycle authority and executable browser/build/Pages fixtures later.
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-13T13-58-35-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T13-58-35-04-00.md
-.agent/architecture-audit/2026-07-13T13-58-35-04-00-player-character-composition-transition-dsk-map.md
-.agent/render-audit/2026-07-13T13-58-35-04-00-composition-visible-preview-coherence-gap.md
-.agent/gameplay-audit/2026-07-13T13-58-35-04-00-core-player-character-composition-loop.md
-.agent/interaction-audit/2026-07-13T13-58-35-04-00-profile-composition-transition-result-map.md
-.agent/character-composition-audit/2026-07-13T13-58-35-04-00-registry-support-preview-atomicity-contract.md
-.agent/deploy-audit/2026-07-13T13-58-35-04-00-character-composition-fixture-gate.md
-.agent/central-sync-audit/2026-07-13T13-58-35-04-00-player-character-composition-runtime-reconciliation.md
+.agent/trackers/2026-07-13T16-41-10-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T16-41-10-04-00.md
+.agent/architecture-audit/2026-07-13T16-41-10-04-00-pause-menu-command-lifecycle-dsk-map.md
+.agent/render-audit/2026-07-13T16-41-10-04-00-pause-overlay-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-13T16-41-10-04-00-non-blocking-menu-input-simulation-loop.md
+.agent/interaction-audit/2026-07-13T16-41-10-04-00-pause-command-exit-settlement-map.md
+.agent/pause-menu-audit/2026-07-13T16-41-10-04-00-command-generation-host-retirement-contract.md
+.agent/deploy-audit/2026-07-13T16-41-10-04-00-pause-menu-fixture-gate.md
+.agent/central-sync-audit/2026-07-13T16-41-10-04-00-pause-menu-runtime-reconciliation.md
 ```
 
 ## Complete interaction loop
 
 ```txt
-game boot
-  -> profile and pinned runtime
-  -> body and articulated rig
-  -> Core Creature definition
-  -> Core Character bindings
-  -> Core Player possession
-  -> controlled-character simulation and pose publication
-  -> Three.js presentation
+boot
+  -> load pinned runtime and profile
+  -> compose Core game domains and Core Presentation
+  -> install product run and pause-menu DSKs
+  -> start simulation, streaming and Three.js RAF
+  -> poll until the public runtime host exists
+  -> install Escape listener and menu sync RAF
 
-creator edit
-  -> draft profile revision
-  -> immediate live composition mutation
-  -> support-anchor evaluation
-  -> morph or crossfade preparation
-  -> articulated pose, placement and camera framing
-  -> visible applied revision
-  -> delayed durable profile commit and second composition call
+pause interaction
+  -> DSK commits menu state and semantic event
+  -> browser host projects overlay DOM
+  -> simulation and gameplay rendering continue
+  -> gameplay keyboard policy remains implicit
+
+exit
+  -> DSK emits one exit request
+  -> browser host immediately navigates
+  -> no terminal cleanup or settlement result
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-player-character-composition-transition-authority-domain
+prehistoric-rush-pause-menu-command-lifecycle-authority-domain
 ```
 
 ```txt
-PlayerCharacterCompositionCommand
-  -> bind profile, engine and expected participant revisions
-  -> prepare body, rig, creature, character and optional player candidates
-  -> evaluate support anchors, bounds, topology, placement and framing
-  -> reject stale, duplicate, conflicting or failed work without live mutation
-  -> atomically adopt every registry participant or preserve every predecessor
-  -> publish PlayerCharacterCompositionResult
-  -> admit one preview transition generation
-  -> acknowledge the first matching visible frame
+PauseMenuCommand
+  -> bind runtime, menu and host generations
+  -> validate command ID and expected sequence
+  -> commit or reject semantic state
+  -> project one matching overlay revision
+  -> apply explicit non-blocking gameplay-input policy
+  -> publish terminal command result
+  -> acknowledge the matching visible frame
+
+accepted exit
+  -> retire poll, RAF, listeners, DOM and runtime participants
+  -> publish ExitSettlementResult
+  -> navigate exactly once
 ```
 
 ## Kit census
 
 ```txt
-Nexus Engine root/subdomain kits: 18
+Nexus Engine root/subdomain kits: 22
 official NexusEngine-Kits:         5
-product/page/Worker kits:         15
+product/page/Worker kits:         16
 external/host adapters:            9
-proof kits:                        5
-total surfaces:                   52
+proof kits:                        6
+total surfaces:                   58
 ```
 
 ## Validation boundary
 
-Documentation only. Source, tests, package wiring and pinned Core contracts were inspected through GitHub. No runtime, renderer, package or deployment source changed. `npm test`, browser composition failures, built output and Pages parity were not independently executed.
+Documentation only. Source, pinned Core Presentation, tests and package wiring were inspected through GitHub. No runtime, renderer, package or deployment source changed. GitHub reported no combined status checks; `npm test`, browser lifecycle fixtures, built output and Pages parity were not independently executed.
