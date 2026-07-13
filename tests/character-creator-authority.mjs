@@ -17,10 +17,13 @@ assert.match(pageSource, /42 - Math\.log2\(height \/ REFERENCE_CHARACTER_HEIGHT\
 
 assert.match(transitionSource, /installPrehistoricRushPlayerCharacter\(\{/, "the preview uses the shared player-character composition");
 assert.match(transitionSource, /includePlayer: false/, "the preview creates a character without player possession");
+assert.match(transitionSource, /composition\.creature\.support\.boneIds/, "character placement reads composed support anchors");
+assert.match(transitionSource, /supportLocalY: supportLocalYs\.length \? Math\.min\(\.\.\.supportLocalYs\) : null/, "foot anchors resolve one stable support height");
+assert.match(transitionSource, /const fallbackMinimumY = finite\(composition\?\.creature\?\.presentation\?\.metadata\?\.bounds\?\.min\?\.\[1\], 0\)/, "bounds minimum remains the placement fallback");
 assert.match(
   transitionSource,
-  /return platformTopY - minimumY \* Math\.max\(0\.0001, finite\(scaleY, 1\)\);/,
-  "the character body offsets to the fixed platform from composed local bounds"
+  /return platformTopY \+ clearance - supportLocalY \* Math\.max\(0\.0001, finite\(scaleY, 1\)\);/,
+  "the character root offsets to the fixed platform from composed support data"
 );
 assert.match(transitionSource, /sampleHeight: \(\) => platformTopY/, "creator IK targets the fixed platform plane");
 assert.match(transitionSource, /articulatedMotion\.evaluatePose\(\{ rigId, pose: basePose \}\)/, "the creator evaluates the procedural source pose");
