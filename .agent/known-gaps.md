@@ -1,76 +1,77 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T08-39-12-04-00`  
-**Status:** `terrain-aware-hind-leg-ik-central-reconciled`  
-**Technical status:** `terrain-aware-hind-leg-ik-implemented-static-proof`
+**Audit:** `2026-07-13T13-58-35-04-00`  
+**Status:** `player-character-composition-transition-authority-central-reconciled`  
+**Technical status:** `player-character-composition-transition-authority-audited`
 
 ## Summary
 
-Terrain-aware hind-leg targets are now part of the authoritative solve, but terrain sampling, target publication, patch streaming and visible presentation do not share one revisioned frame contract.
+Core Creature/Character/Player composition is now source-backed and shared by the game and creator, but registry mutation, support evaluation, preview preparation, profile persistence and visible adoption do not share one atomic composition result.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved terrain-sample, target, pose, streaming, presentation and proof gap explicit while preserving the implemented vertical IK path.
+**Goal:** keep every unresolved participant, transition, persistence and proof gap explicit while preserving the new bounded Core architecture.
 
-### Terrain sample gaps
+### Composition identity gaps
 
-- [ ] Height sampler has no identity or generation.
-- [ ] Active patch membership has no committed revision exposed to the game domain.
-- [ ] Scalar return does not distinguish exact patch from fallback.
-- [ ] No patch ID, generator version, settings hash or terrain content hash is retained.
-- [ ] Root and two foot samples have no common batch identity.
-- [ ] Missing, stale, cancelled and failed samples are not typed.
-- [ ] Terrain normals are generated but not sampled for foot targets.
+- [ ] No composition attempt ID or generation.
+- [ ] No accepted composition revision or predecessor identity.
+- [ ] No expected body, rig, creature, character or player revisions.
+- [ ] No aggregate composition fingerprint.
+- [ ] No typed stale or superseded result.
 
-### Foot-target gaps
+### Preparation and conflict gaps
 
-- [ ] No immutable `TerrainFootTargetFrame`.
-- [ ] No target revision, predecessor ID or commit result.
-- [ ] No target settings revision.
-- [ ] No stale or duplicate target rejection.
-- [ ] No maximum vertical correction or reach/clamp product result.
-- [ ] No explicit stance/swing/contact lifecycle.
-- [ ] No cross-frame planting or target smoothing.
+- [ ] Body and rig are not prepared as detached candidates.
+- [ ] Creature and character candidates publish separately.
+- [ ] Player registration/possession is not part of an aggregate receipt.
+- [ ] Replacement policy depends on exception text containing `different data`.
+- [ ] Duplicate, Replace and Conflict are not typed terminal outcomes.
+- [ ] Changed-rig compatibility with the preserved character pose ID is not proven.
 
-### Streaming-order gaps
+### Atomicity and rollback gaps
 
-- [ ] IK samples terrain during `engine.tick(dt)` before `updateStreaming(state)`.
-- [ ] Patch activation/release can change visible terrain before rendering the same browser frame.
-- [ ] No stream-before-solve, deferred-activation or resample policy is authored.
-- [ ] Late Worker delivery is not generation-fenced against target frames.
-- [ ] Controller reset and sampler replacement do not publish retirement results.
+- [ ] Rig registration can succeed before creature adoption fails.
+- [ ] Creature replacement can succeed before character adoption fails.
+- [ ] Character replacement can succeed before possession fails.
+- [ ] No all-participant prepare/commit boundary exists.
+- [ ] No aggregate rollback result exists.
+- [ ] No bounded attempt/failure journal exists.
 
-### Pose and publication gaps
+### Support and presentation gaps
 
-- [ ] `PlayerPose` stores only the solved pose body.
-- [ ] No target-frame or terrain revision is attached to the pose.
-- [ ] Articulated solve failure/stale results are not retained by the product domain.
-- [ ] Public snapshots do not expose bounded sample/target status.
-- [ ] Compatibility solve APIs remain available outside authoritative publication.
+- [ ] Support-local Y is transition-local rather than a revisioned result.
+- [ ] Support anchor evaluation cites no rig or pose revision.
+- [ ] Local bounds cite body geometry but no composition revision.
+- [ ] Mesh preparation follows live registry mutation.
+- [ ] Camera framing combines live registry data with a potentially predecessor mesh.
+- [ ] Crossfade generation and stale retirement are implicit.
+- [ ] No visible mesh/camera fingerprint exists.
+- [ ] No first composed-character frame acknowledgement exists.
 
-### Presentation gaps
+### Profile and lifecycle gaps
 
-- [ ] Render-time damping has no presentation generation.
-- [ ] Visible terrain has no patch/content fingerprint.
-- [ ] Visible bone transforms have no bounded fingerprint.
-- [ ] No terrain/skeleton coherent frame result exists.
-- [ ] No first matching visible frame acknowledgement exists.
+- [ ] Draft, durable profile and composition revisions are not distinguished in transition results.
+- [ ] One input invokes immediate composition and a second post-save composition.
+- [ ] Reset does not retire save/composition/crossfade generations as one transaction.
+- [ ] External profile updates have no stale/duplicate admission result.
+- [ ] Unload has no terminal cancellation/cleanup result for pending composition.
 
 ### Test gaps
 
-- [ ] New target and authority tests were not independently executed in this run.
-- [ ] No composed-engine execution of terrain target generation.
-- [ ] No exact-versus-fallback fixture.
-- [ ] No patch activation/release boundary fixture.
-- [ ] No stale sample or target predecessor-preservation fixture.
-- [ ] No restart generation fixture.
-- [ ] No slope or unreachable-target fixture.
-- [ ] No browser, built-output or Pages terrain/skeleton correlation fixture.
+- [ ] Current tests were not independently executed in this run.
+- [ ] No real pinned-runtime composition execution fixture.
+- [ ] No participant failure-injection matrix.
+- [ ] No replacement-conflict result fixture.
+- [ ] No changed-rig pose compatibility fixture.
+- [ ] No rapid edit/reset/external-update fixture.
+- [ ] No registry/persistence/visible-preview correlation fixture.
+- [ ] No built-output or Pages composition parity fixture.
 
 ## Retained gaps
 
-Pose-frame provenance still lacks a complete simulation-to-visible identity chain. Collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved independent boundaries.
+Terrain sample/target coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority, articulated presentation and browser-runtime retirement remain unresolved independent boundaries.
 
 ## Non-claims
 
-The current code proves source-backed vertical terrain IK and deterministic target math. It does not prove patch-stream coherence, planted-foot stability, slope alignment, target-frame atomicity, visible terrain/skeleton equivalence, runtime test passage or deployed parity.
+The current code proves successful composition, idempotent identical input, changed creature replacement, support descriptors, local bounds and static creator path markers. It does not prove atomic participant adoption, rollback, typed conflicts, pose compatibility, stale-generation isolation, visible-preview coherence, runtime test passage or deployed parity.
