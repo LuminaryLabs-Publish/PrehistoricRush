@@ -19,8 +19,10 @@ const smoothStep = (value) => {
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 
 function characterGroundY(composition, scaleY, platformTopY) {
-  const minimumY = finite(composition?.creature?.presentation?.metadata?.bounds?.min?.[1], 0);
-  return platformTopY - minimumY * Math.max(0.0001, finite(scaleY, 1));
+  const fallbackMinimumY = finite(composition?.creature?.presentation?.metadata?.bounds?.min?.[1], 0);
+  const supportLocalY = finite(composition?.supportLocalY, fallbackMinimumY);
+  const clearance = finite(composition?.creature?.support?.clearance, 0);
+  return platformTopY + clearance - supportLocalY * Math.max(0.0001, finite(scaleY, 1));
 }
 
 export function createCharacterPreviewTransition(options) {
@@ -44,7 +46,7 @@ export function createCharacterPreviewTransition(options) {
   if (!articulatedMotion || !coreCharacter) throw new Error("Character preview domains did not install.");
 
   function compose(profile) {
-    return installPrehistoricRushPlayerCharacter({
+    const composition = installPrehistoricRushPlayerCharacter({
       engine,
       profile,
       creatureRecipe: profile.creature,
@@ -56,6 +58,18 @@ export function createCharacterPreviewTransition(options) {
       status: "active",
       visualRootOffsetY: 0
     });
+    const supportPose = articulatedMotion.evaluatePose({
+      rigId: composition.rigId,
+      pose: { id: `${composition.rigId}:support-pose`, rigId: composition.rigId, bones: {} }
+    });
+    const supportLocalYs = composition.creature.support.boneIds
+      .map((boneId) => supportPose.bones[boneId]?.rigPosition?.y)
+      .filter((value) => Number.isFinite(Number(value)))
+      .map(Number);
+    return {
+      ...composition,
+      supportLocalY: supportLocalYs.length ? Math.min(...supportLocalYs) : null
+    };
   }
 
   let currentComposition = compose(initialProfile);
