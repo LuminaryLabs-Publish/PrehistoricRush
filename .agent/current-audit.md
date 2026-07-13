@@ -1,123 +1,139 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-13T08-39-12-04-00`  
+**Timestamp:** `2026-07-13T13-58-35-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Runtime revision reviewed:** `666ab306b94c9fefcd8bb4230b61854f121dab86`  
-**Status:** `terrain-aware-hind-leg-ik-central-reconciled`  
-**Technical status:** `terrain-aware-hind-leg-ik-implemented-static-proof`
+**Runtime revision reviewed:** `0c181c308716eb4a143768a0c674177c33c2264c`  
+**Status:** `player-character-composition-transition-authority-central-reconciled`  
+**Technical status:** `player-character-composition-transition-authority-audited`
 
 ## Summary
 
-Terrain-aware hind-leg IK is implemented in the authoritative simulation path. The game evaluates the animated base pose through articulated FK, projects each hind foot into world space, samples terrain, creates weighted rig-space targets and feeds them into `articulatedMotion.solve()` before replacing `PlayerPose`.
+Core Creature, Core Character and Core Player are now active in PrehistoricRush. The product composes a procedural body and articulated rig into a neutral creature definition, binds that creature to an active character and optionally gives a player possession. The game resolves the controlled character for motion, physics and pose publication, while the creator uses the same composition path without player possession.
 
-The current gap is terrain and target-frame provenance. The scalar height callback does not identify exact patch versus fallback source or any patch/sampler revision. The frame loop samples during simulation, updates streamed patch membership afterward and then renders, so the accepted pose and visible terrain do not prove they use the same ground revision.
+The current gap is cross-participant atomicity and visible adoption. Rig, creature, character and player registries mutate sequentially. The creator mutates those registries before topology validation, mesh creation, crossfade completion and framing. No composition attempt, expected revisions, typed duplicate/replace policy, participant receipts, rollback result or matching visible-frame acknowledgement exists.
 
 ## Plan ledger
 
-**Goal:** keep one inspectable chain from committed terrain membership through root/foot samples, target generation, articulated solve, PlayerPose publication and visible terrain/skeleton submission.
+**Goal:** keep Core ownership separated while adding one product composition result that every registry and visible-preview participant adopts together.
 
 - [x] Reconcile the full Publish inventory and central ledger.
-- [x] Select only PrehistoricRush because five source/test commits advanced behavior.
-- [x] Preserve all domains, 46 kit surfaces and offered services.
-- [x] Document implemented FK, target math, authoritative solve and tests.
-- [x] Define the remaining terrain-foot-target coherence DSK.
-- [x] Add the `2026-07-13T08-39-12-04-00` tracker and audit family.
+- [x] Select only PrehistoricRush under the oldest/local-ahead rule.
+- [x] Inspect 18 new source/test commits after the documented runtime revision.
+- [x] Identify the complete interaction loop and all domains.
+- [x] Correct the inventory to 52 implemented kit/adapter/proof surfaces.
+- [x] Define the player-character composition transition authority.
+- [x] Add the timestamped tracker and audit family.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement and execute terrain-revision and visible-frame proof later.
+- [ ] Implement and execute atomic composition/failure/visible-frame fixtures later.
 
 ## Interaction loop
 
 ```txt
-RunState + InputState + TickContext
-  -> movement and root height sample
-  -> Core Motion frame
-  -> procedural gait
-  -> articulated FK foot positions
-  -> exact active-patch or fallback height samples
-  -> weighted left/right ground targets
-  -> articulated IK solve
-  -> PlayerPose replacement
-  -> simulation resolution
-  -> patch streaming release/activation
-  -> renderer reads PlayerPose and current terrain
-  -> bone damping and Three.js submission
+profile
+  -> procedural body
+  -> articulated rig
+  -> Core Creature
+  -> Core Character
+  -> optional Core Player possession
+  -> controlled-character pose/simulation path
+
+creator profile edit
+  -> compose into live registries
+  -> support-pose evaluation
+  -> support-local grounding
+  -> topology morph or crossfade
+  -> articulated preview pose
+  -> camera framing
+  -> applied visual revision
+  -> delayed durable profile commit
 ```
 
 ## Domains in use
 
 ```txt
 browser boot, pinned providers, profile binding, input, resize and RAF
+profile schema, persistence, debounce and cross-page distribution
+Core Creature definitions, body/rig references, support anchors and presentation hints
+Core Character identity, creature/profile reference, pose/motion/physics bindings and lifecycle
+Core Player identity, possession, control and spawn generation
 Core Input, Spatial, Scene, Simulation, Motion, Physics, Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
-articulated motion FK, targets, two-bone IK, solve frames and reset
-articulated dynamics
-procedural creature body, rig, gait pose, collision and snapshots
-terrain-aware player articulation and authoritative PlayerPose publication
-Rapier bodies, colliders, requests, contacts and frames
-seeded route and patch Worker/fallback streaming
-terrain heights, normals, active membership, fallback sampling, activation and release
-run movement, jump, surface, scoring, collisions and outcomes
-Three.js terrain, skeleton, damping, camera, lighting, instancing, HUD and diagnostics
-terrain-sample revision, target-frame identity and visible terrain/skeleton proof
+articulated motion and articulated dynamics
+procedural creature body, rig, skinning, collision and legacy pose
+player-character composition and controlled-character resolution
+support-anchor evaluation, local bounds, platform grounding and camera framing
+creator morph/crossfade and visible transition lifecycle
+Rapier, route generation, patch streaming, terrain and vegetation
+run movement, jumping, scoring, collisions and outcomes
+Three.js rendering, HUD and diagnostics
+composition preparation, atomic adoption, rollback, retirement and visible proof
 validation, build and GitHub Pages deployment
 ```
 
 ## Implemented state
 
 ```txt
-hind-leg chains: present
-animated source pose FK evaluation: present
-world-space foot projection: present
-exact/fallback scalar height sampling: present
-vertical rig-space targets: present
-proximity weight and maximum: present
-airborne zero weight: present
-authoritative target-to-solve path: present
-ground-leg-ik service: present
-domain version 0.9.0: present
-current-pose Nexus runtime pin: present
-deterministic target tests: present
-static authority path tests: present and wired
+Core Creature domain installed: yes
+Core Character domain installed: yes
+Core Player domain installed: yes
+neutral creature support/presentation descriptor: yes
+active character motion/physics/pose bindings: yes
+player registration and possession: yes
+controlled-character resolution in game loop: yes
+shared game/creator composition helper: yes
+creator optional no-player composition: yes
+local unscaled presentation bounds: yes
+support bone IDs and fallback policy: yes
+support-pose grounding: yes
+bounds-based camera framing: yes
+idempotent identical composition test: yes
+changed embodiment replacement test: yes
+creator source authority test: yes
+npm test wiring: yes
 ```
 
 ## Current gaps
 
 ```txt
-terrain sampler identity/generation: absent
-patch-stream revision: absent
-exact versus fallback typed result: absent
-patch ID/content hash in sample receipt: absent
-root/left/right sample batch identity: absent
-TerrainFootTargetFrame: absent
-target commit/stale result: absent
-PlayerPose terrain/target provenance: absent
-patch activation versus solve ordering receipt: absent
-visible terrain/skeleton coherent frame: absent
-planted-foot lifecycle and slope orientation: not implemented
-runtime/browser deployment proof: absent in this run
+CompositionAttemptId and CompositionRevision: absent
+expected participant revisions: absent
+detached body/rig/creature/character/player candidate set: absent
+typed Duplicate/Replace/Conflict result: absent
+replacement policy parses exception text: present
+aggregate preparation receipts: absent
+atomic registry adoption: absent
+aggregate rollback: absent
+rig-change pose compatibility result: absent
+support-anchor revision/result: absent
+mesh/framing candidate receipt: absent
+crossfade generation and stale retirement result: absent
+registry/visible/persistence revision correlation: absent
+FirstComposedCharacterFrameAck: absent
+participant failure fixtures: absent
+browser/build/Pages proof: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-terrain-foot-target-coherence-authority-domain
+prehistoric-rush-player-character-composition-transition-authority-domain
 ```
 
 ```txt
-TerrainFootTargetCommand
-  -> bind session/run/tick/rig/source-pose revisions
-  -> bind sampler and patch-stream revisions
-  -> return typed root/left/right terrain samples
-  -> publish immutable target frame
-  -> admit accepted targets into articulated solve
-  -> publish PlayerPoseFrame citing terrain and target revisions
-  -> render terrain and skeleton from one admitted generation
-  -> acknowledge the first matching visible frame
+PlayerCharacterCompositionCommand
+  -> bind engine/profile/participant predecessor revisions
+  -> prepare body, rig, creature, character and optional player candidates
+  -> evaluate support anchors, bounds, topology and pose compatibility
+  -> prepare mesh, placement and camera framing without live mutation
+  -> atomically adopt all registries or preserve all predecessors
+  -> publish terminal composition and participant results
+  -> admit one visual transition generation
+  -> acknowledge the first matching composed-character frame
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-13T08-39-12-04-00/project-breakdown.md` and its linked audit family.
+See `.agent/trackers/2026-07-13T13-58-35-04-00/project-breakdown.md` and its linked audit family.
 
 ## Validation
 
-Documentation only. No runtime code changed in this pass. Test source and package wiring were inspected, but `npm test`, browser patch-boundary behavior, built output and GitHub Pages were not independently executed.
+Documentation only. No runtime code changed in this pass. Source and test wiring were inspected, but `npm test`, real-runtime failure injection, browser creator transitions, built output and GitHub Pages were not independently executed.
