@@ -1,27 +1,29 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-13T03-12-30-04-00`  
-**Scope:** documentation-only browser input and Core Input adoption reconciliation
+**Audit timestamp:** `2026-07-13T03-13-09-04-00`  
+**Scope:** documentation-only collision source convergence audit
 
 ## Summary
 
-This run compared the current Publish inventory with central tracking, selected PrehistoricRush through the oldest eligible fallback, inspected the browser input and product input paths, preserved the complete 45-surface inventory and added a timestamped input-authority audit family. It changed documentation only.
+This run compared the current Publish inventory with central tracking, selected PrehistoricRush through the oldest eligible rule, inspected collider generation, active-content synchronization, Core Physics and fallback observations, resolution policy, rendering, public readback and existing tests, then added the collision-convergence audit family. It changed documentation only.
 
 ## Plan ledger
 
-**Goal:** record exactly what was inspected, changed, preserved and not executed.
+**Goal:** record exactly what was inspected, changed and not executed.
 
 - [x] Verify `LuminaryLabs-Publish/PrehistoricRush` and `main`.
 - [x] Compare ten Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm nine eligible central-ledger/root-agent rows.
-- [x] Inspect `src/game.js`, the product DSK, root `.agent` files and kit registry.
-- [x] Trace Core Input installation, global keyboard listeners, the visible button, blur, RAF input copying and run-system jump consumption.
-- [x] Preserve all domains, 45 kit/service surfaces and retained audit families.
-- [x] Add the `03-12-30` tracker and audit family.
+- [x] Confirm nine eligible ledger and root `.agent` rows at selection.
+- [x] Inspect `src/game.js` collision and streaming paths.
+- [x] Inspect the product domain, resolution policy and patch generator.
+- [x] Inspect current resolution-policy tests.
+- [x] Preserve all domains and 45 kit/service surfaces.
+- [x] Preserve the concurrent `03-12-30` browser-input/Core Input audit as retained state.
+- [x] Add the `03-13-09` tracker and audit family.
 - [x] Refresh every required root `.agent` document and registry.
 - [x] Change no runtime or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute browser-input fixtures after implementation exists.
+- [ ] Execute collision parity fixtures after implementation exists.
 
 ## Documentation changes
 
@@ -32,24 +34,22 @@ This run compared the current Publish inventory with central tracking, selected 
 .agent/known-gaps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-13T03-12-30-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T03-12-30-04-00.md
-.agent/architecture-audit/2026-07-13T03-12-30-04-00-browser-input-core-adoption-dsk-map.md
-.agent/render-audit/2026-07-13T03-12-30-04-00-input-result-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-13T03-12-30-04-00-global-key-repeat-midrun-reset-loop.md
-.agent/interaction-audit/2026-07-13T03-12-30-04-00-browser-sample-core-input-result-map.md
-.agent/input-system-audit/2026-07-13T03-12-30-04-00-focus-repeat-generation-core-input-contract.md
-.agent/deploy-audit/2026-07-13T03-12-30-04-00-browser-input-fixture-gate.md
+.agent/trackers/2026-07-13T03-13-09-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T03-13-09-04-00.md
+.agent/architecture-audit/2026-07-13T03-13-09-04-00-collision-source-convergence-dsk-map.md
+.agent/render-audit/2026-07-13T03-13-09-04-00-collision-decision-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-13T03-13-09-04-00-dual-collision-source-resolution-loop.md
+.agent/interaction-audit/2026-07-13T03-13-09-04-00-collision-evidence-admission-result-map.md
+.agent/collision-system-audit/2026-07-13T03-13-09-04-00-collider-revision-source-parity-contract.md
+.agent/deploy-audit/2026-07-13T03-13-09-04-00-collision-source-parity-fixture-gate.md
 ```
 
 ## Change boundary
 
 ```txt
 runtime source changed: no
-browser input/Core Input behavior changed: no
-run lifecycle or gameplay changed: no
 simulation/motion/physics changed: no
-streaming/articulation changed: no
+streaming/collision behavior changed: no
 renderer source changed: no
 package scripts/dependencies changed: no
 deployment changed: no
@@ -61,20 +61,18 @@ pull request created: no
 
 ```txt
 npm test
-browser keyboard/focus smoke
-Enter repeat and mid-run restart fixture
-Space repeat and landing fixture
-blur/visibility/page lifecycle fixture
-button/keyboard parity fixture
-Core Input adoption fixture
-built-output input smoke
-GitHub Pages input smoke
+browser collision smoke
+physics/fallback agreement fixture
+disagreement fixture
+stale collider revision fixture
+built-output collision smoke
+GitHub Pages collision smoke
 ```
 
 ## Existing coverage limitations
 
-The current `npm test` command covers resolution policy and player articulation. It does not instantiate browser listeners, focus targets, key repeat, page lifecycle, Core Input browser submission, visible buttons, the RAF input path or first-visible-frame acknowledgements.
+`npm test` covers physics-only and fallback-only failure paths and collision precedence. It does not instantiate streamed collider synchronization, execute both sources for one candidate, compare source results, test stale patch releases or acknowledge a visible run-over frame.
 
 ## Non-claims
 
-No claim is made for Core Input adoption, focus ownership, editable-target safety, repeat determinism, mid-run restart prevention, jump exactly-once behavior, lifecycle generation fencing, stale/duplicate rejection, button/keyboard parity, public input provenance or first-visible-input-frame proof.
+No claim is made for collision-source parity, stale-collider safety, disagreement policy, provider degradation, canonical decision readback or first-visible-outcome-frame proof.
