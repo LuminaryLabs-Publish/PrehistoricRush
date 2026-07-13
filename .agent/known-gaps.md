@@ -1,60 +1,73 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T00-58-50-04-00`  
-**Status:** `game-viewport-render-surface-central-reconciled`
+**Audit:** `2026-07-13T03-12-30-04-00`  
+**Status:** `browser-input-core-input-adoption-central-reconciled`
 
 ## Summary
 
-The active game surface has no authoritative measurement, DPR, camera, drawing-buffer or visible-frame result. Direct resize mutations can leave presentation state observable only through Three.js internals.
+The active browser adapter bypasses installed Core Input and has no focus-owned, repeat-safe or generation-bound command path. One-shot actions and held state therefore lack deterministic admission and visible-frame proof.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved viewport and render-surface risk explicit until executable proof exists.
+**Goal:** keep every unresolved browser-input and Core Input adoption risk explicit until executable proof exists.
 
-### Identity and measurement gaps
+### Ownership gaps
 
-- [ ] No surface ID, command ID, viewport revision or predecessor check.
-- [ ] No actual host CSS-box measurement.
-- [ ] No `ResizeObserver` ownership or measurement sequence.
-- [ ] No stale or duplicate resize rejection.
+- [ ] Core Input is installed but not used by the active browser adapter.
+- [ ] Keyboard listeners are window-global.
+- [ ] No game-surface or canvas-focus admission.
+- [ ] No editable-target exclusion.
+- [ ] No route ownership result.
 
-### DPR and budget gaps
+### Identity and generation gaps
 
-- [ ] DPR is sampled only at startup.
-- [ ] No DPR-change admission.
-- [ ] No total drawing-buffer pixel budget.
-- [ ] No surface-bound shadow or quality revision.
+- [ ] No input-session ID or surface ID.
+- [ ] No focus or lifecycle generation.
+- [ ] No input sample ID, command ID or monotonic sequence.
+- [ ] No stale-generation rejection.
+- [ ] No duplicate command result.
 
-### Commit gaps
+### Held and edge-action gaps
 
-- [ ] Camera and renderer are mutated directly rather than through one prepared candidate.
-- [ ] No finite positive-size validation.
-- [ ] No zero-size deferral.
-- [ ] No rollback or predecessor-retention result.
-- [ ] No protection against partial camera/renderer application.
+- [ ] Host-local steer/boost state exists outside Core Input.
+- [ ] One-shot jump/start/retry do not use edge-command semantics.
+- [ ] No `event.repeat` policy.
+- [ ] Enter can restart an active run.
+- [ ] Holding Enter can call `start()` repeatedly.
+- [ ] Space repeat can re-arm jump after simulation consumption.
+- [ ] Button and keyboard paths do not share one typed command result.
+
+### Lifecycle gaps
+
+- [ ] Blur neutralizes values but retires no generation.
+- [ ] No `visibilitychange` input fence.
+- [ ] No `pagehide` or route-exit input fence.
+- [ ] No listener lease or disposal receipt.
+- [ ] No typed `InputClearResult`.
 
 ### Observation gaps
 
-- [ ] Public host omits CSS size, buffer size, DPR, aspect and viewport revision.
-- [ ] No applied-surface receipt.
-- [ ] No first visible viewport-frame acknowledgement.
-- [ ] No bounded viewport journal.
+- [ ] No accepted/rejected/duplicate/stale input result.
+- [ ] No product consumer receipt.
+- [ ] Public diagnostics omit input session, generation and held state.
+- [ ] No rejection counters or bounded input journal.
+- [ ] No first visible input-frame acknowledgement.
 
 ### Test gaps
 
-- [ ] Host-only resize.
-- [ ] DPR-only change and cap.
-- [ ] Zero-size restore.
-- [ ] Rapid resize and stale delivery.
-- [ ] Pixel-budget downgrade.
-- [ ] Camera/canvas/buffer parity.
-- [ ] Public readback and visible-frame parity.
+- [ ] Focus and editable-target admission.
+- [ ] Held action down/up behavior.
+- [ ] Enter repeat and mid-run restart rejection.
+- [ ] Space repeat and landing behavior.
+- [ ] Blur/visibility/page lifecycle generation fences.
+- [ ] Button/keyboard parity.
+- [ ] Duplicate/stale zero-mutation behavior.
 - [ ] Source/build/Pages parity.
 
 ## Retained gaps
 
-The articulated-pose audit remains unresolved: active rendering still bypasses the articulated solve. The run-start reconciliation also remains unresolved: Enter repeat and participant reset/preserve authority are missing.
+The viewport authority remains unresolved. Active rendering still bypasses the articulated solve. Run-start participant reset/preserve authority remains non-atomic. Runtime callback, Worker and renderer retirement also remain unresolved.
 
 ## Non-claims
 
-The current code does not prove host measurement correctness, DPR convergence, atomic camera/renderer resize, zero-size safety, stale resize rejection, surface readback or first-visible-frame correlation.
+The current code does not prove Core Input adoption, focus safety, repeat determinism, one-shot exactly-once behavior, lifecycle generation fencing, stale/duplicate rejection, button/keyboard equivalence, public input provenance or first-visible-frame correlation.
