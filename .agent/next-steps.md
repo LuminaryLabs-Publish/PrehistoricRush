@@ -1,6 +1,6 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T03-13-09-04-00`  
+**Audit:** `2026-07-13T03-20-58-04-00`  
 **Authority:** `prehistoric-rush-collision-source-convergence-authority-domain`
 
 ## Summary
@@ -56,7 +56,7 @@ The next implementation should give streamed collider publication, Core Physics 
 
 ## Retained priorities
 
-The browser-input/Core Input adoption audit remains unresolved and should keep focus, generation, repeat and typed-command requirements. The viewport, articulation, run-reset and runtime-lifecycle audits also remain active.
+The browser-input adapter still bypasses Core Input. Viewport authority, articulated-pose consumption, run-reset coordination and browser-runtime shutdown also remain unresolved.
 
 ## Completion gate
 
