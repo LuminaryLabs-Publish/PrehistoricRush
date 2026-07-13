@@ -1,9 +1,9 @@
 import { createDrunkRouteGenerator } from "./kits/drunk-route-generator.js";
 import {
   createPlayerArticulatedPose,
-  createPlayerArticulatedRig,
   createPlayerGroundLegTargets
 } from "./player-articulation.js";
+import { installPrehistoricRushPlayerCharacter } from "./player-character-composition.js";
 import { createPrehistoricRushResolutionPolicy } from "./prehistoric-rush-resolution-policy.js";
 import { PLAYER_RAPTOR_ID, PLAYER_RAPTOR_PRESET } from "../../presets/player-raptor.js";
 
@@ -28,6 +28,9 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     "createCoreInputKit",
     "createCoreSpatialKit",
     "createCoreSceneKit",
+    "createCoreCreatureDomain",
+    "createCoreCharacterDomain",
+    "createCorePlayerDomain",
     "createCorePhysicsDomain",
     "createCoreSimulationKit",
     "createCoreMotionDomain",
@@ -54,6 +57,9 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createCoreInputKit,
     createCoreSpatialKit,
     createCoreSceneKit,
+    createCoreCreatureDomain,
+    createCoreCharacterDomain,
+    createCorePlayerDomain,
     createCorePhysicsDomain,
     createCoreSimulationKit,
     createCoreMotionDomain,
@@ -72,8 +78,12 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createSeededWorldPatchControllerKit,
     createCameraSmoothFollowKit
   } = NexusEngineKits;
-  const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
+  const playerCreature = config.playerCreature ?? config.playerProfile?.creature ?? PLAYER_RAPTOR_PRESET;
   const playerCreatureId = String(playerCreature.id ?? PLAYER_RAPTOR_ID);
+  const playerProfile = config.playerProfile ?? {
+    profileId: String(config.playerProfileId ?? "player-1"),
+    creature: playerCreature
+  };
 
   return [
     createCoreInputKit({ actions: { jump: {}, boost: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
@@ -88,6 +98,9 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
         { id: "win", kind: "web-three-scene", exits: { retry: { id: "retry", to: "game", enabled: true } } }
       ]
     }),
+    ...createCoreCreatureDomain(),
+    ...createCoreCharacterDomain(),
+    ...createCorePlayerDomain(),
     ...createCorePhysicsDomain(),
     createCoreSimulationKit({ resolution: true }),
     ...createCoreMotionDomain(),
@@ -103,7 +116,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     createInstancedRenderBatchKit(),
     createSeededWorldPatchControllerKit(),
     createCameraSmoothFollowKit(),
-    createPrehistoricRushDomainKit(NexusEngine, { ...config, playerCreature, playerCreatureId })
+    createPrehistoricRushDomainKit(NexusEngine, { ...config, playerCreature, playerCreatureId, playerProfile })
   ];
 }
 
@@ -134,6 +147,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   let engineRef = null;
   let creatureBodyRef = null;
   let articulatedMotionRef = null;
+  let playerCompositionRef = null;
   let heightSampler = () => 0;
   let heightSamplerReady = false;
   let pickupSampler = () => [];
@@ -143,7 +157,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   let playerVisualScale = 1;
   const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
   const playerCreatureId = String(config.playerCreatureId ?? playerCreature.id ?? PLAYER_RAPTOR_ID);
-  const playerRigId = `${playerCreatureId}:rig`;
+  const playerProfile = config.playerProfile ?? { profileId: "player-1", creature: playerCreature };
+  const playerId = String(playerProfile.profileId ?? "player-1");
 
   const resources = {
     RunState: defineResource("prehistoric-rush.run-state"),
@@ -181,11 +196,22 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     };
   }
 
+  function getControlled() {
+    const controlled = engineRef?.corePlayer?.getControlledCharacter?.(playerId);
+    if (!controlled) throw new Error(`PrehistoricRush player ${playerId} has no controlled character.`);
+    return controlled;
+  }
+
   function resolvePlayerPose(runState = initialRunState(), inputState = {}, tick = {}) {
-    if (!creatureBodyRef || !articulatedMotionRef) return null;
+    if (!creatureBodyRef || !articulatedMotionRef || !engineRef?.coreCharacter) return null;
+    const controlled = getControlled();
+    const character = controlled.character;
+    const creature = controlled.creature;
+    const bodyId = creature.body.descriptorId;
+    const rigId = creature.rig.descriptorId;
     const tickId = String(tick.tickId ?? `pose:${runState.elapsed ?? 0}`);
     const frame = Number(tick.frame ?? 0);
-    const legacyPose = creatureBodyRef.createPose(playerCreatureId, {
+    const legacyPose = creatureBodyRef.createPose(bodyId, {
       speed: Number(runState.speed ?? 0),
       time: Number(runState.elapsed ?? 0),
       turn: Number(inputState.steer ?? 0),
@@ -193,14 +219,11 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       resistance: 1 - Number(runState.surfaceMultiplier ?? 1)
     });
     const basePose = createPlayerArticulatedPose(legacyPose, {
-      rigId: playerRigId,
+      rigId,
       id: `${tickId}:player-base-pose`
     });
-    const rig = articulatedMotionRef.getRig(playerRigId);
-    const evaluatedPose = articulatedMotionRef.evaluatePose({
-      rigId: playerRigId,
-      pose: basePose
-    });
+    const rig = articulatedMotionRef.getRig(rigId);
+    const evaluatedPose = articulatedMotionRef.evaluatePose({ rigId, pose: basePose });
     const targets = heightSamplerReady
       ? createPlayerGroundLegTargets({
           rig,
@@ -212,13 +235,14 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         })
       : [];
     const articulatedFrame = articulatedMotionRef.solve({
-      rigId: playerRigId,
+      rigId,
       pose: basePose,
       targets,
       tickId,
       frame,
-      metadata: { source: "prehistoric-rush-player-authority" }
+      metadata: { source: "prehistoric-rush-player-authority", characterId: character.id }
     });
+    engineRef.coreCharacter.setPose(character.id, articulatedFrame.pose.id);
     return clone(articulatedFrame.pose);
   }
 
@@ -232,6 +256,10 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     if (!state || !input || state.status !== "game") return;
     const tick = tickContext ?? world.__nexusTickContext;
     if (!tick?.tickId) throw new Error("PrehistoricRush simulation requires TickContext.");
+    const controlled = getControlled();
+    const character = controlled.character;
+    const motionActorId = character.bindings.motionActorId;
+    const physicsBodyId = character.bindings.physicsBodyId;
 
     const next = cloneRunState(state);
     const dt = Math.max(0, Math.min(0.05, tick.delta ?? 1 / 60));
@@ -270,7 +298,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     };
     const motionRequest = {
       id: `${tick.tickId}:dino-motion`,
-      bodyId: "dino",
+      bodyId: physicsBodyId,
       kind: "kinematic-target",
       position: {
         x: next.x,
@@ -280,8 +308,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       linearVelocity
     };
     engineRef.coreMotion.submitIntent({
-      id: "dino:motion-intent",
-      actorId: "dino",
+      id: `${motionActorId}:motion-intent`,
+      actorId: motionActorId,
       mode: next.grounded ? "run" : "airborne",
       desiredVelocity: linearVelocity,
       desiredFacing: { x: Math.sin(next.yaw), y: 0, z: Math.cos(next.yaw) },
@@ -295,7 +323,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       tickId: tick.tickId,
       frame: tick.frame,
       requests: [motionRequest],
-      metadata: { source: "prehistoric-rush" }
+      metadata: { source: "prehistoric-rush", characterId: character.id }
     });
 
     const playerPose = resolvePlayerPose(next, input, tick);
@@ -334,6 +362,10 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     const frame = engineRef?.coreSimulation?.getCommittedFrame?.();
     if (!frame?.transition || frame.stepId === lastTransitionStepId) return;
     lastTransitionStepId = frame.stepId;
+    if (["run-over", "win"].includes(frame.transition.toSceneId)) {
+      engineRef.corePlayer.disableControl(playerId);
+      engineRef.coreCharacter.setStatus(getControlled().character.id, "suspended");
+    }
     transition(frame.transition.toSceneId, frame.transition.transitionId, frame.transition.payload ?? {});
   }
 
@@ -341,10 +373,13 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.9.0",
+    version: "1.0.0",
     stability: "game",
-    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature", "player-articulation", "player-pose", "ground-leg-ik"],
+    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature", "player-character", "player-control", "player-articulation", "player-pose", "ground-leg-ik"],
     requires: [
+      "n:core-creature",
+      "n:core-character",
+      "n:core-player",
       "n:core-physics",
       "n:core-physics:articulated-dynamics",
       "n:core-motion",
@@ -366,17 +401,25 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     },
     createApi({ engine, world }) {
       engineRef = engine;
+      playerCompositionRef = installPrehistoricRushPlayerCharacter({
+        engine,
+        profile: playerProfile,
+        creatureRecipe: playerCreature,
+        bodyId: playerCreatureId,
+        characterId: "player-character",
+        playerId,
+        motionActorId: "dino",
+        physicsBodyId: "dino",
+        includePlayer: true,
+        visualRootOffsetY: playerVisualRootOffsetY
+      });
       const creatureBody = engine.n.proceduralCreatureBody;
-      if (!creatureBody?.has?.(playerCreatureId)) creatureBody?.create?.(playerCreature);
-      const playerBody = creatureBody.get(playerCreatureId);
-      playerCollisionCenterY = Number(playerBody?.collision?.centerY ?? playerCollisionCenterY);
-      playerVisualScale = Number(playerBody?.transform?.scale?.[0] ?? 1);
       const articulatedMotion = engine.n.articulatedMotion;
-      if (!articulatedMotion?.getRig?.(playerRigId)) {
-        articulatedMotion.registerRig(createPlayerArticulatedRig(playerBody, { rigId: playerRigId }));
-      }
       creatureBodyRef = creatureBody;
       articulatedMotionRef = articulatedMotion;
+      const playerBody = creatureBody.get(playerCompositionRef.bodyId);
+      playerCollisionCenterY = Number(playerBody?.collision?.centerY ?? playerCollisionCenterY);
+      playerVisualScale = Number(playerBody?.transform?.scale?.[0] ?? 1);
       const getState = () => world.getResource(resources.RunState);
       const getInput = () => world.getResource(resources.InputState);
       world.setResource(resources.PlayerPose, resolvePlayerPose(getState(), getInput(), {
@@ -434,24 +477,39 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           groundIK: clone(groundIKSettings),
           surfaceMultipliers: { ...multipliers }
         },
-        getPlayerBody: () => creatureBody.get(playerCreatureId),
-        getPlayerRig: () => articulatedMotion.getRig(playerRigId),
+        getPlayer: () => engine.corePlayer.get(playerId),
+        getPlayerCharacter: () => engine.corePlayer.getControlledCharacter(playerId),
+        getPlayerBody: () => {
+          const controlled = getControlled();
+          return creatureBody.get(controlled.creature.body.descriptorId);
+        },
+        getPlayerRig: () => {
+          const controlled = getControlled();
+          return articulatedMotion.getRig(controlled.creature.rig.descriptorId);
+        },
         getPlayerPose: () => clone(world.getResource(resources.PlayerPose)),
-        createPlayerPose: (state = {}) => creatureBody.createPose(playerCreatureId, state),
+        createPlayerPose: (state = {}) => {
+          const controlled = getControlled();
+          return creatureBody.createPose(controlled.creature.body.descriptorId, state);
+        },
         solvePlayerArticulatedPose(state = {}, targets = []) {
-          const legacyPose = creatureBody.createPose(playerCreatureId, state);
+          const controlled = getControlled();
+          const rigId = controlled.creature.rig.descriptorId;
+          const legacyPose = creatureBody.createPose(controlled.creature.body.descriptorId, state);
           const basePose = createPlayerArticulatedPose(legacyPose, {
-            rigId: playerRigId,
-            id: `${playerRigId}:base:${state.time ?? 0}`
+            rigId,
+            id: `${rigId}:base:${state.time ?? 0}`
           });
-          return articulatedMotion.solve({
-            rigId: playerRigId,
+          const frame = articulatedMotion.solve({
+            rigId,
             pose: basePose,
             targets,
             tickId: state.tickId ?? `pose:${state.time ?? 0}`,
             frame: state.frame ?? 0,
-            metadata: { source: "prehistoric-rush-player" }
+            metadata: { source: "prehistoric-rush-player", characterId: controlled.character.id }
           });
+          engine.coreCharacter.setPose(controlled.character.id, frame.pose.id);
+          return frame;
         },
         setHeightSampler(nextSampler) {
           if (typeof nextSampler !== "function") throw new TypeError("setHeightSampler expects a function.");
@@ -477,6 +535,9 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           next.status = "game";
           lastTransitionStepId = null;
           engine.coreSimulation.resetResolution();
+          engine.corePlayer.advanceSpawn(playerId);
+          engine.corePlayer.enableControl(playerId);
+          engine.coreCharacter.setStatus(getControlled().character.id, "active");
           world.setResource(resources.RunState, next);
           world.setResource(resources.InputState, nextInput);
           world.setResource(resources.PlayerPose, resolvePlayerPose(next, nextInput, {
@@ -494,6 +555,9 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           run: cloneRunState(getState()),
           route: route.snapshot(),
           simulation: engine.coreSimulation.getCommittedFrame(),
+          creature: engine.coreCreature.getSnapshot(),
+          character: engine.coreCharacter.getSnapshot(),
+          player: engine.corePlayer.getSnapshot(),
           motion: engine.coreMotion.getSnapshot(),
           articulatedMotion: articulatedMotion.getSnapshot(),
           articulatedDynamics: engine.n.articulatedDynamics?.getSnapshot?.(),
@@ -509,6 +573,9 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "core-input",
         "core-spatial",
         "core-scene",
+        "core-creature",
+        "core-character",
+        "core-player",
         "core-physics",
         "articulated-dynamics",
         "core-simulation",
@@ -531,6 +598,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       rendererAgnosticOutcome: true,
       legacyPoseCompatible: true,
       authoritativePlayerPose: true,
+      authoritativePlayerCharacter: true,
       terrainGroundLegIK: true,
       physicalArticulationOptIn: true
     }
