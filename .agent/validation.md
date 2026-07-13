@@ -1,28 +1,28 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-12T22-18-39-04-00`  
-**Scope:** documentation-only articulated pose presentation audit
+**Audit timestamp:** `2026-07-13T00-49-53-04-00`  
+**Scope:** documentation-only game viewport and render-surface authority audit
 
 ## Summary
 
-This run inspected the current Publish inventory, central ledger, repo-local state, simulation and motion submission, rig registration, articulated pose adaptation, Three.js pose application, public readback, tests, and the 45-surface inventory. It changed documentation only and does not claim articulated presentation is implemented.
+This run inspected the current Publish inventory, central ledger, repo-local state, page shell, module preflight, Three.js camera/renderer construction, DPR selection, resize handling, RAF/render ordering, public readback, package tests and the 45-surface inventory. It changed documentation only and does not claim viewport authority is implemented.
 
 ## Plan ledger
 
-**Goal:** record exactly what was inspected, changed, preserved, and not executed.
+**Goal:** record exactly what was inspected, changed, preserved and not executed.
 
 - [x] Verify `LuminaryLabs-Publish/PrehistoricRush` and `main`.
+- [x] Inspect `game.html`.
+- [x] Inspect `src/pages/game.js`.
 - [x] Inspect `src/game.js`.
-- [x] Inspect `src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js`.
-- [x] Inspect `src/domains/prehistoric-rush/player-articulation.js`.
-- [x] Inspect `src/render/three-procedural-creature.js`.
-- [x] Inspect the patch generator for surrounding world context.
-- [x] Preserve the run-start central reconciliation.
-- [x] Add the articulated pose tracker and audit family.
+- [x] Inspect the product domain, resolution policy and patch generator for interaction context.
+- [x] Inspect `package.json` test coverage.
+- [x] Preserve articulated-pose and run-start audits.
+- [x] Add the viewport tracker and audit family.
 - [x] Refresh all required root `.agent` documents and registry.
 - [x] Change no runtime or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute pose fixtures after implementation exists.
+- [ ] Execute viewport fixtures after implementation exists.
 
 ## Documentation changes
 
@@ -33,14 +33,14 @@ This run inspected the current Publish inventory, central ledger, repo-local sta
 .agent/known-gaps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-12T22-18-39-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-12T22-18-39-04-00.md
-.agent/architecture-audit/2026-07-12T22-18-39-04-00-articulated-pose-presentation-dsk-map.md
-.agent/render-audit/2026-07-12T22-18-39-04-00-legacy-pose-articulated-frame-gap.md
-.agent/gameplay-audit/2026-07-12T22-18-39-04-00-simulation-motion-render-pose-divergence-loop.md
-.agent/interaction-audit/2026-07-12T22-18-39-04-00-motion-pose-solve-apply-frame-map.md
-.agent/articulation-audit/2026-07-12T22-18-39-04-00-rig-solve-render-admission-contract.md
-.agent/deploy-audit/2026-07-12T22-18-39-04-00-articulated-pose-fixture-gate.md
+.agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T00-49-53-04-00.md
+.agent/architecture-audit/2026-07-13T00-49-53-04-00-game-viewport-surface-dsk-map.md
+.agent/render-audit/2026-07-13T00-49-53-04-00-camera-dpr-drawing-buffer-frame-gap.md
+.agent/gameplay-audit/2026-07-13T00-49-53-04-00-resize-render-loop.md
+.agent/interaction-audit/2026-07-13T00-49-53-04-00-viewport-change-admission-map.md
+.agent/viewport-audit/2026-07-13T00-49-53-04-00-measure-dpr-commit-frame-contract.md
+.agent/deploy-audit/2026-07-13T00-49-53-04-00-viewport-fixture-gate.md
 ```
 
 ## Change boundary
@@ -48,8 +48,8 @@ This run inspected the current Publish inventory, central ledger, repo-local sta
 ```txt
 runtime source changed: no
 simulation/motion/physics changed: no
-articulation/dynamics changed: no
-rendering changed: no
+streaming/articulation changed: no
+renderer source changed: no
 package scripts/dependencies changed: no
 deployment changed: no
 branch created: no
@@ -60,19 +60,19 @@ pull request created: no
 
 ```txt
 npm test
-browser articulated-pose smoke
-legacy/articulated parity fixture
-missing-bone fixture
-solver failure/fallback fixture
-stale run pose fixture
-built-output pose smoke
-GitHub Pages pose smoke
+browser viewport smoke
+host-only resize fixture
+DPR-change fixture
+zero-size restore fixture
+rapid-resize fixture
+built-output viewport smoke
+GitHub Pages viewport smoke
 ```
 
 ## Existing coverage limitations
 
-The current articulation tests verify rig adaptation, Euler-to-quaternion conversion, and cloneability. They do not instantiate the game renderer, call the articulated solve path from active gameplay, inspect applied Three.js bones, or correlate a pose result with a visible frame.
+The current `npm test` command runs resolution-policy and articulation tests. It does not instantiate a DOM host, `ResizeObserver`, PerspectiveCamera, WebGLRenderer, drawing buffer, DPR transition or visible resized frame.
 
 ## Non-claims
 
-No claim is made for articulated renderer integration, motion/pose parity, physical-articulation provenance, bone-coverage correctness, typed fallback, stale-pose rejection, or first-visible-pose-frame proof.
+No claim is made for host measurement, DPR refresh, pixel-budget enforcement, atomic camera/renderer application, rollback, public surface readback or first-visible-viewport-frame proof.
