@@ -1,159 +1,157 @@
-# Next Steps: PrehistoricRush Player Character Profile Convergence
+# Next Steps: PrehistoricRush Browser Runtime Lifecycle
 
-**Updated:** `2026-07-12T18-18-59-04-00`
+**Updated:** `2026-07-12T20-10-25-04-00`
 
 ## Plan ledger
 
-**Goal:** replace read-increment-write profile persistence and best-effort creator debounce with one conflict-aware durable commit protocol, monotonic cross-tab projection and commit-bound game navigation.
+**Goal:** replace implicit page lifetime with one start/stop authority that owns callback, Worker, engine, physics, render and public-host leases and can prove exact-once retirement.
 
-### Gate 0: preserve current content
+### Gate 0: preserve current behavior
 
-- [ ] Preserve the current v1 profile shape, defaults and field clamps.
-- [ ] Preserve current creator controls, preview behavior and route structure.
-- [ ] Preserve one immutable profile binding per active run.
-- [ ] Keep profile authority separate from procedural creature and renderer implementation.
+- [ ] Preserve deterministic gameplay, route, streaming and profile behavior.
+- [ ] Preserve pinned module versions and current page routes.
+- [ ] Keep participant-specific disposal in participant domains.
+- [ ] Add lifecycle coordination without merging run reset and page shutdown.
 
-### Gate 1: freeze identities and schemas
+### Gate 1: freeze lifecycle identities and schemas
 
-- [ ] Add `writerSessionId`, `commandId` and command sequence.
-- [ ] Add durable `commitId` and `profileFingerprint`.
-- [ ] Define `PlayerProfileEditCommand`, `PlayerProfileResetCommand` and `PlayerProfileCommitResult`.
-- [ ] Define expected predecessor revision/fingerprint fields.
-- [ ] Define field-path patch schema and changed-path extraction.
-- [ ] Define explicit schema migration/rejection policy.
+- [ ] Add runtime session ID and runtime generation.
+- [ ] Define `Idle`, `Starting`, `Running`, `Stopping`, `Stopped` and `Failed`.
+- [ ] Define `StartRuntimeCommand`, `RuntimeStartResult`, `StopRuntimeCommand` and `RuntimeStopResult`.
+- [ ] Define participant and resource lease schemas.
+- [ ] Define lifecycle observation and bounded journal schemas.
 
-### Gate 2: replace revision allocation
+### Gate 2: convert startup to participant preparation
 
-- [ ] Read one durable predecessor envelope.
-- [ ] Validate expected predecessor before commit.
-- [ ] Detect same-revision/different-fingerprint divergence.
-- [ ] Allocate successor revision only after admission.
-- [ ] Verify storage readback after write.
-- [ ] Return typed durable, volatile, rejected or failed result.
-- [ ] Never publish durable success before verified readback.
+- [ ] Register each accepted participant with a lease immediately after creation.
+- [ ] Prepare engine, physics, Worker/executor, controller, camera, renderer and listeners before committing Running.
+- [ ] Publish the public host only after all required participants prepare.
+- [ ] Roll back partial startup in reverse admission order.
+- [ ] Classify import, initialization, WebGL, Worker and provider failures.
 
-### Gate 3: define conflict and merge policy
+### Gate 3: own callback producers
 
-- [ ] Compare changed field paths against the predecessor.
-- [ ] Permit deterministic disjoint-field merge only under explicit policy.
-- [ ] Reject overlapping stale field writes with conflict paths.
-- [ ] Prevent stale nested-group patches from replacing remote subfields.
-- [ ] Define reset as an exclusive profile-epoch barrier.
-- [ ] Record merge/rejection decisions in a bounded journal.
+- [ ] Retain the RAF handle.
+- [ ] Retain named keydown, keyup, blur and resize listener functions.
+- [ ] Associate every callback with the runtime generation.
+- [ ] Reject callbacks after Stopping or from stale generations.
+- [ ] Add visibility/page lifecycle policy explicitly rather than implicitly.
 
-### Gate 4: make delivery monotonic
+### Gate 4: own Worker and streaming retirement
 
-- [ ] Publish one `PlayerProfileCommitEnvelope` per accepted commit.
-- [ ] Include event ID, commit ID, writer, revision and fingerprint.
-- [ ] Treat BroadcastChannel and storage events as delivery adapters.
-- [ ] Deduplicate the same commit across both adapters.
-- [ ] Reject lower revisions.
-- [ ] Fault or reconcile same-revision/different-fingerprint events.
-- [ ] Return a typed subscriber delivery result.
+- [ ] Close patch-controller pumping before Worker retirement.
+- [ ] Reject pending executor requests with typed shutdown results.
+- [ ] Remove Worker listeners.
+- [ ] Terminate Worker exactly once.
+- [ ] Reject late Worker results by runtime and stream generation.
+- [ ] Retire active patch/controller ownership under explicit policy.
 
-### Gate 5: replace creator timeout with a save lease
+### Gate 5: own engine and physics retirement
 
-- [ ] Track local draft revision separately from durable profile revision.
-- [ ] Give every scheduled save a lease ID and captured predecessor.
-- [ ] Cancel or rebase the lease when a remote commit is admitted.
-- [ ] Preserve disjoint local edits through explicit rebase.
-- [ ] Surface overlapping conflict rather than silently overwriting.
-- [ ] Project `Saving`, `Saved`, `Conflict`, `Volatile` and `Failed` from results.
+- [ ] Close product input and restart admission.
+- [ ] Define engine scheduler stop/reset behavior.
+- [ ] Retire Core Motion, Core Physics and articulation participant state under page-stop policy.
+- [ ] Remove player body and fixed colliders.
+- [ ] Retire Rapier provider/world ownership.
+- [ ] Return participant-specific retirement receipts.
 
-### Gate 6: bind navigation to save outcome
+### Gate 6: own render retirement
 
-- [ ] Intercept Play and Menu navigation while a save lease is unresolved.
-- [ ] Flush and await commit, reject navigation, or explicitly choose predecessor policy.
-- [ ] Clear/cancel timers during terminal creator disposal.
-- [ ] Unsubscribe profile listeners on creator disposal.
-- [ ] Include the accepted commit ID in route transition context.
-- [ ] Add timeout/failure handling that never labels an uncommitted draft as saved.
+- [ ] Add `dispose()` to the Three adapter.
+- [ ] Import and call `disposeCreatureMesh()` for the player.
+- [ ] Dispose all unique terrain, tree, grass and shard geometries.
+- [ ] Dispose all unique materials exactly once.
+- [ ] Clear scene and active-content maps.
+- [ ] Dispose renderer after callback producers are stopped.
+- [ ] Publish render-resource retirement results.
 
-### Gate 7: bind runtime and render proof
+### Gate 7: revoke public capabilities
 
-- [ ] Read and verify one durable profile envelope at game boot.
-- [ ] Create `RuntimePlayerProfileBinding` with commit, revision and fingerprint.
-- [ ] Pass that binding into engine composition and creature generation.
-- [ ] Expose binding in `PrehistoricRushHost` readback.
-- [ ] Publish the first menu, creator and game frame acknowledgements.
-- [ ] Keep the active run stable even if later profile commits arrive.
+- [ ] Replace raw `globalThis.PrehistoricRushHost` assignment with a publication lease.
+- [ ] Restrict host commands by lifecycle phase.
+- [ ] Revoke or replace host with terminal read-only state during stop.
+- [ ] Reject stale host references by runtime generation.
 
-### Gate 8: storage capability and lifecycle
+### Gate 8: implement idempotent stop
 
-- [ ] Classify unavailable, denied, quota, serialization and readback failures.
-- [ ] Define explicit volatile-session behavior.
-- [ ] Close BroadcastChannel only when store ownership ends.
-- [ ] Keep per-subscriber disposal separate from global store shutdown.
-- [ ] Define reset and page-unload ordering.
+- [ ] Close admission before disposal begins.
+- [ ] Execute participant retirement in a fixed order.
+- [ ] Continue collecting results when one participant fails retirement.
+- [ ] Return the same result for the same stop command.
+- [ ] Return `AlreadyStopped` for subsequent stop commands.
+- [ ] Preserve unresolved retirement failures in the journal.
 
 ### Gate 9: executable proof
 
-- [ ] Add same-predecessor conflicting-write fixture.
-- [ ] Add same-predecessor disjoint-merge fixture.
-- [ ] Add duplicate BroadcastChannel/storage delivery fixture.
-- [ ] Add stale and same-revision-divergence fixtures.
-- [ ] Add remote-update-during-debounce fixture.
-- [ ] Add reset-during-debounce fixture.
-- [ ] Add edit-then-immediate-Play/Menu fixtures.
-- [ ] Add storage failure/readback mismatch fixtures.
-- [ ] Add runtime profile-binding fixture.
-- [ ] Add browser and deployed Pages first-frame matrices.
+- [ ] Add start-stop success fixture.
+- [ ] Add repeated stop idempotency fixture.
+- [ ] Add stale-generation stop fixture.
+- [ ] Add partial-startup rollback fixture.
+- [ ] Add frame-failure cleanup fixture.
+- [ ] Add pending Worker shutdown and late-result fixtures.
+- [ ] Add input/resize-after-stop rejection fixtures.
+- [ ] Add renderer/resource retirement fixture.
+- [ ] Add public-host revocation fixture.
+- [ ] Add stop-then-reentry fixture.
+- [ ] Run local browser and deployed Pages matrices.
 
 ## Candidate kit order
 
 ```txt
-prehistoric-rush-player-character-profile-commit-convergence-authority-domain
-player-profile-writer-session-kit
-player-profile-command-id-kit
-player-profile-command-sequence-kit
-player-profile-revision-kit
-player-profile-content-fingerprint-kit
-player-profile-edit-command-kit
-player-profile-patch-schema-kit
-player-profile-expected-predecessor-kit
-player-profile-commit-admission-kit
-player-profile-conflict-detection-kit
-player-profile-conflict-policy-kit
-player-profile-merge-plan-kit
-player-profile-storage-write-result-kit
-player-profile-storage-readback-kit
-player-profile-commit-result-kit
-player-profile-reset-command-kit
-player-profile-reset-result-kit
-player-profile-event-id-kit
-player-profile-channel-envelope-kit
-player-profile-monotonic-subscription-kit
-player-profile-duplicate-delivery-rejection-kit
-player-profile-stale-delivery-rejection-kit
-creator-draft-revision-kit
-creator-save-lease-kit
-creator-save-rebase-kit
-creator-save-flush-kit
-creator-navigation-barrier-kit
-runtime-player-profile-binding-kit
-player-profile-visible-frame-ack-kit
-player-profile-observation-kit
-player-profile-journal-kit
+prehistoric-rush-browser-runtime-lifecycle-authority-domain
+runtime-session-id-kit
+runtime-generation-kit
+runtime-lifecycle-state-kit
+runtime-start-command-kit
+runtime-start-result-kit
+runtime-stop-command-kit
+runtime-stop-admission-kit
+runtime-stop-result-kit
+runtime-shutdown-barrier-kit
+raf-lease-kit
+browser-listener-lease-kit
+global-host-publication-lease-kit
+worker-resource-lease-kit
+worker-executor-retirement-kit
+patch-controller-retirement-kit
+engine-runtime-retirement-kit
+physics-provider-retirement-kit
+renderer-resource-lease-kit
+scene-resource-retirement-plan-kit
+creature-resource-retirement-kit
+instanced-resource-retirement-kit
+material-geometry-retirement-kit
+exact-once-disposal-kit
+stale-callback-rejection-kit
+runtime-failure-classification-kit
+runtime-retirement-result-kit
+runtime-observation-kit
+runtime-journal-kit
+terminal-visible-frame-ack-kit
+runtime-stopped-ack-kit
+browser-reentry-fixture-kit
+frame-failure-fixture-kit
+worker-pending-shutdown-fixture-kit
+pages-lifecycle-smoke-kit
 ```
 
 ## Validation order
 
 ```txt
 npm test
-fixture:profile-normalization-stability
-fixture:same-predecessor-conflict
-fixture:disjoint-field-merge
-fixture:same-revision-fingerprint-conflict
-fixture:duplicate-delivery-rejection
-fixture:stale-delivery-rejection
-fixture:remote-commit-during-debounce
-fixture:reset-during-debounce
-fixture:navigation-save-flush
-fixture:storage-write-and-readback-failure
-fixture:runtime-profile-binding
-fixture:first-visible-profile-frame
-browser multi-tab matrix
-Pages multi-tab/navigation matrix
+fixture:partial-startup-rollback
+fixture:runtime-start-stop
+fixture:stop-idempotency
+fixture:stale-generation-stop
+fixture:frame-failure-cleanup
+fixture:worker-pending-shutdown
+fixture:late-worker-result-rejection
+fixture:listener-and-raf-retirement
+fixture:render-resource-retirement
+fixture:public-host-revocation
+fixture:stop-reentry-generation
+browser lifecycle matrix
+Pages lifecycle matrix
 ```
 
-Do not remove current storage compatibility until the replacement proves normalized content parity, deterministic conflict handling and creator-to-game profile binding.
+Do not treat tab closure, route navigation or an apparently stopped frame as proof that callbacks, asynchronous work and GPU resources retired in order.
