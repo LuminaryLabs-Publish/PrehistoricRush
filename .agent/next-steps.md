@@ -1,58 +1,57 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-12T22-18-39-04-00`  
-**Authority:** `prehistoric-rush-articulated-pose-presentation-authority-domain`
+**Audit:** `2026-07-13T00-49-53-04-00`  
+**Authority:** `prehistoric-rush-game-viewport-surface-authority-domain`
 
 ## Summary
 
-The next implementation should connect committed RunState, Core Motion, Core Physics, articulated motion, optional articulated dynamics, and Three.js skeleton application through one typed pose commit.
+The next implementation should replace direct `innerWidth`/`innerHeight` and startup-only DPR handling with one measured, bounded and revisioned viewport transaction applied by the Three.js host.
 
 ## Plan ledger
 
-**Goal:** make the visible dinosaur pose authoritative, revisioned, failure-aware, and provably tied to the rendered frame.
+**Goal:** make camera projection, CSS canvas size, drawing-buffer size, DPR and quality policy agree for every admitted surface revision.
 
-### Phase 1: Pose identity and admission
+### Phase 1: Identity and measurement
 
-- [ ] Add pose command ID, pose frame ID, run generation, tick, and predecessor pose revision.
-- [ ] Bind player body/content hash, profile revision, rig ID, and rig revision.
-- [ ] Define explicit source policy: articulated, legacy fallback, or physical articulation.
+- [ ] Add runtime session, surface ID, viewport command ID and viewport revision.
+- [ ] Measure the actual game host with `getBoundingClientRect()` and `ResizeObserver`.
+- [ ] Record measurement source and sequence.
 
-### Phase 2: Input binding
+### Phase 2: DPR and budget policy
 
-- [ ] Bind committed RunState, Core Motion frame, Physics frame, and optional dynamics frame.
-- [ ] Build one immutable base pose and target set.
-- [ ] Reject stale, mismatched, duplicate, or non-finite candidates.
+- [ ] Re-sample DPR for every relevant environment change.
+- [ ] Define raw DPR, effective DPR, cap and total-pixel budget.
+- [ ] Bind shadow/quality policy to the surface revision.
 
-### Phase 3: Solve and commit
+### Phase 3: Admission and commit
 
-- [ ] Route active gameplay through `solvePlayerArticulatedPose()` when policy requires it.
-- [ ] Validate required bone coverage and transforms.
-- [ ] Fingerprint the candidate and commit `PlayerPoseCommitResult`.
-- [ ] Publish typed fallback reason when legacy pose is admitted.
+- [ ] Reject non-finite, stale and duplicate candidates.
+- [ ] Defer zero-size candidates while preserving the predecessor.
+- [ ] Prepare camera and renderer candidates before mutation.
+- [ ] Commit one `ViewportSurfaceCommitResult` or typed rejection/rollback.
 
-### Phase 4: Skeleton application
+### Phase 4: Host application
 
-- [ ] Apply only committed pose candidates.
-- [ ] Return applied and skipped bone receipts.
-- [ ] Prevent partial skeleton mutation on rejected candidates.
-- [ ] Expose the committed pose through `PrehistoricRushHost`.
+- [ ] Apply camera aspect and projection from the committed candidate.
+- [ ] Apply renderer CSS size, drawing-buffer size and effective DPR from the same candidate.
+- [ ] Coalesce rapid resize observations and reject stale delivery.
 
-### Phase 5: First-frame proof
+### Phase 5: Observation
 
-- [ ] Publish `FirstArticulatedPoseFrameAck` with run, tick, pose revision, fingerprint, rig, and mesh identity.
-- [ ] Correlate renderer frame, HUD diagnostics, and public readback.
+- [ ] Expose committed and applied viewport state through `PrehistoricRushHost`.
+- [ ] Publish `FirstViewportFrameAck` with CSS size, buffer size, DPR, aspect and fingerprint.
+- [ ] Correlate viewport revision with render and simulation frame IDs.
 
 ### Phase 6: Fixtures
 
-- [ ] Legacy versus articulated pose parity.
-- [ ] Hind-leg IK visibly changes the skeleton.
-- [ ] Missing required and optional bones.
-- [ ] Non-finite solver output.
-- [ ] Solver failure with allowed and forbidden fallback.
-- [ ] Stale pose after run restart.
-- [ ] Body/profile/rig/skeleton mismatch.
-- [ ] Source, build, and Pages first-frame parity.
+- [ ] Host-only resize.
+- [ ] DPR-only change and DPR cap.
+- [ ] Zero size then restore.
+- [ ] Rapid resize coalescing and stale predecessor rejection.
+- [ ] Pixel-budget downgrade.
+- [ ] Camera/canvas/drawing-buffer parity.
+- [ ] Source, built output and Pages parity.
 
 ## Completion gate
 
-Do not mark the authority implemented until the active renderer consumes one admitted pose result, failures and fallback are typed, stale candidates cause zero effects, bone application is receipted, and the first visible frame cites the committed pose.
+Do not mark the authority implemented until one committed viewport revision governs camera, CSS canvas and drawing buffer; invalid candidates have zero partial effects; DPR changes are admitted explicitly; and the first visible frame cites the committed surface fingerprint.
