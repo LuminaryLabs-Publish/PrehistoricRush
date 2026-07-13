@@ -194,14 +194,15 @@ subscribePlayerCharacterProfile(({ source, profile }) => {
   renderControls();
 });
 
-function stagedBounds(descriptor, mesh) {
-  const scale = [mesh.scale.x, mesh.scale.y, mesh.scale.z];
-  const position = [mesh.position.x, mesh.position.y, mesh.position.z];
-  const minimum = descriptor.bounds.min.map((value, index) => value * scale[index] + position[index]);
-  const maximum = descriptor.bounds.max.map((value, index) => value * scale[index] + position[index]);
+function stagedBounds(localBounds, mesh) {
+  const minimum = localBounds.min.map((value, index) => value * [mesh.scale.x, mesh.scale.y, mesh.scale.z][index]);
+  const maximum = localBounds.max.map((value, index) => value * [mesh.scale.x, mesh.scale.y, mesh.scale.z][index]);
+  const centerX = (minimum[0] + maximum[0]) * 0.5 + mesh.position.x;
+  const centerZ = (minimum[2] + maximum[2]) * 0.5 + mesh.position.z;
+  const horizontalRadius = Math.hypot(maximum[0] - minimum[0], maximum[2] - minimum[2]) * 0.5;
   return {
-    minimum: minimum.map((value, index) => Math.min(value, maximum[index])),
-    maximum: maximum.map((value, index) => Math.max(value, minimum[index]))
+    minimum: [centerX - horizontalRadius, Math.min(minimum[1], maximum[1]) + mesh.position.y, centerZ - horizontalRadius],
+    maximum: [centerX + horizontalRadius, Math.max(minimum[1], maximum[1]) + mesh.position.y, centerZ + horizontalRadius]
   };
 }
 
@@ -314,10 +315,10 @@ async function startShowcase() {
 
   function updateCameraFrame(dt) {
     const mesh = previewTransition?.getMesh();
-    const descriptor = previewTransition?.getDescriptor();
     const resolved = previewTransition?.getCharacter();
-    if (!mesh || !descriptor?.bounds || !resolved?.creature) return;
-    const bounds = stagedBounds(descriptor, mesh);
+    const localBounds = resolved?.creature?.presentation?.metadata?.bounds;
+    if (!mesh || !localBounds || !resolved?.creature) return;
+    const bounds = stagedBounds(localBounds, mesh);
     const height = Math.max(0.001, bounds.maximum[1] - bounds.minimum[1]);
     const [minimumFov, maximumFov] = resolved.creature.presentation.fovRange;
     const desiredFov = THREE.MathUtils.clamp(
