@@ -1,10 +1,11 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-13T03-13-09-04-00",
-  "status": "collision-source-convergence-authority-audited",
-  "repositoryRevisionReviewed": "1e5591dd99ab4beed9146ef4dcc5adbfdb9e61a6",
-  "currentAuditedSlice": "Streamed Collider Publication / Core Physics Contacts / Browser Fallback Collision / Source Comparison / Canonical Collision Decision / First Visible Outcome Frame",
+  "generatedAt": "2026-07-13T03-20-58-04-00",
+  "status": "collision-source-convergence-publication-central-reconciled",
+  "technicalStatus": "collision-source-convergence-authority-audited",
+  "repositoryRevisionReviewed": "69e6c0c5a1ce870afca15d06570ad5fcba45bca3",
+  "currentAuditedSlice": "Collision Set Publication / Core Physics Evidence / Fallback Evidence / Source Comparison / Canonical Decision / Visible Outcome Frame / Central Publication Reconciliation",
   "retainedStatuses": [
     "browser-input-core-input-adoption-central-reconciled",
     "game-viewport-render-surface-central-reconciled",
@@ -12,20 +13,21 @@
     "run-start-restart-central-reconciled",
     "browser-runtime-lifecycle-authority-audited"
   ],
-  "latestTracker": ".agent/trackers/2026-07-13T03-13-09-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-13T03-13-09-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-13T03-20-58-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-13T03-20-58-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-13T03-13-09-04-00-collision-source-convergence-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-13T03-13-09-04-00-collision-decision-visible-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-13T03-13-09-04-00-dual-collision-source-resolution-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-13T03-13-09-04-00-collision-evidence-admission-result-map.md",
-    "collisionSystem": ".agent/collision-system-audit/2026-07-13T03-13-09-04-00-collider-revision-source-parity-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-13T03-13-09-04-00-collision-source-parity-fixture-gate.md",
-    "browserInput": ".agent/input-system-audit/2026-07-13T03-12-30-04-00-focus-repeat-generation-core-input-contract.md",
-    "viewport": ".agent/viewport-audit/2026-07-13T00-49-53-04-00-measure-dpr-commit-frame-contract.md",
-    "articulation": ".agent/articulation-audit/2026-07-12T22-18-39-04-00-rig-solve-render-admission-contract.md",
-    "runStart": ".agent/run-lifecycle-audit/2026-07-12T22-19-11-04-00-start-result-participant-central-contract.md",
-    "runtimeLifecycle": ".agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md"
+    "architecture": ".agent/architecture-audit/2026-07-13T03-20-58-04-00-collision-convergence-publication-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-13T03-20-58-04-00-collision-publication-visible-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-13T03-20-58-04-00-collision-source-precedence-reconciliation-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-13T03-20-58-04-00-collider-evidence-decision-publication-map.md",
+    "collisionSystem": ".agent/collision-system-audit/2026-07-13T03-20-58-04-00-collider-revision-comparison-contract.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-13T03-20-58-04-00-repo-local-central-publication-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-13T03-20-58-04-00-collision-convergence-fixture-gate.md",
+    "inputSystemRetained": ".agent/input-system-audit/2026-07-13T03-12-30-04-00-focus-repeat-generation-core-input-contract.md",
+    "viewportRetained": ".agent/viewport-audit/2026-07-13T00-49-53-04-00-measure-dpr-commit-frame-contract.md",
+    "articulationRetained": ".agent/articulation-audit/2026-07-12T22-18-39-04-00-rig-solve-render-admission-contract.md",
+    "runStartRetained": ".agent/run-lifecycle-audit/2026-07-12T22-19-11-04-00-start-result-participant-central-contract.md",
+    "runtimeLifecycleRetained": ".agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md"
   },
   "selection": {
     "accessibleRepoCount": 10,
@@ -37,7 +39,8 @@
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
     "priorCentralTimestamp": "2026-07-13T00-58-50-04-00",
-    "reason": "No new, ledger-missing or root-undocumented eligible repository existed. PrehistoricRush had the oldest eligible central timestamp at selection."
+    "repoLocalAuditTimestampBeforeRun": "2026-07-13T03-13-09-04-00",
+    "reason": "No new or missing eligible repository existed. PrehistoricRush was the oldest central row and its repo-local collision audit was newer than central tracking."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 15,
@@ -47,51 +50,56 @@
     "proofKitCount": 2,
     "totalSurfaceCount": 45,
     "activeCollisionConvergenceAuthorityCount": 0,
-    "collisionDecisionResultCount": 0,
+    "typedCollisionComparisonResultCount": 0,
     "firstCollisionOutcomeFrameAckCount": 0
   },
   "interactionLoop": [
-    "patch generation emits deterministic tree collider descriptors",
-    "active-content rebuild synchronizes descriptors into Core Physics and retains a host fallback list",
-    "each simulation tick produces a Core Physics frame and optional fallback collision observation",
-    "resolution policy selects a fatal physics contact first and fallback only when physics has no fatal contact",
-    "committed run state is rendered without collision-source comparison or frame provenance"
+    "boot loads profile and composes engine provider streaming and presentation",
+    "patch generation activates terrain vegetation pickups and collider descriptors",
+    "active colliders synchronize into Core Physics",
+    "Rapier contacts and browser fallback radial sampling evaluate candidate motion independently",
+    "resolution applies implicit physics-first precedence",
+    "gameplay commits continue fail or win",
+    "Three.js and HUD render without source-comparison or visible-frame provenance"
   ],
   "domainsInUse": [
-    "page shell and pinned module admission",
-    "player profile persistence and boot binding",
+    "browser page shell and pinned module admission",
+    "player-profile schema persistence distribution and boot binding",
     "Core Input Spatial Scene Simulation Motion Physics Camera Animation Graphics Skybox UI Diagnostics Composition",
     "articulated motion and articulated dynamics",
-    "Rapier bodies colliders requests contacts and frames",
-    "procedural creature geometry skeleton skinning pose and rig adaptation",
-    "seeded route patch Worker queue cache activation terrain vegetation pickups and collider publication",
-    "run movement jump surface score collision failure and win",
-    "Three camera WebGL renderer lighting shadows HUD and public readback",
-    "collision source identity collider revision evidence comparison canonical decision and visible frame proof",
-    "validation build and Pages deployment"
+    "Rapier provider bodies colliders motion requests stepping contacts and frames",
+    "procedural creature descriptor geometry skeleton skinning pose and rig adaptation",
+    "seeded route patch Worker queue cache activation release and fallback",
+    "terrain trees grass shards pickups collider descriptors and height sampling",
+    "run lifecycle movement jump surface scoring collision failure and win",
+    "Three.js camera renderer lighting shadows instancing skeleton HUD and public host",
+    "collision-source identity collider-set revision evidence comparison canonical decision and visible-frame proof",
+    "validation build and GitHub Pages deployment"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-13T03-13-09-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory"
+    "completeInventory": ".agent/trackers/2026-07-13T03-20-58-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory"
   },
-  "collisionConvergenceState": {
-    "sharedColliderSetRevision": false,
-    "physicsEvidenceTyped": false,
-    "fallbackEvidenceTyped": false,
-    "sourceComparisonResult": false,
-    "disagreementPolicyResult": false,
-    "staleReleasedColliderRejection": false,
-    "publicDecisionReadback": false,
-    "firstVisibleOutcomeFrameAck": false,
-    "currentPrecedence": "fatal-core-physics-contact-else-fallback-hit"
+  "collisionState": {
+    "colliderSetIdentity": "absent",
+    "colliderSetRevision": "absent",
+    "physicsEvidenceResult": "implicit-in-physics-frame",
+    "fallbackEvidenceResult": "ad-hoc-observation",
+    "sourceAgreementResult": "absent",
+    "sourceDisagreementResult": "absent",
+    "staleReleasedColliderRejection": "absent",
+    "canonicalSourcePolicy": "implicit-physics-first",
+    "publicComparisonReadback": "absent",
+    "firstVisibleCollisionFrameAck": "absent"
   },
   "collisionAuthority": {
     "parentDomain": "prehistoric-rush-collision-source-convergence-authority-domain",
-    "mainFinding": "Core Physics and browser fallback collision paths evaluate related streamed collider descriptors without a shared collider revision, parity result, disagreement policy or visible-frame acknowledgement.",
+    "mainFinding": "Core Physics and fallback collision evidence can resolve one streamed tree impact without a shared collider revision, comparison result, disagreement policy or visible-frame receipt.",
     "plannedKits": [
       "collision-session-id-kit",
       "collider-set-id-kit",
       "collider-set-revision-kit",
       "collider-set-fingerprint-kit",
+      "active-collider-commit-result-kit",
       "collision-evaluation-command-kit",
       "collision-source-policy-kit",
       "physics-collision-evidence-kit",
@@ -105,19 +113,20 @@
       "collision-visible-frame-ack-kit"
     ],
     "requiredProof": [
-      "both sources cite one run tick candidate and collider-set revision",
-      "released collider generations have zero successor effects",
-      "agreement and disagreement are observable",
-      "canonical source and degradation policy are explicit",
-      "one collision result controls fail pickup and goal precedence",
-      "public readback and the first visible outcome frame cite the same decision",
-      "source built output and Pages fixtures agree"
+      "all accepted evidence cites one run tick candidate and collider-set revision",
+      "released collider generations cannot fail successor frames",
+      "agreement and disagreement are explicit terminal results",
+      "one versioned canonical source policy controls gameplay resolution",
+      "pickup goal and fatal collision precedence is explicit",
+      "first visible outcome frame cites the committed collision decision",
+      "source built-output and Pages fixtures agree"
     ]
   },
   "validation": {
     "runtimeSourceChanged": false,
-    "simulationMotionPhysicsChanged": false,
-    "streamingCollisionChanged": false,
+    "collisionBehaviorChanged": false,
+    "physicsOrStreamingChanged": false,
+    "runLifecycleOrGameplayChanged": false,
     "renderSourceChanged": false,
     "packageOrDependencyChanged": false,
     "deploymentChanged": false,
@@ -126,6 +135,6 @@
     "npmTestRun": false,
     "browserCollisionSmokeRun": false,
     "pagesCollisionSmokeRun": false,
-    "collisionParityFixturesAvailable": false
+    "collisionFixturesAvailable": false
   }
 }
