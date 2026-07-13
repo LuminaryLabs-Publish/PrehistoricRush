@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const domainSource = await readFile(
-  new URL("../src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js", import.meta.url),
+  new URL("../src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js", import.meta.url),
   "utf8"
 );
 const compositionSource = await readFile(
   new URL("../src/domains/prehistoric-rush/player-character-composition.js", import.meta.url),
   "utf8"
 );
-const gameSource = await readFile(new URL("../src/game.js", import.meta.url), "utf8");
+const gameSource = await readFile(new URL("../src/game-runtime.js", import.meta.url), "utf8");
 const runtimeSource = await readFile(new URL("../src/shared/runtime-versions.js", import.meta.url), "utf8");
 
 assert.match(domainSource, /\.\.\.createCoreCreatureDomain\(\)/, "the game installs Core Creature");
