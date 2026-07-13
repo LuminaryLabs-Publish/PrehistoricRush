@@ -1,71 +1,63 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T03-12-30-04-00`  
-**Authority:** `prehistoric-rush-browser-input-core-adoption-authority-domain`
+**Audit:** `2026-07-13T03-13-09-04-00`  
+**Authority:** `prehistoric-rush-collision-source-convergence-authority-domain`
 
 ## Summary
 
-The next implementation should replace direct window-listener mutation with one Core Input path that owns focus, lifecycle generations, held actions, one-shot edges, repeat policy, command results and visible-frame correlation.
+The next implementation should give streamed collider publication, Core Physics evidence, fallback evidence and gameplay resolution one shared revisioned contract.
 
 ## Plan ledger
 
-**Goal:** make Core Input authoritative for every admitted browser steering, boost, jump, start and retry action.
+**Goal:** produce exactly one canonical collision decision per admitted player candidate and prove the visible outcome frame used it.
 
-### Phase 1: Input identity and surface ownership
+### Phase 1: Collider-set identity
 
-- [ ] Add input-session, surface and focus-generation identities.
-- [ ] Make the game host/canvas explicitly focusable and route-owned.
-- [ ] Exclude editable and non-game targets.
-- [ ] Add lifecycle generation for blur, visibility, pagehide and disposal.
+- [ ] Add collider-set ID, revision, predecessor and fingerprint.
+- [ ] Publish one typed commit result when active patches rebuild colliders.
+- [ ] Return application receipts from Core Physics and fallback consumers.
+- [ ] Fence released patch and collider generations.
 
-### Phase 2: Core Input adoption
+### Phase 2: Evaluation identity
 
-- [ ] Map A/D and arrows to the `steer` axis.
-- [ ] Map W/ArrowUp to held `boost`.
-- [ ] Map Space to one-shot `jump`.
-- [ ] Map Enter and the visible button to explicit `start` or `retry` commands according to current status.
-- [ ] Remove direct browser mutation of product `InputState`.
+- [ ] Add collision evaluation ID, run ID, tick ID and candidate-transform ID.
+- [ ] Bind source-policy revision and enabled-source set.
+- [ ] Reject duplicate, stale and cross-run evaluations.
 
-### Phase 3: Repeat and command policy
+### Phase 3: Typed source evidence
 
-- [ ] Treat steer/boost as generation-bound held actions.
-- [ ] Reject repeated keydown for jump/start/retry by default.
-- [ ] Add command IDs and monotonic sequences.
-- [ ] Return sealed duplicate results for repeated command IDs.
-- [ ] Reject stale focus/lifecycle generations with zero mutation.
+- [ ] Normalize Core Physics contacts into `PhysicsCollisionEvidenceResult`.
+- [ ] Replace ad hoc fallback observation with `FallbackCollisionEvidenceResult`.
+- [ ] Make both cite the same collider-set revision and candidate transform.
+- [ ] Record unavailable, invalid and degraded source states.
 
-### Phase 4: Gameplay consumer contracts
+### Phase 4: Comparison and canonical decision
 
-- [ ] Add typed `RunCommandResult`, `JumpCommandResult` and `HeldInputResult` consumers.
-- [ ] Reject Enter-based restart during an active run unless an explicit restart policy is selected.
-- [ ] Keep run lifecycle participant reset/preserve work under the retained run-lifecycle authority.
-- [ ] Publish product input-consumption receipts.
+- [ ] Compare hit/no-hit, collider identity and source geometry semantics.
+- [ ] Publish agreement and disagreement classifications.
+- [ ] Define explicit canonical-source and degradation policy.
+- [ ] Commit one `CollisionDecisionResult` into fail/pickup/goal precedence.
 
-### Phase 5: Lifecycle fencing
+### Phase 5: Observation and presentation
 
-- [ ] On blur, visibility loss, pagehide, route exit or disposal, close the current generation.
-- [ ] Release held state and publish `InputClearResult`.
-- [ ] Start successor generations from neutral state.
-- [ ] Reject predecessor-generation events and pending commands.
+- [ ] Expose bounded source and comparison metadata through `PrehistoricRushHost`.
+- [ ] Add collision decision ID and collider revision to render admission.
+- [ ] Publish `CollisionOutcomeFrameAck` for the first matching run-over frame.
 
-### Phase 6: Observation and presentation
+### Phase 6: Fixtures
 
-- [ ] Expose input session, generation, held state and terminal results through `PrehistoricRushHost`.
-- [ ] Add repeat, stale, duplicate and rejection counters.
-- [ ] Correlate input results with run ID, simulation revision and render frame.
-- [ ] Publish `FirstInputFrameAck`.
+- [ ] Both-source same-tree agreement.
+- [ ] Physics-hit/fallback-miss and fallback-hit/physics-miss disagreement.
+- [ ] Provider-unavailable fallback degradation.
+- [ ] Jump-threshold parity.
+- [ ] Patch release and stale evidence.
+- [ ] Duplicate evaluation idempotency.
+- [ ] Source, built-output and Pages parity.
 
-### Phase 7: Fixtures
+## Retained priorities
 
-- [ ] Focus and editable-target admission.
-- [ ] A/D/W and arrow held-state parity.
-- [ ] Enter mid-run rejection and key-repeat rejection.
-- [ ] Space repeat produces one edge command.
-- [ ] Blur/visibility/page lifecycle generation fences.
-- [ ] Button/keyboard result parity.
-- [ ] Duplicate and stale zero-mutation behavior.
-- [ ] Source, built output and Pages parity.
+The browser-input/Core Input adoption audit remains unresolved and should keep focus, generation, repeat and typed-command requirements. The viewport, articulation, run-reset and runtime-lifecycle audits also remain active.
 
 ## Completion gate
 
-Do not mark the authority implemented until the browser host submits exclusively through Core Input, one-shot actions are edge-triggered, lifecycle boundaries retire predecessor state, rejected samples have zero effects, button and keyboard paths share terminal results, and the first visible frame cites the accepted input result.
+Do not mark collision convergence implemented until all accepted evidence cites one collider-set revision, disagreements are explicit, stale evidence has zero effects, one canonical result controls outcome precedence and the first visible failure frame cites that result.
