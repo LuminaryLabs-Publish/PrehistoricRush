@@ -1,79 +1,72 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T13-58-35-04-00`  
-**Authority:** `prehistoric-rush-player-character-composition-transition-authority-domain`
+**Audit:** `2026-07-13T16-41-10-04-00`  
+**Authority:** `prehistoric-rush-pause-menu-command-lifecycle-authority-domain`
 
 ## Summary
 
-The semantic Core Creature/Character/Player composition is implemented. Next work should stop mutating those participants and the creator presentation sequentially, introduce typed composition results and prove registry, persistence and visible-preview convergence.
+The semantic pause-menu DSK and Core Presentation descriptors are implemented. Next work should leave those boundaries intact and add the minimum product/browser orchestration required for typed commands, explicit retained-input policy, visible overlay proof and terminal exit cleanup.
 
 ## Plan ledger
 
-**Goal:** add the minimum product orchestration needed for atomic composition without weakening Core domain boundaries.
+**Goal:** make every pause interaction deterministic and terminal without converting the non-blocking menu into a simulation pause.
 
-### Phase 1: Composition identity
+### Phase 1: Command identity
 
-- [ ] Add `CompositionAttemptId`, `CompositionGeneration` and accepted `CompositionRevision`.
-- [ ] Bind engine generation and profile revision.
-- [ ] Capture expected body, rig, creature, character and optional player revisions.
-- [ ] Define clone-safe bounded composition readback.
+- [ ] Add `PauseMenuCommandId`, `PauseMenuGeneration` and accepted revision.
+- [ ] Bind runtime session, run generation, host generation and expected semantic sequence.
+- [ ] Classify Escape, Settings, Exit and programmatic commands by source.
+- [ ] Return Accepted, Duplicate, Stale, Failed, Cancelled or Retired.
+- [ ] Add bounded clone-safe command readback.
 
-### Phase 2: Detached preparation
+### Phase 2: Host lifecycle
 
-- [ ] Build the procedural body candidate without live registry mutation.
-- [ ] Build and validate the articulated rig candidate.
-- [ ] Build creature and character candidates against those references.
-- [ ] Build optional player registration/possession candidate.
-- [ ] Evaluate support anchors and local bounds against candidate data.
-- [ ] Validate pose compatibility when the rig changes.
+- [ ] Allocate one browser pause-host identity and generation.
+- [ ] Replace unbounded readiness polling with cancellable admission and a deadline.
+- [ ] Install exactly one Escape listener and one synchronization scheduler.
+- [ ] Reject callbacks from predecessor or retired host generations.
+- [ ] Publish installation and retirement results.
 
-### Phase 3: Typed conflict policy
+### Phase 3: Overlay projection
 
-- [ ] Replace exception-message parsing with explicit Duplicate, Replace and Conflict results.
-- [ ] Preserve participant revisions on duplicate composition.
-- [ ] Reject stale predecessor or profile revisions.
-- [ ] Require an explicit replacement policy for changed embodiment data.
+- [ ] Prepare overlay DOM from an immutable accepted menu envelope.
+- [ ] Return prepared, committed, stale, failed or retired projection results.
+- [ ] Track overlay node and listener ownership.
+- [ ] Preserve or recover the last complete projection after failure.
+- [ ] Publish `FirstPauseOverlayFrameAck` for the matching sequence.
 
-### Phase 4: Atomic registry adoption
+### Phase 4: Non-blocking gameplay-input policy
 
-- [ ] Add participant preparation receipts.
-- [ ] Adopt rig, creature, character and player together or none.
-- [ ] Preserve the complete predecessor chain on any rejection.
-- [ ] Publish `PlayerCharacterCompositionResult` with participant receipts.
-- [ ] Journal failures and rollback outcomes.
+- [ ] Define whether steer, boost, jump and restart remain admitted while open.
+- [ ] Define held-input clear/retain behavior at open and close boundaries.
+- [ ] Define Escape repeat, pointer capture, blur and focus-restoration rules.
+- [ ] Bind policy revision to menu and run generations.
+- [ ] Expose the active policy through diagnostics.
 
-### Phase 5: Preview preparation and adoption
+### Phase 5: Exit settlement
 
-- [ ] Prepare successor mesh, topology mode and materials before live registry adoption.
-- [ ] Prepare support placement and camera framing from the candidate generation.
-- [ ] Add explicit transition generation and stale retirement.
-- [ ] Correlate `targetRevision` and `appliedRevision` with accepted composition revision.
-- [ ] Release predecessor resources only after accepted visual adoption.
-- [ ] Publish `FirstComposedCharacterFrameAck`.
+- [ ] Consume `exit-requested` through an explicit exit authority.
+- [ ] Prepare and validate the navigation destination.
+- [ ] Retire attach polling, sync RAF, Escape listener, click listeners and overlay.
+- [ ] Request patch Worker, render, physics and runtime cleanup receipts.
+- [ ] Add bounded timeout and partial-failure policy.
+- [ ] Publish `ExitSettlementResult` and navigate exactly once.
 
-### Phase 6: Profile and lifecycle convergence
-
-- [ ] Separate draft revision, durable profile revision and composition revision.
-- [ ] Ensure one user edit does not create unclassified duplicate composition attempts.
-- [ ] Fence reset, external profile updates and unload against pending generations.
-- [ ] Expose honest Saving, Updating, Ready and Failed statuses from terminal results.
-
-### Phase 7: Fixtures
+### Phase 6: Fixtures
 
 - [ ] Run clean-checkout `npm test`.
-- [ ] Execute composition through the pinned real Core runtime.
-- [ ] Inject failure after each participant preparation/adoption point.
-- [ ] Test duplicate, replacement, conflict and stale results.
-- [ ] Test changed-rig pose compatibility/reset.
-- [ ] Test support-anchor and bounds extremes.
-- [ ] Test rapid creator edits, reset, external updates and unload.
-- [ ] Compare registry, persistence and visible frame fingerprints.
-- [ ] Run built-output and GitHub Pages smokes.
+- [ ] Execute the DSK through the pinned real Nexus runtime.
+- [ ] Test delayed runtime readiness, replacement and retirement.
+- [ ] Test rapid Escape, repeated Escape, settings/exit races and stale commands.
+- [ ] Test gameplay input while open, blur and focus restoration.
+- [ ] Correlate semantic sequence, DOM fingerprint and visible frame.
+- [ ] Test cleanup failures, timeout and duplicate navigation.
+- [ ] Run built-output and GitHub Pages parity smokes.
 
 ## Retained priorities
 
-Terrain-foot-target coherence, PlayerPose frame provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The composition authority must emit revisions that those retained boundaries can cite.
+Atomic player-character composition, terrain-foot-target coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The pause authority should cite their revisions rather than absorb their responsibilities.
 
 ## Completion gate
 
-Do not mark composition complete until duplicate and replacement policy is typed, every participant failure preserves the full predecessor chain, changed rigs resolve pose compatibility explicitly, and the first visible preview frame matches the accepted registry and durable profile revision.
+Do not mark the pause-menu lifecycle complete until one browser host generation is proven, every command returns a typed terminal result, retained gameplay input follows an explicit policy, accepted overlay revisions receive visible-frame acknowledgement and exit performs exactly-once settlement with bounded cleanup evidence.
