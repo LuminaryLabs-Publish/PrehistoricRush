@@ -1,5 +1,9 @@
 import { createDrunkRouteGenerator } from "./kits/drunk-route-generator.js";
-import { createPlayerArticulatedPose, createPlayerArticulatedRig } from "./player-articulation.js";
+import {
+  createPlayerArticulatedPose,
+  createPlayerArticulatedRig,
+  createPlayerGroundLegTargets
+} from "./player-articulation.js";
 import { createPrehistoricRushResolutionPolicy } from "./prehistoric-rush-resolution-policy.js";
 import { PLAYER_RAPTOR_ID, PLAYER_RAPTOR_PRESET } from "../../presets/player-raptor.js";
 
@@ -120,14 +124,23 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   const turnRate = Number(config.turnRate ?? 2.25);
   const gravity = Number(config.gravity ?? 34);
   const jumpImpulse = Number(config.jumpImpulse ?? 13.5);
+  const playerVisualRootOffsetY = Number(config.playerVisualRootOffsetY ?? 0.05);
+  const groundIKSettings = Object.freeze({
+    footClearance: Number(config.footClearance ?? 0.03),
+    maximumWeight: Number(config.groundIKMaximumWeight ?? 0.8),
+    activationHeight: Number(config.groundIKActivationHeight ?? 0.45),
+    visualRootOffsetY: playerVisualRootOffsetY
+  });
   let engineRef = null;
   let creatureBodyRef = null;
   let articulatedMotionRef = null;
   let heightSampler = () => 0;
+  let heightSamplerReady = false;
   let pickupSampler = () => [];
   let collisionSampler = () => null;
   let lastTransitionStepId = null;
   let playerCollisionCenterY = Number(config.playerCollisionCenterY ?? 0);
+  let playerVisualScale = 1;
   const playerCreature = config.playerCreature ?? PLAYER_RAPTOR_PRESET;
   const playerCreatureId = String(config.playerCreatureId ?? playerCreature.id ?? PLAYER_RAPTOR_ID);
   const playerRigId = `${playerCreatureId}:rig`;
@@ -183,10 +196,25 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       rigId: playerRigId,
       id: `${tickId}:player-base-pose`
     });
+    const rig = articulatedMotionRef.getRig(playerRigId);
+    const evaluatedPose = articulatedMotionRef.evaluatePose({
+      rigId: playerRigId,
+      pose: basePose
+    });
+    const targets = heightSamplerReady
+      ? createPlayerGroundLegTargets({
+          rig,
+          evaluatedPose,
+          runState,
+          tickId,
+          sampleHeight: heightSampler,
+          settings: { ...groundIKSettings, visualScale: playerVisualScale }
+        })
+      : [];
     const articulatedFrame = articulatedMotionRef.solve({
       rigId: playerRigId,
       pose: basePose,
-      targets: [],
+      targets,
       tickId,
       frame,
       metadata: { source: "prehistoric-rush-player-authority" }
@@ -313,9 +341,9 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     id: "prehistoric-rush-domain-kit",
     domain: "prehistoric-rush",
     apiName: "prehistoricRush",
-    version: "0.8.0",
+    version: "0.9.0",
     stability: "game",
-    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature", "player-articulation", "player-pose"],
+    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature", "player-articulation", "player-pose", "ground-leg-ik"],
     requires: [
       "n:core-physics",
       "n:core-physics:articulated-dynamics",
@@ -342,6 +370,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       if (!creatureBody?.has?.(playerCreatureId)) creatureBody?.create?.(playerCreature);
       const playerBody = creatureBody.get(playerCreatureId);
       playerCollisionCenterY = Number(playerBody?.collision?.centerY ?? playerCollisionCenterY);
+      playerVisualScale = Number(playerBody?.transform?.scale?.[0] ?? 1);
       const articulatedMotion = engine.n.articulatedMotion;
       if (!articulatedMotion?.getRig?.(playerRigId)) {
         articulatedMotion.registerRig(createPlayerArticulatedRig(playerBody, { rigId: playerRigId }));
@@ -401,6 +430,8 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
           turnRate,
           gravity,
           jumpImpulse,
+          playerVisualRootOffsetY,
+          groundIK: clone(groundIKSettings),
           surfaceMultipliers: { ...multipliers }
         },
         getPlayerBody: () => creatureBody.get(playerCreatureId),
@@ -425,6 +456,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         setHeightSampler(nextSampler) {
           if (typeof nextSampler !== "function") throw new TypeError("setHeightSampler expects a function.");
           heightSampler = nextSampler;
+          heightSamplerReady = true;
         },
         setPickupSampler(nextSampler) {
           if (typeof nextSampler !== "function") throw new TypeError("setPickupSampler expects a function.");
@@ -499,6 +531,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
       rendererAgnosticOutcome: true,
       legacyPoseCompatible: true,
       authoritativePlayerPose: true,
+      terrainGroundLegIK: true,
       physicalArticulationOptIn: true
     }
   });
