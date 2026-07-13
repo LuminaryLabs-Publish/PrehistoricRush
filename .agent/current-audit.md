@@ -1,84 +1,105 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-13T00-58-50-04-00`  
+**Timestamp:** `2026-07-13T03-12-30-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `game-viewport-render-surface-central-reconciled`  
-**Technical status:** `game-viewport-render-surface-authority-audited`
+**Status:** `browser-input-core-input-adoption-central-reconciled`  
+**Technical status:** `browser-input-core-input-adoption-authority-audited`
 
 ## Summary
 
-The game surface is initialized and resized through direct browser-global reads and Three.js mutations. The camera and renderer do not consume one measured, revisioned viewport result, DPR is not refreshed after startup, and public readback cannot identify the CSS size, drawing-buffer size, DPR or camera aspect that produced the visible frame. This run synchronizes the completed technical audit with central tracking.
+Core Input is installed with `jump`, `boost`, `start`, `retry` and `steer`, but the active browser host bypasses it. Window-global listeners and the visible action button mutate host-local or product input state directly, so focus ownership, repeat policy, command identity, generation fencing, typed terminal results and visible-frame correlation are absent.
 
 ## Plan ledger
 
-**Goal:** preserve one source-backed viewport authority record from host measurement through first visible frame.
+**Goal:** preserve one source-backed record from browser sample capture through Core Input admission, gameplay consumption and first visible effect.
 
-- [x] Reconcile current Publish inventory and central ledger.
+- [x] Reconcile the current Publish inventory and central ledger.
+- [x] Select only PrehistoricRush through the oldest eligible fallback.
 - [x] Preserve all domains, 45 surfaces and offered services.
-- [x] Preserve measurement, policy, admission, commit, rollback and frame-proof findings.
-- [x] Add the `00-58-50` reconciliation family.
-- [x] Preserve articulated-pose and run-start audits.
+- [x] Trace keyboard, button, blur, held state, one-shot action, RAF and run-system paths.
+- [x] Define focus, repeat, generation, result and frame-proof requirements.
+- [x] Add the `03-12-30` audit family.
+- [x] Preserve viewport, articulation, run-lifecycle and runtime-lifecycle audits.
 - [ ] Implement and execute later.
 
 ## Complete interaction loop
 
 ```txt
-page boot -> module preflight -> engine/kits/profile/physics/streaming/renderer construction
-startup surface -> camera(innerWidth/innerHeight) -> setSize -> startup-only setPixelRatio
-RAF -> input -> engine tick -> streaming -> camera/pose/render -> HUD -> successor RAF
-resize -> camera aspect/projection -> renderer size -> no DPR refresh or typed result
+boot
+  -> install Core Input actions/bindings
+  -> install product domain and browser host
+
+browser input
+  -> window keydown/keyup/blur or button click
+  -> mutate host-local held state, product InputState or call start()
+  -> bypass Core Input admission
+
+RAF
+  -> copy held steer/boost to product InputState
+  -> engine tick and run-system consumption
+  -> jump flag cleared after consumption
+  -> simulation, physics, streaming, pose, camera, render and HUD
+  -> no input result or visible-frame acknowledgement
 ```
 
 ## Main findings
 
 ```txt
-actual host measurement: absent
-viewport command/revision: absent
-DPR refresh after startup: absent
-pixel-budget policy: absent
-positive/zero-size admission: absent
-camera + renderer atomic commit: absent
-rollback/predecessor retention result: absent
-viewport state in public readback: absent
-first visible viewport frame acknowledgement: absent
+Core Input configured but bypassed
+window-global listeners without canvas/focus ownership
+no editable-target exclusion
+no event.repeat policy
+Enter restarts even during active run
+Enter repeat can start multiple successor runs
+Space repeat can re-arm jump after tick consumption
+button and keyboard paths have no shared command/result
+blur neutralizes values but retires no generation
+no visibility/page lifecycle fence
+no command ID, sequence, duplicate or stale result
+public diagnostics omit input authority state
+no first visible input-frame acknowledgement
 ```
 
 ## Domains in use
 
 ```txt
-browser entry, module admission, profile binding, input and run lifecycle
+browser page, module admission, keyboard, button, focus, blur and lifecycle
+player-profile schema, persistence and boot binding
 Core Input, Spatial, Scene, Simulation, Motion, Physics, Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
 articulated motion and articulated dynamics
-Rapier bodies, colliders, motion requests and frames
-procedural creature body, rig, pose, skinning and Three skeleton presentation
-seeded patch Worker, queue, cache, activation, terrain, vegetation, pickups and collisions
-camera follow, WebGL renderer, lighting, shadows, HUD and public diagnostics
-viewport measurement, DPR policy, pixel budget, resize admission and visible-frame proof
+Rapier provider, bodies, colliders, requests, steps and frames
+procedural creature descriptor, geometry, skeleton, pose and rig adaptation
+seeded route, patch Worker, queue, cache, activation and release
+terrain, vegetation, pickups, collisions and height sampling
+run lifecycle, movement, jump, surface, score, failure and win
+Three.js camera, rendering, lighting, instancing, HUD and public diagnostics
+input session, focus generation, repeat policy, Core Input admission, consumer receipts and frame proof
 validation, build and Pages deployment
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-game-viewport-surface-authority-domain
+prehistoric-rush-browser-input-core-adoption-authority-domain
 ```
 
 ```txt
-ViewportChangeCommand
-  -> validate session/surface/predecessor
-  -> measure host CSS box
-  -> sample DPR under explicit cap and pixel budget
-  -> reject/defer invalid, zero, stale and duplicate candidates
-  -> prepare camera and drawing-buffer state
-  -> commit one ViewportSurfaceCommitResult
-  -> apply during render admission
-  -> publish FirstViewportFrameAck
+BrowserInputSample
+  -> validate session, route, surface, focus and lifecycle generation
+  -> exclude non-game/editable targets
+  -> classify held or one-shot action
+  -> apply repeat policy
+  -> submit through Core Input
+  -> return typed accepted/rejected/duplicate/stale/clear result
+  -> obtain product consumer receipt
+  -> correlate simulation and render revisions
+  -> publish FirstInputFrameAck
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-13T00-58-50-04-00/project-breakdown.md` and its linked reconciliation family. The complete technical source audit remains at `00-49-53`.
+See `.agent/trackers/2026-07-13T03-12-30-04-00/project-breakdown.md` and its linked audit family.
 
 ## Validation
 
-Documentation only. No runtime or deployment behavior changed and no viewport fixture was run.
+Documentation only. No runtime input, Core Input, gameplay, rendering or deployment behavior changed and no input fixture was run.
