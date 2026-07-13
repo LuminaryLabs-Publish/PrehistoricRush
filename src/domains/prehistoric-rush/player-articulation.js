@@ -1,4 +1,6 @@
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
+const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+const clamp01 = (value) => Math.max(0, Math.min(1, finite(value, 0)));
 
 export function eulerXYZToQuaternion(value = [0, 0, 0]) {
   const [x, y, z] = Array.isArray(value)
@@ -72,4 +74,70 @@ export function createPlayerArticulatedPose(legacyPose, options = {}) {
       sourceKind: legacyPose?.kind ?? "procedural-creature-pose"
     }
   };
+}
+
+export function createPlayerGroundLegTargets({
+  rig,
+  evaluatedPose,
+  runState = {},
+  tickId = "player-ground-leg-targets",
+  sampleHeight,
+  settings = {}
+} = {}) {
+  if (!rig?.id || !rig?.chains) throw new TypeError("Ground leg targets require an articulated rig.");
+  if (!evaluatedPose?.bones) throw new TypeError("Ground leg targets require an evaluated articulated pose.");
+  if (typeof sampleHeight !== "function") throw new TypeError("Ground leg targets require a terrain height sampler.");
+
+  const footClearance = finite(settings.footClearance, 0.03);
+  const maximumWeight = clamp01(settings.maximumWeight ?? 0.8);
+  const activationHeight = Math.max(1e-4, finite(settings.activationHeight, 0.45));
+  const visualRootOffsetY = finite(settings.visualRootOffsetY, 0.05);
+  const visualScale = Math.max(1e-4, finite(settings.visualScale, 1));
+  const yaw = finite(runState.yaw, 0);
+  const cosine = Math.cos(yaw);
+  const sine = Math.sin(yaw);
+  const rootWorldY = finite(runState.y, 0) + finite(runState.jumpHeight, 0) + visualRootOffsetY;
+  const grounded = runState.grounded === true;
+
+  return ["hindLegL", "hindLegR"].flatMap((chainId) => {
+    const chain = rig.chains[chainId];
+    const endBoneId = chain?.bones?.at(-1);
+    const foot = endBoneId ? evaluatedPose.bones[endBoneId]?.rigPosition : null;
+    if (!chain || !foot) return [];
+
+    const scaledX = finite(foot.x, 0) * visualScale;
+    const scaledZ = finite(foot.z, 0) * visualScale;
+    const worldX = finite(runState.x, 0) + cosine * scaledX + sine * scaledZ;
+    const worldZ = finite(runState.z, 0) - sine * scaledX + cosine * scaledZ;
+    const groundWorldY = finite(sampleHeight(worldX, worldZ), finite(runState.y, 0));
+    const targetRigY = (groundWorldY + footClearance - rootWorldY) / visualScale;
+    const animatedFootWorldY = rootWorldY + finite(foot.y, 0) * visualScale;
+    const heightAboveGround = animatedFootWorldY - (groundWorldY + footClearance);
+    const proximity = clamp01(1 - Math.max(0, heightAboveGround) / activationHeight);
+    const weight = grounded ? proximity * maximumWeight : 0;
+
+    return [{
+      id: `${tickId}:${chainId}:ground-target`,
+      rigId: rig.id,
+      chainId,
+      space: "rig",
+      position: {
+        x: finite(foot.x, 0),
+        y: targetRigY,
+        z: finite(foot.z, 0)
+      },
+      poleDirection: clone(chain.poleDirection),
+      weight,
+      metadata: {
+        source: "prehistoric-rush-ground-leg-target",
+        endBoneId,
+        worldX,
+        worldZ,
+        groundWorldY,
+        animatedFootWorldY,
+        heightAboveGround,
+        visualScale
+      }
+    }];
+  });
 }
