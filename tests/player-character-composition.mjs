@@ -20,7 +20,8 @@ const creatureBody = {
       archetype: String(recipe.archetype ?? "theropod"),
       contentHash: `${recipe.id}:${scale}:${legLength}`,
       transform: { scale: [scale, scale, scale] },
-      bounds: { min: [-0.5, -0.16, -2], max: [0.5, 1.32, 1.6] },
+      geometry: { positions: [-0.8, -0.25, -2.4, 0.8, 1.4, 1.9] },
+      bounds: { min: [-0.5 * scale, -0.16 * scale, -2 * scale], max: [0.5 * scale, 1.32 * scale, 1.6 * scale] },
       collision: { shape: "capsule", radius: 0.32, halfHeight: 0.42, centerY: 0.62 },
       skeleton: {
         rootBoneId: "root",
@@ -143,6 +144,11 @@ assert.equal(installed.bodyId, "raptor");
 assert.equal(installed.rigId, "raptor:rig");
 assert.deepEqual(installed.creature.support.boneIds, ["foot-L", "foot-R"]);
 assert.equal(installed.creature.presentation.focusBoneId, "chest");
+assert.deepEqual(
+  installed.creature.presentation.metadata.bounds,
+  { min: [-0.8, -0.25, -2.4], max: [0.8, 1.4, 1.9] },
+  "Character presentation stores local unscaled geometry bounds"
+);
 assert.equal(corePlayer.getControlledCharacter("player-1").creature.id, installed.creatureId);
 assert.doesNotThrow(() => structuredClone(installed));
 
@@ -154,6 +160,7 @@ const resizedProfile = clone(profile);
 resizedProfile.creature.preset.proportions.bodyScale = 1.1;
 const resized = installPrehistoricRushPlayerCharacter({ engine, profile: resizedProfile });
 assert.equal(resized.creature.presentation.metadata.scale[0], 1.1);
+assert.deepEqual(resized.creature.presentation.metadata.bounds, installed.creature.presentation.metadata.bounds);
 assert.equal(creatureReplacements, 1, "changed embodiment explicitly replaces the creature definition");
 
 const preview = installPrehistoricRushPlayerCharacter({
