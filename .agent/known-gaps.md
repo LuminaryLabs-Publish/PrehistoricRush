@@ -1,141 +1,136 @@
-# Known Gaps: PrehistoricRush Player Character Profile Convergence
+# Known Gaps: PrehistoricRush Browser Runtime Lifecycle
 
-**Updated:** `2026-07-12T18-18-59-04-00`
+**Updated:** `2026-07-12T20-10-25-04-00`
 
-## Implemented profile pieces
+## Implemented runtime pieces
 
 ```txt
-versioned v1 profile shape
-canonical defaults
-field normalization and clamps
-deep recursive patch merge
-localStorage capability fallback for reads
-full-profile load/save/patch/reset
-numeric revision and updatedAt metadata
-BroadcastChannel publication
-browser storage-event subscription
-menu profile card projection
-creator draft, controls, preview and 160 ms save scheduling
-game boot-time profile consumption
-public profileId/revision readback
+pinned module preflight
+Nexus Engine composition
+Rapier provider and player body
+optional Worker executor
+seeded patch controller
+camera smooth follow
+Three scene and WebGL renderer
+terrain, tree, grass, shard and creature presentation
+browser keyboard, blur and resize adapters
+recursive RAF loop
+HTML HUD
+public PrehistoricRushHost readback
+creature-mesh disposal helper
+Worker adapter termination capability
 ```
 
 ## Primary current gap
 
 ```txt
-no writer session or profile command identity
-no expected predecessor revision/fingerprint
-no atomic revision allocation
-no content fingerprint or durable commit ID
-no conflict detection or field-path merge policy
-no typed storage write/readback result
-no same-revision divergence detection
-no duplicate BroadcastChannel/storage-event suppression
-no stale delivery rejection
-no pending-save rebase after remote commit
-no creator save lease or navigation flush
-no reset epoch/barrier
-no runtime profile binding receipt
-no first visible profile-dependent frame acknowledgement
+no runtime session or generation
+no lifecycle state machine
+no typed start or stop command/result
+no participant lease registry
+no partial-startup rollback
+no retained RAF handle
+no removable browser-listener lease set
+no stale callback rejection
+no public-host publication/revocation lease
+no Worker pending-request shutdown composition
+no Worker termination in game lifecycle
+no patch-controller retirement result
+no engine or physics provider retirement result
+no Three-adapter dispose surface
+no exact-once geometry/material/skeleton retirement
+no renderer-disposed acknowledgement
+no bounded retirement journal
+no stop-then-reentry proof
 ```
 
 ## Concrete consequences
 
 ```txt
-two tabs can both write different revision R+1 snapshots
-last full snapshot can silently erase another tab's fields
-an older delivery can replace a newer menu or creator projection
-the same commit can be applied twice through two browser adapters
-a predecessor-derived timer can overwrite a remote commit as R+2
-Play/Menu can leave while the visible edit exists only in a timeout
-storage failure can occur after preview/UI mutation with no terminal result
-game can use the predecessor profile after immediate creator navigation
-revision-only public readback cannot distinguish conflicting same-revision content
+frame failure can stop successor scheduling without retiring owned participants
+startup failure can leave already-created participants without reverse-order rollback proof
+blur clears input but simulation, streaming and rendering remain active
+external code can retain raw PrehistoricRushHost participant references
+late Worker or browser callbacks have no runtime-generation fence
+in-document re-entry cannot prove one Worker, listener set or renderer owner
+disposal failures cannot be represented without losing successful retirement results
 ```
 
-## Policy ambiguity
-
-The current implementation does not classify profile operations as:
+## Render ownership ambiguity
 
 ```txt
-committed durable
-committed merged
-volatile only
-rejected stale
-rejected conflict
-rejected duplicate
-failed write
-failed readback
-cancelled superseded
-navigation flushed
-navigation rejected
-runtime bound
-visible-frame acknowledged
+40 mesh/geometry allocations have no resource-set identity
+12 materials have no unique/shared ownership registry
+player skeleton has no game-runtime retirement receipt
+renderer and internal render resources have no explicit stop ordering
+existing disposeCreatureMesh() is not imported by the game page
+createThreeAdapter() returns no dispose() method
 ```
 
-## Delivery ambiguity
+The allocation count is source-backed and does not by itself prove a leak or quantify retained GPU memory.
+
+## Callback ownership ambiguity
 
 ```txt
-BroadcastChannel and storage events have no shared event identity
-no ordering exists across writers and adapters
-same revision/same content is not distinguished from duplicate delivery
-same revision/different content is not treated as a fault
-subscriber projection state has no revision/fingerprint owner
-listener callbacks receive profile objects but no delivery result
+keydown listener function is not retained
+keyup listener function is not retained
+blur listener function is not retained
+resize listener function is not retained
+RAF request ID is not retained
+frame callback has no runtime-generation admission
+main().catch does not supervise later RAF exceptions
 ```
 
-## Creator lifecycle ambiguity
+## Worker and stream ambiguity
 
 ```txt
-save timer has no lease ID
-external admission does not cancel/rebase timer
-Play/Menu links bypass pending-save policy
-beforeunload disposes preview but not persistence scheduler
-profile subscription disposer is not retained
-Saved status is not derived from durable readback
-reset is a normal save rather than an invalidating barrier
+Worker ownership is stored but never retired
+executor pending rejection/listener removal/termination services are not called
+patch-controller has reset semantics but no page-stop contract
+late ready/released patch delivery has no stopped-runtime rejection
+active content has no shutdown retirement result
 ```
 
-## Runtime-binding ambiguity
+## Public capability ambiguity
 
 ```txt
-game loads profile before runtime imports and holds it for the session
-this stability is useful but unnamed
-no commit ID or fingerprint is bound into game composition
-public host exposes profileId/revision only
-creature body and first frame do not cite the profile commit
-later profile events have no explicit deferred-to-next-run result
+PrehistoricRushHost is assigned directly to globalThis
+raw engine, physics, adapter, controller and camera objects are exposed
+no lifecycle capability policy exists
+no revocation or terminal read-only projection exists
+stale external references cannot be rejected by generation
 ```
 
 ## Retained architecture gaps
 
 ```txt
+player profile convergence remains unimplemented
 coordinated run reset remains unimplemented
 Core Physics/Motion authorization parity remains incomplete
 articulated production solving and pose binding remain incomplete
 streamed content/outcome parity remains incomplete
 browser input authority remains incomplete
 render-surface/frame correlation remains incomplete
-ordered runtime disposal remains absent
 ```
 
 ## Required fixtures
 
 ```txt
-same-predecessor conflict returns one typed rejection
-same-predecessor disjoint edits merge deterministically
-same revision with different fingerprint is detected
-one commit delivered by two adapters mutates projection once
-lower revision delivery performs zero mutation
-remote commit rebases/cancels pending local save
-reset invalidates predecessor save leases
-immediate Play/Menu resolves save before navigation
-storage write/readback failure never reports Saved
-runtime binding cites accepted commit/fingerprint
-first visible game frame cites runtime binding
+partial startup retires accepted participants in reverse order
+normal stop retires every required lease
+same stop command returns same result
+second stop returns AlreadyStopped
+frame exception triggers supervised retirement
+pending Worker requests reject on stop
+late Worker/browser callbacks perform zero mutation
+input and resize listeners are removed
+RAF does not schedule after stop
+public host is revoked
+renderer and all registered render resources retire once
+new runtime generation can re-enter cleanly
 browser and deployed Pages behavior match
 ```
 
 ## Proof warning
 
-A rising revision number, updated creator preview or `Saved` label does not prove persistence or convergence. Completion requires expected-predecessor admission, terminal commit results, monotonic duplicate-safe delivery, navigation binding and first-visible-frame evidence.
+A closed page, missing successor frame, terminated Worker or disposed renderer alone does not prove complete shutdown. Completion requires one terminal result covering all participant leases, rejected late callbacks, public capability revocation and re-entry under a new generation.
