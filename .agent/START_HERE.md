@@ -1,45 +1,44 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T18-18-59-04-00`  
+**Last aligned:** `2026-07-12T20-10-25-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Status:** `player-character-profile-commit-convergence-authority-audited`
+**Status:** `browser-runtime-lifecycle-resource-retirement-authority-audited`
 
 ## Summary
 
-PrehistoricRush normalizes and revisions a browser-stored procedural-player profile, but its revision is assigned through non-atomic read-increment-write. Creator edits are delayed by 160 ms, cross-tab updates arrive through two uncoordinated channels, pending saves are not rebased after remote updates, and navigation does not flush or acknowledge the visible draft before game boot.
+PrehistoricRush creates a complete browser game runtime but does not own that runtime's shutdown. The game page allocates engine, physics, Worker/streaming, camera, Three.js resources, global listeners, a public host and a recursive RAF without a stop command, participant barrier, exact-once disposal result or re-entry proof.
 
-The current audit defines one profile commit/convergence authority spanning writer identity, expected predecessor admission, conflicts, durable write/readback, monotonic delivery, creator save leases, navigation barriers, runtime binding and first-visible-profile-frame proof.
+The current audit defines one browser-runtime lifecycle authority spanning startup preparation, partial-start rollback, callback and Worker fencing, public-host revocation, ordered engine/physics/render retirement and terminal stop evidence.
 
 ## Plan ledger
 
-**Goal:** make Customize → Save → Menu/Play and every cross-tab update reference one durable profile commit rather than a timer, numeric revision guess or unsequenced event.
+**Goal:** make game startup, running frames, failure and exit one supervised lifecycle that either owns a fully admitted runtime or retires every accepted participant.
 
 - [x] Compare all ten accessible Publish repositories.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all nine eligible repositories have central-ledger and root `.agent` coverage.
 - [x] Select only `PrehistoricRush` as the oldest eligible synchronized repository.
-- [x] Trace schema, store, creator, menu and game profile paths.
-- [x] Identify non-atomic revision, lost-update, stale-delivery and navigation-before-save paths.
+- [x] Trace module, engine, physics, Worker, controller, camera, render, listener, RAF and public-host ownership.
 - [x] Preserve the complete 45-surface kit/service inventory.
-- [x] Define the profile commit/convergence parent DSK and fixture boundary.
-- [x] Add the `18-18-59` tracker and architecture/system audit family.
+- [x] Define the runtime lifecycle parent DSK and fixture boundary.
+- [x] Add the `20-10-25` tracker and architecture/system audit family.
 - [x] Refresh root routing and machine registry.
 - [x] Synchronize central tracking on `main`.
 - [x] Create no branch or pull request.
-- [ ] Runtime implementation and executable multi-tab/navigation fixtures remain future work.
+- [ ] Runtime implementation and executable lifecycle fixtures remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T18-18-59-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-12T18-18-59-04-00.md
-.agent/architecture-audit/2026-07-12T18-18-59-04-00-player-profile-commit-convergence-dsk-map.md
-.agent/render-audit/2026-07-12T18-18-59-04-00-profile-commit-visible-creature-gap.md
-.agent/gameplay-audit/2026-07-12T18-18-59-04-00-stale-draft-navigation-profile-loop.md
-.agent/interaction-audit/2026-07-12T18-18-59-04-00-profile-edit-commit-delivery-binding-map.md
-.agent/profile-convergence-audit/2026-07-12T18-18-59-04-00-revision-conflict-debounce-navigation-contract.md
-.agent/deploy-audit/2026-07-12T18-18-59-04-00-profile-convergence-fixture-gate.md
+.agent/trackers/2026-07-12T20-10-25-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-12T20-10-25-04-00.md
+.agent/architecture-audit/2026-07-12T20-10-25-04-00-browser-runtime-lifecycle-dsk-map.md
+.agent/render-audit/2026-07-12T20-10-25-04-00-game-render-resource-retirement-gap.md
+.agent/gameplay-audit/2026-07-12T20-10-25-04-00-running-frame-unsupervised-exit-loop.md
+.agent/interaction-audit/2026-07-12T20-10-25-04-00-start-frame-stop-result-map.md
+.agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md
+.agent/deploy-audit/2026-07-12T20-10-25-04-00-runtime-shutdown-reentry-fixture-gate.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
@@ -47,66 +46,81 @@ The current audit defines one profile commit/convergence authority spanning writ
 .agent/kit-registry.json
 ```
 
-## Current profile loop
+## Current runtime loop
 
 ```txt
-creator input
-  -> mutate draft and preview
-  -> show Saving
-  -> schedule/replace 160 ms timeout
-  -> reload storage and merge captured patch
-  -> assign numeric revision
-  -> setItem full profile
-  -> BroadcastChannel plus local listener publication
+boot
+  -> preflight pinned modules
+  -> compose engine, physics, Worker/controller, camera and renderer
+  -> allocate scene resources and browser callbacks
+  -> publish PrehistoricRushHost
+  -> start recursive RAF
 
-external event
-  -> normalize
-  -> replace projection without monotonic/duplicate admission
-  -> leave pending local timer active
+frame
+  -> submit input
+  -> engine tick
+  -> update streaming/content
+  -> apply pose and camera
+  -> render world and HUD
+  -> schedule successor RAF
 
-navigation
-  -> dispose preview only
-  -> do not flush or acknowledge pending save
-
-game boot
-  -> load one current storage profile
-  -> bind creature to numeric revision only
+exit/failure
+  -> no StopRuntimeCommand
+  -> no producer barrier
+  -> no participant retirement receipts
+  -> no exact-once render disposal
+  -> no public-host revocation
 ```
 
 ## Main findings
 
 ```txt
-two tabs can read R and both write conflicting R+1 snapshots
-same logical commit can arrive through BroadcastChannel and storage events
-older delivery can replace a newer creator/menu projection
-remote admission does not cancel or rebase a predecessor-draft timer
-Play/Menu can navigate while the visible edit exists only in a timeout
-setItem failure has no typed durable/volatile result
-game first frame exposes revision but not commit/fingerprint provenance
+runtime session/generation: absent
+lifecycle state machine: absent
+partial-start rollback: absent
+retained RAF lease: absent
+removable listener lease set: absent
+Worker/executor/controller retirement: absent
+engine/physics retirement result: absent
+Three-adapter dispose surface: absent
+public-host revocation: absent
+terminal RuntimeStopResult: absent
+stop-then-reentry proof: absent
 ```
+
+Source-level render allocation census:
+
+```txt
+40 mesh/geometry allocations
+12 material objects
+1 player skeleton
+1 WebGLRenderer
+```
+
+This is not a measured GPU-memory or leak claim.
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-player-character-profile-commit-convergence-authority-domain
+prehistoric-rush-browser-runtime-lifecycle-authority-domain
 ```
 
 Required flow:
 
 ```txt
-edit/reset intent
-  -> writer, command, sequence and draft identity
-  -> expected predecessor and patch admission
-  -> conflict detection and explicit merge/reject policy
-  -> normalized candidate, successor revision and fingerprint
-  -> durable write plus readback verification
-  -> terminal PlayerProfileCommitResult
-  -> one commit envelope
-  -> monotonic duplicate-safe delivery
-  -> pending-save rebase/cancel
-  -> navigation flush/barrier
-  -> runtime profile binding
-  -> first visible profile-dependent frame acknowledgement
+start command
+  -> participant preparation and leases
+  -> commit Running or reverse-order rollback
+
+stop command
+  -> close admission
+  -> cancel callbacks and listeners
+  -> revoke public host
+  -> reject/terminate Worker work
+  -> retire stream, engine and physics ownership
+  -> retire render resources exactly once
+  -> publish terminal stop result and journal
+  -> permit re-entry only under a new generation
 ```
 
 ## Kit census
@@ -118,21 +132,22 @@ product/page/Worker kits:         14
 external/host adapters:            9
 proof kits:                        2
 total surfaces:                   45
-candidate profile-authority kits: 32 including parent
+candidate lifecycle kits:         35 including parent
 ```
 
 ## Validation boundary
 
 ```txt
-runtime/profile/creator/game behavior changed: no
+runtime/gameplay/physics/streaming behavior changed: no
 rendering changed: no
 package scripts/dependencies/deployment changed: no
 npm test: not run
-multi-tab browser fixtures: not run
-navigation flush fixtures: not run
-Pages profile fixtures: not run
+browser lifecycle fixtures: not run
+Worker shutdown fixtures: not run
+render retirement fixtures: not run
+Pages re-entry fixtures: not run
 branch created: no
 pull request created: no
 ```
 
-A numeric revision, `Saved` label or matching-looking creature does not prove durable convergence. Completion requires a terminal profile commit result, monotonic delivery, navigation binding and first-visible-frame evidence for one fingerprint.
+A tab closing or a frame chain ending does not prove deterministic shutdown. Completion requires a terminal result covering callback, Worker, participant, public capability and render-resource retirement for one runtime generation.
