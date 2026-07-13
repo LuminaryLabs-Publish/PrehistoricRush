@@ -1,7 +1,7 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T00-49-53-04-00`  
-**Status:** `game-viewport-render-surface-authority-audited`
+**Audit:** `2026-07-13T00-58-50-04-00`  
+**Status:** `game-viewport-render-surface-central-reconciled`
 
 ## Summary
 

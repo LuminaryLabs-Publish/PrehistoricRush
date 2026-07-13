@@ -1,22 +1,22 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-13T00-49-53-04-00`  
+**Timestamp:** `2026-07-13T00-58-50-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `game-viewport-render-surface-authority-audited`  
-**Retained audits:** articulated pose presentation; run-start/restart reconciliation
+**Status:** `game-viewport-render-surface-central-reconciled`  
+**Technical status:** `game-viewport-render-surface-authority-audited`
 
 ## Summary
 
-The game surface is initialized and resized through direct browser-global reads and Three.js mutations. The camera and renderer do not consume one measured, revisioned viewport result, DPR is not refreshed after startup, and public readback cannot identify the CSS size, drawing-buffer size, DPR or camera aspect that produced the visible frame.
+The game surface is initialized and resized through direct browser-global reads and Three.js mutations. The camera and renderer do not consume one measured, revisioned viewport result, DPR is not refreshed after startup, and public readback cannot identify the CSS size, drawing-buffer size, DPR or camera aspect that produced the visible frame. This run synchronizes the completed technical audit with central tracking.
 
 ## Plan ledger
 
-**Goal:** make one viewport revision authoritative from host measurement through camera and WebGL application to first visible frame.
+**Goal:** preserve one source-backed viewport authority record from host measurement through first visible frame.
 
-- [x] Trace shell, host, camera, renderer, DPR and resize code.
+- [x] Reconcile current Publish inventory and central ledger.
 - [x] Preserve all domains, 45 surfaces and offered services.
-- [x] Define measurement, policy, admission, commit, rollback and frame proof.
-- [x] Add timestamped architecture and system audits.
+- [x] Preserve measurement, policy, admission, commit, rollback and frame-proof findings.
+- [x] Add the `00-58-50` reconciliation family.
 - [x] Preserve articulated-pose and run-start audits.
 - [ ] Implement and execute later.
 
@@ -26,7 +26,7 @@ The game surface is initialized and resized through direct browser-global reads 
 page boot -> module preflight -> engine/kits/profile/physics/streaming/renderer construction
 startup surface -> camera(innerWidth/innerHeight) -> setSize -> startup-only setPixelRatio
 RAF -> input -> engine tick -> streaming -> camera/pose/render -> HUD -> successor RAF
-resize -> camera aspect/projection -> renderer size -> no DPR refresh or result
+resize -> camera aspect/projection -> renderer size -> no DPR refresh or typed result
 ```
 
 ## Main findings
@@ -77,7 +77,7 @@ ViewportChangeCommand
 
 ## Current output
 
-See `.agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md` and its linked audit family.
+See `.agent/trackers/2026-07-13T00-58-50-04-00/project-breakdown.md` and its linked reconciliation family. The complete technical source audit remains at `00-49-53`.
 
 ## Validation
 

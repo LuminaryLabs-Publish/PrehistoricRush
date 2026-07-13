@@ -1,23 +1,26 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-13T00-49-53-04-00",
-  "status": "game-viewport-render-surface-authority-audited",
-  "repositoryRevisionReviewed": "e57946869b6a68a878a3b42d1d0d788a46f64662",
-  "currentAuditedSlice": "Game Viewport / Host Measurement / DPR Policy / Camera Projection / WebGL Drawing Buffer / Resize Admission / First Visible Surface Frame",
+  "generatedAt": "2026-07-13T00-58-50-04-00",
+  "status": "game-viewport-render-surface-central-reconciled",
+  "repositoryRevisionReviewed": "62ef5b2d538c34aac70708a1ae7030e5734b8588",
+  "currentAuditedSlice": "Game Viewport / Host Measurement / DPR Policy / Camera Projection / WebGL Drawing Buffer / Resize Admission / First Visible Surface Frame / Central Reconciliation",
+  "technicalStatus": "game-viewport-render-surface-authority-audited",
   "retainedStatuses": [
     "articulated-pose-presentation-authority-audited",
     "run-start-restart-central-reconciled"
   ],
-  "latestTracker": ".agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-13T00-49-53-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-13T00-58-50-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-13T00-58-50-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-13T00-49-53-04-00-game-viewport-surface-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-13T00-49-53-04-00-camera-dpr-drawing-buffer-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-13T00-49-53-04-00-resize-render-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-13T00-49-53-04-00-viewport-change-admission-map.md",
-    "viewport": ".agent/viewport-audit/2026-07-13T00-49-53-04-00-measure-dpr-commit-frame-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-13T00-49-53-04-00-viewport-fixture-gate.md",
+    "architecture": ".agent/architecture-audit/2026-07-13T00-58-50-04-00-game-viewport-central-reconciliation-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-13T00-58-50-04-00-viewport-frame-central-reconciliation.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-13T00-58-50-04-00-resize-render-loop-central-reconciliation.md",
+    "interaction": ".agent/interaction-audit/2026-07-13T00-58-50-04-00-viewport-change-central-reconciliation-map.md",
+    "viewport": ".agent/viewport-audit/2026-07-13T00-58-50-04-00-central-ledger-reconciliation.md",
+    "deploy": ".agent/deploy-audit/2026-07-13T00-58-50-04-00-viewport-central-sync-gate.md",
+    "technicalTracker": ".agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md",
+    "technicalViewport": ".agent/viewport-audit/2026-07-13T00-49-53-04-00-measure-dpr-commit-frame-contract.md",
     "articulation": ".agent/articulation-audit/2026-07-12T22-18-39-04-00-rig-solve-render-admission-contract.md",
     "runStart": ".agent/run-lifecycle-audit/2026-07-12T22-19-11-04-00-start-result-participant-central-contract.md",
     "runtimeLifecycle": ".agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md"
@@ -32,7 +35,8 @@
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
     "priorCentralTimestamp": "2026-07-12T22-18-39-04-00",
-    "reason": "No new, ledger-missing or root-undocumented eligible repository existed. PrehistoricRush was the oldest eligible central entry."
+    "repoLocalAuditTimestamp": "2026-07-13T00-49-53-04-00",
+    "reason": "No new, ledger-missing or root-undocumented eligible repository existed. PrehistoricRush repo-local viewport documentation was newer than central tracking."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 15,
@@ -67,7 +71,7 @@
     "validation build and Pages deployment"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory"
+    "completeInventory": ".agent/trackers/2026-07-13T00-58-50-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory"
   },
   "viewportSurfaceState": {
     "measurementSource": "window-innerWidth-innerHeight",
