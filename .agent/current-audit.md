@@ -1,142 +1,130 @@
-# Current Audit: PrehistoricRush Player Character Profile Commit and Convergence
+# Current Audit: PrehistoricRush Browser Runtime Lifecycle and Resource Retirement
 
-**Updated:** `2026-07-12T18-18-59-04-00`  
-**Repository head reviewed before documentation writes:** `4b5b34b7610b7f428696a9e0bcd5a7b4868307f8`  
+**Updated:** `2026-07-12T20-10-25-04-00`  
+**Repository head reviewed before documentation writes:** `f1ef269ec32df13a78fa91c14455796b8434b731`  
 **Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
 
 ## Summary
 
-PrehistoricRush has a normalized versioned player-character profile and distributes it across menu, creator and game routes. The storage helper assigns `revision` by reading the previous complete snapshot and writing a new complete snapshot, while creator persistence is deferred through a 160 ms timeout and cross-tab events are accepted without monotonic ordering or duplicate suppression.
-
-This is not a profile commit or convergence protocol. Two writers can produce conflicting snapshots with the same revision, a stale event can regress a projection, a pending creator timer can overwrite a remote update, and navigation can enter the game before the visible draft is durable.
+PrehistoricRush successfully composes a playable browser runtime, but that runtime has no explicit lifetime owner. Startup allocates engine, physics, Worker/streaming, camera, Three.js and browser callback participants. The page then starts a recursive RAF and exposes raw participant objects through `globalThis.PrehistoricRushHost`. No stop command, participant barrier, lease registry, exact-once retirement result or re-entry proof exists.
 
 ## Plan ledger
 
-**Goal:** make every profile mutation a typed, expected-predecessor command that commits one durable successor or returns zero-mutation rejection, then converge all projections and bind game boot to the accepted commit.
+**Goal:** make startup, running frames, failure and shutdown one supervised transaction with explicit participant ownership and deterministic retirement.
 
-- [x] Trace schema defaults, normalization and merge behavior.
-- [x] Trace storage capability, read, save, patch and reset.
-- [x] Trace BroadcastChannel, storage events and listener lifecycle.
-- [x] Trace creator draft, debounce, external updates, reset and navigation.
-- [x] Trace menu projection and game profile binding.
-- [x] Inventory all domains, kits and services.
-- [x] Define commit, conflict, delivery, navigation and visible-frame contracts.
-- [x] Publish the timestamped audit family.
-- [x] Refresh root routing and machine registry.
+- [x] Trace module preflight and startup failure projection.
+- [x] Trace engine, physics, Worker, controller, camera and renderer composition.
+- [x] Trace global browser listeners and recursive RAF scheduling.
+- [x] Trace public host publication.
+- [x] Inventory render resources and available disposal helpers.
+- [x] Preserve all 45 implemented/adapted/proof surfaces and services.
+- [x] Define the missing lifecycle authority and stop barrier.
+- [x] Publish the complete timestamped audit family.
 - [x] Synchronize central tracking.
-- [ ] Implement and execute convergence fixtures.
+- [ ] Implement lifecycle providers and executable fixtures.
 
 ## Source-backed current behavior
 
 ```txt
-load
-  -> get localStorage if available
-  -> read one key
-  -> JSON.parse
-  -> normalize or return defaults
+startup
+  -> preflight pinned imports
+  -> create shell and load profile
+  -> compose Nexus Engine kits
+  -> install Rapier provider/body
+  -> create patch generator, optional Worker executor and controller
+  -> create camera follow
+  -> allocate Three scene and resources
+  -> register keydown, keyup, blur and resize listeners
+  -> publish PrehistoricRushHost
+  -> request first RAF
 
-save
-  -> load previous
-  -> successor revision = max(previous + 1, input revision)
-  -> normalize full snapshot
-  -> localStorage.setItem
-  -> BroadcastChannel post
-  -> local listeners
-  -> return profile object
+frame
+  -> submit input
+  -> engine.tick
+  -> update streaming and active content
+  -> apply pose/camera
+  -> render Three frame and HUD
+  -> request successor RAF
 
-patch
-  -> load current profile
-  -> recursively merge patch
-  -> save complete snapshot
-
-subscribe
-  -> BroadcastChannel payload normalized and emitted
-  -> storage-event payload normalized and emitted
-  -> no revision/fingerprint/event admission
-
-creator
-  -> mutate draft and preview immediately
-  -> schedule 160 ms patch save
-  -> replace draft on external event
-  -> keep pending timer alive
-  -> navigate without save flush
-
-game
-  -> load profile once before composition
-  -> use profile creature descriptor for the run
-  -> expose profileId and revision only
+shutdown
+  -> no runtime stop API
+  -> no retained RAF lease
+  -> no removable listener lease registry
+  -> no Worker/executor/controller retirement
+  -> no engine/provider retirement result
+  -> no renderer/resource disposal plan
+  -> no public-host revocation
 ```
 
-## Concrete race paths
-
-### Same-predecessor writers
+## Render-resource census
 
 ```txt
-Tab A reads revision R
-Tab B reads revision R
-Tab A writes snapshot A as R+1
-Tab B writes snapshot B as R+1
-last complete snapshot wins
-no conflict or same-revision divergence is reported
+terrain meshes/geometries: 25
+tree instanced meshes/geometries: 10
+grass instanced meshes/geometries: 3
+shard instanced mesh/geometry: 1
+player skinned mesh/geometry: 1
+mesh/geometry allocations: 40
+material objects: 12
+skeletons: 1
+renderers: 1
 ```
 
-### Remote update during local debounce
+This is a source census, not a measured memory-retention claim.
+
+## Concrete failure paths
+
+### Frame exception
 
 ```txt
-creator A schedules patch from draft R
-creator B commits R+1
-A receives R+1 and replaces visible draft
-A's old timer still fires
-A merges predecessor-derived nested patch and writes R+2
-an overlapping B field can be silently replaced
+RAF callback enters
+  -> engine, streaming, pose, camera, renderer or HUD throws
+  -> no lifecycle supervisor catches the frame failure
+  -> successor RAF may not be scheduled
+  -> Worker, listeners, public host and render resources receive no stop transaction
 ```
 
-### Duplicate or stale delivery
+### Stop or route exit
 
 ```txt
-one commit is delivered through BroadcastChannel and storage event
-both are accepted
-or an older cross-writer event arrives after a newer event
-projection is replaced without monotonic admission
+page wants to exit or test harness wants to re-enter
+  -> no StopRuntimeCommand
+  -> no callback producer barrier
+  -> no participant retirement receipts
+  -> browser/document cleanup is the only eventual fallback
 ```
 
-### Immediate navigation
+### Partial startup
 
 ```txt
-creator shows Saving and updated preview
-player clicks Play or Menu before 160 ms
-beforeunload disposes preview only
-pending commit is not flushed or acknowledged
-game/menu can load predecessor profile
-```
-
-### Storage failure
-
-```txt
-UI and preview already show new draft
-localStorage.setItem throws
-no typed durable/volatile result
-no rollback or navigation policy
+some participants are created
+  -> later participant creation fails
+  -> main().catch projects an error message
+  -> no reverse-order rollback manifest proves which accepted participants retired
 ```
 
 ## Domains in use
 
 ```txt
-route shells and browser lifecycle
-profile schema/defaults/normalization/deep merge
-profile identity/revision/time metadata
-localStorage capability/read/write/reset
-BroadcastChannel and storage-event distribution
-listener lifecycle
-creator draft/debounce/status/reset/navigation
-creator procedural preview and render lifecycle
-menu profile projection
-runtime module admission and game composition
-procedural creature generation and Three rendering
-public runtime readback
-Node tests, Pages deployment and audit tracking
-
-missing profile commit/convergence authority
+page shell and route entry
+pinned module identity and startup admission
+player profile boot binding
+Nexus Engine composition and tick scheduling
+Core Input, Spatial, Scene and Simulation
+Core Motion and articulated motion
+Core Physics and articulated dynamics
+Rapier provider, bodies, colliders and frames
+seeded patch generation, Worker execution, queue, cache and activation
+active terrain/tree/grass/shard/pickup/collider materialization
+procedural creature generation and pose application
+camera smooth follow
+Three scene, renderer, geometry, materials, skeleton, lights and shadows
+browser keyboard, blur and resize callbacks
+recursive RAF scheduling
+HUD and global public readback
+runtime lifecycle state, participant leases and shutdown barrier
+ordered retirement, stale-callback rejection and exact-once results
+validation, browser fixtures and Pages deployment
 ```
 
 ## Kit and service census
@@ -148,29 +136,29 @@ missing profile commit/convergence authority
 9 external/host adapters
 2 proof kits
 45 implemented/adapted/proof surfaces total
+35 candidate lifecycle-authority kits including parent
 ```
 
-The full names and service lists are retained in `.agent/kit-registry.json` and the current tracker.
+The complete names and service lists are retained in `.agent/kit-registry.json` and the current tracker.
 
 ## Required domain
 
 ```txt
-prehistoric-rush-player-character-profile-commit-convergence-authority-domain
+prehistoric-rush-browser-runtime-lifecycle-authority-domain
 ```
 
 ## Required invariants
 
 ```txt
-one profile command ID produces at most one terminal result
-successor commit cites one expected predecessor revision and fingerprint
-conflicting writers cannot both claim the same successor history
-stale and duplicate delivery performs zero projection mutation
-remote commit rebases, conflicts or cancels every pending local save lease
-Saved is projected only from verified durable commit result
-navigation resolves pending save policy before route change
-reset invalidates predecessor drafts through an explicit barrier
-runtime binds one profile commit/fingerprint for the run
-first visible profile-dependent frame cites that binding
+one runtime session owns every callback, Worker, participant and render lease
+startup either commits Running or retires every accepted partial participant
+stop closes admission before retiring consumers
+no callback mutates after Stopping
+same stop command returns the same terminal result
+no lease disposer runs more than once
+global public capabilities are revoked before participant disposal
+Stopped implies no owned RAF, listener, Worker or renderer lease
+re-entry allocates a strictly new runtime generation
 ```
 
-The previous coordinated-reset, pose, motion and streamed-content audits remain active. Profile authority feeds them an immutable runtime binding rather than changing their ownership.
+The previous profile-convergence, coordinated-reset, pose, motion and streamed-content audits remain active. Runtime lifecycle authority coordinates their page-level lifetime without absorbing their domain semantics.
