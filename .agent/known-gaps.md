@@ -1,62 +1,60 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-12T22-18-39-04-00`  
-**Status:** `articulated-pose-presentation-authority-audited`
+**Audit:** `2026-07-13T00-49-53-04-00`  
+**Status:** `game-viewport-render-surface-authority-audited`
 
 ## Summary
 
-The visible player skeleton is driven by a direct legacy-pose branch rather than one committed articulated pose result. Motion, physics, articulation, dynamics, skeleton application, public readback, and visible-frame evidence remain disconnected.
+The active game surface has no authoritative measurement, DPR, camera, drawing-buffer or visible-frame result. Direct resize mutations can leave presentation state observable only through Three.js internals.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved pose-presentation risk explicit until executable proof exists.
+**Goal:** keep every unresolved viewport and render-surface risk explicit until executable proof exists.
 
-### Admission gaps
+### Identity and measurement gaps
 
-- [ ] No pose command ID, pose revision, or predecessor check.
-- [ ] No run generation or tick admission.
-- [ ] No player body, profile, rig, or skeleton revision agreement.
-- [ ] No duplicate or stale pose rejection.
+- [ ] No surface ID, command ID, viewport revision or predecessor check.
+- [ ] No actual host CSS-box measurement.
+- [ ] No `ResizeObserver` ownership or measurement sequence.
+- [ ] No stale or duplicate resize rejection.
 
-### Motion and articulation gaps
+### DPR and budget gaps
 
-- [ ] Active render does not bind the committed Core Motion frame.
-- [ ] Active render does not bind the committed Physics frame.
-- [ ] `solvePlayerArticulatedPose()` is not used by the active game renderer.
-- [ ] Articulated dynamics has no visible pose provenance.
-- [ ] Target-set identity and solve result are absent.
-- [ ] Legacy fallback is implicit rather than typed.
+- [ ] DPR is sampled only at startup.
+- [ ] No DPR-change admission.
+- [ ] No total drawing-buffer pixel budget.
+- [ ] No surface-bound shadow or quality revision.
 
-### Skeleton application gaps
+### Commit gaps
 
-- [ ] No finite-transform validation before bone mutation.
-- [ ] Unknown bones are skipped without a typed coverage result.
-- [ ] No required-bone policy.
-- [ ] No applied/skipped bone receipt.
-- [ ] No protection against partial application failure.
+- [ ] Camera and renderer are mutated directly rather than through one prepared candidate.
+- [ ] No finite positive-size validation.
+- [ ] No zero-size deferral.
+- [ ] No rollback or predecessor-retention result.
+- [ ] No protection against partial camera/renderer application.
 
 ### Observation gaps
 
-- [ ] No pose fingerprint or source policy in `PrehistoricRushHost`.
-- [ ] Independent motion, physics, articulation, and render snapshots do not prove one compatible frame.
-- [ ] No first visible articulated-pose frame acknowledgement.
-- [ ] No bounded pose presentation journal.
+- [ ] Public host omits CSS size, buffer size, DPR, aspect and viewport revision.
+- [ ] No applied-surface receipt.
+- [ ] No first visible viewport-frame acknowledgement.
+- [ ] No bounded viewport journal.
 
 ### Test gaps
 
-- [ ] Articulated solve reaches active Three.js skeleton.
-- [ ] Hind-leg IK visible effect.
-- [ ] Missing optional and required bone fixtures.
-- [ ] Non-finite transform fixture.
-- [ ] Solver failure and typed fallback fixtures.
-- [ ] Stale predecessor-run pose fixture.
+- [ ] Host-only resize.
+- [ ] DPR-only change and cap.
+- [ ] Zero-size restore.
+- [ ] Rapid resize and stale delivery.
+- [ ] Pixel-budget downgrade.
+- [ ] Camera/canvas/buffer parity.
 - [ ] Public readback and visible-frame parity.
 - [ ] Source/build/Pages parity.
 
-## Retained run-start gaps
+## Retained gaps
 
-The `22-19-11` reconciliation remains valid: Enter repeat, active-run restart, participant reset/preserve receipts, stale Worker fencing, and first run-generation frame proof are still unresolved.
+The articulated-pose audit remains unresolved: active rendering still bypasses the articulated solve. The run-start reconciliation also remains unresolved: Enter repeat and participant reset/preserve authority are missing.
 
 ## Non-claims
 
-The current code does not prove that visible articulation reflects committed motion or dynamics, that fallback is explicit, that bone application is complete, or that public readback identifies the pose shown.
+The current code does not prove host measurement correctness, DPR convergence, atomic camera/renderer resize, zero-size safety, stale resize rejection, surface readback or first-visible-frame correlation.
