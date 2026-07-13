@@ -1,7 +1,8 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T03-13-09-04-00`  
-**Status:** `collision-source-convergence-authority-audited`
+**Audit:** `2026-07-13T03-20-58-04-00`  
+**Status:** `collision-source-convergence-publication-central-reconciled`  
+**Technical status:** `collision-source-convergence-authority-audited`
 
 ## Summary
 
