@@ -1,63 +1,65 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T03-20-58-04-00`  
-**Authority:** `prehistoric-rush-collision-source-convergence-authority-domain`
+**Audit:** `2026-07-13T06-39-10-04-00`  
+**Authority:** `prehistoric-rush-player-pose-frame-provenance-authority-domain`
 
 ## Summary
 
-The next implementation should give streamed collider publication, Core Physics evidence, fallback evidence and gameplay resolution one shared revisioned contract.
+The ownership correction is complete at the target-pose level. Next work should retain articulated solve identity, make renderer smoothing explicitly derived, generation-fence restarts and prove the first visible skeleton frame.
 
 ## Plan ledger
 
-**Goal:** produce exactly one canonical collision decision per admitted player candidate and prove the visible outcome frame used it.
+**Goal:** move from a bare authoritative pose object to a revisioned target/presentation frame contract without moving animation truth back into rendering.
 
-### Phase 1: Collider-set identity
+### Phase 1: Pose-frame envelope
 
-- [ ] Add collider-set ID, revision, predecessor and fingerprint.
-- [ ] Publish one typed commit result when active patches rebuild colliders.
-- [ ] Return application receipts from Core Physics and fallback consumers.
-- [ ] Fence released patch and collider generations.
+- [ ] Replace bare `PlayerPose` contents with `PlayerPoseFrame`.
+- [ ] Retain run ID, run generation, tick ID, frame and rig revision.
+- [ ] Retain source-state fingerprint and articulated solve metadata.
+- [ ] Add predecessor pose-frame ID and monotonic revision.
 
-### Phase 2: Evaluation identity
+### Phase 2: Typed solve results
 
-- [ ] Add collision evaluation ID, run ID, tick ID and candidate-transform ID.
-- [ ] Bind source-policy revision and enabled-source set.
-- [ ] Reject duplicate, stale and cross-run evaluations.
+- [ ] Add `PlayerPoseSolveCommand` identity and expected revisions.
+- [ ] Return Accepted, Duplicate, Stale, Invalid or Failed.
+- [ ] Preserve the accepted predecessor on non-accepted results.
+- [ ] Publish bounded solve observations.
 
-### Phase 3: Typed source evidence
+### Phase 3: Presentation derivation
 
-- [ ] Normalize Core Physics contacts into `PhysicsCollisionEvidenceResult`.
-- [ ] Replace ad hoc fallback observation with `FallbackCollisionEvidenceResult`.
-- [ ] Make both cite the same collider-set revision and candidate transform.
-- [ ] Record unavailable, invalid and degraded source states.
+- [ ] Add a presentation-pose generation owned by the Three.js adapter.
+- [ ] Make damping policy versioned and explicit.
+- [ ] Publish `PresentationPoseFrame` with source pose-frame ID and applied alpha.
+- [ ] Add bounded visible-bone fingerprint/readback.
 
-### Phase 4: Comparison and canonical decision
+### Phase 4: Restart and discontinuities
 
-- [ ] Compare hit/no-hit, collider identity and source geometry semantics.
-- [ ] Publish agreement and disagreement classifications.
-- [ ] Define explicit canonical-source and degradation policy.
-- [ ] Commit one `CollisionDecisionResult` into fail/pickup/goal precedence.
+- [ ] Increment pose and presentation generations on run restart.
+- [ ] Choose authored Snap or Transition behavior for successor runs.
+- [ ] Reject predecessor callbacks and pose frames.
+- [ ] Force snap/rebuild on rig revision changes.
+- [ ] Classify large-delta and missing-pose behavior.
 
-### Phase 5: Observation and presentation
+### Phase 5: Public observation
 
-- [ ] Expose bounded source and comparison metadata through `PrehistoricRushHost`.
-- [ ] Add collision decision ID and collider revision to render admission.
-- [ ] Publish `CollisionOutcomeFrameAck` for the first matching run-over frame.
+- [ ] Distinguish simulation target pose from visible presentation pose in `PrehistoricRushHost`.
+- [ ] Keep readback clone-safe and capability-bounded.
+- [ ] Publish `VisiblePlayerPoseFrameAck` after the matching Three.js submission.
 
 ### Phase 6: Fixtures
 
-- [ ] Both-source same-tree agreement.
-- [ ] Physics-hit/fallback-miss and fallback-hit/physics-miss disagreement.
-- [ ] Provider-unavailable fallback degradation.
-- [ ] Jump-threshold parity.
-- [ ] Patch release and stale evidence.
-- [ ] Duplicate evaluation idempotency.
-- [ ] Source, built-output and Pages parity.
+- [ ] Execute initial/start/tick pose-frame identity tests.
+- [ ] Prove deterministic source-state-to-pose changes.
+- [ ] Prove clone isolation.
+- [ ] Prove stale and failed solve predecessor preservation.
+- [ ] Prove restart generation and damping policy.
+- [ ] Compare 30/60/120/144 Hz presentation behavior.
+- [ ] Run clean-checkout `npm test`, browser, build and Pages smokes.
 
 ## Retained priorities
 
-The browser-input adapter still bypasses Core Input. Viewport authority, articulated-pose consumption, run-reset coordination and browser-runtime shutdown also remain unresolved.
+Collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The new PlayerPose path should be preserved while those independent boundaries are addressed.
 
 ## Completion gate
 
-Do not mark collision convergence implemented until all accepted evidence cites one collider-set revision, disagreements are explicit, stale evidence has zero effects, one canonical result controls outcome precedence and the first visible failure frame cites that result.
+Do not mark pose-frame provenance complete until every accepted target pose identifies its run/tick/frame/rig revision, every presentation frame cites one target frame, restart state cannot leak silently, and the first visible skeleton frame is acknowledged.
