@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { installPrehistoricRushPlayerCharacter } from "../src/domains/prehistoric-rush/player-character-composition.js";
 
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
+const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
 const creatureRecords = new Map();
 const characterRecords = new Map();
 const playerRecords = new Map();
@@ -54,6 +55,11 @@ const articulatedMotion = {
 const coreCreature = {
   register(value) {
     const next = { schema: "nexus-creature-definition/1", ...clone(value) };
+    const current = creatureRecords.get(next.id);
+    if (current) {
+      if (same(current, next)) return clone(current);
+      throw new Error(`Creature ${next.id} already exists with different data; use replace().`);
+    }
     creatureRecords.set(next.id, next);
     return clone(next);
   },
@@ -69,6 +75,11 @@ const coreCreature = {
 const coreCharacter = {
   create(value) {
     const next = { schema: "nexus-character/1", ...clone(value) };
+    const current = characterRecords.get(next.id);
+    if (current) {
+      if (same(current, next)) return clone(current);
+      throw new Error(`Character ${next.id} already exists with different data; use replace().`);
+    }
     characterRecords.set(next.id, next);
     return clone(next);
   },
@@ -93,6 +104,7 @@ const corePlayer = {
   },
   possess(id, characterId) {
     const current = playerRecords.get(String(id));
+    if (current.characterId === String(characterId) && current.controlStatus === "enabled") return clone(current);
     const next = {
       ...current,
       characterId: String(characterId),
