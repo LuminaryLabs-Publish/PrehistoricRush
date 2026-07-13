@@ -1,12 +1,20 @@
 import { createPlayerArticulatedRig } from "./player-articulation.js";
 
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
-const same = (left, right) => JSON.stringify(left) === JSON.stringify(right);
 
 function requireApi(engine, name) {
   const api = engine?.[name] ?? engine?.n?.[name];
   if (!api) throw new TypeError(`PrehistoricRush player-character composition requires ${name}.`);
   return api;
+}
+
+function registerOrReplace(api, registerMethod, replaceMethod, descriptor) {
+  try {
+    return api[registerMethod](descriptor);
+  } catch (error) {
+    if (!String(error?.message ?? error).includes("different data")) throw error;
+    return api[replaceMethod](descriptor);
+  }
 }
 
 export function createPrehistoricRushCreatureDefinition({
@@ -25,19 +33,22 @@ export function createPrehistoricRushCreatureDefinition({
     body: {
       provider: "procedural-creature-body",
       descriptorId: String(bodyDescriptor.id),
-      contentHash: bodyDescriptor.contentHash ?? null
+      contentHash: bodyDescriptor.contentHash ?? null,
+      metadata: {}
     },
     rig: {
       provider: "articulated-motion",
       descriptorId: String(rigDescriptor.id),
-      contentHash: rigDescriptor.metadata?.contentHash ?? bodyDescriptor.contentHash ?? null
+      contentHash: rigDescriptor.metadata?.contentHash ?? bodyDescriptor.contentHash ?? null,
+      metadata: {}
     },
     collision: clone(bodyDescriptor.collision ?? {}),
     support: {
       kind: "feet",
       boneIds: ["foot-L", "foot-R"],
       fallback: "bounds-minimum",
-      clearance: 0
+      clearance: 0,
+      metadata: {}
     },
     presentation: {
       focusBoneId: "chest",
@@ -78,7 +89,7 @@ export function installPrehistoricRushPlayerCharacter({
   const recipe = creatureRecipe ?? profile?.creature ?? profile;
   const resolvedBodyId = String(bodyId ?? recipe?.id ?? "prehistoric-rush-raptor");
   const bodyDescriptor = creatureBody.create(recipe);
-  if (bodyDescriptor.id !== resolvedBodyId && creatureBody.has?.(resolvedBodyId)) {
+  if (bodyDescriptor.id !== resolvedBodyId) {
     throw new Error(`Player creature body id mismatch: expected ${resolvedBodyId}, received ${bodyDescriptor.id}.`);
   }
 
@@ -92,12 +103,7 @@ export function installPrehistoricRushPlayerCharacter({
     creatureId,
     visualRootOffsetY
   });
-  const existingCreature = coreCreature.get(creatureDefinition.id);
-  const creature = !existingCreature
-    ? coreCreature.register(creatureDefinition)
-    : same(existingCreature, { schema: existingCreature.schema, ...creatureDefinition })
-      ? existingCreature
-      : coreCreature.replace(creatureDefinition);
+  const creature = registerOrReplace(coreCreature, "register", "replace", creatureDefinition);
 
   const existingCharacter = coreCharacter.get(characterId);
   const characterInput = {
@@ -113,11 +119,7 @@ export function installPrehistoricRushPlayerCharacter({
     lifecycleRevision: existingCharacter?.lifecycleRevision ?? 0,
     metadata: { source: "prehistoric-rush-player-character" }
   };
-  const character = !existingCharacter
-    ? coreCharacter.create(characterInput)
-    : same(existingCharacter, { schema: existingCharacter.schema, ...characterInput })
-      ? existingCharacter
-      : coreCharacter.replace({ ...characterInput, lifecycleRevision: existingCharacter.lifecycleRevision + 1 });
+  const character = registerOrReplace(coreCharacter, "create", "replace", characterInput);
 
   const resolvedPlayerId = String(playerId ?? profile?.profileId ?? "player-1");
   let player = null;
