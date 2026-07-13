@@ -17,6 +17,25 @@ function registerOrReplace(api, registerMethod, replaceMethod, descriptor) {
   }
 }
 
+function localGeometryBounds(bodyDescriptor) {
+  const positions = bodyDescriptor?.geometry?.positions;
+  if (!positions || positions.length < 3) return clone(bodyDescriptor.bounds ?? { min: [0, 0, 0], max: [0, 0, 0] });
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  for (let index = 0; index < positions.length; index += 3) {
+    for (let axis = 0; axis < 3; axis += 1) {
+      const value = Number(positions[index + axis]);
+      if (!Number.isFinite(value)) continue;
+      min[axis] = Math.min(min[axis], value);
+      max[axis] = Math.max(max[axis], value);
+    }
+  }
+  return {
+    min: min.map((value) => Number.isFinite(value) ? value : 0),
+    max: max.map((value) => Number.isFinite(value) ? value : 0)
+  };
+}
+
 export function createPrehistoricRushCreatureDefinition({
   profile = {},
   bodyDescriptor,
@@ -55,7 +74,7 @@ export function createPrehistoricRushCreatureDefinition({
       framingPadding: 1.18,
       fovRange: [36, 48],
       metadata: {
-        bounds: clone(bodyDescriptor.bounds ?? null),
+        bounds: localGeometryBounds(bodyDescriptor),
         scale: clone(bodyDescriptor.transform?.scale ?? [1, 1, 1]),
         visualRootOffsetY: Number(visualRootOffsetY)
       }
