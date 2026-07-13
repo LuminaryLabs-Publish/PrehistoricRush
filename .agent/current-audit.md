@@ -1,77 +1,84 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-12T22-18-39-04-00`  
+**Timestamp:** `2026-07-13T00-49-53-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `articulated-pose-presentation-authority-audited`  
-**Retained reconciliation:** `run-start-restart-central-reconciled`
+**Status:** `game-viewport-render-surface-authority-audited`  
+**Retained audits:** articulated pose presentation; run-start/restart reconciliation
 
 ## Summary
 
-The active player renderer bypasses the installed articulated-motion path. Simulation commits RunState, Core Motion, Core Physics, and Core Simulation observations, but rendering calls `game.createPlayerPose()` and directly applies that legacy pose to Three.js bones. `solvePlayerArticulatedPose()` and articulated-dynamics observations are available but do not participate in the visible frame.
+The game surface is initialized and resized through direct browser-global reads and Three.js mutations. The camera and renderer do not consume one measured, revisioned viewport result, DPR is not refreshed after startup, and public readback cannot identify the CSS size, drawing-buffer size, DPR or camera aspect that produced the visible frame.
 
 ## Plan ledger
 
-**Goal:** make one run/tick-scoped pose result authoritative from committed movement through skeleton application and first visible frame.
+**Goal:** make one viewport revision authoritative from host measurement through camera and WebGL application to first visible frame.
 
-- [x] Trace simulation, motion, physics, rig, pose, solve, application, and render paths.
-- [x] Preserve all domains, 45 surfaces, and services.
-- [x] Define pose source policy, admission, validation, fallback, result, and frame proof.
+- [x] Trace shell, host, camera, renderer, DPR and resize code.
+- [x] Preserve all domains, 45 surfaces and offered services.
+- [x] Define measurement, policy, admission, commit, rollback and frame proof.
 - [x] Add timestamped architecture and system audits.
-- [x] Preserve run-start central reconciliation.
+- [x] Preserve articulated-pose and run-start audits.
 - [ ] Implement and execute later.
 
 ## Complete interaction loop
 
 ```txt
-input -> RunState proposal -> Core Motion intent/frame -> Core Physics request/frame -> Core Simulation commit
-committed RunState -> legacy procedural pose -> direct Three.js bone mutation -> visible frame
-registered rig + articulated solve API + dynamics snapshot -> not consumed by active render path
+page boot -> module preflight -> engine/kits/profile/physics/streaming/renderer construction
+startup surface -> camera(innerWidth/innerHeight) -> setSize -> startup-only setPixelRatio
+RAF -> input -> engine tick -> streaming -> camera/pose/render -> HUD -> successor RAF
+resize -> camera aspect/projection -> renderer size -> no DPR refresh or result
 ```
 
 ## Main findings
 
 ```txt
-pose command and revision: absent
-run/tick/profile/rig admission: absent
-committed motion and physics binding: absent
-articulated solve use: absent
-articulated dynamics provenance: absent
-bone coverage and transform validation: absent
-typed fallback: absent
-skeleton application result: absent
-first visible pose frame acknowledgement: absent
+actual host measurement: absent
+viewport command/revision: absent
+DPR refresh after startup: absent
+pixel-budget policy: absent
+positive/zero-size admission: absent
+camera + renderer atomic commit: absent
+rollback/predecessor retention result: absent
+viewport state in public readback: absent
+first visible viewport frame acknowledgement: absent
 ```
 
 ## Domains in use
 
 ```txt
-browser entry, profile, input, run lifecycle, simulation, motion, physics, articulation, dynamics
-procedural creature body, rig adaptation, legacy pose, IK solve, skinning, Three.js skeleton
-patch streaming, Worker generation, terrain, vegetation, pickups, collision, camera, HUD, diagnostics
-pose admission, source policy, fallback, application result, frame proof, validation, deployment
+browser entry, module admission, profile binding, input and run lifecycle
+Core Input, Spatial, Scene, Simulation, Motion, Physics, Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
+articulated motion and articulated dynamics
+Rapier bodies, colliders, motion requests and frames
+procedural creature body, rig, pose, skinning and Three skeleton presentation
+seeded patch Worker, queue, cache, activation, terrain, vegetation, pickups and collisions
+camera follow, WebGL renderer, lighting, shadows, HUD and public diagnostics
+viewport measurement, DPR policy, pixel budget, resize admission and visible-frame proof
+validation, build and Pages deployment
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-articulated-pose-presentation-authority-domain
+prehistoric-rush-game-viewport-surface-authority-domain
 ```
 
 ```txt
-PlayerPoseFrameCommand
-  -> validate run/tick/body/profile/rig/predecessor
-  -> bind game/motion/physics/dynamics inputs
-  -> adapt base pose and target set
-  -> solve and validate
-  -> commit articulated pose or typed fallback
-  -> apply committed pose
-  -> publish first visible pose frame acknowledgement
+ViewportChangeCommand
+  -> validate session/surface/predecessor
+  -> measure host CSS box
+  -> sample DPR under explicit cap and pixel budget
+  -> reject/defer invalid, zero, stale and duplicate candidates
+  -> prepare camera and drawing-buffer state
+  -> commit one ViewportSurfaceCommitResult
+  -> apply during render admission
+  -> publish FirstViewportFrameAck
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-12T22-18-39-04-00/project-breakdown.md` and its linked audit family.
+See `.agent/trackers/2026-07-13T00-49-53-04-00/project-breakdown.md` and its linked audit family.
 
 ## Validation
 
-Documentation only. No runtime behavior changed and no articulated-pose fixture was run.
+Documentation only. No runtime or deployment behavior changed and no viewport fixture was run.
