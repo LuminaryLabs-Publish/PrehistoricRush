@@ -1,65 +1,79 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T06-39-10-04-00`  
-**Authority:** `prehistoric-rush-player-pose-frame-provenance-authority-domain`
+**Audit:** `2026-07-13T08-39-12-04-00`  
+**Authority:** `prehistoric-rush-terrain-foot-target-coherence-authority-domain`
 
 ## Summary
 
-The ownership correction is complete at the target-pose level. Next work should retain articulated solve identity, make renderer smoothing explicitly derived, generation-fence restarts and prove the first visible skeleton frame.
+The vertical hind-leg IK slice is implemented. Next work should make terrain samples and target frames revisioned, align patch-stream adoption with simulation/rendering, preserve the existing PlayerPose ownership correction and then prove visible terrain/skeleton coherence.
 
 ## Plan ledger
 
-**Goal:** move from a bare authoritative pose object to a revisioned target/presentation frame contract without moving animation truth back into rendering.
+**Goal:** add the minimum identity and admission layer needed around the implemented target math without prematurely building full foot planting.
 
-### Phase 1: Pose-frame envelope
+### Phase 1: Terrain sample identity
 
-- [ ] Replace bare `PlayerPose` contents with `PlayerPoseFrame`.
-- [ ] Retain run ID, run generation, tick ID, frame and rig revision.
-- [ ] Retain source-state fingerprint and articulated solve metadata.
-- [ ] Add predecessor pose-frame ID and monotonic revision.
+- [ ] Add `TerrainSamplerGeneration`.
+- [ ] Add committed `PatchStreamRevision`.
+- [ ] Identify patch ID, generator version, settings hash and terrain content hash.
+- [ ] Replace scalar-only trust with `TerrainSampleCommand` and terminal results.
+- [ ] Distinguish ExactPatch, Fallback, Missing, Stale and Failed.
 
-### Phase 2: Typed solve results
+### Phase 2: Sample batching
 
-- [ ] Add `PlayerPoseSolveCommand` identity and expected revisions.
-- [ ] Return Accepted, Duplicate, Stale, Invalid or Failed.
+- [ ] Sample root, left foot and right foot under one immutable batch.
+- [ ] Bind session, run generation, tick and source pose frame.
+- [ ] Define whether fallback is accepted for root and feet.
+- [ ] Retain sampled coordinates, heights and optional normals.
+- [ ] Add batch fingerprint and clone-safe readback.
+
+### Phase 3: Target-frame commit
+
+- [ ] Add `TerrainFootTargetFrame` with monotonic revision and predecessor ID.
+- [ ] Retain rig revision, source pose frame, sample batch and settings revision.
+- [ ] Return Accepted, Duplicate, Stale, Invalid, Cancelled or Failed.
 - [ ] Preserve the accepted predecessor on non-accepted results.
-- [ ] Publish bounded solve observations.
+- [ ] Admit only accepted target frames into articulated solve.
 
-### Phase 3: Presentation derivation
+### Phase 4: Patch-stream ordering
 
-- [ ] Add a presentation-pose generation owned by the Three.js adapter.
-- [ ] Make damping policy versioned and explicit.
-- [ ] Publish `PresentationPoseFrame` with source pose-frame ID and applied alpha.
-- [ ] Add bounded visible-bone fingerprint/readback.
+- [ ] Choose an explicit policy: stream-before-solve, deferred activation, or typed resample.
+- [ ] Fence patch release/activation against the terrain revision used by a visible frame.
+- [ ] Retire stale Worker delivery and sampler callbacks.
+- [ ] Reset terrain/target generations on run restart and controller reset.
 
-### Phase 4: Restart and discontinuities
+### Phase 5: Pose and render provenance
 
-- [ ] Increment pose and presentation generations on run restart.
-- [ ] Choose authored Snap or Transition behavior for successor runs.
-- [ ] Reject predecessor callbacks and pose frames.
-- [ ] Force snap/rebuild on rig revision changes.
-- [ ] Classify large-delta and missing-pose behavior.
+- [ ] Publish `PlayerPoseFrame` rather than only the solved pose body.
+- [ ] Attach target-frame and terrain revisions.
+- [ ] Preserve the existing simulation-owned pose path.
+- [ ] Publish `PresentationPoseFrame` after damping.
+- [ ] Publish a bounded visible terrain/skeleton fingerprint.
+- [ ] Acknowledge the first complete matching frame.
 
-### Phase 5: Public observation
+### Phase 6: Gameplay expansion after coherence
 
-- [ ] Distinguish simulation target pose from visible presentation pose in `PrehistoricRushHost`.
-- [ ] Keep readback clone-safe and capability-bounded.
-- [ ] Publish `VisiblePlayerPoseFrameAck` after the matching Three.js submission.
+- [ ] Add explicit stance/swing classification.
+- [ ] Add authored maximum vertical correction and reach status.
+- [ ] Add contact enter/hold/release results.
+- [ ] Add slope normal sampling and optional foot orientation.
+- [ ] Add planting only after target/terrain revisions are proven.
 
-### Phase 6: Fixtures
+### Phase 7: Fixtures
 
-- [ ] Execute initial/start/tick pose-frame identity tests.
-- [ ] Prove deterministic source-state-to-pose changes.
-- [ ] Prove clone isolation.
-- [ ] Prove stale and failed solve predecessor preservation.
-- [ ] Prove restart generation and damping policy.
-- [ ] Compare 30/60/120/144 Hz presentation behavior.
-- [ ] Run clean-checkout `npm test`, browser, build and Pages smokes.
+- [ ] Run clean-checkout `npm test`.
+- [ ] Add exact versus fallback sample tests.
+- [ ] Add patch activation/release boundary tests.
+- [ ] Instantiate the composed engine and execute the solve.
+- [ ] Prove stale target predecessor preservation.
+- [ ] Prove restart generation isolation.
+- [ ] Compare visible terrain and skeleton at 30/60/120/144 Hz.
+- [ ] Run built-output and GitHub Pages smokes.
 
 ## Retained priorities
 
-Collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The new PlayerPose path should be preserved while those independent boundaries are addressed.
+PlayerPose frame provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The terrain target authority should compose with those boundaries rather than replacing them.
 
 ## Completion gate
 
-Do not mark pose-frame provenance complete until every accepted target pose identifies its run/tick/frame/rig revision, every presentation frame cites one target frame, restart state cannot leak silently, and the first visible skeleton frame is acknowledged.
+Do not mark terrain IK coherence complete until every accepted target cites one sample batch and terrain revision, the solve and PlayerPose cite that target frame, patch activation cannot silently alter the visible ground, and the first matching terrain/skeleton frame is acknowledged.
