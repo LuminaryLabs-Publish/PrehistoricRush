@@ -1,57 +1,71 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T00-58-50-04-00`  
-**Authority:** `prehistoric-rush-game-viewport-surface-authority-domain`
+**Audit:** `2026-07-13T03-12-30-04-00`  
+**Authority:** `prehistoric-rush-browser-input-core-adoption-authority-domain`
 
 ## Summary
 
-The next implementation should replace direct `innerWidth`/`innerHeight` and startup-only DPR handling with one measured, bounded and revisioned viewport transaction applied by the Three.js host.
+The next implementation should replace direct window-listener mutation with one Core Input path that owns focus, lifecycle generations, held actions, one-shot edges, repeat policy, command results and visible-frame correlation.
 
 ## Plan ledger
 
-**Goal:** make camera projection, CSS canvas size, drawing-buffer size, DPR and quality policy agree for every admitted surface revision.
+**Goal:** make Core Input authoritative for every admitted browser steering, boost, jump, start and retry action.
 
-### Phase 1: Identity and measurement
+### Phase 1: Input identity and surface ownership
 
-- [ ] Add runtime session, surface ID, viewport command ID and viewport revision.
-- [ ] Measure the actual game host with `getBoundingClientRect()` and `ResizeObserver`.
-- [ ] Record measurement source and sequence.
+- [ ] Add input-session, surface and focus-generation identities.
+- [ ] Make the game host/canvas explicitly focusable and route-owned.
+- [ ] Exclude editable and non-game targets.
+- [ ] Add lifecycle generation for blur, visibility, pagehide and disposal.
 
-### Phase 2: DPR and budget policy
+### Phase 2: Core Input adoption
 
-- [ ] Re-sample DPR for every relevant environment change.
-- [ ] Define raw DPR, effective DPR, cap and total-pixel budget.
-- [ ] Bind shadow/quality policy to the surface revision.
+- [ ] Map A/D and arrows to the `steer` axis.
+- [ ] Map W/ArrowUp to held `boost`.
+- [ ] Map Space to one-shot `jump`.
+- [ ] Map Enter and the visible button to explicit `start` or `retry` commands according to current status.
+- [ ] Remove direct browser mutation of product `InputState`.
 
-### Phase 3: Admission and commit
+### Phase 3: Repeat and command policy
 
-- [ ] Reject non-finite, stale and duplicate candidates.
-- [ ] Defer zero-size candidates while preserving the predecessor.
-- [ ] Prepare camera and renderer candidates before mutation.
-- [ ] Commit one `ViewportSurfaceCommitResult` or typed rejection/rollback.
+- [ ] Treat steer/boost as generation-bound held actions.
+- [ ] Reject repeated keydown for jump/start/retry by default.
+- [ ] Add command IDs and monotonic sequences.
+- [ ] Return sealed duplicate results for repeated command IDs.
+- [ ] Reject stale focus/lifecycle generations with zero mutation.
 
-### Phase 4: Host application
+### Phase 4: Gameplay consumer contracts
 
-- [ ] Apply camera aspect and projection from the committed candidate.
-- [ ] Apply renderer CSS size, drawing-buffer size and effective DPR from the same candidate.
-- [ ] Coalesce rapid resize observations and reject stale delivery.
+- [ ] Add typed `RunCommandResult`, `JumpCommandResult` and `HeldInputResult` consumers.
+- [ ] Reject Enter-based restart during an active run unless an explicit restart policy is selected.
+- [ ] Keep run lifecycle participant reset/preserve work under the retained run-lifecycle authority.
+- [ ] Publish product input-consumption receipts.
 
-### Phase 5: Observation
+### Phase 5: Lifecycle fencing
 
-- [ ] Expose committed and applied viewport state through `PrehistoricRushHost`.
-- [ ] Publish `FirstViewportFrameAck` with CSS size, buffer size, DPR, aspect and fingerprint.
-- [ ] Correlate viewport revision with render and simulation frame IDs.
+- [ ] On blur, visibility loss, pagehide, route exit or disposal, close the current generation.
+- [ ] Release held state and publish `InputClearResult`.
+- [ ] Start successor generations from neutral state.
+- [ ] Reject predecessor-generation events and pending commands.
 
-### Phase 6: Fixtures
+### Phase 6: Observation and presentation
 
-- [ ] Host-only resize.
-- [ ] DPR-only change and DPR cap.
-- [ ] Zero size then restore.
-- [ ] Rapid resize coalescing and stale predecessor rejection.
-- [ ] Pixel-budget downgrade.
-- [ ] Camera/canvas/drawing-buffer parity.
+- [ ] Expose input session, generation, held state and terminal results through `PrehistoricRushHost`.
+- [ ] Add repeat, stale, duplicate and rejection counters.
+- [ ] Correlate input results with run ID, simulation revision and render frame.
+- [ ] Publish `FirstInputFrameAck`.
+
+### Phase 7: Fixtures
+
+- [ ] Focus and editable-target admission.
+- [ ] A/D/W and arrow held-state parity.
+- [ ] Enter mid-run rejection and key-repeat rejection.
+- [ ] Space repeat produces one edge command.
+- [ ] Blur/visibility/page lifecycle generation fences.
+- [ ] Button/keyboard result parity.
+- [ ] Duplicate and stale zero-mutation behavior.
 - [ ] Source, built output and Pages parity.
 
 ## Completion gate
 
-Do not mark the authority implemented until one committed viewport revision governs camera, CSS canvas and drawing buffer; invalid candidates have zero partial effects; DPR changes are admitted explicitly; and the first visible frame cites the committed surface fingerprint.
+Do not mark the authority implemented until the browser host submits exclusively through Core Input, one-shot actions are edge-triggered, lifecycle boundaries retire predecessor state, rejected samples have zero effects, button and keyboard paths share terminal results, and the first visible frame cites the accepted input result.
