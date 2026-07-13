@@ -3,41 +3,41 @@
 **Last aligned:** `2026-07-12T22-19-11-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Status:** `run-start-restart-central-reconciled`
+**Status:** `articulated-pose-presentation-authority-audited`  
+**Retained reconciliation:** `run-start-restart-central-reconciled`
 
 ## Summary
 
-PrehistoricRush composes a Nexus Engine runner with Core Motion/Physics, Rapier, deterministic patch streaming, a procedural creature, Three.js presentation, and browser controls. The current audit isolates Run Start/Restart Admission Authority and reconciles the newer repo-local audit with central tracking.
+PrehistoricRush composes Core Motion/Physics, articulated motion/dynamics, Rapier, procedural creatures, deterministic patch streaming, Three.js, browser controls, and public diagnostics. The latest technical audit finds that the visible dinosaur bypasses the installed articulated solve path: the renderer creates a legacy procedural pose from RunState scalars and applies it directly to Three.js bones without a pose commit, source policy, bone-coverage result, or visible-frame acknowledgement.
 
-Enter calls `start()` during every route and on browser key repeat. Domain `start()` unconditionally creates a new run, emits `RunStarted`, resets only RunState, engine InputState, and simulation resolution, then reuses host-local held keys, patch/Worker, physics, active content, camera, renderer, HUD, and public observation without one successor-generation participant manifest.
+The `22-19-11` run-start reconciliation remains retained and current in central tracking. It documents unconditional Enter restart, key-repeat, and missing participant reset/preserve authority.
 
 ## Plan ledger
 
-**Goal:** make Start, Retry, and Run Again one exactly-once, status-gated transaction that resets, rebuilds, or explicitly preserves every run-scoped participant before the first visible frame.
+**Goal:** connect committed simulation and motion through one admitted articulated pose result to the visible player frame while preserving the current run-start reconciliation.
 
 - [x] Compare all ten accessible Publish repositories.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all nine eligible repositories have central-ledger and root `.agent` coverage.
-- [x] Select only `PrehistoricRush` because repo-local audit state was newer than central tracking.
-- [x] Trace scene exits, UI/keyboard/public start paths, key repeat, domain start, simulation, physics, streaming, Worker, content, camera, render, and input state.
+- [x] Select only `PrehistoricRush` because its repo-local state was newer than central tracking.
+- [x] Trace simulation, Core Motion, Core Physics, rig registration, pose generation, articulated solving, skeleton application, rendering, and public readback.
 - [x] Preserve the complete 45-surface kit/service inventory.
-- [x] Add the `22-19-11` reconciliation tracker and audit family.
-- [x] Refresh root routing and machine registry.
-- [x] Synchronize central tracking on `main`.
-- [x] Create no branch or pull request.
-- [ ] Runtime implementation and executable start/restart fixtures remain future work.
+- [x] Add the articulated pose tracker and architecture/system audit family.
+- [x] Preserve the `22-19-11` run-start central reconciliation.
+- [x] Push only to `main`; create no branch or pull request.
+- [ ] Runtime integration and executable pose fixtures remain future work.
 
-## Read this first
+## Current audit family
 
 ```txt
-.agent/trackers/2026-07-12T22-19-11-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-12T22-19-11-04-00.md
-.agent/architecture-audit/2026-07-12T22-19-11-04-00-run-start-central-reconciliation-dsk-map.md
-.agent/render-audit/2026-07-12T22-19-11-04-00-first-run-frame-central-reconciliation.md
-.agent/gameplay-audit/2026-07-12T22-19-11-04-00-start-repeat-participant-central-reconciliation.md
-.agent/interaction-audit/2026-07-12T22-19-11-04-00-start-command-central-admission-map.md
-.agent/run-lifecycle-audit/2026-07-12T22-19-11-04-00-start-result-participant-central-contract.md
-.agent/deploy-audit/2026-07-12T22-19-11-04-00-start-restart-central-fixture-gate.md
+.agent/trackers/2026-07-12T22-18-39-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-12T22-18-39-04-00.md
+.agent/architecture-audit/2026-07-12T22-18-39-04-00-articulated-pose-presentation-dsk-map.md
+.agent/render-audit/2026-07-12T22-18-39-04-00-legacy-pose-articulated-frame-gap.md
+.agent/gameplay-audit/2026-07-12T22-18-39-04-00-simulation-motion-render-pose-divergence-loop.md
+.agent/interaction-audit/2026-07-12T22-18-39-04-00-motion-pose-solve-apply-frame-map.md
+.agent/articulation-audit/2026-07-12T22-18-39-04-00-rig-solve-render-admission-contract.md
+.agent/deploy-audit/2026-07-12T22-18-39-04-00-articulated-pose-fixture-gate.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
@@ -45,71 +45,38 @@ Enter calls `start()` during every route and on browser key repeat. Domain `star
 .agent/kit-registry.json
 ```
 
-The browser-runtime retirement audit at `2026-07-12T20-10-25-04-00` remains a direct dependency. Restart must not create a second runtime owner.
-
-## Current start loop
+## Visible pose loop
 
 ```txt
-button or Space
-  -> Jump during game, otherwise start
+engine.tick
+  -> RunState, Core Motion, Core Physics, and Core Simulation commit
+  -> renderer reads RunState scalars
+  -> game.createPlayerPose creates legacy procedural pose
+  -> applyCreaturePose mutates matching Three.js bones
+  -> renderer renders
 
-Enter
-  -> always start, including active game and repeated keydown delivery
-
-start wrapper
-  -> game.start()
-  -> retained content refresh
-  -> retained patch controller update/generate/pump
-  -> retained camera reset
-
-domain start
-  -> increment runId
-  -> replace RunState and engine InputState
-  -> reset simulation resolution
-  -> emit RunStarted
-  -> direct transition to game
-  -> return state, not typed command result
-
-next frame
-  -> retained host-local keys enter successor input
-  -> retained patch/Worker/physics/content/camera/render participants continue
-```
-
-## Main findings
-
-```txt
-start command identity: absent
-scene/status admission inside domain start: absent
-Enter active-run guard: absent
-KeyboardEvent.repeat guard: absent
-exactly-once start result: absent
-host-local input retirement: absent
-patch-controller run generation: absent
-pending Worker run generation: absent
-physics reset receipt: absent
-active-content reset/preserve receipt: absent
-camera/render/HUD participant receipts: absent
-first run-generation frame acknowledgement: absent
+available but bypassed
+  -> articulated rig
+  -> solvePlayerArticulatedPose
+  -> articulatedMotion.solve
+  -> articulated motion and dynamics observations
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-run-start-restart-admission-authority-domain
+prehistoric-rush-articulated-pose-presentation-authority-domain
 ```
 
-## Required flow
-
 ```txt
-StartRunCommand or RestartRunCommand
-  -> validate runtime session, scene, status, event repeat, command ID, sequence, and expected run generation
-  -> reject repeat, duplicate, stale, or disallowed active-run commands
-  -> close predecessor input and asynchronous delivery admission
-  -> prepare RunState, Input, simulation, Scene, physics, patch/Worker, content, camera, render, HUD, and observation participants
-  -> classify each participant reset, rebuilt, or explicitly preserved
-  -> atomically commit one RunStartResult or preserve/classify the predecessor truthfully
-  -> publish one RunStarted event and one scene transition
-  -> acknowledge the first visible frame citing the new run and participant generations
+PlayerPoseFrameCommand
+  -> admit run/tick/body/profile/rig and committed motion/physics inputs
+  -> adapt base pose and target set
+  -> solve articulation under explicit policy
+  -> validate transforms and bone coverage
+  -> commit articulated pose or typed fallback
+  -> apply only the committed pose
+  -> render and acknowledge the first matching visible frame
 ```
 
 ## Kit census
@@ -125,4 +92,4 @@ total surfaces:                   45
 
 ## Validation boundary
 
-Documentation only. Runtime, input, simulation, physics, streaming, Worker, camera, rendering, package, dependency, and deployment behavior are unchanged. No start/restart fixture was run.
+Documentation only. Runtime, simulation, motion, physics, articulation, rendering, package, dependency, and deployment behavior are unchanged. No articulated-pose fixture was run.
