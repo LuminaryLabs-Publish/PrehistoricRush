@@ -1,29 +1,26 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-13T03-13-09-04-00`  
-**Scope:** documentation-only collision source convergence audit
+**Audit timestamp:** `2026-07-13T03-20-58-04-00`  
+**Scope:** documentation-only collision-source convergence publication reconciliation
 
 ## Summary
 
-This run compared the current Publish inventory with central tracking, selected PrehistoricRush through the oldest eligible rule, inspected collider generation, active-content synchronization, Core Physics and fallback observations, resolution policy, rendering, public readback and existing tests, then added the collision-convergence audit family. It changed documentation only.
+This run compared the complete Publish inventory with central tracking, selected PrehistoricRush through the oldest eligible rule, preserved the source-backed collision audit and synchronized every required root `.agent` projection plus the central ledger. Runtime code was not changed.
 
 ## Plan ledger
 
-**Goal:** record exactly what was inspected, changed and not executed.
+**Goal:** record exactly what was inspected, reconciled, changed and not executed.
 
 - [x] Verify `LuminaryLabs-Publish/PrehistoricRush` and `main`.
 - [x] Compare ten Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm nine eligible ledger and root `.agent` rows at selection.
-- [x] Inspect `src/game.js` collision and streaming paths.
-- [x] Inspect the product domain, resolution policy and patch generator.
-- [x] Inspect current resolution-policy tests.
-- [x] Preserve all domains and 45 kit/service surfaces.
-- [x] Preserve the concurrent `03-12-30` browser-input/Core Input audit as retained state.
-- [x] Add the `03-13-09` tracker and audit family.
-- [x] Refresh every required root `.agent` document and registry.
+- [x] Confirm nine eligible central-ledger and root-agent rows.
+- [x] Detect that repo-local collision documentation was newer than the central PrehistoricRush row.
+- [x] Preserve the complete interaction loop, domain map and 45-surface service inventory.
+- [x] Reconcile `START_HERE.md`, `current-audit.md`, `next-steps.md`, `known-gaps.md`, `validation.md` and `kit-registry.json`.
+- [x] Add the `2026-07-13T03-20-58-04-00` tracker, turn ledger and audit family.
 - [x] Change no runtime or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute collision parity fixtures after implementation exists.
+- [ ] Execute collision-source fixtures after implementation exists.
 
 ## Documentation changes
 
@@ -34,24 +31,27 @@ This run compared the current Publish inventory with central tracking, selected 
 .agent/known-gaps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-13T03-13-09-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T03-13-09-04-00.md
-.agent/architecture-audit/2026-07-13T03-13-09-04-00-collision-source-convergence-dsk-map.md
-.agent/render-audit/2026-07-13T03-13-09-04-00-collision-decision-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-13T03-13-09-04-00-dual-collision-source-resolution-loop.md
-.agent/interaction-audit/2026-07-13T03-13-09-04-00-collision-evidence-admission-result-map.md
-.agent/collision-system-audit/2026-07-13T03-13-09-04-00-collider-revision-source-parity-contract.md
-.agent/deploy-audit/2026-07-13T03-13-09-04-00-collision-source-parity-fixture-gate.md
+.agent/trackers/2026-07-13T03-20-58-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T03-20-58-04-00.md
+.agent/architecture-audit/2026-07-13T03-20-58-04-00-collision-convergence-publication-dsk-map.md
+.agent/render-audit/2026-07-13T03-20-58-04-00-collision-publication-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-13T03-20-58-04-00-collision-source-precedence-reconciliation-loop.md
+.agent/interaction-audit/2026-07-13T03-20-58-04-00-collider-evidence-decision-publication-map.md
+.agent/collision-system-audit/2026-07-13T03-20-58-04-00-collider-revision-comparison-contract.md
+.agent/central-sync-audit/2026-07-13T03-20-58-04-00-repo-local-central-publication-contract.md
+.agent/deploy-audit/2026-07-13T03-20-58-04-00-collision-convergence-fixture-gate.md
 ```
 
 ## Change boundary
 
 ```txt
 runtime source changed: no
-simulation/motion/physics changed: no
-streaming/collision behavior changed: no
+collision behavior changed: no
+physics or streaming changed: no
+run lifecycle or gameplay changed: no
+articulation changed: no
 renderer source changed: no
-package scripts/dependencies changed: no
+package scripts or dependencies changed: no
 deployment changed: no
 branch created: no
 pull request created: no
@@ -62,17 +62,18 @@ pull request created: no
 ```txt
 npm test
 browser collision smoke
-physics/fallback agreement fixture
-disagreement fixture
-stale collider revision fixture
+both-source agreement fixture
+source-disagreement fixtures
+provider-unavailable fallback fixture
+patch-release stale-evidence fixture
 built-output collision smoke
 GitHub Pages collision smoke
 ```
 
-## Existing coverage limitations
+## Existing coverage limitation
 
-`npm test` covers physics-only and fallback-only failure paths and collision precedence. It does not instantiate streamed collider synchronization, execute both sources for one candidate, compare source results, test stale patch releases or acknowledge a visible run-over frame.
+The current `npm test` script runs resolution-policy and player-articulation tests. It does not prove both collision sources used one collider revision, detect disagreement, reject stale released colliders or correlate a collision decision with the first visible run-over frame.
 
 ## Non-claims
 
-No claim is made for collision-source parity, stale-collider safety, disagreement policy, provider degradation, canonical decision readback or first-visible-outcome-frame proof.
+No claim is made for collision-source equivalence, disagreement safety, stale-collider rejection, canonical decision provenance, public comparison readback or first-visible-collision-frame proof.
