@@ -1,164 +1,146 @@
-# Current Audit: PrehistoricRush Browser Runtime Lifecycle and Resource Retirement
+# PrehistoricRush Current Audit
 
-**Updated:** `2026-07-12T20-10-25-04-00`  
-**Repository head reviewed before documentation writes:** `f1ef269ec32df13a78fa91c14455796b8434b731`  
-**Pinned Nexus Engine:** `cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1`
+**Timestamp:** `2026-07-12T21-51-38-04-00`  
+**Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
+**Status:** `run-start-restart-admission-authority-audited`
 
 ## Summary
 
-PrehistoricRush successfully composes a playable browser runtime, but that runtime has no explicit lifetime owner. Startup allocates engine, physics, Worker/streaming, camera, Three.js and browser callback participants. The page then starts a recursive RAF and exposes raw participant objects through `globalThis.PrehistoricRushHost`. No stop command, participant barrier, lease registry, exact-once retirement result or re-entry proof exists.
+The current audit isolates Run Start and Restart Admission Authority. Enter invokes the host `start()` path regardless of current status and without filtering `KeyboardEvent.repeat`. The domain `start()` always increments `runId`, replaces RunState/Input, resets simulation resolution, emits `RunStarted`, and requests a direct game transition, while patch streaming, Worker execution, physics, content, camera adapters, rendering, and host-local held keys remain independently owned.
 
 ## Plan ledger
 
-**Goal:** make startup, running frames, failure and shutdown one supervised transaction with explicit participant ownership and deterministic retirement.
+**Goal:** admit exactly one complete start/restart transaction for an allowed predecessor state and bind all run-scoped participants to the same successor generation.
 
-- [x] Trace module preflight and startup failure projection.
-- [x] Trace engine, physics, Worker, controller, camera and renderer composition.
-- [x] Trace global browser listeners and recursive RAF scheduling.
-- [x] Trace public host publication.
-- [x] Inventory render resources and available disposal helpers.
-- [x] Preserve all 45 implemented/adapted/proof surfaces and services.
-- [x] Define the missing lifecycle authority and stop barrier.
-- [x] Publish the complete timestamped audit family.
-- [x] Synchronize central tracking.
-- [ ] Implement lifecycle providers and executable fixtures.
+- [x] Compare the Publish inventory and central tracking.
+- [x] Exclude `TheCavalryOfRome`.
+- [x] Select only `PrehistoricRush` as the oldest eligible current entry.
+- [x] Inspect scene topology, browser input, host start wrapper, domain start, simulation, streaming, Worker, physics, camera, render, and public host.
+- [x] Preserve all domains, 45 surfaces, and offered services.
+- [x] Define command admission, participant reset/preserve plans, atomic result, and first-frame proof.
+- [x] Add timestamped tracker and system audits.
+- [x] Refresh root `.agent` state and central tracking.
+- [ ] Implement and execute later.
 
-## Source-backed current behavior
-
-```txt
-startup
-  -> preflight pinned imports
-  -> create shell and load profile
-  -> compose Nexus Engine kits
-  -> install Rapier provider/body
-  -> create patch generator, optional Worker executor and controller
-  -> create camera follow
-  -> allocate Three scene and resources
-  -> register keydown, keyup, blur and resize listeners
-  -> publish PrehistoricRushHost
-  -> request first RAF
-
-frame
-  -> submit input
-  -> engine.tick
-  -> update streaming and active content
-  -> apply pose/camera
-  -> render Three frame and HUD
-  -> request successor RAF
-
-shutdown
-  -> no runtime stop API
-  -> no retained RAF lease
-  -> no removable listener lease registry
-  -> no Worker/executor/controller retirement
-  -> no engine/provider retirement result
-  -> no renderer/resource disposal plan
-  -> no public-host revocation
-```
-
-## Render-resource census
+## Complete interaction loop
 
 ```txt
-terrain meshes/geometries: 25
-tree instanced meshes/geometries: 10
-grass instanced meshes/geometries: 3
-shard instanced mesh/geometry: 1
-player skinned mesh/geometry: 1
-mesh/geometry allocations: 40
-material objects: 12
-skeletons: 1
-renderers: 1
+boot
+  -> create engine, game, physics, controller, optional Worker, camera, renderer, local input booleans
+  -> call game.start() immediately
+  -> prime streaming and reset camera
+  -> attach button and keyboard listeners
+  -> start RAF
+
+run start ingress
+  -> button: Jump during game, otherwise start
+  -> Space: Jump during game, otherwise start
+  -> Enter: always start
+  -> public host: engine exposes engine.n.prehistoricRush.start indirectly
+
+host start wrapper
+  -> game.start()
+  -> refresh dynamic content from retained active patches
+  -> update retained patch controller and optionally generate center
+  -> reset retained camera follower
+
+domain start
+  -> clone predecessor only for runId
+  -> create fresh RunState and increment runId
+  -> reset simulation resolution
+  -> replace RunState and InputState
+  -> emit RunStarted
+  -> direct transition to game
 ```
 
-This is a source census, not a measured memory-retention claim.
+## Source-backed findings
 
-## Concrete failure paths
+### Enter bypasses route/status policy
 
-### Frame exception
+The UI button and Space choose Jump or Start from `state.status`. Enter calls `start()` unconditionally. Core Scene declares Start only from menu and Retry from run-over/win, yet direct transitions are allowed and domain `start()` does not inspect scene or status.
 
-```txt
-RAF callback enters
-  -> engine, streaming, pose, camera, renderer or HUD throws
-  -> no lifecycle supervisor catches the frame failure
-  -> successor RAF may not be scheduled
-  -> Worker, listeners, public host and render resources receive no stop transaction
-```
+### Key repeat can create many runs
 
-### Stop or route exit
+No `event.repeat` check exists. Holding Enter can invoke `start()` repeatedly, increment `runId`, reset state/resolution, emit repeated RunStarted events, request repeated transitions, prime streaming, and reset camera.
 
-```txt
-page wants to exit or test harness wants to re-enter
-  -> no StopRuntimeCommand
-  -> no callback producer barrier
-  -> no participant retirement receipts
-  -> browser/document cleanup is the only eventual fallback
-```
+### Start is not a complete participant transaction
 
-### Partial startup
+The domain resets RunState, InputState, and simulation resolution. The host then reuses the same patch controller/cache/queue, Worker executor, active patch map, physics provider/body/colliders, instance batches, renderer, and camera follower. No reset/preserve plan or per-participant receipt proves that all retained state belongs to the successor run.
 
-```txt
-some participants are created
-  -> later participant creation fails
-  -> main().catch projects an error message
-  -> no reverse-order rollback manifest proves which accepted participants retired
-```
+### Host-local keys survive restart
+
+`game.start()` resets engine InputState, but the host-local `input.left/right/boost` booleans are not cleared. On the next RAF, they are written back into the new run.
+
+### No terminal result
+
+`game.start()` returns a cloned state, not a typed command result. There is no command ID, expected predecessor, duplicate/stale rejection, partial-failure classification, participant barrier, journal, or first visible run-generation frame.
 
 ## Domains in use
 
 ```txt
-page shell and route entry
-pinned module identity and startup admission
-player profile boot binding
-Nexus Engine composition and tick scheduling
-Core Input, Spatial, Scene and Simulation
-Core Motion and articulated motion
-Core Physics and articulated dynamics
-Rapier provider, bodies, colliders and frames
-seeded patch generation, Worker execution, queue, cache and activation
-active terrain/tree/grass/shard/pickup/collider materialization
-procedural creature generation and pose application
-camera smooth follow
-Three scene, renderer, geometry, materials, skeleton, lights and shadows
-browser keyboard, blur and resize callbacks
-recursive RAF scheduling
-HUD and global public readback
-runtime lifecycle state, participant leases and shutdown barrier
-ordered retirement, stale-callback rejection and exact-once results
-validation, browser fixtures and Pages deployment
+page shell and pinned module admission
+player-profile boot binding
+Core Input, Spatial, Scene, Simulation, Motion, Physics, Camera, Animation, Graphics, UI, Diagnostics, Composition
+articulated motion and dynamics
+Rapier provider, player body, colliders, and frames
+procedural creature generation, rig, pose, skinning, and presentation
+seeded patch generation, Worker executor, queue, cache, activation, release, and colliders
+terrain, trees, grass, shards, pickups, and dynamic content
+browser button/keyboard/blur input and key-repeat semantics
+run start/restart command admission and participant reset/preserve policy
+camera follower reset and run binding
+Three.js rendering, HUD, public host, and first-frame observation
+validation, browser fixtures, and Pages deployment
 ```
 
-## Kit and service census
+## Kit census
 
 ```txt
-15 Nexus Engine root/subdomain kits
-5 official NexusEngine-Kits
-14 product/page/Worker kits
-9 external/host adapters
-2 proof kits
-45 implemented/adapted/proof surfaces total
-35 candidate lifecycle-authority kits including parent
+Nexus Engine root/subdomain kits: 15
+official NexusEngine-Kits:         5
+product/page/Worker kits:         14
+external/host adapters:            9
+proof kits:                        2
+total surfaces:                   45
 ```
 
-The complete names and service lists are retained in `.agent/kit-registry.json` and the current tracker.
+The exact inventory is in the current tracker and `.agent/kit-registry.json`.
 
-## Required domain
+## Required authority
 
 ```txt
-prehistoric-rush-browser-runtime-lifecycle-authority-domain
+prehistoric-rush-run-start-restart-admission-authority-domain
 ```
 
-## Required invariants
+## Required transaction
 
 ```txt
-one runtime session owns every callback, Worker, participant and render lease
-startup either commits Running or retires every accepted partial participant
-stop closes admission before retiring consumers
-no callback mutates after Stopping
-same stop command returns the same terminal result
-no lease disposer runs more than once
-global public capabilities are revoked before participant disposal
-Stopped implies no owned RAF, listener, Worker or renderer lease
-re-entry allocates a strictly new runtime generation
+RunStartCommand
+  -> validate runtime session, scene/status, command ID/sequence, input event, and expected run generation
+  -> reject repeat, duplicate, stale, or disallowed active-run commands
+  -> close predecessor input and async delivery admission
+  -> freeze predecessor participant revisions
+  -> prepare RunState, Input, simulation, physics, streaming/Worker, active content, camera, render, and scene plans
+  -> classify every participant as reset, rebuilt, or explicitly preserved
+  -> validate complete candidate generation
+  -> atomically commit one RunStartResult or preserve predecessor
+  -> emit one RunStarted and one scene transition
+  -> acknowledge first visible frame citing run and participant generations
 ```
 
-The previous profile-convergence, coordinated-reset, pose, motion and streamed-content audits remain active. Runtime lifecycle authority coordinates their page-level lifetime without absorbing their domain semantics.
+## Current output
+
+```txt
+.agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-12T21-51-38-04-00.md
+.agent/architecture-audit/2026-07-12T21-51-38-04-00-run-start-restart-admission-dsk-map.md
+.agent/render-audit/2026-07-12T21-51-38-04-00-first-run-generation-frame-gap.md
+.agent/gameplay-audit/2026-07-12T21-51-38-04-00-enter-repeat-active-run-reset-loop.md
+.agent/interaction-audit/2026-07-12T21-51-38-04-00-start-command-status-generation-map.md
+.agent/run-lifecycle-audit/2026-07-12T21-51-38-04-00-participant-reset-start-result-contract.md
+.agent/deploy-audit/2026-07-12T21-51-38-04-00-start-restart-fixture-gate.md
+```
+
+## Validation
+
+Documentation only. Existing source and tests were inspected but not run. No runtime behavior changed.

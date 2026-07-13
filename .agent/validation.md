@@ -1,106 +1,74 @@
-# Validation: PrehistoricRush Browser Runtime Lifecycle
+# PrehistoricRush Validation
 
-**Updated:** `2026-07-12T20-10-25-04-00`
+**Audit timestamp:** `2026-07-12T21-51-38-04-00`  
+**Scope:** documentation-only run start/restart admission audit
 
-## Scope
+## Summary
 
-Documentation-only review of game-page module admission, runtime composition, Rapier provider ownership, Worker/controller setup, Three.js allocation, browser callbacks, recursive RAF, public-host publication and available disposal capabilities.
+This run inspected browser start controls, domain start behavior, scene topology, simulation reset, patch/Worker reuse, physics, camera, rendering, public host, tests, and prior `.agent` state. It changed documentation only and does not claim start/restart behavior is repaired.
 
 ## Plan ledger
 
-**Goal:** distinguish a functioning browser session from executable proof that startup, failure, stop and re-entry retire every owned participant exactly once.
+**Goal:** record exactly what was inspected, changed, and not executed.
 
-- [x] Compare the full Publish inventory with central tracking.
-- [x] Exclude `TheCavalryOfRome`.
-- [x] Select only `PrehistoricRush` by the oldest eligible synchronized timestamp.
-- [x] Review `game.html` and `src/pages/game.js`.
-- [x] Review `src/game.js` startup, adapter, Worker, input, RAF and public-host paths.
-- [x] Review `src/render/three-procedural-creature.js` disposal helper.
-- [x] Review creator page shutdown as a comparison boundary.
-- [x] Confirm no game-runtime lifecycle authority or stop result exists.
-- [x] Publish the complete `20-10-25` audit family.
-- [x] Change no runtime source, dependency or deployment configuration.
+- [x] Verify repository and target branch.
+- [x] Inspect `src/game.js`.
+- [x] Inspect `src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js`.
+- [x] Inspect package tests and prior kit/service inventory.
+- [x] Refresh all required root `.agent` documents.
+- [x] Add timestamped architecture, render, gameplay, interaction, lifecycle, and deploy audits.
+- [x] Change no runtime or deployment source.
 - [x] Create no branch or pull request.
+- [ ] Execute start/restart fixtures after implementation exists.
 
-## Source-backed validation performed
-
-```txt
-verified game-page preflight loads nine pinned runtime module groups
-verified main composes Nexus Engine, Rapier, patch controller, camera and Three adapter
-verified optional Worker/executor is created and retained in workerState
-verified createThreeAdapter allocates renderer, scene and presentation resources
-verified 25 terrain, 10 tree, 3 grass, 1 shard and 1 player mesh/geometry allocations
-verified 12 material objects and one player skeleton
-verified createThreeAdapter returns no dispose function
-verified game imports createCreatureMesh/applyCreaturePose but not disposeCreatureMesh
-verified keydown, keyup, blur and resize listeners are anonymous and unretained
-verified recursive RAF request ID is not retained
-verified startup promise catch does not supervise later frame exceptions
-verified global PrehistoricRushHost exposes raw participant objects
-verified no StopRuntimeCommand, participant barrier or RuntimeStopResult exists
-verified current npm test covers outcome policy and articulation only
-```
-
-## Executable proof currently present
+## Documentation changes
 
 ```txt
-module preflight and startup failure projection exist
-creator preview has a partial beforeunload disposal path
-creature-mesh disposal helper exists
-Worker adapter advertises pending rejection, listener removal and termination
-package test command exists
-outcome-policy and articulation tests exist
+.agent/START_HERE.md
+.agent/current-audit.md
+.agent/next-steps.md
+.agent/known-gaps.md
+.agent/validation.md
+.agent/kit-registry.json
+.agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-12T21-51-38-04-00.md
+.agent/architecture-audit/2026-07-12T21-51-38-04-00-run-start-restart-admission-dsk-map.md
+.agent/render-audit/2026-07-12T21-51-38-04-00-first-run-generation-frame-gap.md
+.agent/gameplay-audit/2026-07-12T21-51-38-04-00-enter-repeat-active-run-reset-loop.md
+.agent/interaction-audit/2026-07-12T21-51-38-04-00-start-command-status-generation-map.md
+.agent/run-lifecycle-audit/2026-07-12T21-51-38-04-00-participant-reset-start-result-contract.md
+.agent/deploy-audit/2026-07-12T21-51-38-04-00-start-restart-fixture-gate.md
 ```
 
-## Proof currently absent
+## Change boundary
 
 ```txt
-runtime start-result fixture
-partial-startup rollback fixture
-normal stop fixture
-stop idempotency fixture
-stale-generation stop fixture
-frame-failure cleanup fixture
-pending Worker shutdown fixture
-late callback rejection fixture
-browser-listener removal fixture
-RAF cancellation fixture
-public-host revocation fixture
-render-resource retirement fixture
-renderer-disposed acknowledgement
-stop-then-reentry fixture
-browser and Pages lifecycle matrix
+runtime source changed: no
+input behavior changed: no
+simulation/physics/streaming behavior changed: no
+rendering changed: no
+package scripts/dependencies/deployment changed: no
+branch created: no
+pull request created: no
 ```
 
-## Commands not run in this pass
+## Commands not run
 
 ```txt
 npm test
-browser start/stop smoke
-frame failure injection
-Worker pending-request shutdown
-WebGL resource retirement inspection
-repeated stop/re-entry smoke
-Pages lifecycle smoke
+browser Enter-repeat smoke
+active-run restart smoke
+Worker stale-delivery fixture
+physics/content participant reset fixture
+start failure/rollback fixture
+built-output start/restart smoke
+GitHub Pages start/restart smoke
 ```
 
-The GitHub connector supplied current source and write access but no checked-out browser runtime. The direct public clone attempt failed because the execution container could not resolve `github.com`. No executable lifecycle or rendering result is claimed.
+## Existing coverage limitations
 
-## Change-state validation
+The current tests cover resolution policy and player articulation. They do not instantiate browser key events, start/restart controls, patch streaming, Worker delivery, physics reset, scene transitions, or first-frame generation proof.
 
-```txt
-runtime source changed by audit: no
-gameplay behavior changed by audit: no
-physics/streaming behavior changed by audit: no
-render behavior changed by audit: no
-package scripts or dependencies changed by audit: no
-deployment changed by audit: no
-branch created: no
-pull request created: no
-.agent documentation changed: yes
-central ledger and internal change log synchronized: yes
-```
+## Non-claims
 
-## Completion boundary
-
-Do not claim deterministic shutdown, leak freedom, exact-once disposal, late-callback safety or re-entry readiness until startup participants are leased, stop closes producers before consumers, every retirement publishes a typed result and browser/Pages fixtures prove a new runtime generation can start without predecessor ownership.
+No claim is made for exactly-once start, active-run protection, input retirement, participant consistency, rollback, stale asynchronous rejection, or production-ready restart behavior.

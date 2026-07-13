@@ -1,44 +1,42 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-12T20-10-25-04-00`  
+**Last aligned:** `2026-07-12T21-51-38-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Status:** `browser-runtime-lifecycle-resource-retirement-authority-audited`
+**Status:** `run-start-restart-admission-authority-audited`
 
 ## Summary
 
-PrehistoricRush creates a complete browser game runtime but does not own that runtime's shutdown. The game page allocates engine, physics, Worker/streaming, camera, Three.js resources, global listeners, a public host and a recursive RAF without a stop command, participant barrier, exact-once disposal result or re-entry proof.
-
-The current audit defines one browser-runtime lifecycle authority spanning startup preparation, partial-start rollback, callback and Worker fencing, public-host revocation, ordered engine/physics/render retirement and terminal stop evidence.
+PrehistoricRush composes a full Nexus Engine runner with Core Motion/Physics, Rapier, deterministic patch streaming, a procedural creature, Three.js presentation, and browser controls. The current audit isolates run start and restart admission: Enter calls `start()` during every route and on key repeat, while `game.start()` unconditionally creates a new run, emits a start event, resets only selected participants, and reuses the predecessor patch controller, Worker, physics, render, and browser-input ownership.
 
 ## Plan ledger
 
-**Goal:** make game startup, running frames, failure and exit one supervised lifecycle that either owns a fully admitted runtime or retires every accepted participant.
+**Goal:** make Start, Retry, and Run Again one exactly-once, status-gated transaction that resets or preserves every run-scoped participant under a new run generation before the first visible frame.
 
 - [x] Compare all ten accessible Publish repositories.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Confirm all nine eligible repositories have central-ledger and root `.agent` coverage.
-- [x] Select only `PrehistoricRush` as the oldest eligible synchronized repository.
-- [x] Trace module, engine, physics, Worker, controller, camera, render, listener, RAF and public-host ownership.
+- [x] Select only `PrehistoricRush` as the oldest eligible current repository.
+- [x] Trace scene exits, UI/keyboard start paths, key repeat, public capabilities, domain `start()`, simulation reset, physics, streaming, Worker, camera, render, and input state.
 - [x] Preserve the complete 45-surface kit/service inventory.
-- [x] Define the runtime lifecycle parent DSK and fixture boundary.
-- [x] Add the `20-10-25` tracker and architecture/system audit family.
+- [x] Define the run start/restart parent DSK and fixture boundary.
+- [x] Add the timestamped tracker and architecture/system audit family.
 - [x] Refresh root routing and machine registry.
 - [x] Synchronize central tracking on `main`.
 - [x] Create no branch or pull request.
-- [ ] Runtime implementation and executable lifecycle fixtures remain future work.
+- [ ] Runtime implementation and executable start/restart fixtures remain future work.
 
 ## Read this first
 
 ```txt
-.agent/trackers/2026-07-12T20-10-25-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-12T20-10-25-04-00.md
-.agent/architecture-audit/2026-07-12T20-10-25-04-00-browser-runtime-lifecycle-dsk-map.md
-.agent/render-audit/2026-07-12T20-10-25-04-00-game-render-resource-retirement-gap.md
-.agent/gameplay-audit/2026-07-12T20-10-25-04-00-running-frame-unsupervised-exit-loop.md
-.agent/interaction-audit/2026-07-12T20-10-25-04-00-start-frame-stop-result-map.md
-.agent/runtime-lifecycle-audit/2026-07-12T20-10-25-04-00-callback-worker-render-retirement-contract.md
-.agent/deploy-audit/2026-07-12T20-10-25-04-00-runtime-shutdown-reentry-fixture-gate.md
+.agent/trackers/2026-07-12T21-51-38-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-12T21-51-38-04-00.md
+.agent/architecture-audit/2026-07-12T21-51-38-04-00-run-start-restart-admission-dsk-map.md
+.agent/render-audit/2026-07-12T21-51-38-04-00-first-run-generation-frame-gap.md
+.agent/gameplay-audit/2026-07-12T21-51-38-04-00-enter-repeat-active-run-reset-loop.md
+.agent/interaction-audit/2026-07-12T21-51-38-04-00-start-command-status-generation-map.md
+.agent/run-lifecycle-audit/2026-07-12T21-51-38-04-00-participant-reset-start-result-contract.md
+.agent/deploy-audit/2026-07-12T21-51-38-04-00-start-restart-fixture-gate.md
 .agent/current-audit.md
 .agent/next-steps.md
 .agent/known-gaps.md
@@ -46,81 +44,63 @@ The current audit defines one browser-runtime lifecycle authority spanning start
 .agent/kit-registry.json
 ```
 
-## Current runtime loop
+The browser-runtime retirement audit at `2026-07-12T20-10-25-04-00` remains a direct dependency. Restart must retire or explicitly preserve run-scoped participants without creating a second runtime owner.
+
+## Current start loop
 
 ```txt
-boot
-  -> preflight pinned modules
-  -> compose engine, physics, Worker/controller, camera and renderer
-  -> allocate scene resources and browser callbacks
-  -> publish PrehistoricRushHost
-  -> start recursive RAF
+UI button
+  -> game status decides Jump or start()
 
-frame
-  -> submit input
-  -> engine tick
-  -> update streaming/content
-  -> apply pose and camera
-  -> render world and HUD
-  -> schedule successor RAF
+Space
+  -> game status decides Jump or start()
 
-exit/failure
-  -> no StopRuntimeCommand
-  -> no producer barrier
-  -> no participant retirement receipts
-  -> no exact-once render disposal
-  -> no public-host revocation
+Enter
+  -> always start(), including active game and key-repeat delivery
+
+start()
+  -> game.start() resets RunState/Input and increments runId
+  -> reset simulation resolution
+  -> emit RunStarted and direct transition to game
+  -> refresh content using retained active patches
+  -> reuse retained controller, cache, Worker, physics provider/body, renderer, and local held-key booleans
+  -> prime streaming and reset camera
 ```
 
 ## Main findings
 
 ```txt
-runtime session/generation: absent
-lifecycle state machine: absent
-partial-start rollback: absent
-retained RAF lease: absent
-removable listener lease set: absent
-Worker/executor/controller retirement: absent
-engine/physics retirement result: absent
-Three-adapter dispose surface: absent
-public-host revocation: absent
-terminal RuntimeStopResult: absent
-stop-then-reentry proof: absent
+start command identity: absent
+status/scene admission inside game.start(): absent
+Enter active-run guard: absent
+KeyboardEvent.repeat guard: absent
+exactly-once start result: absent
+local held-key retirement: absent
+patch-controller run generation/reset: absent
+pending Worker run generation: absent
+physics body/collider reset receipt: absent
+render/content reset receipt: absent
+first run-generation frame acknowledgement: absent
 ```
-
-Source-level render allocation census:
-
-```txt
-40 mesh/geometry allocations
-12 material objects
-1 player skeleton
-1 WebGLRenderer
-```
-
-This is not a measured GPU-memory or leak claim.
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-browser-runtime-lifecycle-authority-domain
+prehistoric-rush-run-start-restart-admission-authority-domain
 ```
 
 Required flow:
 
 ```txt
-start command
-  -> participant preparation and leases
-  -> commit Running or reverse-order rollback
-
-stop command
-  -> close admission
-  -> cancel callbacks and listeners
-  -> revoke public host
-  -> reject/terminate Worker work
-  -> retire stream, engine and physics ownership
-  -> retire render resources exactly once
-  -> publish terminal stop result and journal
-  -> permit re-entry only under a new generation
+StartRunCommand or RestartRunCommand
+  -> validate browser/runtime session, scene, status, command ID, and expected run generation
+  -> reject key repeat, duplicate, stale, or active-run start by policy
+  -> close predecessor run input and asynchronous admission
+  -> prepare RunState, Input, simulation, physics, patch/Worker, camera, content, and render participants
+  -> reset or explicitly preserve each participant under one successor run generation
+  -> atomically commit RunStartResult
+  -> publish one RunStarted event and scene transition
+  -> acknowledge the first visible frame citing the new run and participant generations
 ```
 
 ## Kit census
@@ -132,22 +112,8 @@ product/page/Worker kits:         14
 external/host adapters:            9
 proof kits:                        2
 total surfaces:                   45
-candidate lifecycle kits:         35 including parent
 ```
 
 ## Validation boundary
 
-```txt
-runtime/gameplay/physics/streaming behavior changed: no
-rendering changed: no
-package scripts/dependencies/deployment changed: no
-npm test: not run
-browser lifecycle fixtures: not run
-Worker shutdown fixtures: not run
-render retirement fixtures: not run
-Pages re-entry fixtures: not run
-branch created: no
-pull request created: no
-```
-
-A tab closing or a frame chain ending does not prove deterministic shutdown. Completion requires a terminal result covering callback, Worker, participant, public capability and render-resource retirement for one runtime generation.
+Documentation only. Runtime, input, simulation, physics, streaming, Worker, camera, rendering, package, dependency, and deployment behavior are unchanged. No start/restart fixture was run.

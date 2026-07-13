@@ -1,157 +1,70 @@
-# Next Steps: PrehistoricRush Browser Runtime Lifecycle
+# PrehistoricRush Next Steps
 
-**Updated:** `2026-07-12T20-10-25-04-00`
+**Audit:** `2026-07-12T21-51-38-04-00`  
+**Authority:** `prehistoric-rush-run-start-restart-admission-authority-domain`
+
+## Summary
+
+The next implementation should convert UI, Space, Enter, and public start requests into one status-gated command, retire host-local input, fence predecessor async work, and atomically reset or preserve every participant under a new run generation.
 
 ## Plan ledger
 
-**Goal:** replace implicit page lifetime with one start/stop authority that owns callback, Worker, engine, physics, render and public-host leases and can prove exact-once retirement.
+**Goal:** make Start, Retry, and Run Again deterministic, exactly once, and complete across all run-scoped owners.
 
-### Gate 0: preserve current behavior
+### Phase 1: Command admission
 
-- [ ] Preserve deterministic gameplay, route, streaming and profile behavior.
-- [ ] Preserve pinned module versions and current page routes.
-- [ ] Keep participant-specific disposal in participant domains.
-- [ ] Add lifecycle coordination without merging run reset and page shutdown.
+- [ ] Add `RunStartCommandId`, sequence, expected runtime session, scene, status, and run generation.
+- [ ] Distinguish Start, Retry, and Run Again intent.
+- [ ] Reject `KeyboardEvent.repeat` and duplicate commands.
+- [ ] Reject active-game Start unless an explicit restart policy permits it.
+- [ ] Route button, Space, Enter, and public capabilities through one command path.
 
-### Gate 1: freeze lifecycle identities and schemas
+### Phase 2: Participant manifest
 
-- [ ] Add runtime session ID and runtime generation.
-- [ ] Define `Idle`, `Starting`, `Running`, `Stopping`, `Stopped` and `Failed`.
-- [ ] Define `StartRuntimeCommand`, `RuntimeStartResult`, `StopRuntimeCommand` and `RuntimeStopResult`.
-- [ ] Define participant and resource lease schemas.
-- [ ] Define lifecycle observation and bounded journal schemas.
+- [ ] Inventory RunState, InputState, simulation resolution, Core Scene, physics body/colliders, patch controller, Worker deliveries, active content, instance batches, camera follower, renderer, HUD, and public observations.
+- [ ] Mark each participant reset, rebuilt, or preserved.
+- [ ] Require predecessor and successor revisions for every participant.
+- [ ] Close predecessor input and async delivery admission before preparation.
 
-### Gate 2: convert startup to participant preparation
+### Phase 3: Atomic run start
 
-- [ ] Register each accepted participant with a lease immediately after creation.
-- [ ] Prepare engine, physics, Worker/executor, controller, camera, renderer and listeners before committing Running.
-- [ ] Publish the public host only after all required participants prepare.
-- [ ] Roll back partial startup in reverse admission order.
-- [ ] Classify import, initialization, WebGL, Worker and provider failures.
+- [ ] Prepare fresh RunState and InputState without publishing them.
+- [ ] Clear host-local left/right/boost state.
+- [ ] Reset simulation resolution and transition state under the command.
+- [ ] Fence or retire predecessor Worker/patch results.
+- [ ] Reset player physics transform and collider generation.
+- [ ] Rebuild or validate active content for the origin generation.
+- [ ] Reset camera follower and render observation.
+- [ ] Commit one `RunStartResult` and one `RunStarted` event.
 
-### Gate 3: own callback producers
+### Phase 4: Failure and idempotency
 
-- [ ] Retain the RAF handle.
-- [ ] Retain named keydown, keyup, blur and resize listener functions.
-- [ ] Associate every callback with the runtime generation.
-- [ ] Reject callbacks after Stopping or from stale generations.
-- [ ] Add visibility/page lifecycle policy explicitly rather than implicitly.
+- [ ] Preserve the predecessor if preparation fails.
+- [ ] Report partial rollback or indeterminate state truthfully.
+- [ ] Return the sealed result for duplicate command delivery.
+- [ ] Reject stale callbacks and Worker deliveries after commit.
+- [ ] Journal participant preparation and commit receipts.
 
-### Gate 4: own Worker and streaming retirement
+### Phase 5: First-frame proof
 
-- [ ] Close patch-controller pumping before Worker retirement.
-- [ ] Reject pending executor requests with typed shutdown results.
-- [ ] Remove Worker listeners.
-- [ ] Terminate Worker exactly once.
-- [ ] Reject late Worker results by runtime and stream generation.
-- [ ] Retire active patch/controller ownership under explicit policy.
+- [ ] Bind HUD, player pose, patches, physics, camera, and renderer to the accepted run generation.
+- [ ] Publish `FirstRunGenerationFrameAck`.
+- [ ] Expose immutable start/participant/frame observations through `PrehistoricRushHost`.
 
-### Gate 5: own engine and physics retirement
+### Phase 6: Fixtures
 
-- [ ] Close product input and restart admission.
-- [ ] Define engine scheduler stop/reset behavior.
-- [ ] Retire Core Motion, Core Physics and articulation participant state under page-stop policy.
-- [ ] Remove player body and fixed colliders.
-- [ ] Retire Rapier provider/world ownership.
-- [ ] Return participant-specific retirement receipts.
+- [ ] Hold Enter and verify one run start.
+- [ ] Enter during active gameplay.
+- [ ] Button, Space, Enter, and public-command parity.
+- [ ] Retry after collision and Run Again after win.
+- [ ] Held steering/boost state across restart.
+- [ ] Pending Worker result from predecessor run.
+- [ ] Physics/player reset at origin.
+- [ ] Patch/cache reset or explicit preserve policy.
+- [ ] Participant preparation failure and rollback.
+- [ ] First visible successor frame.
+- [ ] Source, built output, and Pages parity.
 
-### Gate 6: own render retirement
+## Completion gate
 
-- [ ] Add `dispose()` to the Three adapter.
-- [ ] Import and call `disposeCreatureMesh()` for the player.
-- [ ] Dispose all unique terrain, tree, grass and shard geometries.
-- [ ] Dispose all unique materials exactly once.
-- [ ] Clear scene and active-content maps.
-- [ ] Dispose renderer after callback producers are stopped.
-- [ ] Publish render-resource retirement results.
-
-### Gate 7: revoke public capabilities
-
-- [ ] Replace raw `globalThis.PrehistoricRushHost` assignment with a publication lease.
-- [ ] Restrict host commands by lifecycle phase.
-- [ ] Revoke or replace host with terminal read-only state during stop.
-- [ ] Reject stale host references by runtime generation.
-
-### Gate 8: implement idempotent stop
-
-- [ ] Close admission before disposal begins.
-- [ ] Execute participant retirement in a fixed order.
-- [ ] Continue collecting results when one participant fails retirement.
-- [ ] Return the same result for the same stop command.
-- [ ] Return `AlreadyStopped` for subsequent stop commands.
-- [ ] Preserve unresolved retirement failures in the journal.
-
-### Gate 9: executable proof
-
-- [ ] Add start-stop success fixture.
-- [ ] Add repeated stop idempotency fixture.
-- [ ] Add stale-generation stop fixture.
-- [ ] Add partial-startup rollback fixture.
-- [ ] Add frame-failure cleanup fixture.
-- [ ] Add pending Worker shutdown and late-result fixtures.
-- [ ] Add input/resize-after-stop rejection fixtures.
-- [ ] Add renderer/resource retirement fixture.
-- [ ] Add public-host revocation fixture.
-- [ ] Add stop-then-reentry fixture.
-- [ ] Run local browser and deployed Pages matrices.
-
-## Candidate kit order
-
-```txt
-prehistoric-rush-browser-runtime-lifecycle-authority-domain
-runtime-session-id-kit
-runtime-generation-kit
-runtime-lifecycle-state-kit
-runtime-start-command-kit
-runtime-start-result-kit
-runtime-stop-command-kit
-runtime-stop-admission-kit
-runtime-stop-result-kit
-runtime-shutdown-barrier-kit
-raf-lease-kit
-browser-listener-lease-kit
-global-host-publication-lease-kit
-worker-resource-lease-kit
-worker-executor-retirement-kit
-patch-controller-retirement-kit
-engine-runtime-retirement-kit
-physics-provider-retirement-kit
-renderer-resource-lease-kit
-scene-resource-retirement-plan-kit
-creature-resource-retirement-kit
-instanced-resource-retirement-kit
-material-geometry-retirement-kit
-exact-once-disposal-kit
-stale-callback-rejection-kit
-runtime-failure-classification-kit
-runtime-retirement-result-kit
-runtime-observation-kit
-runtime-journal-kit
-terminal-visible-frame-ack-kit
-runtime-stopped-ack-kit
-browser-reentry-fixture-kit
-frame-failure-fixture-kit
-worker-pending-shutdown-fixture-kit
-pages-lifecycle-smoke-kit
-```
-
-## Validation order
-
-```txt
-npm test
-fixture:partial-startup-rollback
-fixture:runtime-start-stop
-fixture:stop-idempotency
-fixture:stale-generation-stop
-fixture:frame-failure-cleanup
-fixture:worker-pending-shutdown
-fixture:late-worker-result-rejection
-fixture:listener-and-raf-retirement
-fixture:render-resource-retirement
-fixture:public-host-revocation
-fixture:stop-reentry-generation
-browser lifecycle matrix
-Pages lifecycle matrix
-```
-
-Do not treat tab closure, route navigation or an apparently stopped frame as proof that callbacks, asynchronous work and GPU resources retired in order.
+Do not mark the authority implemented until repeated or stale start commands cause zero duplicate effects, every participant has a reset/preserve receipt, predecessor async work cannot enter the successor run, and the first visible frame cites the committed run generation.
