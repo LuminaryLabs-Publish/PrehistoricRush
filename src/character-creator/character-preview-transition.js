@@ -18,10 +18,9 @@ const smoothStep = (value) => {
 };
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 
-function descriptorGroundY(descriptor, platformTopY) {
-  const minimumY = finite(descriptor?.bounds?.min?.[1], 0);
-  const scaleY = Math.max(0.0001, finite(descriptor?.transform?.scale?.[1], 1));
-  return platformTopY - minimumY * scaleY;
+function characterGroundY(composition, scaleY, platformTopY) {
+  const minimumY = finite(composition?.creature?.presentation?.metadata?.bounds?.min?.[1], 0);
+  return platformTopY - minimumY * Math.max(0.0001, finite(scaleY, 1));
 }
 
 export function createCharacterPreviewTransition(options) {
@@ -64,7 +63,7 @@ export function createCharacterPreviewTransition(options) {
   let targetComposition = currentComposition;
   let targetDescriptor = currentDescriptor;
   let currentMesh = createCreatureMesh(THREE, currentDescriptor);
-  currentMesh.position.y = descriptorGroundY(currentDescriptor, platformTopY);
+  currentMesh.position.y = characterGroundY(currentComposition, currentMesh.scale.y, platformTopY);
   let targetRevision = initialProfile.revision;
   let appliedRevision = initialProfile.revision;
   let crossfade = null;
@@ -100,7 +99,7 @@ export function createCharacterPreviewTransition(options) {
 
     const nextMesh = createCreatureMesh(THREE, descriptor, { opacity: 0 });
     nextMesh.position.copy(currentMesh.position);
-    nextMesh.position.y = descriptorGroundY(descriptor, platformTopY);
+    nextMesh.position.y = characterGroundY(composition, nextMesh.scale.y, platformTopY);
     nextMesh.rotation.copy(currentMesh.rotation);
     scene.add(nextMesh);
     crossfade = {
@@ -124,7 +123,7 @@ export function createCharacterPreviewTransition(options) {
       id: `${tickId}:base`
     });
     const evaluatedPose = articulatedMotion.evaluatePose({ rigId, pose: basePose });
-    const visualScale = Math.max(0.0001, finite(targetDescriptor.transform?.scale?.[0], 1));
+    const visualScale = Math.max(0.0001, finite(mesh.scale.x, 1));
     const targets = createPlayerGroundLegTargets({
       rig,
       evaluatedPose,
@@ -158,8 +157,8 @@ export function createCharacterPreviewTransition(options) {
     return frame.pose;
   }
 
-  function updateMeshPlacement(mesh, descriptor, frameTime) {
-    const targetY = descriptorGroundY(descriptor, platformTopY);
+  function updateMeshPlacement(mesh, composition, frameTime) {
+    const targetY = characterGroundY(composition, mesh.scale.y, platformTopY);
     const alpha = 1 - Math.exp(-placementSharpness * frameTime);
     mesh.position.y += (targetY - mesh.position.y) * alpha;
   }
@@ -173,8 +172,8 @@ export function createCharacterPreviewTransition(options) {
       setCreatureOpacity(crossfade.nextMesh, blend);
       crossfade.previousMesh.rotation.y = rotationY;
       crossfade.nextMesh.rotation.y = rotationY;
-      updateMeshPlacement(crossfade.previousMesh, currentDescriptor, frameTime);
-      updateMeshPlacement(crossfade.nextMesh, crossfade.descriptor, frameTime);
+      updateMeshPlacement(crossfade.previousMesh, currentComposition, frameTime);
+      updateMeshPlacement(crossfade.nextMesh, crossfade.composition, frameTime);
       const pose = solvePose(poseState, rotationY, crossfade.nextMesh);
       applyCreaturePoseDamped(crossfade.previousMesh, pose, frameTime, poseSharpness);
       applyCreaturePoseDamped(crossfade.nextMesh, pose, frameTime, poseSharpness);
@@ -184,7 +183,7 @@ export function createCharacterPreviewTransition(options) {
 
     currentMesh.rotation.y = rotationY;
     const difference = dampCreatureMeshTowardDescriptor(currentMesh, targetDescriptor, frameTime, morphSharpness);
-    updateMeshPlacement(currentMesh, targetDescriptor, frameTime);
+    updateMeshPlacement(currentMesh, targetComposition, frameTime);
     const pose = solvePose(poseState, rotationY, currentMesh);
     applyCreaturePoseDamped(currentMesh, pose, frameTime, poseSharpness);
     if (difference < 0.0005) appliedRevision = targetRevision;
