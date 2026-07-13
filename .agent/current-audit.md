@@ -1,139 +1,134 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-13T13-58-35-04-00`  
+**Timestamp:** `2026-07-13T16-41-10-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Runtime revision reviewed:** `0c181c308716eb4a143768a0c674177c33c2264c`  
-**Status:** `player-character-composition-transition-authority-central-reconciled`  
-**Technical status:** `player-character-composition-transition-authority-audited`
+**Runtime revision reviewed:** `66a219fea4bb886fb4fff41c9b31c67ba7e4eaee`  
+**Status:** `non-blocking-pause-menu-command-lifecycle-authority-central-reconciled`  
+**Technical status:** `non-blocking-pause-menu-command-lifecycle-authority-audited`
 
 ## Summary
 
-Core Creature, Core Character and Core Player are now active in PrehistoricRush. The product composes a procedural body and articulated rig into a neutral creature definition, binds that creature to an active character and optionally gives a player possession. The game resolves the controlled character for motion, physics and pose publication, while the creator uses the same composition path without player possession.
+PrehistoricRush now includes a product pause-menu child DSK with bounded state, commands, events, snapshot/reset and renderer-neutral Core UI/Core Presentation descriptors. The authored policy keeps simulation running while the overlay is open.
 
-The current gap is cross-participant atomicity and visible adoption. Rig, creature, character and player registries mutate sequentially. The creator mutates those registries before topology validation, mesh creation, crossfade completion and framing. No composition attempt, expected revisions, typed duplicate/replace policy, participant receipts, rollback result or matching visible-frame acknowledgement exists.
+The current gap is the browser boundary. The public entry polls for runtime readiness, installs an Escape listener, starts a perpetual menu synchronization RAF, owns overlay DOM and navigates immediately after an exit request. Those participants have no shared identity, typed terminal results, visible-frame acknowledgement or retirement receipt.
 
 ## Plan ledger
 
-**Goal:** keep Core ownership separated while adding one product composition result that every registry and visible-preview participant adopts together.
+**Goal:** retain non-blocking gameplay while unifying menu command admission, overlay projection, input policy, exit settlement and host retirement.
 
 - [x] Reconcile the full Publish inventory and central ledger.
-- [x] Select only PrehistoricRush under the oldest/local-ahead rule.
-- [x] Inspect 18 new source/test commits after the documented runtime revision.
+- [x] Select only PrehistoricRush because it had two newer commits.
+- [x] Inspect the DSK, Core Presentation graph, host, runtime, test and package wiring.
 - [x] Identify the complete interaction loop and all domains.
-- [x] Correct the inventory to 52 implemented kit/adapter/proof surfaces.
-- [x] Define the player-character composition transition authority.
-- [x] Add the timestamped tracker and audit family.
+- [x] Update the inventory to 58 implemented surfaces.
+- [x] Define the pause-menu command lifecycle authority.
+- [x] Add the timestamped audit family and refresh root projections.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement and execute atomic composition/failure/visible-frame fixtures later.
+- [ ] Implement and execute lifecycle/input/navigation/visible-frame fixtures later.
 
 ## Interaction loop
 
 ```txt
-profile
-  -> procedural body
-  -> articulated rig
-  -> Core Creature
-  -> Core Character
-  -> optional Core Player possession
-  -> controlled-character pose/simulation path
+runtime boot
+  -> Core Presentation and product pause DSK install
+  -> run, streaming and render loop start
+  -> public entry polls until PrehistoricRushHost exists
+  -> Escape listener and menu sync RAF install
 
-creator profile edit
-  -> compose into live registries
-  -> support-pose evaluation
-  -> support-local grounding
-  -> topology morph or crossfade
-  -> articulated preview pose
-  -> camera framing
-  -> applied visual revision
-  -> delayed durable profile commit
+Escape
+  -> pauseMenu.toggle
+  -> semantic sequence changes
+  -> host recreates or removes overlay
+  -> gameplay simulation and rendering continue
+
+Settings
+  -> semantic view becomes settings
+  -> overlay is rebuilt
+
+Exit
+  -> selectedAction becomes exit
+  -> one exit event emits
+  -> location.href changes immediately
 ```
 
 ## Domains in use
 
 ```txt
-browser boot, pinned providers, profile binding, input, resize and RAF
-profile schema, persistence, debounce and cross-page distribution
-Core Creature definitions, body/rig references, support anchors and presentation hints
-Core Character identity, creature/profile reference, pose/motion/physics bindings and lifecycle
-Core Player identity, possession, control and spawn generation
-Core Input, Spatial, Scene, Simulation, Motion, Physics, Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
-articulated motion and articulated dynamics
-procedural creature body, rig, skinning, collision and legacy pose
-player-character composition and controlled-character resolution
-support-anchor evaluation, local bounds, platform grounding and camera framing
-creator morph/crossfade and visible transition lifecycle
-Rapier, route generation, patch streaming, terrain and vegetation
-run movement, jumping, scoring, collisions and outcomes
-Three.js rendering, HUD and diagnostics
-composition preparation, atomic adoption, rollback, retirement and visible proof
-validation, build and GitHub Pages deployment
+browser boot, provider admission, fatal projection, DOM, resize and RAF
+browser gameplay and menu input admission
+Core Input, Spatial, Scene, Creature, Character, Player, Physics, Simulation and Motion
+articulated dynamics and articulated motion
+Core Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
+Core Presentation composition, output, UI scale and camera framing
+product run, route, score, outcome, player pose and terrain IK
+product pause-menu semantic state, commands, descriptors, events and snapshots
+profile schema/persistence and player-character composition
+Rapier, patch Worker, terrain, vegetation, pickups and collisions
+Three.js world/creature/camera and DOM overlay presentation
+exit navigation, host retirement, validation, build and Pages deployment
 ```
 
 ## Implemented state
 
 ```txt
-Core Creature domain installed: yes
-Core Character domain installed: yes
-Core Player domain installed: yes
-neutral creature support/presentation descriptor: yes
-active character motion/physics/pose bindings: yes
-player registration and possession: yes
-controlled-character resolution in game loop: yes
-shared game/creator composition helper: yes
-creator optional no-player composition: yes
-local unscaled presentation bounds: yes
-support bone IDs and fallback policy: yes
-support-pose grounding: yes
-bounds-based camera framing: yes
-idempotent identical composition test: yes
-changed embodiment replacement test: yes
-creator source authority test: yes
-npm test wiring: yes
+Core Presentation installed: yes
+product pause-menu child DSK installed: yes
+Core UI menu descriptor: yes
+Core Presentation overlay policy: yes
+menu and overlay blocksSimulation false: yes
+clone-safe state and snapshot: yes
+open/close/toggle/settings/exit/reset commands: yes
+duplicate exit event suppression: yes
+Escape and clicks delegate to DSK: yes
+simulation ticking remains unconditional: yes
+pause test wired into npm test: yes
 ```
 
 ## Current gaps
 
 ```txt
-CompositionAttemptId and CompositionRevision: absent
-expected participant revisions: absent
-detached body/rig/creature/character/player candidate set: absent
-typed Duplicate/Replace/Conflict result: absent
-replacement policy parses exception text: present
-aggregate preparation receipts: absent
-atomic registry adoption: absent
-aggregate rollback: absent
-rig-change pose compatibility result: absent
-support-anchor revision/result: absent
-mesh/framing candidate receipt: absent
-crossfade generation and stale retirement result: absent
-registry/visible/persistence revision correlation: absent
-FirstComposedCharacterFrameAck: absent
-participant failure fixtures: absent
-browser/build/Pages proof: absent
+PauseMenuCommandId and generation: absent
+expected semantic sequence: absent
+typed duplicate/stale/failed/retired command result: absent
+browser host identity/generation: absent
+bounded cancellable attach poll: absent
+sync RAF retirement: absent
+Escape listener retirement: absent
+overlay projection result/fingerprint: absent
+first matching visible overlay frame ack: absent
+explicit gameplay-input policy while open: absent
+exit event consumer and settlement: absent
+runtime/Worker/render cleanup before navigation: absent
+exactly-once navigation result: absent
+browser/build/Pages fixtures: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-player-character-composition-transition-authority-domain
+prehistoric-rush-pause-menu-command-lifecycle-authority-domain
 ```
 
 ```txt
-PlayerCharacterCompositionCommand
-  -> bind engine/profile/participant predecessor revisions
-  -> prepare body, rig, creature, character and optional player candidates
-  -> evaluate support anchors, bounds, topology and pose compatibility
-  -> prepare mesh, placement and camera framing without live mutation
-  -> atomically adopt all registries or preserve all predecessors
-  -> publish terminal composition and participant results
-  -> admit one visual transition generation
-  -> acknowledge the first matching composed-character frame
+PauseMenuCommand
+  -> bind runtime, menu, overlay and host generations
+  -> validate command identity and expected sequence
+  -> publish accepted or typed non-accepted result
+  -> project one matching overlay revision
+  -> apply explicit retained-gameplay-input policy
+  -> acknowledge the first matching frame
+
+accepted exit
+  -> retire all browser-host and runtime participants
+  -> collect bounded receipts
+  -> publish ExitSettlementResult
+  -> navigate exactly once
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-13T13-58-35-04-00/project-breakdown.md` and its linked audit family.
+See `.agent/trackers/2026-07-13T16-41-10-04-00/project-breakdown.md` and its linked audit family.
 
 ## Validation
 
-Documentation only. No runtime code changed in this pass. Source and test wiring were inspected, but `npm test`, real-runtime failure injection, browser creator transitions, built output and GitHub Pages were not independently executed.
+Documentation only. No runtime code changed. Source, pinned Core Presentation and tests were inspected, but GitHub reported no combined status checks and `npm test`, browser behavior, built output and Pages parity were not independently executed.
