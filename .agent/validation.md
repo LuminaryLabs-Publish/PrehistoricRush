@@ -1,102 +1,97 @@
-# Validation: PrehistoricRush Player Character Profile Convergence
+# Validation: PrehistoricRush Browser Runtime Lifecycle
 
-**Updated:** `2026-07-12T18-18-59-04-00`
+**Updated:** `2026-07-12T20-10-25-04-00`
 
 ## Scope
 
-Documentation-only review of the profile schema, localStorage store, BroadcastChannel and storage-event adapters, creator draft/debounce/reset/navigation flow, menu projection, game boot profile binding, public readback and current package test boundary.
+Documentation-only review of game-page module admission, runtime composition, Rapier provider ownership, Worker/controller setup, Three.js allocation, browser callbacks, recursive RAF, public-host publication and available disposal capabilities.
 
 ## Plan ledger
 
-**Goal:** distinguish profile normalization and visible draft updates from executable proof of atomic durable commit, cross-tab convergence and creator-to-game frame parity.
+**Goal:** distinguish a functioning browser session from executable proof that startup, failure, stop and re-entry retire every owned participant exactly once.
 
 - [x] Compare the full Publish inventory with central tracking.
 - [x] Exclude `TheCavalryOfRome`.
 - [x] Select only `PrehistoricRush` by the oldest eligible synchronized timestamp.
-- [x] Review `player-character-schema.js`.
-- [x] Review `player-character-store.js`.
-- [x] Review menu profile loading/subscription.
-- [x] Review creator draft, timer, external updates, reset and unload.
-- [x] Review game boot profile consumption and public readback.
-- [x] Confirm no commit, conflict, convergence, navigation or visible-frame authority exists.
-- [x] Publish the complete `18-18-59` audit family.
+- [x] Review `game.html` and `src/pages/game.js`.
+- [x] Review `src/game.js` startup, adapter, Worker, input, RAF and public-host paths.
+- [x] Review `src/render/three-procedural-creature.js` disposal helper.
+- [x] Review creator page shutdown as a comparison boundary.
+- [x] Confirm no game-runtime lifecycle authority or stop result exists.
+- [x] Publish the complete `20-10-25` audit family.
 - [x] Change no runtime source, dependency or deployment configuration.
 - [x] Create no branch or pull request.
 
 ## Source-backed validation performed
 
 ```txt
-verified profile schema is normalized to prehistoric-rush.character.v1
-verified revision is a nonnegative integer field
-verified save reads previous profile before assigning successor revision
-verified save writes one complete JSON snapshot with localStorage.setItem
-verified save does not compare an expected predecessor
-verified save does not verify durable readback
-verified BroadcastChannel payloads are normalized then emitted without revision admission
-verified storage-event payloads are normalized then emitted without revision admission
-verified creator schedules a 160 ms timeout after draft/preview mutation
-verified external creator updates do not clear or rebase the pending timer
-verified creator Play/Menu navigation has no save flush barrier
-verified beforeunload disposes the preview only
-verified menu projects every admitted profile event directly
-verified game loads one profile before engine composition
-verified public host exposes profileId/revision but no commit/fingerprint
-verified npm test covers outcome policy and articulation only
+verified game-page preflight loads nine pinned runtime module groups
+verified main composes Nexus Engine, Rapier, patch controller, camera and Three adapter
+verified optional Worker/executor is created and retained in workerState
+verified createThreeAdapter allocates renderer, scene and presentation resources
+verified 25 terrain, 10 tree, 3 grass, 1 shard and 1 player mesh/geometry allocations
+verified 12 material objects and one player skeleton
+verified createThreeAdapter returns no dispose function
+verified game imports createCreatureMesh/applyCreaturePose but not disposeCreatureMesh
+verified keydown, keyup, blur and resize listeners are anonymous and unretained
+verified recursive RAF request ID is not retained
+verified startup promise catch does not supervise later frame exceptions
+verified global PrehistoricRushHost exposes raw participant objects
+verified no StopRuntimeCommand, participant barrier or RuntimeStopResult exists
+verified current npm test covers outcome policy and articulation only
 ```
 
 ## Executable proof currently present
 
 ```txt
-profile normalization code exists
-profile load/save/patch/reset helpers exist
-menu and creator subscriptions exist
-numeric revision is exposed
-creator preview transition exists
-runtime binds one loaded profile for one page session
-npm test command exists
+module preflight and startup failure projection exist
+creator preview has a partial beforeunload disposal path
+creature-mesh disposal helper exists
+Worker adapter advertises pending rejection, listener removal and termination
+package test command exists
 outcome-policy and articulation tests exist
 ```
 
 ## Proof currently absent
 
 ```txt
-profile command idempotency fixture
-expected-predecessor/CAS fixture
-same-predecessor conflict fixture
-disjoint field merge fixture
-same-revision fingerprint divergence fixture
-storage write/readback result fixture
-duplicate delivery fixture
-stale/out-of-order delivery fixture
-remote commit during debounce fixture
-reset barrier fixture
-navigation save-flush fixture
-storage unavailable/failure fixture
-runtime profile binding fixture
-first visible profile-dependent frame acknowledgement
-browser and Pages multi-tab/navigation matrix
+runtime start-result fixture
+partial-startup rollback fixture
+normal stop fixture
+stop idempotency fixture
+stale-generation stop fixture
+frame-failure cleanup fixture
+pending Worker shutdown fixture
+late callback rejection fixture
+browser-listener removal fixture
+RAF cancellation fixture
+public-host revocation fixture
+render-resource retirement fixture
+renderer-disposed acknowledgement
+stop-then-reentry fixture
+browser and Pages lifecycle matrix
 ```
 
 ## Commands not run in this pass
 
 ```txt
 npm test
-browser creator/menu/game smoke
-multi-tab BroadcastChannel/storage smoke
-storage failure injection
-navigation timing smoke
-Pages profile convergence smoke
-first-visible-profile-frame capture
+browser start/stop smoke
+frame failure injection
+Worker pending-request shutdown
+WebGL resource retirement inspection
+repeated stop/re-entry smoke
+Pages lifecycle smoke
 ```
 
-The GitHub connector supplied current source and write access but no checked-out browser runtime. The direct public clone attempt failed because the execution container could not resolve `github.com`. No executable persistence or rendering result is claimed.
+The GitHub connector supplied current source and write access but no checked-out browser runtime. The direct public clone attempt failed because the execution container could not resolve `github.com`. No executable lifecycle or rendering result is claimed.
 
 ## Change-state validation
 
 ```txt
 runtime source changed by audit: no
-profile behavior changed by audit: no
-creator/menu/game behavior changed by audit: no
+gameplay behavior changed by audit: no
+physics/streaming behavior changed by audit: no
 render behavior changed by audit: no
 package scripts or dependencies changed by audit: no
 deployment changed by audit: no
@@ -108,4 +103,4 @@ central ledger and internal change log synchronized: yes
 
 ## Completion boundary
 
-Do not claim atomic profile persistence, multi-tab convergence, safe creator navigation or creator-to-game visual parity until commands are expected-predecessor admitted, writes are verified, deliveries are monotonic and duplicate-safe, pending saves resolve before navigation, runtime binding cites the accepted commit and the first visible profile-dependent frame acknowledges it.
+Do not claim deterministic shutdown, leak freedom, exact-once disposal, late-callback safety or re-entry readiness until startup participants are leased, stop closes producers before consumers, every retirement publishes a typed result and browser/Pages fixtures prove a new runtime generation can start without predecessor ownership.
