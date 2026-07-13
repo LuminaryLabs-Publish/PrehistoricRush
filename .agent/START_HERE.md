@@ -1,95 +1,98 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-13T08-39-12-04-00`  
+**Last aligned:** `2026-07-13T13-58-35-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Runtime revision reviewed:** `666ab306b94c9fefcd8bb4230b61854f121dab86`  
-**Status:** `terrain-aware-hind-leg-ik-central-reconciled`  
-**Technical status:** `terrain-aware-hind-leg-ik-implemented-static-proof`  
-**Retained audits:** `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
+**Runtime revision reviewed:** `0c181c308716eb4a143768a0c674177c33c2264c`  
+**Status:** `player-character-composition-transition-authority-central-reconciled`  
+**Technical status:** `player-character-composition-transition-authority-audited`  
+**Retained audits:** `terrain-aware-hind-leg-ik-central-reconciled`, `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
 
 ## Summary
 
-PrehistoricRush now evaluates the animated dinosaur pose through articulated FK, generates weighted terrain targets for both hind feet and feeds those targets into the simulation-owned articulated solve. The domain advertises `ground-leg-ik`, the runtime pin was advanced to the current-pose solver and target/path tests are wired into `npm test`.
+PrehistoricRush now composes the playable dinosaur and creator preview through Core Creature, Core Character and Core Player. Neutral creature definitions own body/rig references, support anchors and presentation hints; active characters own runtime bindings; players own possession and control authority.
 
-The remaining boundary is terrain-sample coherence. IK samples the current active-patch map or fallback height during `engine.tick(dt)`, then the browser host updates patch streaming before rendering. The solved pose and visible terrain therefore do not share a patch-stream revision, target-frame ID or coherent visible-frame acknowledgement.
+The remaining boundary is atomic composition adoption. The product helper registers the rig, creature, character and optional player sequentially. The creator performs those mutations before topology validation, successor mesh preparation, crossfade completion and camera-framing adoption. Registry state can therefore identify a successor profile while the visible preview or durable profile still identifies the predecessor.
 
 ## Plan ledger
 
-**Goal:** preserve the implemented terrain IK and define one revisioned evidence chain from streamed terrain through foot targets, authoritative pose and visible terrain/skeleton presentation.
+**Goal:** preserve the new bounded Core composition and add one product transaction for participant preparation, typed conflict policy, atomic adoption, rollback and first-visible-frame proof.
 
 - [x] Compare all ten Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm nine eligible ledger and root `.agent` entries.
-- [x] Select only PrehistoricRush because five runtime/test commits made its prior documentation stale.
-- [x] Preserve the complete interaction loop, domain map and 46-surface service inventory.
-- [x] Add the `2026-07-13T08-39-12-04-00` tracker and audit family.
+- [x] Confirm nine eligible central ledger and root `.agent` entries.
+- [x] Select only PrehistoricRush because it had the oldest central timestamp and 18 newer source/test commits.
+- [x] Reconcile Core Creature/Character/Player, player-character composition, creator support placement, framing and tests.
+- [x] Preserve the full interaction loop, domain map and 52-surface service inventory.
+- [x] Add the `2026-07-13T13-58-35-04-00` tracker and audit family.
 - [x] Refresh every required root `.agent` file and machine registry.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement terrain revisions, target frames and browser coherence fixtures later.
+- [ ] Implement atomic composition and executable failure/browser fixtures later.
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-13T08-39-12-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T08-39-12-04-00.md
-.agent/architecture-audit/2026-07-13T08-39-12-04-00-terrain-foot-target-coherence-dsk-map.md
-.agent/render-audit/2026-07-13T08-39-12-04-00-terrain-pose-visible-frame-coherence-gap.md
-.agent/gameplay-audit/2026-07-13T08-39-12-04-00-terrain-ik-patch-revision-loop.md
-.agent/interaction-audit/2026-07-13T08-39-12-04-00-terrain-sample-target-solve-admission-map.md
-.agent/terrain-ik-audit/2026-07-13T08-39-12-04-00-sample-revision-foot-target-contract.md
-.agent/deploy-audit/2026-07-13T08-39-12-04-00-terrain-ik-fixture-gate.md
-.agent/central-sync-audit/2026-07-13T08-39-12-04-00-terrain-ik-runtime-reconciliation.md
+.agent/trackers/2026-07-13T13-58-35-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T13-58-35-04-00.md
+.agent/architecture-audit/2026-07-13T13-58-35-04-00-player-character-composition-transition-dsk-map.md
+.agent/render-audit/2026-07-13T13-58-35-04-00-composition-visible-preview-coherence-gap.md
+.agent/gameplay-audit/2026-07-13T13-58-35-04-00-core-player-character-composition-loop.md
+.agent/interaction-audit/2026-07-13T13-58-35-04-00-profile-composition-transition-result-map.md
+.agent/character-composition-audit/2026-07-13T13-58-35-04-00-registry-support-preview-atomicity-contract.md
+.agent/deploy-audit/2026-07-13T13-58-35-04-00-character-composition-fixture-gate.md
+.agent/central-sync-audit/2026-07-13T13-58-35-04-00-player-character-composition-runtime-reconciliation.md
 ```
 
 ## Complete interaction loop
 
 ```txt
-boot and compose
-  -> create body and articulated rig
-  -> install browser height sampler
-  -> initialize and start PlayerPose
-  -> prime streamed terrain
+game boot
+  -> profile and pinned runtime
+  -> body and articulated rig
+  -> Core Creature definition
+  -> Core Character bindings
+  -> Core Player possession
+  -> controlled-character simulation and pose publication
+  -> Three.js presentation
 
-active frame
-  -> browser input
-  -> engine.tick
-  -> movement and root terrain sample
-  -> legacy gait and FK foot evaluation
-  -> left/right terrain samples
-  -> weighted ground targets
-  -> authoritative articulated solve and PlayerPose publication
-  -> patch streaming activation/release
-  -> render current terrain and damped skeleton
+creator edit
+  -> draft profile revision
+  -> immediate live composition mutation
+  -> support-anchor evaluation
+  -> morph or crossfade preparation
+  -> articulated pose, placement and camera framing
+  -> visible applied revision
+  -> delayed durable profile commit and second composition call
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-terrain-foot-target-coherence-authority-domain
+prehistoric-rush-player-character-composition-transition-authority-domain
 ```
 
 ```txt
-TerrainFootTargetCommand
-  -> bind run/tick/rig/source-pose and terrain revisions
-  -> issue typed root/left/right sample results
-  -> publish immutable TerrainFootTargetFrame
-  -> solve only from an accepted target frame
-  -> publish PlayerPoseFrame with terrain provenance
-  -> render terrain and skeleton from the same admitted generation
+PlayerCharacterCompositionCommand
+  -> bind profile, engine and expected participant revisions
+  -> prepare body, rig, creature, character and optional player candidates
+  -> evaluate support anchors, bounds, topology, placement and framing
+  -> reject stale, duplicate, conflicting or failed work without live mutation
+  -> atomically adopt every registry participant or preserve every predecessor
+  -> publish PlayerCharacterCompositionResult
+  -> admit one preview transition generation
   -> acknowledge the first matching visible frame
 ```
 
 ## Kit census
 
 ```txt
-Nexus Engine root/subdomain kits: 15
+Nexus Engine root/subdomain kits: 18
 official NexusEngine-Kits:         5
-product/page/Worker kits:         14
+product/page/Worker kits:         15
 external/host adapters:            9
-proof kits:                        3
-total surfaces:                   46
+proof kits:                        5
+total surfaces:                   52
 ```
 
 ## Validation boundary
 
-Documentation only. Source and tests were inspected through GitHub. No runtime, renderer, package or deployment source changed. `npm test`, browser patch-boundary behavior, built output and Pages terrain-IK parity were not independently executed.
+Documentation only. Source, tests, package wiring and pinned Core contracts were inspected through GitHub. No runtime, renderer, package or deployment source changed. `npm test`, browser composition failures, built output and Pages parity were not independently executed.
