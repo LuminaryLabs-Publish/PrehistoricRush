@@ -1,66 +1,64 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T03-20-58-04-00`  
-**Status:** `collision-source-convergence-publication-central-reconciled`  
-**Technical status:** `collision-source-convergence-authority-audited`
+**Audit:** `2026-07-13T06-39-10-04-00`  
+**Status:** `authoritative-player-pose-publication-central-reconciled`  
+**Technical status:** `authoritative-player-pose-implemented-static-proof`
 
 ## Summary
 
-Core Physics and browser fallback collision evidence are not bound to one collider revision or comparison result. Implicit physics-first precedence hides disagreement and provides no visible-frame proof.
+The renderer no longer creates animation truth, but the authoritative target pose and the visibly damped pose are not connected by one revisioned frame contract.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved collision-source and collider-lifecycle risk explicit until executable proof exists.
+**Goal:** keep every unresolved pose identity, lifecycle, presentation and proof gap explicit while preserving the implemented PlayerPose ownership path.
 
-### Collider publication gaps
+### Target-pose frame gaps
 
-- [ ] No collider-set ID, revision, predecessor or fingerprint.
-- [ ] No typed active-collider commit result.
-- [ ] No Core Physics or fallback application receipt.
-- [ ] No retirement generation for released patch colliders.
+- [ ] `PlayerPose` stores only the inner pose, not the articulated frame envelope.
+- [ ] No stored run ID, run generation, tick ID or frame number.
+- [ ] No rig revision or source-state fingerprint.
+- [ ] No predecessor pose-frame ID or monotonic pose revision.
+- [ ] No typed stale, duplicate, invalid or solve-failure result.
 
-### Evaluation identity gaps
+### Publication gaps
 
-- [ ] No collision evaluation ID or candidate-transform ID.
-- [ ] No source-policy revision.
-- [ ] No duplicate evaluation result.
-- [ ] No stale run, tick or collider-revision rejection.
-
-### Source parity gaps
-
-- [ ] Physics and fallback evidence use different semantics and shapes.
-- [ ] No proof they evaluated the same collider generation.
-- [ ] No agreement or disagreement classification.
-- [ ] No explicit provider-unavailable degradation result.
-- [ ] No documented policy for physics-hit/fallback-miss or the inverse.
-
-### Commit gaps
-
-- [ ] Physics-first precedence is implicit in policy control flow.
-- [ ] No canonical `CollisionDecisionResult`.
-- [ ] No bounded collision decision journal.
-- [ ] No exact decision provenance in `RunFailed` or public readback.
+- [ ] No atomic `PlayerPoseFrameCommitResult`.
+- [ ] Missing-pose behavior leaves predecessor renderer bones in place implicitly.
+- [ ] Public snapshots expose the target pose but not its frame provenance.
+- [ ] Detached compatibility APIs remain available without an explicit non-authoritative classification.
 
 ### Presentation gaps
 
-- [ ] Render admission does not cite collision decision or collider revision.
-- [ ] HUD/run-over projection has no source comparison metadata.
-- [ ] No first visible collision-outcome frame acknowledgement.
+- [ ] Render-time damping has no presentation generation.
+- [ ] Damping policy and sharpness are not revisioned evidence.
+- [ ] Applied alpha is not exposed.
+- [ ] Visible bone transforms or fingerprints are not exposed.
+- [ ] The visible skeleton can differ from the stored target without a derivation receipt.
+- [ ] No first visible player-pose frame acknowledgement.
+
+### Restart and lifecycle gaps
+
+- [ ] Run restart replaces target pose but does not reset or fence prior Three.js bone state.
+- [ ] No authored Snap versus Transition result.
+- [ ] No stale predecessor RAF/pose rejection.
+- [ ] No rig-change rebuild result.
+- [ ] No large-delta pose presentation classification.
 
 ### Test gaps
 
-- [ ] Both-source same-tree agreement.
-- [ ] Source disagreement in both directions.
-- [ ] Provider-unavailable fallback mode.
-- [ ] Jump-threshold parity.
-- [ ] Patch-release stale evidence.
-- [ ] Duplicate evaluation idempotency.
-- [ ] Source/build/Pages parity.
+- [ ] New source-marker test was not independently executed in this run.
+- [ ] No engine/domain execution of the authoritative solve path.
+- [ ] No clone-isolation mutation fixture.
+- [ ] No initial/start/tick pose revision fixture.
+- [ ] No failed/stale solve fixture.
+- [ ] No restart damping fixture.
+- [ ] No 30/60/120/144 Hz presentation comparison.
+- [ ] No browser, build or Pages visible-pose fixture.
 
 ## Retained gaps
 
-The browser-input adapter still bypasses installed Core Input. Viewport authority, articulated-pose consumption, run-reset coordination and browser-runtime shutdown also remain unresolved.
+Collision-source convergence still lacks one collider revision and comparison result. The browser-input adapter still bypasses installed Core Input. Viewport and runtime-retirement authority also remain unresolved.
 
 ## Non-claims
 
-The current code does not prove collision-source equivalence, stale-collider safety, disagreement handling, canonical decision provenance or first-visible-failure-frame correlation.
+The current code proves a source-backed ownership correction, not complete pose-frame provenance, restart isolation, visible-pose equivalence, render-rate parity or deployed behavior.
