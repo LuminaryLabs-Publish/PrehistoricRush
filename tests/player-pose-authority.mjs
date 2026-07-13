@@ -6,6 +6,7 @@ const domainSource = await readFile(
   "utf8"
 );
 const gameSource = await readFile(new URL("../src/game.js", import.meta.url), "utf8");
+const runtimeSource = await readFile(new URL("../src/shared/runtime-versions.js", import.meta.url), "utf8");
 
 assert.match(
   domainSource,
@@ -16,6 +17,26 @@ assert.match(
   domainSource,
   /const playerPose = resolvePlayerPose\(next, input, tick\);\s*if \(playerPose\) world\.setResource\(resources\.PlayerPose, playerPose\);/,
   "the simulation tick commits the resolved articulated pose"
+);
+assert.match(
+  domainSource,
+  /const evaluatedPose = articulatedMotionRef\.evaluatePose\(\{\s*rigId: playerRigId,\s*pose: basePose\s*\}\);/,
+  "the authoritative solve evaluates the animated source pose through generic FK"
+);
+assert.match(
+  domainSource,
+  /const targets = heightSamplerReady\s*\? createPlayerGroundLegTargets\(\{/,
+  "terrain targets are generated only after the height sampler is installed"
+);
+assert.match(
+  domainSource,
+  /const articulatedFrame = articulatedMotionRef\.solve\(\{[\s\S]*?pose: basePose,\s*targets,/,
+  "terrain targets feed the authoritative articulated solve"
+);
+assert.match(
+  domainSource,
+  /heightSampler = nextSampler;\s*heightSamplerReady = true;/,
+  "installing terrain height sampling enables ground-leg IK"
 );
 assert.match(
   domainSource,
@@ -45,6 +66,11 @@ assert.doesNotMatch(
 assert.ok(
   gameSource.indexOf("engine.tick(dt);") < gameSource.indexOf("adapter.render(state, dt);"),
   "rendering observes the pose after the authoritative simulation tick"
+);
+assert.match(
+  runtimeSource,
+  /NEXUS_COMMIT = "f3c880b7a433dbefb19892389b03607b33f5c267"/,
+  "the game pins the current-pose articulated solver"
 );
 
 console.log("player pose authority test ok");
