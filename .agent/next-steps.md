@@ -1,71 +1,58 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-12T22-19-11-04-00`  
-**Authority:** `prehistoric-rush-run-start-restart-admission-authority-domain`  
-**Status:** `run-start-restart-central-reconciled`
+**Audit:** `2026-07-12T22-18-39-04-00`  
+**Authority:** `prehistoric-rush-articulated-pose-presentation-authority-domain`
 
 ## Summary
 
-The next implementation should convert boot, UI, Space, Enter, and public start requests into one status-gated command, retire predecessor input and asynchronous delivery, and atomically reset, rebuild, or preserve every participant under a new run generation.
+The next implementation should connect committed RunState, Core Motion, Core Physics, articulated motion, optional articulated dynamics, and Three.js skeleton application through one typed pose commit.
 
 ## Plan ledger
 
-**Goal:** make Start, Retry, and Run Again deterministic, exactly once, and complete across all run-scoped owners.
+**Goal:** make the visible dinosaur pose authoritative, revisioned, failure-aware, and provably tied to the rendered frame.
 
-### Phase 1: Command admission
+### Phase 1: Pose identity and admission
 
-- [ ] Add `RunStartCommandId`, sequence, expected runtime session, scene, status, and run generation.
-- [ ] Distinguish Start, Retry, Run Again, and explicit active-run restart intent.
-- [ ] Reject `KeyboardEvent.repeat`, duplicate, stale, and wrong-session commands.
-- [ ] Reject active-game Start unless an explicit restart policy permits it.
-- [ ] Route boot, button, Space, Enter, and public capabilities through one command path.
-- [ ] Return the same sealed result for duplicate delivery.
+- [ ] Add pose command ID, pose frame ID, run generation, tick, and predecessor pose revision.
+- [ ] Bind player body/content hash, profile revision, rig ID, and rig revision.
+- [ ] Define explicit source policy: articulated, legacy fallback, or physical articulation.
 
-### Phase 2: Participant manifest
+### Phase 2: Input binding
 
-- [ ] Inventory RunState, engine InputState, host-local input, simulation resolution, Core Scene, physics body/colliders, patch controller, Worker deliveries, active content, instance batches, camera follower, renderer, HUD, and public observations.
-- [ ] Mark each participant reset, rebuilt, or explicitly preserved.
-- [ ] Require predecessor and successor revisions for every participant.
-- [ ] Close predecessor input and async delivery admission before preparation.
+- [ ] Bind committed RunState, Core Motion frame, Physics frame, and optional dynamics frame.
+- [ ] Build one immutable base pose and target set.
+- [ ] Reject stale, mismatched, duplicate, or non-finite candidates.
 
-### Phase 3: Atomic run start
+### Phase 3: Solve and commit
 
-- [ ] Prepare fresh RunState and engine InputState without publishing them.
-- [ ] Clear host-local left/right/boost state.
-- [ ] Reset simulation resolution and transition state under the command.
-- [ ] Fence or retire predecessor Worker and patch results.
-- [ ] Reset player physics transform and collider generation.
-- [ ] Rebuild or validate active content for the origin generation.
-- [ ] Reset camera follower and render/HUD observations.
-- [ ] Commit one `RunStartResult`, one `RunStarted` event, and one scene transition.
+- [ ] Route active gameplay through `solvePlayerArticulatedPose()` when policy requires it.
+- [ ] Validate required bone coverage and transforms.
+- [ ] Fingerprint the candidate and commit `PlayerPoseCommitResult`.
+- [ ] Publish typed fallback reason when legacy pose is admitted.
 
-### Phase 4: Failure and idempotency
+### Phase 4: Skeleton application
 
-- [ ] Preserve the predecessor if preparation fails.
-- [ ] Report partial rollback or indeterminate state truthfully.
-- [ ] Reject stale callbacks and Worker deliveries after commit.
-- [ ] Journal participant preparation, commit, rollback, and observation receipts.
+- [ ] Apply only committed pose candidates.
+- [ ] Return applied and skipped bone receipts.
+- [ ] Prevent partial skeleton mutation on rejected candidates.
+- [ ] Expose the committed pose through `PrehistoricRushHost`.
 
 ### Phase 5: First-frame proof
 
-- [ ] Bind HUD, player pose, patches, physics, camera, and renderer to the accepted run generation.
-- [ ] Publish `FirstRunGenerationFrameAck`.
-- [ ] Expose immutable command, participant, journal, and frame observations through a bounded public capability.
+- [ ] Publish `FirstArticulatedPoseFrameAck` with run, tick, pose revision, fingerprint, rig, and mesh identity.
+- [ ] Correlate renderer frame, HUD diagnostics, and public readback.
 
 ### Phase 6: Fixtures
 
-- [ ] Hold Enter and verify one run start.
-- [ ] Enter during active gameplay.
-- [ ] Boot, button, Space, Enter, and public-command parity.
-- [ ] Retry after collision and Run Again after win.
-- [ ] Held steering/boost state across restart.
-- [ ] Pending Worker result from predecessor run.
-- [ ] Physics/player reset at origin.
-- [ ] Patch/cache reset or explicit preserve policy.
-- [ ] Participant preparation failure and rollback.
-- [ ] First visible successor frame.
-- [ ] Source, built output, and Pages parity.
+- [ ] Legacy versus articulated pose parity.
+- [ ] Hind-leg IK visibly changes the skeleton.
+- [ ] Missing required and optional bones.
+- [ ] Non-finite solver output.
+- [ ] Solver failure with allowed and forbidden fallback.
+- [ ] Stale pose after run restart.
+- [ ] Body/profile/rig/skeleton mismatch.
+- [ ] Source, build, and Pages first-frame parity.
 
 ## Completion gate
 
-Do not mark the authority implemented until repeated, duplicate, stale, and disallowed commands cause zero effects; every participant has a reset/rebuild/preserve receipt; predecessor async work cannot enter the successor run; rollback is truthful; and the first visible frame cites the committed start result and participant generations.
+Do not mark the authority implemented until the active renderer consumes one admitted pose result, failures and fallback are typed, stale candidates cause zero effects, bone application is receipted, and the first visible frame cites the committed pose.
