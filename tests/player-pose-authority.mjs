@@ -5,9 +5,25 @@ const domainSource = await readFile(
   new URL("../src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js", import.meta.url),
   "utf8"
 );
+const compositionSource = await readFile(
+  new URL("../src/domains/prehistoric-rush/player-character-composition.js", import.meta.url),
+  "utf8"
+);
 const gameSource = await readFile(new URL("../src/game.js", import.meta.url), "utf8");
 const runtimeSource = await readFile(new URL("../src/shared/runtime-versions.js", import.meta.url), "utf8");
 
+assert.match(domainSource, /\.\.\.createCoreCreatureDomain\(\)/, "the game installs Core Creature");
+assert.match(domainSource, /\.\.\.createCoreCharacterDomain\(\)/, "the game installs Core Character");
+assert.match(domainSource, /\.\.\.createCorePlayerDomain\(\)/, "the game installs Core Player");
+assert.match(domainSource, /"n:core-creature"/, "the game requires Core Creature");
+assert.match(domainSource, /"n:core-character"/, "the game requires Core Character");
+assert.match(domainSource, /"n:core-player"/, "the game requires Core Player");
+assert.match(domainSource, /installPrehistoricRushPlayerCharacter\(\{/, "the game uses the shared composition authority");
+assert.match(
+  compositionSource,
+  /corePlayer\.possess\(resolvedPlayerId, character\.id\)/,
+  "the player possesses the composed character"
+);
 assert.match(
   domainSource,
   /PlayerPose:\s*defineResource\("prehistoric-rush\.player-pose"\)/,
@@ -20,7 +36,7 @@ assert.match(
 );
 assert.match(
   domainSource,
-  /const evaluatedPose = articulatedMotionRef\.evaluatePose\(\{\s*rigId: playerRigId,\s*pose: basePose\s*\}\);/,
+  /const evaluatedPose = articulatedMotionRef\.evaluatePose\(\{ rigId, pose: basePose \}\);/,
   "the authoritative solve evaluates the animated source pose through generic FK"
 );
 assert.match(
@@ -32,6 +48,21 @@ assert.match(
   domainSource,
   /const articulatedFrame = articulatedMotionRef\.solve\(\{[\s\S]*?pose: basePose,\s*targets,/,
   "terrain targets feed the authoritative articulated solve"
+);
+assert.match(
+  domainSource,
+  /engineRef\.coreCharacter\.setPose\(character\.id, articulatedFrame\.pose\.id\)/,
+  "the articulated pose binding is published through Core Character"
+);
+assert.match(
+  domainSource,
+  /bodyId: physicsBodyId/,
+  "motion requests use the Character physics binding"
+);
+assert.match(
+  domainSource,
+  /actorId: motionActorId/,
+  "motion intent uses the Character motion binding"
 );
 assert.match(
   domainSource,
@@ -48,6 +79,9 @@ assert.match(
   /playerPose:\s*clone\(world\.getResource\(resources\.PlayerPose\)\)/,
   "snapshots include the authoritative pose"
 );
+assert.match(domainSource, /creature: engine\.coreCreature\.getSnapshot\(\)/, "snapshots include Core Creature");
+assert.match(domainSource, /character: engine\.coreCharacter\.getSnapshot\(\)/, "snapshots include Core Character");
+assert.match(domainSource, /player: engine\.corePlayer\.getSnapshot\(\)/, "snapshots include Core Player");
 assert.match(
   gameSource,
   /import \{ applyCreaturePoseDamped, createCreatureMesh \}/,
@@ -58,19 +92,15 @@ assert.match(
   /const playerPose = game\.getPlayerPose\(\);\s*if \(playerPose\) applyCreaturePoseDamped\(player, playerPose, dt, 18\);/,
   "the renderer consumes the simulation-owned pose"
 );
-assert.doesNotMatch(
-  gameSource,
-  /game\.createPlayerPose\(/,
-  "the render loop no longer generates animation truth"
-);
+assert.doesNotMatch(gameSource, /game\.createPlayerPose\(/, "the render loop no longer generates animation truth");
 assert.ok(
   gameSource.indexOf("engine.tick(dt);") < gameSource.indexOf("adapter.render(state, dt);"),
   "rendering observes the pose after the authoritative simulation tick"
 );
 assert.match(
   runtimeSource,
-  /NEXUS_COMMIT = "f3c880b7a433dbefb19892389b03607b33f5c267"/,
-  "the game pins the current-pose articulated solver"
+  /NEXUS_COMMIT = "682c9fa697a36a6bf6262762a6e647ffc3a5e289"/,
+  "the game pins the Core Creature Character Player runtime"
 );
 
 console.log("player pose authority test ok");
