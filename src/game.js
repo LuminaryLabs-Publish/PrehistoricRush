@@ -7,7 +7,7 @@ import {
   PROTOKITS_COMMIT,
   RUNTIME_URLS
 } from "./shared/runtime-versions.js";
-import { applyCreaturePose, createCreatureMesh } from "./render/three-procedural-creature.js";
+import { applyCreaturePoseDamped, createCreatureMesh } from "./render/three-procedural-creature.js";
 
 const CDN = RUNTIME_URLS;
 
@@ -394,13 +394,8 @@ function createThreeAdapter(THREE, game, corePhysics, ui, instanceBatches, camer
     view.time += dt;
     player.position.set(state.x, state.y + state.jumpHeight + 0.05, state.z);
     player.rotation.y = state.yaw;
-    applyCreaturePose(player, game.createPlayerPose({
-      speed: state.speed,
-      time: state.elapsed,
-      turn: game.getInput().steer,
-      jump: Math.min(1, state.jumpHeight / 2),
-      resistance: 1 - state.surfaceMultiplier
-    }));
+    const playerPose = game.getPlayerPose();
+    if (playerPose) applyCreaturePoseDamped(player, playerPose, dt, 18);
     setCameraTargets(state);
     const cameraTransform = cameraRunId !== state.runId
       ? resetCamera(state, "run-change")
