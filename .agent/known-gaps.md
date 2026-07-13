@@ -1,73 +1,65 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T03-12-30-04-00`  
-**Status:** `browser-input-core-input-adoption-central-reconciled`
+**Audit:** `2026-07-13T03-13-09-04-00`  
+**Status:** `collision-source-convergence-authority-audited`
 
 ## Summary
 
-The active browser adapter bypasses installed Core Input and has no focus-owned, repeat-safe or generation-bound command path. One-shot actions and held state therefore lack deterministic admission and visible-frame proof.
+Core Physics and browser fallback collision evidence are not bound to one collider revision or comparison result. Implicit physics-first precedence hides disagreement and provides no visible-frame proof.
 
 ## Plan ledger
 
-**Goal:** keep every unresolved browser-input and Core Input adoption risk explicit until executable proof exists.
+**Goal:** keep every unresolved collision-source and collider-lifecycle risk explicit until executable proof exists.
 
-### Ownership gaps
+### Collider publication gaps
 
-- [ ] Core Input is installed but not used by the active browser adapter.
-- [ ] Keyboard listeners are window-global.
-- [ ] No game-surface or canvas-focus admission.
-- [ ] No editable-target exclusion.
-- [ ] No route ownership result.
+- [ ] No collider-set ID, revision, predecessor or fingerprint.
+- [ ] No typed active-collider commit result.
+- [ ] No Core Physics or fallback application receipt.
+- [ ] No retirement generation for released patch colliders.
 
-### Identity and generation gaps
+### Evaluation identity gaps
 
-- [ ] No input-session ID or surface ID.
-- [ ] No focus or lifecycle generation.
-- [ ] No input sample ID, command ID or monotonic sequence.
-- [ ] No stale-generation rejection.
-- [ ] No duplicate command result.
+- [ ] No collision evaluation ID or candidate-transform ID.
+- [ ] No source-policy revision.
+- [ ] No duplicate evaluation result.
+- [ ] No stale run, tick or collider-revision rejection.
 
-### Held and edge-action gaps
+### Source parity gaps
 
-- [ ] Host-local steer/boost state exists outside Core Input.
-- [ ] One-shot jump/start/retry do not use edge-command semantics.
-- [ ] No `event.repeat` policy.
-- [ ] Enter can restart an active run.
-- [ ] Holding Enter can call `start()` repeatedly.
-- [ ] Space repeat can re-arm jump after simulation consumption.
-- [ ] Button and keyboard paths do not share one typed command result.
+- [ ] Physics and fallback evidence use different semantics and shapes.
+- [ ] No proof they evaluated the same collider generation.
+- [ ] No agreement or disagreement classification.
+- [ ] No explicit provider-unavailable degradation result.
+- [ ] No documented policy for physics-hit/fallback-miss or the inverse.
 
-### Lifecycle gaps
+### Commit gaps
 
-- [ ] Blur neutralizes values but retires no generation.
-- [ ] No `visibilitychange` input fence.
-- [ ] No `pagehide` or route-exit input fence.
-- [ ] No listener lease or disposal receipt.
-- [ ] No typed `InputClearResult`.
+- [ ] Physics-first precedence is implicit in policy control flow.
+- [ ] No canonical `CollisionDecisionResult`.
+- [ ] No bounded collision decision journal.
+- [ ] No exact decision provenance in `RunFailed` or public readback.
 
-### Observation gaps
+### Presentation gaps
 
-- [ ] No accepted/rejected/duplicate/stale input result.
-- [ ] No product consumer receipt.
-- [ ] Public diagnostics omit input session, generation and held state.
-- [ ] No rejection counters or bounded input journal.
-- [ ] No first visible input-frame acknowledgement.
+- [ ] Render admission does not cite collision decision or collider revision.
+- [ ] HUD/run-over projection has no source comparison metadata.
+- [ ] No first visible collision-outcome frame acknowledgement.
 
 ### Test gaps
 
-- [ ] Focus and editable-target admission.
-- [ ] Held action down/up behavior.
-- [ ] Enter repeat and mid-run restart rejection.
-- [ ] Space repeat and landing behavior.
-- [ ] Blur/visibility/page lifecycle generation fences.
-- [ ] Button/keyboard parity.
-- [ ] Duplicate/stale zero-mutation behavior.
+- [ ] Both-source same-tree agreement.
+- [ ] Source disagreement in both directions.
+- [ ] Provider-unavailable fallback mode.
+- [ ] Jump-threshold parity.
+- [ ] Patch-release stale evidence.
+- [ ] Duplicate evaluation idempotency.
 - [ ] Source/build/Pages parity.
 
 ## Retained gaps
 
-The viewport authority remains unresolved. Active rendering still bypasses the articulated solve. Run-start participant reset/preserve authority remains non-atomic. Runtime callback, Worker and renderer retirement also remain unresolved.
+The browser-input adapter still bypasses installed Core Input. Viewport authority, articulated-pose consumption, run-reset coordination and browser-runtime shutdown also remain unresolved.
 
 ## Non-claims
 
-The current code does not prove Core Input adoption, focus safety, repeat determinism, one-shot exactly-once behavior, lifecycle generation fencing, stale/duplicate rejection, button/keyboard equivalence, public input provenance or first-visible-frame correlation.
+The current code does not prove collision-source equivalence, stale-collider safety, disagreement handling, canonical decision provenance or first-visible-failure-frame correlation.
