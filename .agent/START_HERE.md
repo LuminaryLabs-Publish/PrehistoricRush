@@ -1,90 +1,93 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-13T16-41-10-04-00`  
+**Last aligned:** `2026-07-13T21-38-52-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Runtime revision reviewed:** `66a219fea4bb886fb4fff41c9b31c67ba7e4eaee`  
-**Status:** `non-blocking-pause-menu-command-lifecycle-authority-central-reconciled`  
-**Technical status:** `non-blocking-pause-menu-command-lifecycle-authority-audited`  
-**Retained audits:** `player-character-composition-transition-authority-central-reconciled`, `terrain-aware-hind-leg-ik-central-reconciled`, `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
+**Runtime revision reviewed:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
+**Status:** `patch-owned-streaming-adoption-authority-central-reconciled`  
+**Technical status:** `patch-owned-streaming-adoption-authority-audited`  
+**Retained audits:** `non-blocking-pause-menu-command-lifecycle-authority-central-reconciled`, `player-character-composition-transition-authority-central-reconciled`, `terrain-aware-hind-leg-ik-central-reconciled`, `authoritative-player-pose-publication-central-reconciled`, `collision-source-convergence-publication-central-reconciled`, `browser-input-core-input-adoption-central-reconciled`, `game-viewport-render-surface-central-reconciled`, `articulated-pose-presentation-authority-audited`, `run-start-restart-central-reconciled`, `browser-runtime-lifecycle-authority-audited`
 
 ## Summary
 
-PrehistoricRush now installs Core Presentation and a renderer-agnostic pause-menu child DSK. The menu intentionally does not stop simulation and provides bounded state, commands, events, snapshots and Core UI/Presentation descriptors.
+PrehistoricRush now consumes streamed terrain, trees, grass, shards, colliders and pickups through explicit patch ownership. Stable per-cell instance ranges and changed-range GPU uploads replace the prior full active-world rebuild path.
 
-The remaining gap is browser command and lifecycle ownership. Escape admission, runtime polling, the synchronization RAF, overlay DOM, retained gameplay input and immediate exit navigation live outside the DSK without command generations, terminal results, visible-frame evidence or cleanup receipts.
+The remaining gap is patch adoption atomicity. The controller marks a patch active before terrain, instance, physics and pickup consumers settle, and release intent is cleared before consumer retirement returns any result. No activation/release identity, rollback receipt or visible patch-frame acknowledgement exists.
 
 ## Plan ledger
 
-**Goal:** preserve the non-blocking menu while making input admission, semantic state, DOM projection, gameplay-input policy, exit settlement and host retirement one observable transaction.
+**Goal:** preserve incremental patch ownership while making controller membership and every mandatory consumer settle under one revision-bound activation or release result.
 
 - [x] Compare all ten Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm nine eligible central ledger and root `.agent` entries.
-- [x] Select only PrehistoricRush because it was two commits ahead of central tracking.
-- [x] Reconcile Core Presentation, pause-menu DSK, browser host, preserved runtime and tests.
-- [x] Preserve the complete interaction loop, domain map and 58-surface inventory.
-- [x] Add the `2026-07-13T16-41-10-04-00` tracker and audit family.
+- [x] Confirm nine eligible ledger and root `.agent` entries.
+- [x] Select only PrehistoricRush because it was one substantive commit ahead of its documentation head.
+- [x] Reconcile the extracted adapter, stable-range kit pin, runtime orchestration and authority test.
+- [x] Preserve the complete interaction loop, domain map and 59-surface inventory.
+- [x] Add the `2026-07-13T21-38-52-04-00` tracker and audit family.
 - [x] Refresh all required root `.agent` files and registry.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement the lifecycle authority and executable browser/build/Pages fixtures later.
+- [ ] Implement transactional adoption and executable Worker/WebGL/Rapier/Pages fixtures later.
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-13T16-41-10-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T16-41-10-04-00.md
-.agent/architecture-audit/2026-07-13T16-41-10-04-00-pause-menu-command-lifecycle-dsk-map.md
-.agent/render-audit/2026-07-13T16-41-10-04-00-pause-overlay-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-13T16-41-10-04-00-non-blocking-menu-input-simulation-loop.md
-.agent/interaction-audit/2026-07-13T16-41-10-04-00-pause-command-exit-settlement-map.md
-.agent/pause-menu-audit/2026-07-13T16-41-10-04-00-command-generation-host-retirement-contract.md
-.agent/deploy-audit/2026-07-13T16-41-10-04-00-pause-menu-fixture-gate.md
-.agent/central-sync-audit/2026-07-13T16-41-10-04-00-pause-menu-runtime-reconciliation.md
+.agent/trackers/2026-07-13T21-38-52-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T21-38-52-04-00.md
+.agent/architecture-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-adoption-dsk-map.md
+.agent/render-audit/2026-07-13T21-38-52-04-00-patch-cell-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-13T21-38-52-04-00-streaming-membership-collision-pickup-loop.md
+.agent/interaction-audit/2026-07-13T21-38-52-04-00-patch-activation-release-result-map.md
+.agent/streaming-audit/2026-07-13T21-38-52-04-00-patch-generation-adoption-contract.md
+.agent/grass-system-audit/2026-07-13T21-38-52-04-00-patch-cell-range-lifecycle.md
+.agent/deploy-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-fixture-gate.md
+.agent/central-sync-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-runtime-reconciliation.md
 ```
 
 ## Complete interaction loop
 
 ```txt
 boot
-  -> load pinned runtime and profile
-  -> compose Core game domains and Core Presentation
-  -> install product run and pause-menu DSKs
-  -> start simulation, streaming and Three.js RAF
-  -> poll until the public runtime host exists
-  -> install Escape listener and menu sync RAF
+  -> load pinned engine, kits, Three.js and Rapier
+  -> compose Core and product domains
+  -> create patch controller, Worker executor, stable instance batches and Three adapter
+  -> prime center patch and start run
 
-pause interaction
-  -> DSK commits menu state and semantic event
-  -> browser host projects overlay DOM
-  -> simulation and gameplay rendering continue
-  -> gameplay keyboard policy remains implicit
+frame
+  -> engine.tick(dt)
+  -> refresh affected pickup shard cells
+  -> update patch focus and desired membership
+  -> release departed patch cells
+  -> pump generation and activate bounded ready patches
+  -> render and publish diagnostics
 
-exit
-  -> DSK emits one exit request
-  -> browser host immediately navigates
-  -> no terminal cleanup or settlement result
+activation
+  -> controller marks ready patch active
+  -> adapter assigns terrain and patch-owned tree, grass, shard, collider and pickup state
+  -> flush changed instance ranges and physics membership
+  -> no terminal adoption result or visible-frame acknowledgement
 ```
 
 ## Required parent domain
 
 ```txt
-prehistoric-rush-pause-menu-command-lifecycle-authority-domain
+prehistoric-rush-patch-owned-streaming-adoption-authority-domain
 ```
 
 ```txt
-PauseMenuCommand
-  -> bind runtime, menu and host generations
-  -> validate command ID and expected sequence
-  -> commit or reject semantic state
-  -> project one matching overlay revision
-  -> apply explicit non-blocking gameplay-input policy
-  -> publish terminal command result
+PatchActivationCommand
+  -> bind controller revision, patch key and adapter generation
+  -> prepare terrain, instances, physics and pickup consumers
+  -> validate capacity and overflow policy
+  -> commit controller membership and consumers together
+  -> publish PatchActivationResult
   -> acknowledge the matching visible frame
+  -> otherwise restore the predecessor
 
-accepted exit
-  -> retire poll, RAF, listeners, DOM and runtime participants
-  -> publish ExitSettlementResult
-  -> navigate exactly once
+PatchReleaseCommand
+  -> preserve durable release intent until consumer retirement settles
+  -> commit controller and consumer release together
+  -> publish PatchReleaseResult
+  -> reject late predecessor callbacks
 ```
 
 ## Kit census
@@ -94,10 +97,10 @@ Nexus Engine root/subdomain kits: 22
 official NexusEngine-Kits:         5
 product/page/Worker kits:         16
 external/host adapters:            9
-proof kits:                        6
-total surfaces:                   58
+proof kits:                        7
+total surfaces:                   59
 ```
 
 ## Validation boundary
 
-Documentation only. Source, pinned Core Presentation, tests and package wiring were inspected through GitHub. No runtime, renderer, package or deployment source changed. GitHub reported no combined status checks; `npm test`, browser lifecycle fixtures, built output and Pages parity were not independently executed.
+Documentation only. Source, pinned kit implementations, tests and package wiring were inspected through GitHub. The runtime commit had no combined status checks. `npm test`, Worker, WebGL, Rapier, fault-injection, built-output and Pages fixtures were not independently executed.
