@@ -1,11 +1,11 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-13T16-41-10-04-00`  
-**Scope:** non-blocking pause-menu command, overlay, input and exit-lifecycle documentation reconciliation
+**Audit timestamp:** `2026-07-13T21-38-52-04-00`  
+**Scope:** patch-owned streaming, stable instance-cell ranges, controller-to-consumer adoption and visible-frame documentation reconciliation
 
 ## Summary
 
-This run compared the complete Publish inventory with central tracking, selected PrehistoricRush because it was two commits ahead, inspected the pause-menu DSK, Core Presentation composition, browser host, preserved runtime loop, tests and package wiring, then refreshed the required `.agent` projections. No runtime source was changed by this documentation pass.
+This run selected PrehistoricRush because it was one runtime commit ahead of its documented head, inspected the complete diff and pinned official kit contracts, then refreshed the required `.agent` projections. No runtime source was changed by this documentation pass.
 
 ## Plan ledger
 
@@ -14,18 +14,16 @@ This run compared the complete Publish inventory with central tracking, selected
 - [x] Verify `LuminaryLabs-Publish/PrehistoricRush` and default branch `main`.
 - [x] Enumerate ten Publish repositories and exclude `TheCavalryOfRome`.
 - [x] Verify nine eligible central-ledger and root-agent states.
-- [x] Compare prior documentation head `cb322503...` with runtime head `66a219fe...`.
-- [x] Inspect both new commits and all changed files.
-- [x] Inspect the pinned Core Presentation parent and child kits.
-- [x] Inspect pause semantic state, commands, events, descriptors and reset.
-- [x] Inspect browser Escape, settings, exit, polling, RAF and DOM behavior.
-- [x] Inspect unconditional runtime simulation and gameplay input.
-- [x] Inspect pause test and `npm test` wiring.
-- [x] Update the inventory to 58 kit/adapter/proof surfaces.
+- [x] Compare documentation head `4c959f4732df99112bb55845fa6b4a974f5f65f2` with runtime head `ab3c63fed62b70e776ee56c4295f359bc3660274`.
+- [x] Confirm one new commit and eight changed source/test surfaces.
+- [x] Inspect extracted Three patch-stream adapter and runtime orchestration.
+- [x] Inspect the exact pinned instanced-render-batch and patch-controller kit contracts.
+- [x] Inspect the new authority test and `npm test` wiring.
+- [x] Update the inventory to 59 kit, adapter and proof surfaces.
 - [x] Add the timestamped audit family and refresh required root files.
-- [x] Change no runtime, renderer, package or deployment source.
+- [x] Change no runtime, renderer, package, test, dependency or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute runtime/browser/build/Pages fixtures later.
+- [ ] Execute runtime, browser, fault and deployment fixtures later.
 
 ## Documentation changes
 
@@ -36,50 +34,47 @@ This run compared the complete Publish inventory with central tracking, selected
 .agent/known-gaps.md
 .agent/validation.md
 .agent/kit-registry.json
-.agent/trackers/2026-07-13T16-41-10-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-13T16-41-10-04-00.md
-.agent/architecture-audit/2026-07-13T16-41-10-04-00-pause-menu-command-lifecycle-dsk-map.md
-.agent/render-audit/2026-07-13T16-41-10-04-00-pause-overlay-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-13T16-41-10-04-00-non-blocking-menu-input-simulation-loop.md
-.agent/interaction-audit/2026-07-13T16-41-10-04-00-pause-command-exit-settlement-map.md
-.agent/pause-menu-audit/2026-07-13T16-41-10-04-00-command-generation-host-retirement-contract.md
-.agent/deploy-audit/2026-07-13T16-41-10-04-00-pause-menu-fixture-gate.md
-.agent/central-sync-audit/2026-07-13T16-41-10-04-00-pause-menu-runtime-reconciliation.md
+.agent/trackers/2026-07-13T21-38-52-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-13T21-38-52-04-00.md
+.agent/architecture-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-adoption-dsk-map.md
+.agent/render-audit/2026-07-13T21-38-52-04-00-patch-cell-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-13T21-38-52-04-00-streaming-membership-collision-pickup-loop.md
+.agent/interaction-audit/2026-07-13T21-38-52-04-00-patch-activation-release-result-map.md
+.agent/streaming-audit/2026-07-13T21-38-52-04-00-patch-generation-adoption-contract.md
+.agent/grass-system-audit/2026-07-13T21-38-52-04-00-patch-cell-range-lifecycle.md
+.agent/deploy-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-fixture-gate.md
+.agent/central-sync-audit/2026-07-13T21-38-52-04-00-patch-owned-streaming-runtime-reconciliation.md
 ```
 
 ## Source findings verified
 
 ```txt
-Core Presentation parent installed: yes
-Core Presentation output/UI-scale/camera-framing children installed: yes
-product pause-menu child DSK installed: yes
-Core UI menu descriptor registration: yes
-Core Presentation overlay configuration: yes
-menu and overlay blocksSimulation false: yes
-state, commands and snapshot services: yes
-open/close/toggle/settings/exit/reset: yes
-duplicate exit event suppressed: yes
-Escape and click delegation to DSK: yes
-runtime simulation tick remains unconditional: yes
-pause authority test present: yes
-six tests wired into npm test: yes
+full active-world rebuild removed: yes
+patch-owned active, grass, shard, collider and pickup maps: yes
+stable per-cell tree, grass and shard ranges: yes
+incremental changed-range flush: yes
+GPU update ranges use reported changed spans: yes
+pickup-only shard refresh: yes
+collider synchronization isolated to membership changes: yes
+runtime ownership counts exposed: yes
+new authority test present: yes
+seven tests wired into npm test: yes
+stable-range official kit revision pinned: yes
 ```
 
 ## Authority findings verified
 
 ```txt
-command ID and generation: absent
-expected semantic sequence: absent
-typed command terminal result: absent
-host identity and generation: absent
-bounded/cancellable attach poll: absent
-sync RAF and listener retirement: absent
-overlay projection result/fingerprint: absent
-visible overlay frame acknowledgement: absent
-explicit gameplay-input policy while open: absent
-exit consumer and settlement result: absent
-runtime/Worker/render cleanup before navigation: absent
-exactly-once navigation proof: absent
+activation/release command identity: absent
+controller revision bound to adapter: absent
+patch key retained by adapter: absent
+prepare/commit/rollback: absent
+typed activation and release results: absent
+terrain-slot failure result: absent
+explicit overflow policy: absent
+physics cell-diff result: absent
+visible patch-frame acknowledgement: absent
+fault-injection and real-runtime fixtures: absent
 ```
 
 ## Change boundary
@@ -87,10 +82,9 @@ exactly-once navigation proof: absent
 ```txt
 runtime source changed by this pass: no
 gameplay changed by this pass: no
-pause behavior changed by this pass: no
-renderer or DOM behavior changed by this pass: no
-package scripts or dependencies changed: no
-deployment changed: no
+streaming or rendering behavior changed by this pass: no
+package scripts or dependencies changed by this pass: no
+tests or deployment changed by this pass: no
 branch created: no
 pull request created: no
 ```
@@ -99,12 +93,13 @@ pull request created: no
 
 ```txt
 npm test
-real pinned-runtime pause-menu execution
-browser attach/replacement/retirement fixture
-rapid Escape/settings/exit race fixture
-gameplay-input-while-open fixture
-semantic/DOM/paint correlation
-exit cleanup and navigation fixture
+real pinned-kit execution
+Worker and fallback generation parity
+maximum active-patch capacity stress
+WebGL changed-range inspection
+Rapier collider publication parity
+consumer fault injection and rollback
+visible patch-frame correlation
 built-output smoke
 GitHub Pages smoke
 ```
@@ -113,12 +108,10 @@ GitHub Pages smoke
 
 The reviewed runtime commit had no combined status checks reported through GitHub. This is not a pass or failure result.
 
-The available execution container could not reach GitHub over the network, so a clean checkout and `npm test` were not possible in this run.
-
 ## Existing coverage limitation
 
-`tests/pause-menu-authority.mjs` uses an in-memory world and source-text assertions. It proves descriptors, semantic transitions, duplicate exit-event suppression and source-level non-blocking markers. It does not execute the pinned Nexus runtime, browser RAFs, actual DOM paint, retained gameplay inputs, navigation or cleanup.
+`tests/patch-owned-streaming-authority.mjs` verifies source structure, call sites and the official kit pin. It does not instantiate the pinned kits, execute Worker generation, create a WebGL renderer, inspect real GPU writes, exercise Rapier, inject failures or verify a visible frame.
 
 ## Non-claims
 
-No claim is made for independently passing tests, typed command admission, deterministic retained input, visible overlay equivalence, browser-host retirement, exit settlement, exactly-once navigation or deployed parity.
+No claim is made for independently passing tests, atomic adoption, rollback, explicit degradation, physics parity, visible-frame completion, built-output parity or production readiness.
