@@ -82,6 +82,7 @@ assert.match(gameEntry, /event\.code !== "Escape"/, "Escape toggles the menu hos
 assert.match(gameEntry, /pauseMenu\.toggle\(\)/, "Escape delegates to the pause-menu DSK");
 assert.match(gameEntry, /pauseMenu\.showSettings\(\)/, "Settings delegates to the pause-menu DSK");
 assert.match(gameEntry, /pauseMenu\.requestExit\(\);[\s\S]*?location\.href = "\.\/menu\.html"/, "the host navigates only after an exit request");
+assert.doesNotMatch(gameEntry, /function syncFrame\(|requestAnimationFrame\(syncFrame\)/, "the pause menu has no permanent synchronization frame loop");
 assert.match(gameRuntime, /engine\.tick\(dt\);/, "simulation ticking remains unconditional in the runtime loop");
 assert.doesNotMatch(gameRuntime, /pauseMenu[^\n]*engine\.tick|if \([^)]*pause[^)]*\)[\s\S]{0,80}engine\.tick/, "pause-menu state does not gate simulation ticking");
 assert.match(domainEntry, /createCorePresentationDomain/, "the game graph installs Core Presentation");

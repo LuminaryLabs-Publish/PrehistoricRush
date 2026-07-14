@@ -130,12 +130,7 @@ function attachPauseMenuHost() {
     pauseMenu.toggle();
     host.sync();
   });
-
-  function syncFrame() {
-    host.sync();
-    requestAnimationFrame(syncFrame);
-  }
-  syncFrame();
+  host.sync();
   globalThis.PrehistoricRushPauseMenuHost = Object.freeze({ pauseMenu, host });
 }
 

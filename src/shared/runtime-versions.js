@@ -1,5 +1,5 @@
 export const NEXUS_COMMIT = "682c9fa697a36a6bf6262762a6e647ffc3a5e289";
-export const KITS_COMMIT = "9673594de5669b4691737b91a9d56fa282e74370";
+export const KITS_COMMIT = "9fd5b10053135e278c84b8b1591aece5cc641da1";
 export const PROTOKITS_COMMIT = "534e249346d94351baa4cfce9f2d3cd837362920";
 export const THREE_VERSION = "0.179.1";
 export const RAPIER_VERSION = "0.15.0";

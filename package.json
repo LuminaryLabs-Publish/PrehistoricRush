@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/prehistoric-rush-resolution-policy.mjs && node tests/player-articulation.mjs && node tests/player-character-composition.mjs && node tests/player-pose-authority.mjs && node tests/character-creator-authority.mjs && node tests/pause-menu-authority.mjs"
+    "test": "node tests/prehistoric-rush-resolution-policy.mjs && node tests/player-articulation.mjs && node tests/player-character-composition.mjs && node tests/player-pose-authority.mjs && node tests/character-creator-authority.mjs && node tests/pause-menu-authority.mjs && node tests/patch-owned-streaming-authority.mjs"
   }
 }

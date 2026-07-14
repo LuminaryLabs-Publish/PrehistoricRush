@@ -10,6 +10,7 @@ const compositionSource = await readFile(
   "utf8"
 );
 const gameSource = await readFile(new URL("../src/game-runtime.js", import.meta.url), "utf8");
+const adapterSource = await readFile(new URL("../src/render/three-patch-stream-adapter.js", import.meta.url), "utf8");
 const runtimeSource = await readFile(new URL("../src/shared/runtime-versions.js", import.meta.url), "utf8");
 
 assert.match(domainSource, /\.\.\.createCoreCreatureDomain\(\)/, "the game installs Core Creature");
@@ -54,16 +55,8 @@ assert.match(
   /engineRef\.coreCharacter\.setPose\(character\.id, articulatedFrame\.pose\.id\)/,
   "the articulated pose binding is published through Core Character"
 );
-assert.match(
-  domainSource,
-  /bodyId: physicsBodyId/,
-  "motion requests use the Character physics binding"
-);
-assert.match(
-  domainSource,
-  /actorId: motionActorId/,
-  "motion intent uses the Character motion binding"
-);
+assert.match(domainSource, /bodyId: physicsBodyId/, "motion requests use the Character physics binding");
+assert.match(domainSource, /actorId: motionActorId/, "motion intent uses the Character motion binding");
 assert.match(
   domainSource,
   /heightSampler = nextSampler;\s*heightSamplerReady = true;/,
@@ -83,16 +76,16 @@ assert.match(domainSource, /creature: engine\.coreCreature\.getSnapshot\(\)/, "s
 assert.match(domainSource, /character: engine\.coreCharacter\.getSnapshot\(\)/, "snapshots include Core Character");
 assert.match(domainSource, /player: engine\.corePlayer\.getSnapshot\(\)/, "snapshots include Core Player");
 assert.match(
-  gameSource,
+  adapterSource,
   /import \{ applyCreaturePoseDamped, createCreatureMesh \}/,
   "the renderer imports damped pose application"
 );
 assert.match(
-  gameSource,
+  adapterSource,
   /const playerPose = game\.getPlayerPose\(\);\s*if \(playerPose\) applyCreaturePoseDamped\(player, playerPose, dt, 18\);/,
   "the renderer consumes the simulation-owned pose"
 );
-assert.doesNotMatch(gameSource, /game\.createPlayerPose\(/, "the render loop no longer generates animation truth");
+assert.doesNotMatch(adapterSource, /game\.createPlayerPose\(/, "the render loop no longer generates animation truth");
 assert.ok(
   gameSource.indexOf("engine.tick(dt);") < gameSource.indexOf("adapter.render(state, dt);"),
   "rendering observes the pose after the authoritative simulation tick"
