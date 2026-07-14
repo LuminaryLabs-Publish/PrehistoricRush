@@ -1,71 +1,57 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T21-38-52-04-00`  
-**Authority:** `prehistoric-rush-patch-owned-streaming-adoption-authority-domain`
+**Audit:** `2026-07-14T03-39-56-04-00`  
+**Authority:** `prehistoric-rush-player-character-profile-revision-admission-authority-domain`
 
 ## Summary
 
-Patch-owned maps and stable cell ranges are implemented. Next work should keep those boundaries and add only the orchestration needed for revisioned activation, rollback, release settlement and visible-frame proof.
+Keep the existing schema, store, creator and composition kits. Add only the identities, conflict rules, run sealing and proof needed for deterministic multi-document use.
 
 ## Plan ledger
 
-**Goal:** make each streamed patch either completely adopted, explicitly degraded under policy, or rejected with the predecessor restored.
+**Goal:** make each profile update and run admission terminate with a typed result and immutable artifact.
 
-### Phase 1: Identity and provenance
+### Phase 1: Identity
 
-- [ ] Add `PatchActivationId`, `PatchReleaseId` and adapter generation.
-- [ ] Bind controller revision, patch key, runtime session and run ID.
-- [ ] Retain generation request and payload fingerprints through adoption.
-- [ ] Reject stale Worker results and predecessor adapter callbacks.
-- [ ] Add bounded activation/release journal readback.
+- [ ] Add writer ID, document generation, write ID and message ID.
+- [ ] Fingerprint normalized profile payloads.
+- [ ] Enforce one fingerprint per accepted revision.
+- [ ] Add bounded profile journal readback.
 
-### Phase 2: Preparation
+### Phase 2: Write settlement
 
-- [ ] Reserve a terrain slot before controller membership commits.
-- [ ] Prepare tree, grass and shard cell replacements without visible mutation.
-- [ ] Prepare collider and pickup candidates by patch ID.
-- [ ] Validate all fixed capacities and authored overflow policy.
-- [ ] Return typed preparation results for every mandatory consumer.
+- [ ] Add expected-base revision and fingerprint.
+- [ ] Implement compare-and-set around persistence.
+- [ ] Return Accepted, Conflict, Duplicate, Stale, Failed or Retired.
+- [ ] Define recovery after quota/storage failure.
 
-### Phase 3: Commit and rollback
+### Phase 3: Event admission
 
-- [ ] Commit controller active membership and consumer revisions together.
-- [ ] Return `PatchActivationResult` with complete consumer receipts.
-- [ ] Restore predecessor maps, ranges, meshes and physics after failure.
-- [ ] Preserve release intent until all mandatory retirement work settles.
-- [ ] Return `PatchReleaseResult` and reject duplicate or stale releases.
+- [ ] Suppress duplicate and out-of-order broadcast/storage events.
+- [ ] Reject same-revision different-fingerprint events.
+- [ ] Cancel or rebase pending creator writes explicitly.
+- [ ] Retire listeners, timers and channel ownership on page shutdown.
 
-### Phase 4: Presentation proof
+### Phase 4: Run admission
 
-- [ ] Bind terrain and instance revisions to one renderer submission.
-- [ ] Publish `PatchVisibleFrameAck` for the matching activation.
-- [ ] Classify Complete, Degraded, Partial, Failed, Stale or Retired.
-- [ ] Preserve the last complete patch frame after partial failure.
-- [ ] Expose patch-level readback through `PrehistoricRushHost`.
+- [ ] Re-read the accepted profile after providers are ready.
+- [ ] Seal profile revision, fingerprint and body content hash.
+- [ ] Keep active runs immutable under ambient profile events.
+- [ ] Define restart/recompose policy for later edits.
 
-### Phase 5: Physics and gameplay parity
+### Phase 5: Presentation proof
 
-- [ ] Replace aggregate collider republish with a cell-diff result where supported.
-- [ ] Bind height, collision and pickup queries to accepted membership revisions.
-- [ ] Define whether gameplay may enter a patch before visible acknowledgement.
-- [ ] Verify collected pickup changes never mutate unrelated patches.
-- [ ] Verify mandatory gameplay consumers never silently degrade.
+- [ ] Bind creator preview submissions to accepted profile artifacts.
+- [ ] Bind game renderer submission to RunCharacterArtifact.
+- [ ] Publish first matching visible frame acknowledgements.
+- [ ] Expose conflict and binding diagnostics through the host.
 
 ### Phase 6: Fixtures
 
-- [ ] Run clean-checkout `npm test`.
-- [ ] Execute the exact pinned official kits.
-- [ ] Test Worker and fallback generation.
-- [ ] Stress maximum active patches and every fixed cell capacity.
-- [ ] Inject terrain, batch, GPU and Rapier failures.
-- [ ] Test rapid boundary crossing, restart and late Worker completion.
-- [ ] Correlate activation results with visible frames.
-- [ ] Run built-output and GitHub Pages parity smokes.
-
-## Retained priorities
-
-Pause-menu command lifecycle, player-character composition, terrain-foot-target coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved independent boundaries. Patch adoption should cite those revisions rather than absorb their responsibilities.
-
-## Completion gate
-
-Do not mark patch-owned streaming complete until controller membership, terrain, instance cells, collision, pickups and the first matching visible frame settle under one terminal activation or release result, including injected failure and rollback proof.
+- [ ] Run existing `npm test`.
+- [ ] Add two-tab concurrent writer tests.
+- [ ] Add storage/broadcast reordering tests.
+- [ ] Add pending debounce versus remote-update tests.
+- [ ] Add delayed-provider versus profile-update tests.
+- [ ] Add visible preview/game frame correlation.
+- [ ] Run built-output and Pages parity.
