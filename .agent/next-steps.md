@@ -1,72 +1,71 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-13T16-41-10-04-00`  
-**Authority:** `prehistoric-rush-pause-menu-command-lifecycle-authority-domain`
+**Audit:** `2026-07-13T21-38-52-04-00`  
+**Authority:** `prehistoric-rush-patch-owned-streaming-adoption-authority-domain`
 
 ## Summary
 
-The semantic pause-menu DSK and Core Presentation descriptors are implemented. Next work should leave those boundaries intact and add the minimum product/browser orchestration required for typed commands, explicit retained-input policy, visible overlay proof and terminal exit cleanup.
+Patch-owned maps and stable cell ranges are implemented. Next work should keep those boundaries and add only the orchestration needed for revisioned activation, rollback, release settlement and visible-frame proof.
 
 ## Plan ledger
 
-**Goal:** make every pause interaction deterministic and terminal without converting the non-blocking menu into a simulation pause.
+**Goal:** make each streamed patch either completely adopted, explicitly degraded under policy, or rejected with the predecessor restored.
 
-### Phase 1: Command identity
+### Phase 1: Identity and provenance
 
-- [ ] Add `PauseMenuCommandId`, `PauseMenuGeneration` and accepted revision.
-- [ ] Bind runtime session, run generation, host generation and expected semantic sequence.
-- [ ] Classify Escape, Settings, Exit and programmatic commands by source.
-- [ ] Return Accepted, Duplicate, Stale, Failed, Cancelled or Retired.
-- [ ] Add bounded clone-safe command readback.
+- [ ] Add `PatchActivationId`, `PatchReleaseId` and adapter generation.
+- [ ] Bind controller revision, patch key, runtime session and run ID.
+- [ ] Retain generation request and payload fingerprints through adoption.
+- [ ] Reject stale Worker results and predecessor adapter callbacks.
+- [ ] Add bounded activation/release journal readback.
 
-### Phase 2: Host lifecycle
+### Phase 2: Preparation
 
-- [ ] Allocate one browser pause-host identity and generation.
-- [ ] Replace unbounded readiness polling with cancellable admission and a deadline.
-- [ ] Install exactly one Escape listener and one synchronization scheduler.
-- [ ] Reject callbacks from predecessor or retired host generations.
-- [ ] Publish installation and retirement results.
+- [ ] Reserve a terrain slot before controller membership commits.
+- [ ] Prepare tree, grass and shard cell replacements without visible mutation.
+- [ ] Prepare collider and pickup candidates by patch ID.
+- [ ] Validate all fixed capacities and authored overflow policy.
+- [ ] Return typed preparation results for every mandatory consumer.
 
-### Phase 3: Overlay projection
+### Phase 3: Commit and rollback
 
-- [ ] Prepare overlay DOM from an immutable accepted menu envelope.
-- [ ] Return prepared, committed, stale, failed or retired projection results.
-- [ ] Track overlay node and listener ownership.
-- [ ] Preserve or recover the last complete projection after failure.
-- [ ] Publish `FirstPauseOverlayFrameAck` for the matching sequence.
+- [ ] Commit controller active membership and consumer revisions together.
+- [ ] Return `PatchActivationResult` with complete consumer receipts.
+- [ ] Restore predecessor maps, ranges, meshes and physics after failure.
+- [ ] Preserve release intent until all mandatory retirement work settles.
+- [ ] Return `PatchReleaseResult` and reject duplicate or stale releases.
 
-### Phase 4: Non-blocking gameplay-input policy
+### Phase 4: Presentation proof
 
-- [ ] Define whether steer, boost, jump and restart remain admitted while open.
-- [ ] Define held-input clear/retain behavior at open and close boundaries.
-- [ ] Define Escape repeat, pointer capture, blur and focus-restoration rules.
-- [ ] Bind policy revision to menu and run generations.
-- [ ] Expose the active policy through diagnostics.
+- [ ] Bind terrain and instance revisions to one renderer submission.
+- [ ] Publish `PatchVisibleFrameAck` for the matching activation.
+- [ ] Classify Complete, Degraded, Partial, Failed, Stale or Retired.
+- [ ] Preserve the last complete patch frame after partial failure.
+- [ ] Expose patch-level readback through `PrehistoricRushHost`.
 
-### Phase 5: Exit settlement
+### Phase 5: Physics and gameplay parity
 
-- [ ] Consume `exit-requested` through an explicit exit authority.
-- [ ] Prepare and validate the navigation destination.
-- [ ] Retire attach polling, sync RAF, Escape listener, click listeners and overlay.
-- [ ] Request patch Worker, render, physics and runtime cleanup receipts.
-- [ ] Add bounded timeout and partial-failure policy.
-- [ ] Publish `ExitSettlementResult` and navigate exactly once.
+- [ ] Replace aggregate collider republish with a cell-diff result where supported.
+- [ ] Bind height, collision and pickup queries to accepted membership revisions.
+- [ ] Define whether gameplay may enter a patch before visible acknowledgement.
+- [ ] Verify collected pickup changes never mutate unrelated patches.
+- [ ] Verify mandatory gameplay consumers never silently degrade.
 
 ### Phase 6: Fixtures
 
 - [ ] Run clean-checkout `npm test`.
-- [ ] Execute the DSK through the pinned real Nexus runtime.
-- [ ] Test delayed runtime readiness, replacement and retirement.
-- [ ] Test rapid Escape, repeated Escape, settings/exit races and stale commands.
-- [ ] Test gameplay input while open, blur and focus restoration.
-- [ ] Correlate semantic sequence, DOM fingerprint and visible frame.
-- [ ] Test cleanup failures, timeout and duplicate navigation.
+- [ ] Execute the exact pinned official kits.
+- [ ] Test Worker and fallback generation.
+- [ ] Stress maximum active patches and every fixed cell capacity.
+- [ ] Inject terrain, batch, GPU and Rapier failures.
+- [ ] Test rapid boundary crossing, restart and late Worker completion.
+- [ ] Correlate activation results with visible frames.
 - [ ] Run built-output and GitHub Pages parity smokes.
 
 ## Retained priorities
 
-Atomic player-character composition, terrain-foot-target coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved. The pause authority should cite their revisions rather than absorb their responsibilities.
+Pause-menu command lifecycle, player-character composition, terrain-foot-target coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority and browser-runtime retirement remain unresolved independent boundaries. Patch adoption should cite those revisions rather than absorb their responsibilities.
 
 ## Completion gate
 
-Do not mark the pause-menu lifecycle complete until one browser host generation is proven, every command returns a typed terminal result, retained gameplay input follows an explicit policy, accepted overlay revisions receive visible-frame acknowledgement and exit performs exactly-once settlement with bounded cleanup evidence.
+Do not mark patch-owned streaming complete until controller membership, terrain, instance cells, collision, pickups and the first matching visible frame settle under one terminal activation or release result, including injected failure and rollback proof.
