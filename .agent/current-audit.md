@@ -1,81 +1,76 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-14T14-01-07-04-00`  
+**Timestamp:** `2026-07-14T18-58-04-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Repository head before audit:** `0a8e5dff693226ea5ca8d163a1b89fa85fc837dc`  
+**Repository head before audit:** `436aaad739f521f036f14f7f5dd3ab1ff51ecee2`  
 **Runtime source revision retained:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
-**Status:** `runtime-provider-revision-convergence-authority-central-reconciled`  
-**Technical status:** `runtime-provider-revision-convergence-authority-audited`
+**Status:** `route-progress-goal-eligibility-authority-central-reconciled`  
+**Technical status:** `route-progress-goal-eligibility-authority-audited`
 
 ## Summary
 
-The game and creator use a newer directly imported NexusEngine module while their HTML import maps resolve transitive bare `nexusengine` imports to an older commit. Stable kits and ProtoKits can therefore contribute factories and descriptors from a different provider revision than the engine constructor used for composition.
+The authored route supplies nearest-sample progress and lateral-distance evidence, but the game does not use that evidence to determine course completion. Every horizontal displacement increases `RunState.distance`, and victory is proposed when that unrestricted movement counter reaches `3600`.
 
 ## Plan ledger
 
-**Goal:** make route startup accept exactly one canonical provider graph before engine composition, physics, Workers, gameplay, preview, or rendering begins.
+**Goal:** make movement, accepted course progress, goal eligibility and visible finish state distinct, revisioned participants.
 
-- [x] Trace game and creator import maps.
-- [x] Trace direct runtime and dependency URLs.
-- [x] Verify bare imports in stable kits and ProtoKit core.
-- [x] Trace game and creator composition.
-- [x] Trace configured public version readback.
-- [x] Define provider admission, rollback, and first-frame evidence.
+- [x] Trace route sample and progress generation.
+- [x] Trace movement and distance accumulation.
+- [x] Trace goal proposal and resolution-policy admission.
+- [x] Trace HUD and terminal projection.
+- [x] Define course-progress, checkpoint and finish-frame authority.
 - [x] Add timestamped docs and root projections.
-- [ ] Implement and execute browser fixtures later.
+- [ ] Implement and execute fixtures later.
 
-## Current module loop
+## Current loop
 
 ```txt
-HTML import map
-  -> bare nexusengine = cf2fe3d...
-
-page/runtime module
-  -> direct NexusEngine = 682c9fa...
-  -> direct stable kits and ProtoKits
-
-stable kits and ProtoKit core
-  -> import bare nexusengine
-  -> resolve to cf2fe3d...
-
-composition
-  -> createRealtimeGame from 682c9fa...
-  -> kit helpers/descriptors may originate from cf2fe3d...
-  -> shape checks pass or fail
-  -> gameplay/preview starts without provider identity settlement
+input
+  -> movement dx/dz
+  -> total distance += hypot(dx, dz)
+  -> nearest route sample
+  -> routeIndex, routeProgress and region update
+  -> route evidence is not used for goal
+  -> goal = total distance >= 3600
+  -> resolution policy trusts goal boolean
+  -> win transition and HUD completion
 ```
 
 ## Domains in use
 
 ```txt
-browser import map and module loading
-provider identity, dependency graph, compatibility, admission, rollback, and diagnostics
-Core engine and presentation domains
-PrehistoricRush gameplay, profile, creator, pause, streaming, physics, and rendering
-source, built output, Pages, and first-frame proof
+browser input and frame lifecycle
+Core simulation, physics, motion, scene, player, character and presentation
+product run, route, surface, score, outcome, pose and terrain IK
+authored route geometry, nearest sample, progress, checkpoints and finish eligibility
+seeded patch streaming, Rapier, Worker and Three.js presentation
+profile, creator, validation, build, Pages and central tracking
 ```
 
 ## Current gaps
 
 ```txt
-single canonical provider manifest: absent
-import map derived from runtime manifest: absent
-transitive module provider receipts: absent
-split-revision rejection: absent
-compatibility result: absent
-atomic provider composition result: absent
-provider candidate rollback: absent
-resolved provider graph public readback: absent
-first provider-converged frame acknowledgement: absent
-source/build/Pages provider parity fixture: absent
+CourseManifestRevision: absent
+stable checkpoint identities: absent
+monotonic accepted route progress: absent
+forward-direction predicate: absent
+lateral eligibility predicate: absent
+repeated-segment rejection: absent
+movement versus course-distance separation: absent
+typed CourseGoalEligibilityResult: absent
+CourseCompletionResult: absent
+HUD progress revision: absent
+FirstEligibleFinishFrameAck: absent
+reverse, circle and off-route fixtures: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-runtime-provider-revision-convergence-authority-domain
+prehistoric-rush-route-progress-goal-eligibility-authority-domain
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-14T14-01-07-04-00/project-breakdown.md`.
+See `.agent/trackers/2026-07-14T18-58-04-04-00/project-breakdown.md`.
