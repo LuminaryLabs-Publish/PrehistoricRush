@@ -4,7 +4,7 @@
 
 ## Summary
 
-All ten eligible Publish repositories were centrally tracked, had root `.agent` state, and matched their recorded documentation heads. PrehistoricRush was selected as the oldest synchronized repository and audited for route-progress goal eligibility.
+All ten eligible Publish repositories were centrally tracked, had root `.agent` state, and matched their recorded documentation heads. PrehistoricRush was selected as the oldest synchronized repository and its route-progress eligibility audit is prepared for the central ledger and internal change log.
 
 ## Plan ledger
 
@@ -16,8 +16,8 @@ All ten eligible Publish repositories were centrally tracked, had root `.agent` 
 - [x] Select only PrehistoricRush.
 - [x] Add the timestamped repo-local audit family.
 - [x] Refresh required root files.
-- [ ] Record the final repo-local head in the central ledger after all local documentation commits.
-- [ ] Add the central internal change-log entry.
+- [x] Prepare the final repo-local head for the central ledger.
+- [x] Prepare the central internal change-log entry.
 
 ## Selection result
 
