@@ -1,47 +1,47 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-14T03-39-56-04-00`  
+**Last aligned:** `2026-07-14T08-40-38-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
 **Runtime revision reviewed:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
-**Status:** `player-character-profile-revision-admission-authority-central-reconciled`  
-**Technical status:** `player-character-profile-revision-admission-authority-audited`
+**Status:** `run-outcome-score-settlement-authority-central-reconciled`  
+**Technical status:** `run-outcome-score-settlement-authority-audited`
 
 ## Summary
 
-The current audit covers player-character profile convergence across menu, creator and game documents. Numeric revision, localStorage and BroadcastChannel are present, but concurrent writes, out-of-order events, delayed provider loading and visible character frames do not share one accepted profile artifact.
+The current audit covers terminal run outcome, score provenance, retry lineage and visible result evidence. Collision, pickup and goal resolution is deterministic, but the accepted terminal decision is not retained as one immutable artifact before retry replaces mutable run state.
 
 ## Plan ledger
 
-**Goal:** bind profile writes, cross-document admission, run composition and the first visible raptor frame to one immutable revision and fingerprint.
+**Goal:** bind terminal simulation truth, score policy, reproducibility inputs, terminal UI/frame and retry to one durable RunOutcomeArtifact.
 
 - [x] Compare 11 Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm 10 eligible ledgers and root `.agent` states.
+- [x] Confirm 10 eligible ledgers, root `.agent` states and synchronized heads.
 - [x] Select only PrehistoricRush by the oldest eligible timestamp.
-- [x] Inspect store, menu, creator, preview and game bootstrap.
+- [x] Inspect run state, resolution, transitions, HUD, renderer, retry and tests.
 - [x] Preserve the full 59-surface inventory.
-- [x] Add the `2026-07-14T03-39-56-04-00` audit family.
+- [x] Add the `2026-07-14T08-40-38-04-00` audit family.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement profile settlement and executable browser proof later.
+- [ ] Implement settlement and executable proof later.
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-14T03-39-56-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-14T03-39-56-04-00.md
-.agent/architecture-audit/2026-07-14T03-39-56-04-00-player-profile-revision-admission-dsk-map.md
-.agent/render-audit/2026-07-14T03-39-56-04-00-profile-visible-character-frame-gap.md
-.agent/gameplay-audit/2026-07-14T03-39-56-04-00-profile-run-admission-loop.md
-.agent/interaction-audit/2026-07-14T03-39-56-04-00-cross-document-profile-result-map.md
-.agent/profile-store-audit/2026-07-14T03-39-56-04-00-conflict-run-sealing-contract.md
-.agent/deploy-audit/2026-07-14T03-39-56-04-00-profile-revision-fixture-gate.md
-.agent/central-sync-audit/2026-07-14T03-39-56-04-00-profile-revision-central-reconciliation.md
+.agent/trackers/2026-07-14T08-40-38-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-14T08-40-38-04-00.md
+.agent/architecture-audit/2026-07-14T08-40-38-04-00-run-outcome-score-settlement-dsk-map.md
+.agent/render-audit/2026-07-14T08-40-38-04-00-terminal-result-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-14T08-40-38-04-00-terminal-outcome-retry-loop.md
+.agent/interaction-audit/2026-07-14T08-40-38-04-00-outcome-retry-command-result-map.md
+.agent/outcome-system-audit/2026-07-14T08-40-38-04-00-result-score-retry-contract.md
+.agent/deploy-audit/2026-07-14T08-40-38-04-00-run-outcome-score-fixture-gate.md
+.agent/central-sync-audit/2026-07-14T08-40-38-04-00-run-outcome-score-reconciliation.md
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-player-character-profile-revision-admission-authority-domain
+prehistoric-rush-run-outcome-score-settlement-authority-domain
 ```
 
 ## Kit census
@@ -57,4 +57,4 @@ total surfaces:                   59
 
 ## Retained audit families
 
-Patch adoption, pause-menu lifecycle, player composition, terrain IK, player-pose provenance, collision convergence, Core Input, viewport, articulation, run lifecycle and browser-runtime retirement remain separate unresolved boundaries.
+Player-profile admission, patch adoption, pause-menu lifecycle, character composition, terrain IK, PlayerPose provenance, collision convergence, Core Input, viewport, articulation, run-start/restart and browser-runtime retirement remain separate unresolved boundaries.
