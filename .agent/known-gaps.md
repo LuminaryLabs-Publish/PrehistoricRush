@@ -1,74 +1,56 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-13T21-38-52-04-00`  
-**Status:** `patch-owned-streaming-adoption-authority-central-reconciled`  
-**Technical status:** `patch-owned-streaming-adoption-authority-audited`
+**Audit:** `2026-07-14T03-39-56-04-00`  
+**Status:** `player-character-profile-revision-admission-authority-central-reconciled`
 
 ## Summary
 
-Patch ownership and changed-range uploads are implemented. Controller membership, terrain, instance cells, physics, pickups and visible presentation still do not share one activation or release transaction.
+Profile persistence works in the common single-document path, but concurrent writers, delayed messages and game boot can diverge without explicit conflict or stale results.
 
 ## Plan ledger
 
-**Goal:** keep every adoption, capacity, rollback, gameplay and proof gap explicit without undoing the incremental streaming refactor.
+**Goal:** keep every profile identity, conflict, lifecycle, run and proof gap explicit.
 
-### Identity and provenance gaps
+### Identity and sequencing
 
-- [ ] No activation or release command ID.
-- [ ] No adapter generation or controller revision in consumer calls.
-- [ ] Adapter does not retain the controller patch key.
-- [ ] No payload fingerprint or accepted adoption revision.
-- [ ] No bounded activation and release journal.
+- [ ] No writer ID or document generation.
+- [ ] No write/message ID.
+- [ ] No payload fingerprint.
+- [ ] No monotonic event admission.
+- [ ] No duplicate or out-of-order classification.
 
-### Atomicity gaps
+### Settlement
 
-- [ ] `takeReadyPatches()` marks membership active before adapter adoption.
-- [ ] `takeReleasedPatchIds()` clears release intent before retirement settles.
-- [ ] Terrain, tree, grass, shard, collider and pickup mutations occur sequentially.
-- [ ] No prepare phase or mandatory-consumer validation.
-- [ ] No rollback or predecessor restoration after partial failure.
-- [ ] No typed `PatchActivationResult` or `PatchReleaseResult`.
+- [ ] Revision allocation is not compare-and-set.
+- [ ] Two writers may derive the same next revision.
+- [ ] Same-revision conflicting payloads are not rejected.
+- [ ] Storage failure has no typed durable result.
+- [ ] Pending creator writes are not explicitly rebased after remote updates.
 
-### Capacity and degradation gaps
+### Run composition
 
-- [ ] Terrain-slot availability is not returned as a result.
-- [ ] Tree, grass and shard overflow only emits console warnings.
-- [ ] No authored optional-versus-mandatory consumer policy.
-- [ ] No patch-level result combines all layer overflow outcomes.
-- [ ] No maximum-active-set capacity fixture.
+- [ ] Game profile is captured before asynchronous providers settle.
+- [ ] No revalidation immediately before engine composition.
+- [ ] No immutable RunCharacterArtifact.
+- [ ] No explicit active-run policy for later profile updates.
+- [ ] Profile revision and body content hash are not joined by a receipt.
 
-### Physics and gameplay gaps
+### Presentation and lifecycle
 
-- [ ] Collider membership is flattened and republished as one aggregate on membership changes.
-- [ ] No physics cell-diff or collider revision result.
-- [ ] Height sampler can see active patch data before other consumers settle.
-- [ ] Collision and pickup samplers cite no patch-membership revision.
-- [ ] No policy defines gameplay admission during partial activation.
-- [ ] Late Worker results after release or restart have no explicit stale classification.
+- [ ] Creator status does not cite a profile/frame revision.
+- [ ] Game frames do not acknowledge the admitted profile artifact.
+- [ ] Menu and creator do not retain subscription disposers.
+- [ ] `closePlayerCharacterProfileStore()` is not page-lifecycle governed.
+- [ ] No first visible profile frame proof.
 
-### Presentation gaps
+### Tests
 
-- [ ] No terrain-slot revision.
-- [ ] No renderer submission cites patch activation.
-- [ ] No visible patch fingerprint.
-- [ ] No first matching visible frame acknowledgement.
-- [ ] No last-complete-frame recovery after partial projection failure.
-- [ ] Public ownership readback contains counts but not patch keys or consumer revisions.
-
-### Test gaps
-
-- [ ] Current tests were not independently executed in this run.
-- [ ] New coverage is source-text validation, not real runtime execution.
-- [ ] No real Worker and fallback parity fixture.
-- [ ] No WebGL changed-range upload inspection.
-- [ ] No Rapier publication or rollback fixture.
-- [ ] No fault-injection fixture.
-- [ ] No built-output or GitHub Pages parity fixture.
+- [ ] Existing tests were not run in this audit.
+- [ ] No real multi-tab conflict fixture.
+- [ ] No delayed-provider profile race fixture.
+- [ ] No creator pending-write race fixture.
+- [ ] No visible-frame or Pages parity fixture.
 
 ## Retained gaps
 
-Pause-menu lifecycle, player composition, terrain IK coherence, PlayerPose provenance, collision-source convergence, Core Input adoption, viewport authority, articulated presentation and browser-runtime retirement remain unresolved independent boundaries.
-
-## Non-claims
-
-The source proves patch-owned maps, stable instance ranges, changed-range uploads, targeted pickup refresh and isolated collider membership synchronization. It does not prove atomic adoption, rollback, explicit degradation, gameplay parity, visible-frame equivalence, independently passing tests or deployed parity.
+Patch adoption, pause-menu lifecycle, player composition transition, terrain IK, PlayerPose provenance, collision convergence, Core Input, viewport, articulation, run lifecycle and browser runtime retirement remain separate.
