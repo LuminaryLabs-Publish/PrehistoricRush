@@ -1,49 +1,52 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-14T14-01-07-04-00`  
-**Authority:** `prehistoric-rush-runtime-provider-revision-convergence-authority-domain`
+**Audit:** `2026-07-14T18-58-04-04-00`  
+**Authority:** `prehistoric-rush-route-progress-goal-eligibility-authority-domain`
 
 ## Summary
 
-Keep the existing Core, product, stable-kit, ProtoKit, Three.js, Rapier, streaming, and creator structures. Replace the duplicated NexusEngine revision sources with one route provider manifest and make startup reject mixed provider graphs before any gameplay or rendering participant is adopted.
+Keep the existing route generator, simulation, collision precedence and renderer. Add a narrow progress authority that converts candidate movement into monotonic authored-course progress and requires the terminal checkpoint before victory.
 
 ## Plan ledger
 
-**Goal:** make each browser route compose from one immutable and observable provider graph.
+**Goal:** replace movement-only completion with versioned course progress, checkpoint admission and finish-frame proof.
 
-### Phase 1: Canonical provider manifest
+### Phase 1: Course manifest
 
-- [ ] Add one `RouteProviderManifest` containing NexusEngine, stable-kit, ProtoKit, Three.js, and Rapier identities.
-- [ ] Derive both direct module URLs and the `nexusengine` import-map entry from that manifest.
-- [ ] Remove or replace stale hard-coded provider mappings in `game.html` and `charactercreator.html`.
-- [ ] Give the manifest a schema version and immutable revision.
+- [ ] Add `CourseManifest` with schema, course ID, revision, seed and route fingerprint.
+- [ ] Generate stable ordered checkpoint IDs from the authored route.
+- [ ] Add a terminal `CourseGoalDescriptor` with finish volume and direction.
+- [ ] Version lateral, direction and checkpoint-skip policies.
 
-### Phase 2: Dependency receipts
+### Phase 2: Progress admission
 
-- [ ] Add provider revision markers or receipts for root runtime, stable kits, and ProtoKits.
-- [ ] Record whether each kit used imported or injected runtime helpers.
-- [ ] Compare every transitive `nexusengine` dependency with the canonical provider revision.
-- [ ] Reject unknown, mixed, or incompatible provider identities.
+- [ ] Add `CourseProgressCommand` and typed result statuses.
+- [ ] Project displacement onto the current route tangent.
+- [ ] Separate total movement telemetry from accepted forward course distance.
+- [ ] Reject backward, repeated, skipped and off-route progress.
+- [ ] Bind progress to RunId, StepId and manifest revision.
 
-### Phase 3: Atomic route admission
+### Phase 3: Goal settlement
 
-- [ ] Add `RouteProviderAdmissionCommand` and typed result classes.
-- [ ] Prepare engine, physics, Worker, renderer, listeners, and route host as candidates.
-- [ ] Adopt all participants only after provider and capability probes pass.
-- [ ] Dispose all candidates and preserve a DOM fallback on rejection.
-- [ ] Reject stale and superseded startup attempts.
+- [ ] Add `CourseGoalEligibilityCommand` and typed result.
+- [ ] Require the terminal checkpoint or finish volume.
+- [ ] Preserve existing collision-over-goal precedence.
+- [ ] Publish immutable `CourseCompletionResult`.
+- [ ] Reject stale and predecessor-run completion work.
 
-### Phase 4: Diagnostics and presentation
+### Phase 4: Presentation and diagnostics
 
-- [ ] Expose the resolved `ModuleGraphManifest`, not only configured commit constants.
-- [ ] Bind public host state to the accepted provider attempt.
-- [ ] Publish `FirstProviderConvergedFrameAck` for game and creator routes.
-- [ ] Include route, module-graph, renderer, viewport, and frame identities.
+- [ ] Drive the HUD from accepted course progress.
+- [ ] Expose total movement separately for diagnostics or scoring.
+- [ ] Bind terminal UI to `CourseCompletionRevision`.
+- [ ] Publish `FirstEligibleFinishFrameAck`.
+- [ ] Expose route, checkpoint, progress and finish identities through the public host.
 
 ### Phase 5: Fixtures
 
-- [ ] Add a same-revision browser success fixture.
-- [ ] Add a split-revision import-map rejection fixture.
-- [ ] Assert no run, physics, Worker, or RAF starts before provider acceptance.
+- [ ] Add forward-course success coverage.
+- [ ] Add reverse, circle, repeated-segment and off-route rejection fixtures.
+- [ ] Add checkpoint-skip and wrong-direction finish fixtures.
+- [ ] Add collision-at-finish precedence coverage.
 - [ ] Run `npm test`.
-- [ ] Run source, built-output, and GitHub Pages provider-parity checks.
+- [ ] Run source, built-output and GitHub Pages finish-parity checks.
