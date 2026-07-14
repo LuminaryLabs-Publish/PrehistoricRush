@@ -1,14 +1,15 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-14T14-01-07-04-00",
-  "status": "runtime-provider-revision-convergence-authority-central-reconciled",
-  "technicalStatus": "runtime-provider-revision-convergence-authority-audited",
-  "repositoryRevisionReviewed": "0a8e5dff693226ea5ca8d163a1b89fa85fc837dc",
+  "generatedAt": "2026-07-14T18-58-04-04-00",
+  "status": "route-progress-goal-eligibility-authority-central-reconciled",
+  "technicalStatus": "route-progress-goal-eligibility-authority-audited",
+  "repositoryRevisionReviewed": "436aaad739f521f036f14f7f5dd3ab1ff51ecee2",
   "runtimeSourceRevisionRetained": "ab3c63fed62b70e776ee56c4295f359bc3660274",
-  "priorDocumentationHead": "0a8e5dff693226ea5ca8d163a1b89fa85fc837dc",
-  "currentAuditedSlice": "Runtime Provider Revision / Import Map / Module Graph / Route Admission / First Provider-Converged Frame",
+  "priorDocumentationHead": "436aaad739f521f036f14f7f5dd3ab1ff51ecee2",
+  "currentAuditedSlice": "Route Progress / Direction / Checkpoint / Goal Eligibility / First Eligible Finish Frame",
   "retainedStatuses": [
+    "runtime-provider-revision-convergence-authority-central-reconciled",
     "run-outcome-score-settlement-authority-central-reconciled",
     "player-character-profile-revision-admission-authority-central-reconciled",
     "patch-owned-streaming-adoption-authority-central-reconciled",
@@ -23,16 +24,17 @@
     "run-start-restart-central-reconciled",
     "browser-runtime-lifecycle-authority-audited"
   ],
-  "latestTracker": ".agent/trackers/2026-07-14T14-01-07-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-14T14-01-07-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-14T18-58-04-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-14T18-58-04-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-14T14-01-07-04-00-runtime-provider-revision-convergence-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-14T14-01-07-04-00-split-provider-first-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-14T14-01-07-04-00-mixed-runtime-composition-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-14T14-01-07-04-00-route-bootstrap-provider-result-map.md",
-    "runtimeProvider": ".agent/runtime-provider-audit/2026-07-14T14-01-07-04-00-import-map-module-graph-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-14T14-01-07-04-00-provider-revision-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-14T14-01-07-04-00-repo-ledger-provider-revision-reconciliation.md",
+    "architecture": ".agent/architecture-audit/2026-07-14T18-58-04-04-00-route-progress-goal-eligibility-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-14T18-58-04-04-00-movement-progress-finish-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-14T18-58-04-04-00-off-route-distance-win-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-14T18-58-04-04-00-course-progress-goal-command-result-map.md",
+    "routeProgress": ".agent/route-progress-audit/2026-07-14T18-58-04-04-00-checkpoint-direction-finish-eligibility-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-14T18-58-04-04-00-course-progress-browser-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-14T18-58-04-04-00-oldest-selection-route-progress-reconciliation.md",
+    "providerRetained": ".agent/runtime-provider-audit/2026-07-14T14-01-07-04-00-import-map-module-graph-contract.md",
     "outcomeRetained": ".agent/outcome-system-audit/2026-07-14T08-40-38-04-00-result-score-retry-contract.md",
     "profileRetained": ".agent/profile-store-audit/2026-07-14T03-39-56-04-00-conflict-run-sealing-contract.md",
     "patchStreamingRetained": ".agent/streaming-audit/2026-07-13T21-38-52-04-00-patch-generation-adoption-contract.md"
@@ -47,7 +49,7 @@
     "runtimeAheadCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "Oldest eligible central documentation timestamp after new, missing, root-agent-missing, and runtime-ahead checks."
+    "reason": "Oldest synchronized central documentation timestamp after new, missing, root-agent-missing, and runtime-ahead checks."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 22,
@@ -56,59 +58,62 @@
     "externalHostAdapterCount": 9,
     "proofKitCount": 7,
     "totalSurfaceCount": 59,
-    "canonicalProviderManifestCount": 0,
-    "providerAdmissionResultCount": 0,
-    "resolvedModuleGraphSnapshotCount": 0,
-    "providerConvergedFrameAckCount": 0
+    "plannedRouteAuthoritySurfaceCount": 22,
+    "courseManifestCount": 0,
+    "courseProgressResultCount": 0,
+    "courseCompletionResultCount": 0,
+    "eligibleFinishFrameAckCount": 0
   },
   "interactionLoop": [
-    "game and creator HTML map the bare nexusengine specifier to cf2fe3d",
-    "route code directly imports NexusEngine 682c9fa through runtime-versions",
-    "stable kits and ProtoKit core resolve their internal bare nexusengine imports through the older import map",
-    "the root engine constructor comes from the newer direct module",
-    "kit helpers and descriptors may originate from the older mapped module",
-    "composition proceeds after capability shape checks without provider identity settlement",
-    "rendering starts and public diagnostics report configured direct commits only"
+    "browser input is projected into PrehistoricRush steer boost and jump state",
+    "the simulation integrates displacement and adds its magnitude to cumulative movement distance",
+    "the same step resolves nearest route sample route index normalized route progress lateral distance and region",
+    "the goal proposal ignores route evidence and becomes true when cumulative movement reaches 3600",
+    "the resolution policy trusts the goal boolean after collision precedence",
+    "the HUD presents cumulative movement as course progress and terminal state",
+    "reverse repeated circular and off-route travel can therefore advance the victory counter"
   ],
   "domainsInUse": [
-    "browser import map and module loading",
-    "runtime provider identity dependency graph compatibility admission rollback and diagnostics",
-    "Core engine simulation physics motion scene player character and presentation",
-    "PrehistoricRush gameplay profile creator pause streaming and rendering",
-    "source built-output Pages and first-frame proof"
+    "browser input resize blur navigation and frame lifecycle",
+    "Core simulation physics motion scene player character and presentation",
+    "PrehistoricRush run movement route surface score outcome pose and terrain IK",
+    "authored route geometry nearest sampling progress checkpoints direction and finish eligibility",
+    "profile creator seeded streaming Rapier Worker and Three.js presentation",
+    "validation build Pages and central audit tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-14T14-01-07-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "providerAdmission": ["manifest-resolution", "module-load", "dependency-receipt", "revision-comparison", "capability-probe", "composition-admission", "rollback"],
-    "publicReadback": ["configured-versions", "resolved-module-graph", "provider-attempt", "composition-receipt"],
-    "presentation": ["game-frame", "creator-frame", "provider-converged-frame-ack"]
+    "completeInventory": ".agent/trackers/2026-07-14T18-58-04-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "route": ["control-points", "samples", "nearest-query", "tangent", "normalized-progress", "surface-classification"],
+    "progressAuthority": ["course-manifest", "checkpoint-resolution", "direction-predicate", "lateral-predicate", "progress-admission", "goal-eligibility", "completion-settlement"],
+    "presentation": ["hud-progress", "finish-state", "public-readback", "eligible-finish-frame-ack"]
   },
-  "providerRevisionState": {
-    "directNexusEngineRevision": "682c9fa697a36a6bf6262762a6e647ffc3a5e289",
-    "bareSpecifierNexusEngineRevision": "cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1",
-    "stableKitsRevision": "9fd5b10053135e278c84b8b1591aece5cc641da1",
-    "protoKitsRevision": "534e249346d94351baa4cfce9f2d3cd837362920",
-    "threeVersion": "0.179.1",
-    "rapierVersion": "0.15.0",
-    "bareSpecifierConsumersVerified": [
-      "NexusEngine-Kits seed-kit",
-      "NexusEngine-Kits procedural-creature-body-kit",
-      "NexusEngine-ProtoKits protokit-core"
-    ],
-    "singleCanonicalManifest": false,
-    "singleNexusEngineRevision": false,
-    "transitiveProviderReceipts": false,
-    "splitRevisionRejection": false,
-    "typedAdmissionResult": false,
-    "candidateRollbackReceipt": false,
-    "resolvedGraphPublicReadback": false,
-    "visibleFrameAck": false
+  "courseProgressState": {
+    "deterministicRouteGenerator": true,
+    "nearestSampleLookup": true,
+    "routeIndex": true,
+    "normalizedRouteProgress": true,
+    "lateralRouteDistance": true,
+    "surfaceRegion": true,
+    "cumulativeMovementCounter": true,
+    "movementOnlyGoalPredicate": true,
+    "versionedCourseManifest": false,
+    "stableCheckpoints": false,
+    "monotonicAcceptedProgress": false,
+    "forwardDirectionPredicate": false,
+    "lateralEligibilityPredicate": false,
+    "repeatedSegmentRejection": false,
+    "checkpointSkipRejection": false,
+    "typedGoalEligibilityResult": false,
+    "typedCourseCompletionResult": false,
+    "hudProgressRevision": false,
+    "eligibleFinishFrameAck": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-runtime-provider-revision-convergence-authority-domain",
-    "mainFinding": "Direct route imports use NexusEngine 682c9fa while stable-kit and ProtoKit bare imports resolve through the HTML import map to cf2fe3d, creating an unadmitted mixed-revision provider graph."
+    "parentDomain": "prehistoric-rush-route-progress-goal-eligibility-authority-domain",
+    "mainFinding": "PrehistoricRush computes authored-route progress and lateral evidence but admits victory from unrestricted cumulative movement, allowing reverse, repeated, circular, and off-route travel to advance the win counter."
   },
   "validation": {
+    "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
     "htmlChangedByAudit": false,
     "gameplayChangedByAudit": false,
@@ -117,9 +122,9 @@
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "browserModuleGraphFixtureRun": false,
-    "splitRevisionFixtureRun": false,
-    "visibleProviderFrameFixtureRun": false,
+    "routeProgressFixtureRun": false,
+    "reverseCircleOffRouteFixtureRun": false,
+    "visibleFinishFrameFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
