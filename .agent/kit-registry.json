@@ -1,13 +1,14 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-14T03-39-56-04-00",
-  "status": "player-character-profile-revision-admission-authority-central-reconciled",
-  "technicalStatus": "player-character-profile-revision-admission-authority-audited",
+  "generatedAt": "2026-07-14T08-40-38-04-00",
+  "status": "run-outcome-score-settlement-authority-central-reconciled",
+  "technicalStatus": "run-outcome-score-settlement-authority-audited",
   "repositoryRevisionReviewed": "ab3c63fed62b70e776ee56c4295f359bc3660274",
-  "priorDocumentationHead": "ffe71fe93671b4ada5a473232fddf9e26754862a",
-  "currentAuditedSlice": "Player Character Profile / localStorage / BroadcastChannel / Creator Debounce / Run Admission / Visible Character Frame",
+  "priorDocumentationHead": "2a9ec99a67d31e40e54070aad52dc31014c9bdbd",
+  "currentAuditedSlice": "Run Outcome / Score Provenance / Terminal Settlement / Retry Lineage / Visible Terminal Frame",
   "retainedStatuses": [
+    "player-character-profile-revision-admission-authority-central-reconciled",
     "patch-owned-streaming-adoption-authority-central-reconciled",
     "non-blocking-pause-menu-command-lifecycle-authority-central-reconciled",
     "player-character-composition-transition-authority-central-reconciled",
@@ -20,16 +21,17 @@
     "run-start-restart-central-reconciled",
     "browser-runtime-lifecycle-authority-audited"
   ],
-  "latestTracker": ".agent/trackers/2026-07-14T03-39-56-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-14T03-39-56-04-00.md",
+  "latestTracker": ".agent/trackers/2026-07-14T08-40-38-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-14T08-40-38-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-14T03-39-56-04-00-player-profile-revision-admission-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-14T03-39-56-04-00-profile-visible-character-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-14T03-39-56-04-00-profile-run-admission-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-14T03-39-56-04-00-cross-document-profile-result-map.md",
-    "profileStore": ".agent/profile-store-audit/2026-07-14T03-39-56-04-00-conflict-run-sealing-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-14T03-39-56-04-00-profile-revision-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-14T03-39-56-04-00-profile-revision-central-reconciliation.md",
+    "architecture": ".agent/architecture-audit/2026-07-14T08-40-38-04-00-run-outcome-score-settlement-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-14T08-40-38-04-00-terminal-result-visible-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-14T08-40-38-04-00-terminal-outcome-retry-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-14T08-40-38-04-00-outcome-retry-command-result-map.md",
+    "outcomeSystem": ".agent/outcome-system-audit/2026-07-14T08-40-38-04-00-result-score-retry-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-14T08-40-38-04-00-run-outcome-score-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-14T08-40-38-04-00-run-outcome-score-reconciliation.md",
+    "profileRetained": ".agent/profile-store-audit/2026-07-14T03-39-56-04-00-conflict-run-sealing-contract.md",
     "patchStreamingRetained": ".agent/streaming-audit/2026-07-13T21-38-52-04-00-patch-generation-adoption-contract.md"
   },
   "selection": {
@@ -51,54 +53,56 @@
     "externalHostAdapterCount": 9,
     "proofKitCount": 7,
     "totalSurfaceCount": 59,
-    "profileWriteResultCount": 0,
-    "profileConflictResultCount": 0,
-    "runCharacterAdmissionResultCount": 0,
-    "profileVisibleFrameAckCount": 0
+    "runOutcomeArtifactCount": 0,
+    "scorePolicyCount": 0,
+    "runRetryResultCount": 0,
+    "terminalVisibleFrameAckCount": 0
   },
   "interactionLoop": [
-    "menu loads and subscribes to the browser profile store",
-    "creator edits a local draft and schedules writes after 160 milliseconds",
-    "store writes localStorage then publishes BroadcastChannel and local listener events",
-    "subscribers accept normalized events without monotonic sequencing",
-    "game reads one profile before asynchronous provider loading",
-    "engine composes the run from that captured profile",
-    "renderer presents the character without a profile-bound visible-frame acknowledgement"
+    "game start allocates a new run ID and active RunState",
+    "each tick submits movement pickup and goal proposals",
+    "physics and fallback collision observations enter resolution",
+    "the resolution policy accepts continuation win or failure with collision priority",
+    "events and a Core Scene transition are published and control is suspended",
+    "the renderer and HUD project mutable terminal state",
+    "retry calls start and replaces the predecessor state without a durable outcome artifact"
   ],
   "domainsInUse": [
-    "browser document navigation lifecycle localStorage BroadcastChannel and storage events",
-    "profile schema persistence revision subscription and reset",
-    "creator draft debounce remote update intake and preview transition",
-    "run character admission composition and public readback",
-    "Core and product gameplay rendering physics streaming validation and deployment domains"
+    "browser input lifecycle resize and animation scheduling",
+    "pinned runtime provider composition",
+    "Core simulation physics motion scene player character and presentation",
+    "product run route surface score outcome player pose and terrain IK",
+    "terminal events scene transition control suspension and retry",
+    "run result identity score provenance result journal retry lineage and visible frame proof",
+    "streaming Three.js diagnostics validation build and Pages deployment"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-14T03-39-56-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "profileStore": ["load", "save", "patch", "reset", "subscribe", "close"],
-    "creator": ["draft", "control-projection", "debounced-save", "remote-profile-intake", "preview-transition"],
-    "runAdmission": ["profile-capture", "character-composition", "profile-revision-readback", "body-content-hash-readback"]
+    "completeInventory": ".agent/trackers/2026-07-14T08-40-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "resolutionPolicy": ["movement-admission", "collision-priority", "pickup-admission", "goal-admission", "events", "scene-transition"],
+    "runApi": ["start", "input", "state", "committed-frame", "snapshot", "player-pose", "samplers"],
+    "presentation": ["world-render", "camera", "hud", "button-label", "public-readback"]
   },
-  "profileRevisionState": {
-    "normalizedPersistence": true,
-    "numericRevision": true,
-    "broadcastPublication": true,
-    "storageEventPublication": true,
-    "writerIdentity": false,
-    "messageIdentity": false,
-    "payloadFingerprint": false,
-    "compareAndSet": false,
-    "monotonicAdmission": false,
-    "sameRevisionConflictResult": false,
-    "pendingWriteRebaseResult": false,
-    "postProviderRevalidation": false,
-    "sealedRunCharacterArtifact": false,
-    "profileBodyBindingReceipt": false,
-    "visibleFrameAck": false,
-    "pageLifecycleRetirement": false
+  "outcomeSettlementState": {
+    "deterministicResolution": true,
+    "collisionPriority": true,
+    "pickupDeduplication": true,
+    "terminalEvents": true,
+    "terminalSceneTransition": true,
+    "controlSuspension": true,
+    "immutableOutcomeArtifact": false,
+    "scorePolicyRevision": false,
+    "reproducibilityFingerprint": false,
+    "terminalStepReceipt": false,
+    "outcomeJournal": false,
+    "retryPredecessorCitation": false,
+    "typedRetryResult": false,
+    "lateTerminalWorkRejection": false,
+    "terminalPresentationDescriptor": false,
+    "visibleFrameAck": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-player-character-profile-revision-admission-authority-domain",
-    "mainFinding": "Cross-document profile persistence and game composition do not share one accepted immutable profile artifact, conflict result or visible-frame acknowledgement."
+    "parentDomain": "prehistoric-rush-run-outcome-score-settlement-authority-domain",
+    "mainFinding": "Deterministic terminal decisions are split across mutable state, events, scene transition and HUD, then can be replaced by retry without one immutable result, score-policy revision, retry lineage or visible-frame acknowledgement."
   },
   "validation": {
     "runtimeSourceChangedByAudit": false,
@@ -108,9 +112,9 @@
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "multiTabFixtureRun": false,
-    "delayedProviderFixtureRun": false,
-    "visibleFrameFixtureRun": false,
+    "engineOutcomeFixtureRun": false,
+    "retryLineageFixtureRun": false,
+    "visibleTerminalFrameFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
