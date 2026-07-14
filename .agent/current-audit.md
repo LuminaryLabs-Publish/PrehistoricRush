@@ -1,134 +1,130 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-13T16-41-10-04-00`  
+**Timestamp:** `2026-07-13T21-38-52-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Runtime revision reviewed:** `66a219fea4bb886fb4fff41c9b31c67ba7e4eaee`  
-**Status:** `non-blocking-pause-menu-command-lifecycle-authority-central-reconciled`  
-**Technical status:** `non-blocking-pause-menu-command-lifecycle-authority-audited`
+**Runtime revision reviewed:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
+**Status:** `patch-owned-streaming-adoption-authority-central-reconciled`  
+**Technical status:** `patch-owned-streaming-adoption-authority-audited`
 
 ## Summary
 
-PrehistoricRush now includes a product pause-menu child DSK with bounded state, commands, events, snapshot/reset and renderer-neutral Core UI/Core Presentation descriptors. The authored policy keeps simulation running while the overlay is open.
+The active streaming consumer now has explicit patch ownership for terrain, grass, shards, colliders and pickups, while tree, grass and shard instances use stable per-cell ranges and changed-range GPU uploads.
 
-The current gap is the browser boundary. The public entry polls for runtime readiness, installs an Escape listener, starts a perpetual menu synchronization RAF, owns overlay DOM and navigates immediately after an exit request. Those participants have no shared identity, typed terminal results, visible-frame acknowledgement or retirement receipt.
+The current gap is the boundary between controller membership and consumer adoption. Ready membership is committed before adapter work begins, release intent is cleared before retirement completes, and neither path returns a typed result or rollback receipt.
 
 ## Plan ledger
 
-**Goal:** retain non-blocking gameplay while unifying menu command admission, overlay projection, input policy, exit settlement and host retirement.
+**Goal:** make each patch activation and release atomic across controller membership, terrain, instance cells, collision, pickups and visible presentation.
 
 - [x] Reconcile the full Publish inventory and central ledger.
-- [x] Select only PrehistoricRush because it had two newer commits.
-- [x] Inspect the DSK, Core Presentation graph, host, runtime, test and package wiring.
-- [x] Identify the complete interaction loop and all domains.
-- [x] Update the inventory to 58 implemented surfaces.
-- [x] Define the pause-menu command lifecycle authority.
+- [x] Select only PrehistoricRush as one commit ahead.
+- [x] Inspect the runtime diff, extracted adapter, pinned official kits, tests and package wiring.
+- [x] Identify the complete interaction loop and active domains.
+- [x] Update the inventory to 59 implemented surfaces.
+- [x] Define the patch-owned streaming adoption authority.
 - [x] Add the timestamped audit family and refresh root projections.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement and execute lifecycle/input/navigation/visible-frame fixtures later.
+- [ ] Implement and execute transactional streaming fixtures later.
 
 ## Interaction loop
 
 ```txt
 runtime boot
-  -> Core Presentation and product pause DSK install
-  -> run, streaming and render loop start
-  -> public entry polls until PrehistoricRushHost exists
-  -> Escape listener and menu sync RAF install
+  -> create deterministic patch generator and optional Worker executor
+  -> create patch controller with bounded generation and activation budgets
+  -> create stable-range tree, grass and shard batches
+  -> create Three patch-stream adapter and prime center patch
 
-Escape
-  -> pauseMenu.toggle
-  -> semantic sequence changes
-  -> host recreates or removes overlay
-  -> gameplay simulation and rendering continue
-
-Settings
-  -> semantic view becomes settings
-  -> overlay is rebuilt
-
-Exit
-  -> selectedAction becomes exit
-  -> one exit event emits
-  -> location.href changes immediately
+frame
+  -> engine.tick(dt)
+  -> update only affected pickup cells
+  -> controller updates desired membership
+  -> adapter releases departed patch ownership
+  -> controller pumps generation
+  -> adapter activates bounded ready patches
+  -> render world and diagnostics
 ```
 
 ## Domains in use
 
 ```txt
-browser boot, provider admission, fatal projection, DOM, resize and RAF
-browser gameplay and menu input admission
+browser boot, provider admission, DOM, resize, RAF and lifecycle
+browser gameplay and pause-menu input admission
 Core Input, Spatial, Scene, Creature, Character, Player, Physics, Simulation and Motion
 articulated dynamics and articulated motion
-Core Camera, Animation, Graphics, Skybox, UI, Diagnostics and Composition
-Core Presentation composition, output, UI scale and camera framing
-product run, route, score, outcome, player pose and terrain IK
-product pause-menu semantic state, commands, descriptors, events and snapshots
-profile schema/persistence and player-character composition
-Rapier, patch Worker, terrain, vegetation, pickups and collisions
-Three.js world/creature/camera and DOM overlay presentation
-exit navigation, host retirement, validation, build and Pages deployment
+Core Camera, Animation, Graphics, Skybox, UI, Diagnostics, Composition and Presentation
+product run, route, surface, score, outcome, player pose and terrain IK
+product pause-menu semantics and browser projection
+profile persistence and player-character composition
+seeded patch focus, generation, cache, activation and release
+stable-range instance-cell ownership and changed-range flush
+patch-owned terrain, trees, grass, shards, colliders, pickups and height sampling
+Rapier physics and Three.js presentation
+validation, build and Pages deployment
 ```
 
 ## Implemented state
 
 ```txt
-Core Presentation installed: yes
-product pause-menu child DSK installed: yes
-Core UI menu descriptor: yes
-Core Presentation overlay policy: yes
-menu and overlay blocksSimulation false: yes
-clone-safe state and snapshot: yes
-open/close/toggle/settings/exit/reset commands: yes
-duplicate exit event suppression: yes
-Escape and clicks delegate to DSK: yes
-simulation ticking remains unconditional: yes
-pause test wired into npm test: yes
+full active-world rebuild removed: yes
+patch-owned active map: yes
+patch-owned grass map: yes
+patch-owned shard map: yes
+patch-owned collider map: yes
+patch-owned pickup map: yes
+stable tree ranges: yes
+stable grass ranges: yes
+stable shard ranges: yes
+changed-range GPU uploads: yes
+pickup-only shard refresh: yes
+collider sync isolated to membership changes: yes
+ownership diagnostics: yes
+static authority test in npm test: yes
 ```
 
 ## Current gaps
 
 ```txt
-PauseMenuCommandId and generation: absent
-expected semantic sequence: absent
-typed duplicate/stale/failed/retired command result: absent
-browser host identity/generation: absent
-bounded cancellable attach poll: absent
-sync RAF retirement: absent
-Escape listener retirement: absent
-overlay projection result/fingerprint: absent
-first matching visible overlay frame ack: absent
-explicit gameplay-input policy while open: absent
-exit event consumer and settlement: absent
-runtime/Worker/render cleanup before navigation: absent
-exactly-once navigation result: absent
-browser/build/Pages fixtures: absent
+PatchActivationId and PatchReleaseId: absent
+controller revision bound to adapter work: absent
+patch key retained by adapter: absent
+prepare/commit/rollback: absent
+typed activation and release results: absent
+controller rollback after adapter failure: absent
+terrain-slot capacity result: absent
+explicit overflow/degradation policy: absent
+physics cell-diff result: absent
+first matching visible patch frame ack: absent
+Worker/WebGL/Rapier fault fixtures: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-pause-menu-command-lifecycle-authority-domain
+prehistoric-rush-patch-owned-streaming-adoption-authority-domain
 ```
 
 ```txt
-PauseMenuCommand
-  -> bind runtime, menu, overlay and host generations
-  -> validate command identity and expected sequence
-  -> publish accepted or typed non-accepted result
-  -> project one matching overlay revision
-  -> apply explicit retained-gameplay-input policy
-  -> acknowledge the first matching frame
+ready candidate
+  -> validate patch key and desired membership
+  -> reserve mandatory consumer capacity
+  -> prepare terrain, instance, physics and pickup candidates
+  -> commit controller and consumers together
+  -> publish PatchActivationResult
+  -> publish PatchVisibleFrameAck
+  -> otherwise restore the predecessor
 
-accepted exit
-  -> retire all browser-host and runtime participants
-  -> collect bounded receipts
-  -> publish ExitSettlementResult
-  -> navigate exactly once
+release intent
+  -> retain intent until retirement settles
+  -> commit controller and consumers together
+  -> publish PatchReleaseResult
+  -> fence late predecessor callbacks
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-13T16-41-10-04-00/project-breakdown.md` and its linked audit family.
+See `.agent/trackers/2026-07-13T21-38-52-04-00/project-breakdown.md` and its linked audit family.
 
 ## Validation
 
-Documentation only. No runtime code changed. Source, pinned Core Presentation and tests were inspected, but GitHub reported no combined status checks and `npm test`, browser behavior, built output and Pages parity were not independently executed.
+Documentation only. Runtime source was not changed by this audit. GitHub reported no combined status checks for the reviewed runtime commit. No executable runtime, browser, Worker, GPU, physics, build or Pages fixture was run.
