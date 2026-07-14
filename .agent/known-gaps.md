@@ -1,56 +1,62 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-14T03-39-56-04-00`  
-**Status:** `player-character-profile-revision-admission-authority-central-reconciled`
+**Audit:** `2026-07-14T08-40-38-04-00`  
+**Status:** `run-outcome-score-settlement-authority-central-reconciled`
 
 ## Summary
 
-Profile persistence works in the common single-document path, but concurrent writers, delayed messages and game boot can diverge without explicit conflict or stale results.
+Per-tick terminal resolution is implemented, but run-level result settlement, score provenance, retry lineage and visible terminal-frame proof are missing.
 
 ## Plan ledger
 
-**Goal:** keep every profile identity, conflict, lifecycle, run and proof gap explicit.
+**Goal:** keep every terminal identity, score, settlement, retry, presentation and validation gap explicit.
 
-### Identity and sequencing
+### Identity and provenance
 
-- [ ] No writer ID or document generation.
-- [ ] No write/message ID.
-- [ ] No payload fingerprint.
-- [ ] No monotonic event admission.
-- [ ] No duplicate or out-of-order classification.
+- [ ] No immutable `RunOutcomeArtifact`.
+- [ ] No terminal result ID or fingerprint.
+- [ ] No committed terminal `StepId` receipt.
+- [ ] No seed, route, config, profile and body fingerprint bundle.
+- [ ] No bounded outcome journal.
+
+### Score
+
+- [ ] No explicit score formula.
+- [ ] No score-policy ID or revision.
+- [ ] No rounding, clamping, bonus or penalty contract.
+- [ ] `RunWon` omits elapsed time and reproducibility inputs.
+- [ ] `RunFailed` omits final distance, shards and elapsed summary.
 
 ### Settlement
 
-- [ ] Revision allocation is not compare-and-set.
-- [ ] Two writers may derive the same next revision.
-- [ ] Same-revision conflicting payloads are not rejected.
-- [ ] Storage failure has no typed durable result.
-- [ ] Pending creator writes are not explicitly rebased after remote updates.
+- [ ] Events, RunState, scene transition and HUD are not one atomic result.
+- [ ] No duplicate or conflicting terminal-result classification.
+- [ ] No late terminal-work rejection after restart.
+- [ ] No persistence adapter or durable schema.
 
-### Run composition
+### Retry
 
-- [ ] Game profile is captured before asynchronous providers settle.
-- [ ] No revalidation immediately before engine composition.
-- [ ] No immutable RunCharacterArtifact.
-- [ ] No explicit active-run policy for later profile updates.
-- [ ] Profile revision and body content hash are not joined by a receipt.
+- [ ] Retry calls `start()` directly.
+- [ ] Retry does not cite an accepted predecessor outcome.
+- [ ] No typed retry result.
+- [ ] No successor lineage.
+- [ ] No guarantee that predecessor evidence survives restart.
 
-### Presentation and lifecycle
+### Presentation
 
-- [ ] Creator status does not cite a profile/frame revision.
-- [ ] Game frames do not acknowledge the admitted profile artifact.
-- [ ] Menu and creator do not retain subscription disposers.
-- [ ] `closePlayerCharacterProfileStore()` is not page-lifecycle governed.
-- [ ] No first visible profile frame proof.
+- [ ] No terminal result summary surface.
+- [ ] HUD does not cite result identity or score policy.
+- [ ] Render submission does not cite terminal simulation revision.
+- [ ] No first visible terminal-frame acknowledgement.
 
 ### Tests
 
-- [ ] Existing tests were not run in this audit.
-- [ ] No real multi-tab conflict fixture.
-- [ ] No delayed-provider profile race fixture.
-- [ ] No creator pending-write race fixture.
-- [ ] No visible-frame or Pages parity fixture.
+- [ ] Existing `npm test` was not run in this audit.
+- [ ] No engine event/scene settlement fixture.
+- [ ] No retry-lineage fixture.
+- [ ] No terminal visible-frame fixture.
+- [ ] No built-output or Pages result-parity fixture.
 
 ## Retained gaps
 
-Patch adoption, pause-menu lifecycle, player composition transition, terrain IK, PlayerPose provenance, collision convergence, Core Input, viewport, articulation, run lifecycle and browser runtime retirement remain separate.
+Player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart and browser-runtime retirement remain separate.
