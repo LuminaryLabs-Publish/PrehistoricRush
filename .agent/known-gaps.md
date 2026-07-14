@@ -1,57 +1,62 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-14T14-01-07-04-00`  
-**Status:** `runtime-provider-revision-convergence-authority-central-reconciled`
+**Audit:** `2026-07-14T18-58-04-04-00`  
+**Status:** `route-progress-goal-eligibility-authority-central-reconciled`
 
 ## Summary
 
-The browser route can admit two NexusEngine revisions through direct imports and transitive bare imports. Provider identity, compatibility, rollback, diagnostics, and first-frame convergence are not settled as one result.
+The game calculates authored-route evidence but does not admit it as authoritative progress. Unrestricted movement controls the progress bar and terminal goal.
 
 ## Plan ledger
 
-**Goal:** keep every provider-manifest, module-graph, composition, presentation, and proof gap explicit.
+**Goal:** keep every course identity, traversal, completion, presentation and proof gap explicit.
 
-### Provider identity
+### Course identity
 
-- [ ] No single canonical `RouteProviderManifest`.
-- [ ] Direct NexusEngine revision is `682c9fa...` while the import map binds `nexusengine` to `cf2fe3d...`.
-- [ ] Import-map entries are not derived from `runtime-versions.js`.
-- [ ] No stable module identity or provider dependency receipt.
-- [ ] No explicit imported-versus-injected runtime-helper record.
+- [ ] No versioned `CourseManifest`.
+- [ ] No stable course-goal identity.
+- [ ] No stable ordered checkpoint descriptors.
+- [ ] No route fingerprint bound to run completion.
+- [ ] No versioned direction or lateral-tolerance policy.
 
-### Compatibility and composition
+### Progress settlement
 
-- [ ] No split-provider rejection policy.
-- [ ] Factory shape checks do not prove revision compatibility.
-- [ ] No typed `RouteProviderAdmissionResult`.
-- [ ] No atomic engine, kit, physics, Worker, renderer, and listener adoption.
-- [ ] No complete candidate rollback receipt.
-- [ ] No stale or superseded startup-attempt rejection.
+- [ ] Total movement and accepted course distance are not separated.
+- [ ] No monotonic `CourseProgressRevision`.
+- [ ] No forward-direction admission.
+- [ ] No off-route rejection.
+- [ ] No repeated-segment or loop suppression.
+- [ ] No skipped-checkpoint rejection.
+- [ ] No stale or duplicate progress-result rejection.
 
-### Diagnostics
+### Goal eligibility
 
-- [ ] `PrehistoricRushHost.versions` reports configured direct commits only.
-- [ ] No public resolved module-graph manifest.
-- [ ] No transitive `nexusengine` URL readback.
-- [ ] No accepted provider-attempt identity.
-- [ ] No rejected provider graph retained for diagnosis.
+- [ ] Goal uses `RunState.distance >= 3600` only.
+- [ ] Route index and progress do not gate victory.
+- [ ] No terminal checkpoint or finish volume.
+- [ ] No typed `CourseGoalEligibilityResult`.
+- [ ] No immutable `CourseCompletionResult`.
+- [ ] Terminal result does not cite a course-progress revision.
 
 ### Presentation
 
-- [ ] Render submissions do not cite a provider graph.
-- [ ] No first provider-converged game frame acknowledgement.
-- [ ] No first provider-converged creator frame acknowledgement.
-- [ ] A visually correct frame can mask mixed provider revisions.
+- [ ] HUD progress uses unrestricted movement.
+- [ ] Total movement is not labeled separately from course progress.
+- [ ] No course-progress presentation descriptor.
+- [ ] No finish-frame receipt.
+- [ ] No `FirstEligibleFinishFrameAck`.
 
 ### Tests and deployment
 
-- [ ] Existing `npm test` was not run in this audit.
-- [ ] Existing tests do not execute the browser import map or CDN module graph.
-- [ ] No same-revision browser admission fixture.
-- [ ] No split-revision fault-injection fixture.
-- [ ] No built-output provider parity fixture.
-- [ ] No GitHub Pages provider parity fixture.
+- [ ] Existing outcome-policy tests accept a caller-supplied goal boolean.
+- [ ] `npm test` was not run in this audit.
+- [ ] No reverse-route fixture.
+- [ ] No start-area circle fixture.
+- [ ] No repeated-segment fixture.
+- [ ] No off-route distance fixture.
+- [ ] No browser finish-frame fixture.
+- [ ] No built-output or GitHub Pages course-progress parity fixture.
 
 ## Retained gaps
 
-Run outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate.
+Runtime-provider convergence, run-outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart and browser-runtime retirement remain separate.
