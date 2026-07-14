@@ -1,45 +1,51 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-14T03-39-56-04-00`  
-**Scope:** player-character profile persistence, cross-document revision admission, run composition and visible-frame documentation
+**Audit timestamp:** `2026-07-14T08-40-38-04-00`  
+**Scope:** run outcome, score provenance, retry lineage and visible terminal-frame documentation
 
 ## Summary
 
-This was a documentation-only audit. It inspected the current store, menu, creator, preview and game bootstrap source, then updated repo-local and central tracking without changing runtime behavior.
+This was a documentation-only audit. It inspected the current product domain, resolution policy, game runtime, Three.js adapter and policy test, then updated repo-local and central tracking without changing runtime behavior.
 
 ## Plan ledger
 
-**Goal:** distinguish source-backed findings from unexecuted behavior.
+**Goal:** separate source-backed terminal findings from unexecuted behavior.
 
 - [x] Verify the selected repository and `main`.
 - [x] Compare the current Publish inventory and central tracking.
-- [x] Inspect `player-character-store.js`.
-- [x] Inspect menu profile projection.
-- [x] Inspect creator draft, debounce, subscription and preview lifecycle.
-- [x] Inspect game profile capture and composition.
+- [x] Inspect run state and `start()`.
+- [x] Inspect proposal/observation resolution and terminal priority.
+- [x] Inspect event, Core Scene and control-suspension paths.
+- [x] Inspect HUD, renderer and retry projection.
+- [x] Inspect the existing resolution-policy test.
 - [x] Preserve the 59-surface inventory.
-- [x] Add the `2026-07-14T03-39-56-04-00` audit family.
+- [x] Add the `2026-07-14T08-40-38-04-00` audit family.
 - [x] Change no runtime, package, test, workflow or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute profile conflict and visible-frame fixtures later.
+- [ ] Execute outcome, retry and visible-frame fixtures later.
 
 ## Source findings verified
 
 ```txt
-numeric revision and normalized persistence: present
-BroadcastChannel and storage events: present
-menu and creator subscriptions: present
-creator debounced writes: present
-game one-time profile capture before provider load: present
-profile revision and body content hash readback: present but unbound
+collision priority over goal: present
+collision rejection of pickups: present
+unique pickup acceptance: present
+win/fail events: present
+terminal scene transition: present
+control suspension: present
+runId increment and state replacement on start: present
+generic terminal HUD/button projection: present
+policy unit coverage and serializable output: present
 
-compare-and-set write: absent
-writer/message identity: absent
-monotonic event admission: absent
-same-revision conflict result: absent
-run sealing after provider readiness: absent
-visible character frame acknowledgement: absent
-page-owned store retirement: absent
+immutable run result: absent
+versioned score policy: absent
+reproducibility fingerprint: absent
+terminal StepId/result receipt: absent
+outcome journal: absent
+retry predecessor citation: absent
+typed retry settlement: absent
+terminal result UI descriptor: absent
+visible terminal-frame acknowledgement: absent
 ```
 
 ## Change boundary
@@ -59,15 +65,14 @@ pull request created: no
 
 ```txt
 npm test
-multi-tab browser conflict fixture
-storage/BroadcastChannel ordering fixture
-creator pending-write race fixture
-delayed-provider run-admission fixture
-visible preview/game frame correlation
+headless engine outcome settlement fixture
+terminal event and scene fixture
+retry-lineage fixture
+browser terminal-frame fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No claim is made for conflict-free multi-tab persistence, monotonic event delivery, current-profile run composition, visible-frame equivalence, independently passing tests or production readiness.
+No claim is made for immutable result settlement, a stable score formula, durable result history, retry lineage, first visible terminal-frame equivalence, independently passing tests or production readiness.
