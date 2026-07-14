@@ -1,57 +1,49 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-14T08-40-38-04-00`  
-**Authority:** `prehistoric-rush-run-outcome-score-settlement-authority-domain`
+**Audit:** `2026-07-14T14-01-07-04-00`  
+**Authority:** `prehistoric-rush-runtime-provider-revision-convergence-authority-domain`
 
 ## Summary
 
-Keep the existing run domain, resolution policy, Core Scene transitions and renderer. Add only the durable result, score, retry and proof boundary required to make terminal runs authoritative.
+Keep the existing Core, product, stable-kit, ProtoKit, Three.js, Rapier, streaming, and creator structures. Replace the duplicated NexusEngine revision sources with one route provider manifest and make startup reject mixed provider graphs before any gameplay or rendering participant is adopted.
 
 ## Plan ledger
 
-**Goal:** make every terminal run produce one immutable artifact before a successor run is admitted.
+**Goal:** make each browser route compose from one immutable and observable provider graph.
 
-### Phase 1: Result identity
+### Phase 1: Canonical provider manifest
 
-- [ ] Add `RunOutcomeId`, terminal `StepId` and result fingerprint.
-- [ ] Bind seed, route, runtime config, profile revision and body content hash.
-- [ ] Admit exactly one terminal result per `RunId`.
-- [ ] Retain a bounded in-memory result journal.
+- [ ] Add one `RouteProviderManifest` containing NexusEngine, stable-kit, ProtoKit, Three.js, and Rapier identities.
+- [ ] Derive both direct module URLs and the `nexusengine` import-map entry from that manifest.
+- [ ] Remove or replace stale hard-coded provider mappings in `game.html` and `charactercreator.html`.
+- [ ] Give the manifest a schema version and immutable revision.
 
-### Phase 2: Score policy
+### Phase 2: Dependency receipts
 
-- [ ] Define an explicit versioned score policy.
-- [ ] Derive score from distance, shards, elapsed time, collision and completion.
-- [ ] Record rounding, clamping and bonus rules.
-- [ ] Include score-policy revision in every result artifact.
+- [ ] Add provider revision markers or receipts for root runtime, stable kits, and ProtoKits.
+- [ ] Record whether each kit used imported or injected runtime helpers.
+- [ ] Compare every transitive `nexusengine` dependency with the canonical provider revision.
+- [ ] Reject unknown, mixed, or incompatible provider identities.
 
-### Phase 3: Atomic settlement
+### Phase 3: Atomic route admission
 
-- [ ] Add `RunOutcomeSettlementCommand` and typed result classes.
-- [ ] Atomically publish result artifact, journal entry, terminal scene and diagnostics.
-- [ ] Reject duplicate, conflicting, stale and late terminal work.
-- [ ] Preserve collision-over-goal priority.
+- [ ] Add `RouteProviderAdmissionCommand` and typed result classes.
+- [ ] Prepare engine, physics, Worker, renderer, listeners, and route host as candidates.
+- [ ] Adopt all participants only after provider and capability probes pass.
+- [ ] Dispose all candidates and preserve a DOM fallback on rejection.
+- [ ] Reject stale and superseded startup attempts.
 
-### Phase 4: Retry lineage
+### Phase 4: Diagnostics and presentation
 
-- [ ] Replace direct `start()` retry admission with `RunRetryCommand`.
-- [ ] Require accepted predecessor `RunOutcomeId`.
-- [ ] Allocate successor `RunId` and lineage.
-- [ ] Settle simulation, player, input, pose, camera and streaming reset participants.
-- [ ] Preserve predecessor evidence after restart.
+- [ ] Expose the resolved `ModuleGraphManifest`, not only configured commit constants.
+- [ ] Bind public host state to the accepted provider attempt.
+- [ ] Publish `FirstProviderConvergedFrameAck` for game and creator routes.
+- [ ] Include route, module-graph, renderer, viewport, and frame identities.
 
-### Phase 5: Presentation proof
+### Phase 5: Fixtures
 
-- [ ] Add a terminal result summary surface.
-- [ ] Bind HUD and renderer submissions to `RunOutcomeId`.
-- [ ] Publish `FirstVisibleTerminalFrameAck`.
-- [ ] Block or classify retry before terminal presentation acknowledgement.
-
-### Phase 6: Fixtures
-
-- [ ] Run existing `npm test`.
-- [ ] Add engine-level outcome/event/transition fixtures.
-- [ ] Add duplicate and late terminal-work fixtures.
-- [ ] Add retry-lineage and predecessor-retention fixtures.
-- [ ] Add browser visible-terminal-frame fixtures.
-- [ ] Run built-output and Pages parity.
+- [ ] Add a same-revision browser success fixture.
+- [ ] Add a split-revision import-map rejection fixture.
+- [ ] Assert no run, physics, Worker, or RAF starts before provider acceptance.
+- [ ] Run `npm test`.
+- [ ] Run source, built-output, and GitHub Pages provider-parity checks.
