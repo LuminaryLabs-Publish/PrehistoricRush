@@ -1,57 +1,57 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-14T03-39-56-04-00`  
-**Authority:** `prehistoric-rush-player-character-profile-revision-admission-authority-domain`
+**Audit:** `2026-07-14T08-40-38-04-00`  
+**Authority:** `prehistoric-rush-run-outcome-score-settlement-authority-domain`
 
 ## Summary
 
-Keep the existing schema, store, creator and composition kits. Add only the identities, conflict rules, run sealing and proof needed for deterministic multi-document use.
+Keep the existing run domain, resolution policy, Core Scene transitions and renderer. Add only the durable result, score, retry and proof boundary required to make terminal runs authoritative.
 
 ## Plan ledger
 
-**Goal:** make each profile update and run admission terminate with a typed result and immutable artifact.
+**Goal:** make every terminal run produce one immutable artifact before a successor run is admitted.
 
-### Phase 1: Identity
+### Phase 1: Result identity
 
-- [ ] Add writer ID, document generation, write ID and message ID.
-- [ ] Fingerprint normalized profile payloads.
-- [ ] Enforce one fingerprint per accepted revision.
-- [ ] Add bounded profile journal readback.
+- [ ] Add `RunOutcomeId`, terminal `StepId` and result fingerprint.
+- [ ] Bind seed, route, runtime config, profile revision and body content hash.
+- [ ] Admit exactly one terminal result per `RunId`.
+- [ ] Retain a bounded in-memory result journal.
 
-### Phase 2: Write settlement
+### Phase 2: Score policy
 
-- [ ] Add expected-base revision and fingerprint.
-- [ ] Implement compare-and-set around persistence.
-- [ ] Return Accepted, Conflict, Duplicate, Stale, Failed or Retired.
-- [ ] Define recovery after quota/storage failure.
+- [ ] Define an explicit versioned score policy.
+- [ ] Derive score from distance, shards, elapsed time, collision and completion.
+- [ ] Record rounding, clamping and bonus rules.
+- [ ] Include score-policy revision in every result artifact.
 
-### Phase 3: Event admission
+### Phase 3: Atomic settlement
 
-- [ ] Suppress duplicate and out-of-order broadcast/storage events.
-- [ ] Reject same-revision different-fingerprint events.
-- [ ] Cancel or rebase pending creator writes explicitly.
-- [ ] Retire listeners, timers and channel ownership on page shutdown.
+- [ ] Add `RunOutcomeSettlementCommand` and typed result classes.
+- [ ] Atomically publish result artifact, journal entry, terminal scene and diagnostics.
+- [ ] Reject duplicate, conflicting, stale and late terminal work.
+- [ ] Preserve collision-over-goal priority.
 
-### Phase 4: Run admission
+### Phase 4: Retry lineage
 
-- [ ] Re-read the accepted profile after providers are ready.
-- [ ] Seal profile revision, fingerprint and body content hash.
-- [ ] Keep active runs immutable under ambient profile events.
-- [ ] Define restart/recompose policy for later edits.
+- [ ] Replace direct `start()` retry admission with `RunRetryCommand`.
+- [ ] Require accepted predecessor `RunOutcomeId`.
+- [ ] Allocate successor `RunId` and lineage.
+- [ ] Settle simulation, player, input, pose, camera and streaming reset participants.
+- [ ] Preserve predecessor evidence after restart.
 
 ### Phase 5: Presentation proof
 
-- [ ] Bind creator preview submissions to accepted profile artifacts.
-- [ ] Bind game renderer submission to RunCharacterArtifact.
-- [ ] Publish first matching visible frame acknowledgements.
-- [ ] Expose conflict and binding diagnostics through the host.
+- [ ] Add a terminal result summary surface.
+- [ ] Bind HUD and renderer submissions to `RunOutcomeId`.
+- [ ] Publish `FirstVisibleTerminalFrameAck`.
+- [ ] Block or classify retry before terminal presentation acknowledgement.
 
 ### Phase 6: Fixtures
 
 - [ ] Run existing `npm test`.
-- [ ] Add two-tab concurrent writer tests.
-- [ ] Add storage/broadcast reordering tests.
-- [ ] Add pending debounce versus remote-update tests.
-- [ ] Add delayed-provider versus profile-update tests.
-- [ ] Add visible preview/game frame correlation.
+- [ ] Add engine-level outcome/event/transition fixtures.
+- [ ] Add duplicate and late terminal-work fixtures.
+- [ ] Add retry-lineage and predecessor-retention fixtures.
+- [ ] Add browser visible-terminal-frame fixtures.
 - [ ] Run built-output and Pages parity.
