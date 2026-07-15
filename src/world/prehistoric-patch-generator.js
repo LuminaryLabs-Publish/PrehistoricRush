@@ -1,5 +1,13 @@
+import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./prehistoric-terrain-lod-policy.js";
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function smoothstep(edge0, edge1, value) {
+  if (edge0 === edge1) return value < edge0 ? 0 : 1;
+  const t = clamp((value - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
 }
 
 function hash(x, z, seed = 1) {
@@ -25,6 +33,15 @@ function matrixFromYRotationScaleTranslation(rotation, scaleX, scaleY, scaleZ, x
     0, scaleY, 0, 0,
     sine * scaleZ, 0, cosine * scaleZ, 0,
     x, y, z, 1
+  ];
+}
+
+function mixColor(left, right, amount) {
+  const t = clamp(amount, 0, 1);
+  return [
+    left[0] + (right[0] - left[0]) * t,
+    left[1] + (right[1] - left[1]) * t,
+    left[2] + (right[2] - left[2]) * t
   ];
 }
 
@@ -66,11 +83,28 @@ function createRouteSampler(samples) {
   return { samples, nearest, classify };
 }
 
+function surfaceColor(worldX, worldZ, distance, width) {
+  const path = [0.54, 0.39, 0.20];
+  const edge = [0.43, 0.50, 0.22];
+  const verge = [0.28, 0.49, 0.22];
+  const forest = [0.18, 0.39, 0.18];
+  const pathWeight = 1 - smoothstep(width - 0.35, width + 1.45, distance);
+  const edgeWeight = 1 - smoothstep(width + 0.5, width + 3.0, distance);
+  const vergeWeight = 1 - smoothstep(width + 2.1, width + 6.2, distance);
+  const broad = Math.sin(worldX * 0.021 + worldZ * 0.012) * 0.5 + Math.cos(worldZ * 0.017 - worldX * 0.009) * 0.5;
+  const clayVariation = broad * 0.035;
+
+  let color = mixColor(forest, verge, vergeWeight);
+  color = mixColor(color, edge, edgeWeight);
+  color = mixColor(color, path, pathWeight);
+  return color.map((channel, index) => clamp(channel + clayVariation * (index === 1 ? 0.72 : 1), 0, 1));
+}
+
 export function createPrehistoricPatchGenerator(options = {}) {
   const config = {
     seed: Number(options.config?.seed ?? 238991),
     chunk: Number(options.config?.chunk ?? 56),
-    segments: Number(options.config?.segments ?? 30),
+    segments: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.sourceResolution,
     trees: Number(options.config?.trees ?? 7),
     grass: Number(options.config?.grass ?? 70),
     shardsPerPatch: Number(options.config?.shardsPerPatch ?? 2)
@@ -117,14 +151,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
         const worldX = minX + x * spacing;
         const worldZ = minZ + z * spacing;
         const sample = sampleHeight(worldX, worldZ, centerNearest.index);
-        const region = route.classify(sample.nearest.distance, sample.nearest.width);
-        const color = region === "path"
-          ? [0.36, 0.25, 0.13]
-          : region === "edge"
-            ? [0.34, 0.36, 0.16]
-            : region === "verge"
-              ? [0.18, 0.39, 0.18]
-              : [0.11, 0.29, 0.13];
+        const color = surfaceColor(worldX, worldZ, sample.nearest.distance, sample.nearest.width);
         heights[index] = sample.y;
         colors[index * 3] = color[0];
         colors[index * 3 + 1] = color[1];
@@ -143,9 +170,14 @@ export function createPrehistoricPatchGenerator(options = {}) {
         const ny = spacing * 2;
         const nz = down - up;
         const length = Math.hypot(nx, ny, nz) || 1;
+        const normalY = ny / length;
         normals[index * 3] = nx / length;
-        normals[index * 3 + 1] = ny / length;
+        normals[index * 3 + 1] = normalY;
         normals[index * 3 + 2] = nz / length;
+        const slopeShade = 0.92 + normalY * 0.08;
+        colors[index * 3] = clamp(colors[index * 3] * slopeShade, 0, 1);
+        colors[index * 3 + 1] = clamp(colors[index * 3 + 1] * slopeShade, 0, 1);
+        colors[index * 3 + 2] = clamp(colors[index * 3 + 2] * slopeShade, 0, 1);
       }
     }
 
@@ -226,7 +258,14 @@ export function createPrehistoricPatchGenerator(options = {}) {
       x: chunkX,
       z: chunkZ,
       seed: `${request.worldSeed}:${patchId}`,
-      terrain: { heights, colors, normals, segments: config.segments },
+      terrain: {
+        heights,
+        colors,
+        normals,
+        segments: config.segments,
+        mapping: "world-space",
+        materialRevision: "shiny-clay-v1"
+      },
       trees,
       grass,
       pickups,
