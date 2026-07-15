@@ -1,72 +1,82 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-15T00-00-35-04-00`  
+**Timestamp:** `2026-07-15T04-03-03-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Repository head before audit:** `3c24168f2b977bea463c5c4ac3bcb243aa811639`  
+**Reviewed repository head:** `34be1adad1ef169a14dd48d9e3016e9477684039`  
 **Runtime source revision retained:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
-**Status:** `game-feedback-control-surface-admission-authority-central-reconciled`  
-**Technical status:** `game-feedback-control-surface-admission-authority-audited`
+**Status:** `creator-profile-navigation-commit-authority-central-reconciled`  
+**Technical status:** `creator-profile-navigation-commit-authority-audited`
 
 ## Summary
 
-The runtime creates a feedback panel containing run status, progress, diagnostics, and the primary Jump/Retry/Run Again button. The page wrapper removes the panel because it deletes every `aside` under `#app`, while WebGL, keyboard gameplay, and detached-node updates continue.
+The creator makes draft edits visible immediately but stores them from a delayed timeout. Explicit Menu and Play navigation do not flush or await that work, and unload cleanup only disposes the preview. The destination can compose the previous stored profile.
 
 ## Plan ledger
 
-**Goal:** make feedback visibility, semantic projection, action coverage, surface retirement, and first-frame evidence explicit and revisioned.
+**Goal:** require one accepted profile commit before route transfer and bind that result to the generated player body and first visible frame.
 
-- [x] Trace the game route and module preflight.
-- [x] Trace feedback-node creation and per-frame updates.
-- [x] Trace broad `aside` removal and MutationObserver ownership.
-- [x] Trace keyboard, pointer, touch, pause, and terminal actions.
-- [x] Define feedback-surface admission and frame acknowledgement.
+- [x] Trace draft mutation and preview updates.
+- [x] Trace the 160 ms persistence timer and timer replacement.
+- [x] Trace localStorage, revision assignment, BroadcastChannel, and storage events.
+- [x] Trace Menu, Play, beforeunload, and destination startup.
+- [x] Trace game character composition and public profile/body readback.
+- [x] Define commit, navigation, sealing, and frame results.
 - [x] Add timestamped docs and root projections.
 - [ ] Implement and execute browser fixtures later.
 
 ## Current loop
 
 ```txt
-game route
-  -> wrapper removes current and future asides
-  -> runtime creates an aside containing status and action controls
-  -> wrapper removes the runtime panel
-  -> engine, streaming, Three.js, and keyboard gameplay continue
-  -> frame loop updates detached status and action nodes
-  -> no typed feedback result or first-frame acknowledgement exists
+creator input
+  -> draft and preview update now
+  -> save status becomes Saving
+  -> prior timeout is cancelled
+  -> profile patch is scheduled for +160 ms
+
+immediate route activation
+  -> Menu or Play navigation starts
+  -> preview resources are disposed on beforeunload
+  -> no pending-write flush or accepted result is required
+
+next route
+  -> game loads the current stored profile once
+  -> game composes the run character from that profile
+  -> no receipt proves equality with the final creator draft
 ```
 
 ## Domains in use
 
 ```txt
-browser module loading, DOM, MutationObserver, keyboard, blur, resize, and RAF lifecycle
-Core simulation, physics, motion, scene, player, character, UI, and presentation
-product run, route, surface, score, outcome, pause, pose, and terrain IK
-feedback ownership, semantic status, action routing, accessibility, and device coverage
-profile, creator, streaming, Rapier, Worker, Three.js, validation, Pages, and central tracking
+browser input, timers, navigation, page lifecycle, localStorage, BroadcastChannel, and RAF
+Core simulation, physics, motion, scene, creature, character, player, camera, UI, composition, and presentation
+product run, route, pause, profile schema, draft, persistence, composition, pose, and terrain IK
+creator controls, preview transition, Three.js rendering, and resource lifecycle
+seed, procedural creature, instancing, patch streaming, Worker, Rapier, and camera follow
+validation, build, Pages, and central tracking
 ```
 
 ## Current gaps
 
 ```txt
-FeedbackSurfaceDescriptor: absent
-FeedbackPolicyRevision: absent
-surface-specific retirement: absent
-semantic active and terminal status: absent
-pointer/touch active action after suppression: absent
-visible terminal Retry and Run Again: absent
-FeedbackSurfaceAdmissionResult: absent
-FeedbackProjectionResult: absent
-feedback generation in public readback: absent
-FirstFeedbackSurfaceFrameAck: absent
-browser and Pages fixtures: absent
+explicit dirty state result: absent
+scheduler flush API: absent
+CreatorProfileCommitCommand: absent
+CreatorProfileCommitResult: absent
+storage write verification: absent
+route admission prerequisite: absent
+storage failure presentation: absent
+expected destination profile receipt: absent
+profile revision to creature content hash binding: absent
+FirstCommittedProfileFrameAck: absent
+browser and Pages navigation fixtures: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-game-feedback-control-surface-admission-authority-domain
+prehistoric-rush-creator-profile-navigation-commit-authority-domain
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-15T00-00-35-04-00/project-breakdown.md`.
+See `.agent/trackers/2026-07-15T04-03-03-04-00/project-breakdown.md`.
