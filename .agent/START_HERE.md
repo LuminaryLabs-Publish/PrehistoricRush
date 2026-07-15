@@ -1,67 +1,63 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-15T06-39-22-04-00`  
+**Last aligned:** `2026-07-15T10-58-45-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Prior repo-local documentation head:** `a882bce237ae6a404bb3fecf58b38cdf6b580928`  
-**Reviewed runtime-ahead head:** `1a37e9141c9a3afd28db865d1df9b01cdd4cb7d2`  
-**Status:** `terrain-single-owner-render-retirement-authority-audited`
+**Reviewed repository head:** `4808f05cff438ff5a9d013cd7ddec5127bbcf213`  
+**Status:** `host-clock-fixed-step-frame-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected because nine commits advanced the terrain runtime beyond the last documented head. The new runtime now boots the 64/32/16 LOD layer, uses the clay textures, and includes a terrain authority test.
+PrehistoricRush was selected by the oldest synchronized eligible-repository rule after all 11 accessible Publish repositories were compared with ten central ledgers and current repo-local documentation heads. `TheCavalryOfRome` remained excluded, and no eligible repository was new, missing, undocumented or runtime-ahead.
 
-The LOD wrapper still constructs the complete legacy terrain renderer through `createThreePatchStreamAdapter()`. Every active patch is uploaded once to the authoritative LOD mesh and again to a hidden fixed-grid mesh. The runtime therefore owns 25 LOD terrain slots plus 25 hidden legacy terrain slots and maintains two independent patch-to-terrain maps.
+The active LOD host clips each RAF interval to 50 ms and performs exactly one engine tick. The PrehistoricRush run system clips the admitted tick to 50 ms again. Any callback interval above 50 ms therefore loses wall time instead of producing bounded fixed-step catch-up, residual time or an overload receipt.
 
 ## Plan ledger
 
-**Goal:** give terrain presentation one owner while preserving the base adapter's vegetation, collider, pickup, height-sampling, camera and creature services.
+**Goal:** preserve deterministic bounded simulation while preventing low callback rates from silently slowing elapsed time, movement, jumping, distance and goal progress.
 
-- [x] Compare all 11 Publish repositories and exclude `TheCavalryOfRome`.
-- [x] Confirm ten eligible central ledgers and root `.agent` states.
-- [x] Detect PrehistoricRush nine commits ahead of its repo-local documentation head.
-- [x] Select only PrehistoricRush under the runtime-ahead priority rule.
-- [x] Inspect the new LOD runtime, wrapper, terrain layer, geometry, clay textures and test.
-- [x] Trace terrain allocation, activation, hiding, release and frame acknowledgement.
-- [x] Preserve the full kit and service inventory and add four new active surfaces.
-- [x] Add the `2026-07-15T06-39-22-04-00` audit family.
+- [x] Compare the complete Publish inventory and central ledger.
+- [x] Select only PrehistoricRush by the oldest synchronized timestamp.
+- [x] Trace RAF timing through input, simulation, physics, streaming and rendering.
+- [x] Preserve all 66 source-backed kits, adapters and proof surfaces.
+- [x] Define one host-clock parent authority with 20 coordinating surfaces.
+- [x] Add the `2026-07-15T10-58-45-04-00` audit family.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Split non-terrain patch services from terrain presentation and execute lifecycle fixtures.
+- [ ] Implement and execute fixed-step, overload, suspension, resume, interpolation and deployment fixtures.
 
 ## Main finding
 
 ```txt
-active patch radius: 2
-terrain slots per renderer: (2 * 2 + 1)^2 = 25
-LOD terrain slots: 25
-hidden legacy terrain slots: 25
-total terrain mesh slots allocated: 50
-
-legacy vertices per slot: 4,225
-LOD vertices per slot including skirts: 4,485
-terrain uploads per activated patch: 2
-independent terrain patch maps: 2
+RAF wall interval
+  -> min(0.05, interval)
+  -> one engine.tick
+  -> product run system min(0.05, tick.delta)
+  -> one gameplay integration
+  -> remainder is not accumulated or reported
 ```
 
-The legacy mesh is hidden after each base activation, but its geometry, material, attributes, slot map and patch upload path remain alive.
+```txt
+10 FPS: 100 ms wall -> 50 ms simulation
+5 FPS: 200 ms wall -> 50 ms simulation
+```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-15T06-39-22-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-15T06-39-22-04-00.md
-.agent/architecture-audit/2026-07-15T06-39-22-04-00-terrain-single-owner-dsk-map.md
-.agent/render-audit/2026-07-15T06-39-22-04-00-hidden-legacy-terrain-allocation-gap.md
-.agent/gameplay-audit/2026-07-15T06-39-22-04-00-patch-dual-terrain-adoption-loop.md
-.agent/interaction-audit/2026-07-15T06-39-22-04-00-terrain-owner-command-result-map.md
-.agent/terrain-system-audit/2026-07-15T06-39-22-04-00-single-owner-retirement-contract.md
-.agent/deploy-audit/2026-07-15T06-39-22-04-00-terrain-owner-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-15T06-39-22-04-00-runtime-ahead-single-owner-reconciliation.md
+.agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-15T10-58-45-04-00.md
+.agent/architecture-audit/2026-07-15T10-58-45-04-00-host-clock-fixed-step-frame-dsk-map.md
+.agent/render-audit/2026-07-15T10-58-45-04-00-clock-aligned-render-frame-gap.md
+.agent/gameplay-audit/2026-07-15T10-58-45-04-00-low-fps-slow-run-loop.md
+.agent/interaction-audit/2026-07-15T10-58-45-04-00-host-clock-command-result-map.md
+.agent/simulation-clock-audit/2026-07-15T10-58-45-04-00-raf-delta-accumulator-contract.md
+.agent/deploy-audit/2026-07-15T10-58-45-04-00-host-clock-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-15T10-58-45-04-00-oldest-selection-host-clock-reconciliation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-terrain-presentation-single-owner-retirement-authority-domain`
+`prehistoric-rush-host-clock-fixed-step-frame-authority-domain`
 
 ## Kit census
 
@@ -72,12 +68,13 @@ product/page/Worker kits: 17
 external/host/render adapters: 14
 proof kits: 8
 total source-backed surfaces: 66
+planned host-clock surfaces: 20
 ```
 
 ## Next safe ledge
 
-Extract the base adapter's non-terrain services into a patch-world-content adapter. Let the LOD layer exclusively allocate, upload, select, render and release terrain. Remove hidden legacy meshes and publish per-patch adoption and retirement receipts before claiming the matching visible frame.
+Add a versioned host-clock policy and accumulator above `engine.tick`. Sample input once, execute bounded fixed steps, retain residual time or publish an overload receipt, rebase after suspension, pass explicit budgets to patch streaming and render the accepted simulation revision with an interpolation descriptor.
 
 ## Claim boundary
 
-This audit changes documentation only. It does not claim reduced allocations, reduced upload work, correct browser rendering, passing tests, artifact parity, Pages parity or production readiness.
+Documentation only. No fixed-step implementation, pacing correction, overload recovery, interpolation, passing test, artifact parity, Pages parity or production readiness is claimed.
