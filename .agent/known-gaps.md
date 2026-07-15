@@ -1,47 +1,50 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T10-58-45-04-00`  
-**Status:** `host-clock-fixed-step-frame-authority-audited`
+**Audit:** `2026-07-15T16-00-32-04-00`  
+**Status:** `accessible-gameplay-projection-focus-authority-audited`
 
 ## Summary
 
-The browser host and product run system both cap admitted delta at 50 ms, while no accumulator retains the remainder. Simulation pacing can therefore fall behind wall time whenever callbacks arrive below 20 FPS.
+Accepted run and pause state is visible, but no authority binds it to stable semantic status, progress, terminal announcements or dialog-focus results.
 
 ## Plan ledger
 
-**Goal:** keep timing, lifecycle, overload, streaming and render-evidence gaps explicit until one host-clock authority settles them.
+**Goal:** keep semantic projection, announcement, focus, lifecycle and proof gaps explicit until one accessibility authority settles them.
 
-### Clock admission
+### Gameplay semantics
 
-- [ ] No monotonic clock revision or callback generation is published.
-- [ ] The host clips wall intervals to 50 ms.
-- [ ] The product run system independently clips tick delta to 50 ms.
-- [ ] No accumulator or residual-time state exists.
-- [ ] No fixed-step batch identity exists.
+- [ ] No versioned semantic gameplay snapshot exists.
+- [ ] The active status container has no `status` role.
+- [ ] No authored live-region or atomic-update policy exists.
+- [ ] The visual distance bar has no progressbar role or numeric value contract.
+- [ ] High-frequency values have no announcement-throttling policy.
 
-### Overload and lifecycle
+### Outcomes and actions
 
-- [ ] No catch-up step budget is declared.
-- [ ] No overload classification exists.
-- [ ] No discarded-time receipt exists.
-- [ ] Hidden-document behavior has no clock suspension result.
-- [ ] Resume has no one-time clock rebase result.
-- [ ] Late RAF callbacks are not bound to a runtime generation.
+- [ ] Start, retry, run-over and win have no semantic transition IDs.
+- [ ] Terminal outcomes have no one-shot announcement result.
+- [ ] Repeated RAF snapshots have no announcement deduplication.
+- [ ] The primary button label has no revision-bound accessible action snapshot.
 
-### Gameplay and streaming
+### Pause focus
 
-- [ ] Elapsed time, movement, jump, distance and goal progress depend on clipped time.
-- [ ] Patch-controller updates and generation/activation budgets are callback-count driven.
-- [ ] No schedule-equivalence fixture compares normal and delayed callbacks.
-- [ ] No terminal-outcome fixture proves pacing equivalence.
+- [ ] The pause overlay has no dialog role.
+- [ ] `aria-modal` is not adopted as true for the active pause state.
+- [ ] No prior-focus capture result exists.
+- [ ] No initial-focus policy exists.
+- [ ] No Tab containment exists.
+- [ ] Background gameplay controls are not made inert by an owned result.
+- [ ] Overlay removal has no explicit focus restoration or fallback policy.
+- [ ] Pagehide and route retirement have no focus/inert lease settlement.
 
 ### Rendering and proof
 
-- [ ] Rendering receives clipped delta without an interpolation descriptor.
-- [ ] The public host snapshot omits clock revision, residual and overload state.
-- [ ] No `FirstClockAlignedFrameAck` binds clock, simulation and renderer revisions.
-- [ ] No source/build/Pages clock-policy parity fixture exists.
+- [ ] No semantic frame revision is bound to the visible frame.
+- [ ] No `FirstAccessibleGameplayFrameAck` exists.
+- [ ] No keyboard-only browser fixture exists.
+- [ ] No accessibility-tree or screen-reader fixture exists.
+- [ ] No source/build/Pages semantic parity fixture exists.
 
 ## Retained gaps
 
-Terrain single-owner retirement, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.
+Host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause command lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.
