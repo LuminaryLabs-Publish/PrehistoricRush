@@ -1,22 +1,22 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-15T06-39-22-04-00",
-  "status": "terrain-single-owner-render-retirement-authority-audited",
-  "technicalStatus": "terrain-single-owner-render-retirement-authority-audited",
-  "repositoryRevisionReviewed": "1a37e9141c9a3afd28db865d1df9b01cdd4cb7d2",
-  "priorDocumentationHead": "a882bce237ae6a404bb3fecf58b38cdf6b580928",
-  "currentAuditedSlice": "Active Terrain LOD Runtime / Hidden Legacy Terrain / Single Renderer Ownership / Retirement",
-  "latestTracker": ".agent/trackers/2026-07-15T06-39-22-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T06-39-22-04-00.md",
+  "generatedAt": "2026-07-15T10-58-45-04-00",
+  "status": "host-clock-fixed-step-frame-authority-audited",
+  "technicalStatus": "host-clock-fixed-step-frame-authority-audited",
+  "repositoryRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
+  "priorDocumentationHead": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
+  "currentAuditedSlice": "RAF Wall Clock / Fixed-Step Accumulation / Low-FPS Pacing / Render Alignment",
+  "latestTracker": ".agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T10-58-45-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-15T06-39-22-04-00-terrain-single-owner-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-15T06-39-22-04-00-hidden-legacy-terrain-allocation-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-15T06-39-22-04-00-patch-dual-terrain-adoption-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-15T06-39-22-04-00-terrain-owner-command-result-map.md",
-    "terrainSystem": ".agent/terrain-system-audit/2026-07-15T06-39-22-04-00-single-owner-retirement-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-15T06-39-22-04-00-terrain-owner-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-15T06-39-22-04-00-runtime-ahead-single-owner-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-15T10-58-45-04-00-host-clock-fixed-step-frame-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-15T10-58-45-04-00-clock-aligned-render-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-15T10-58-45-04-00-low-fps-slow-run-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-15T10-58-45-04-00-host-clock-command-result-map.md",
+    "simulationClock": ".agent/simulation-clock-audit/2026-07-15T10-58-45-04-00-raf-delta-accumulator-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-15T10-58-45-04-00-host-clock-browser-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-15T10-58-45-04-00-oldest-selection-host-clock-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -25,10 +25,11 @@
     "rootAgentStateCount": 10,
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
-    "runtimeAheadCount": 1,
+    "undocumentedCount": 0,
+    "runtimeAheadCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush was nine commits ahead of its repo-local documentation head, so runtime-ahead priority applied before the oldest-documented fallback."
+    "reason": "PrehistoricRush had the oldest synchronized eligible central timestamp after all current heads matched their repo-local documentation heads."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 22,
@@ -37,70 +38,62 @@
     "externalHostRenderAdapterCount": 14,
     "proofKitCount": 8,
     "totalSurfaceCount": 66,
-    "newActiveSurfaceCount": 4,
-    "terrainPresentationOwnerCount": 2,
-    "terrainPresentationAdoptionResultCount": 0,
-    "terrainPresentationRetirementReceiptCount": 0,
-    "firstTerrainOwnerFrameAckCount": 0
+    "plannedHostClockSurfaceCount": 20
   },
   "interactionLoop": [
-    "game-runtime-lod creates the engine patch controller camera and LOD wrapper",
-    "the wrapper creates the complete base patch adapter and 25 fixed-grid terrain slots",
-    "the wrapper creates the LOD terrain layer and 25 skirted LOD terrain slots",
-    "each ready patch is uploaded to the LOD slot and then uploaded again to the legacy slot",
-    "the wrapper hides matching legacy terrain meshes after base adoption",
-    "the LOD layer updates selection and geomorph before the base adapter renders the shared scene"
+    "game-runtime-lod samples the RAF wall interval",
+    "the host clips the interval to 0.05 seconds and samples keyboard input",
+    "the host calls engine.tick exactly once",
+    "the PrehistoricRush run system clips tick.delta to 0.05 seconds again",
+    "movement physics pickups and goal proposals settle for one clipped step",
+    "patch streaming updates once and the adapter renders once with the clipped delta"
   ],
   "domainsInUse": [
-    "browser lifecycle input RAF Worker transfer storage and navigation",
-    "Core domains for input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
-    "PrehistoricRush run route surface score outcome pause player pose and terrain IK",
-    "patch generation schema queue cache Worker adoption and release",
-    "terrain LOD selection hysteresis skirts geomorph and world-space clay materials",
-    "legacy fixed-grid terrain allocation upload hiding and release",
-    "Three.js scene rendering instancing camera and resource lifecycle",
-    "Rapier collision height sampling vegetation pickups validation build Pages and central tracking"
+    "browser document lifecycle RAF performance clock input blur resize Worker storage and navigation",
+    "Core input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
+    "PrehistoricRush run route surface score outcome pause player composition pose and terrain IK",
+    "host clock interval admission fixed-step accumulation overload suspension resume and interpolation",
+    "patch generation queue cache Worker adoption and release",
+    "terrain LOD Three.js Rapier vegetation pickups validation build Pages and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-15T06-39-22-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "newSurfaces": {
-      "game-runtime-lod-host-adapter": ["pinned module loading", "engine composition", "Rapier provider setup", "patch streaming", "input", "RAF", "diagnostics"],
-      "three-patch-stream-lod-adapter": ["LOD wrapper composition", "terrain activation ordering", "legacy suppression", "release composition", "frame acknowledgement"],
-      "three-terrain-lod-layer": ["LOD slot allocation", "patch upload", "level selection", "geomorph", "clay material", "release", "disposal"],
-      "terrain-lod-renderer-authority-test-kit": ["policy assertions", "topology assertions", "source integration assertions", "npm test gate"]
+    "completeInventory": ".agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "clockSurfaces": {
+      "game-runtime-lod-host-adapter": ["RAF timestamp sampling", "input sampling", "engine tick submission", "patch streaming cadence", "render cadence", "public diagnostics"],
+      "prehistoric-rush-domain-kit": ["elapsed time", "movement", "jump physics", "distance", "physics proposals", "pickup proposals", "goal proposals"],
+      "planned-host-clock-authority": ["fixed-step policy", "accumulator", "catch-up budget", "residual time", "overload receipts", "suspension", "resume rebase", "render interpolation", "frame acknowledgement"]
     }
   },
-  "terrainState": {
-    "activeRadius": 2,
-    "legacyTerrainSlotCount": 25,
-    "lodTerrainSlotCount": 25,
-    "totalTerrainMeshSlotCount": 50,
-    "legacyVertexCountPerSlot": 4225,
-    "lodVertexCountPerSlot": 4485,
-    "terrainUploadPathCountPerPatch": 2,
-    "terrainPatchMapCount": 2,
-    "legacyTerrainVisible": false,
-    "legacyTerrainAllocated": true,
-    "legacyTerrainUploaded": true,
-    "singleTerrainOwner": false,
-    "completeAdapterDisposal": false
+  "clockState": {
+    "hostDeltaCapSeconds": 0.05,
+    "productDeltaCapSeconds": 0.05,
+    "engineTicksPerRafCallback": 1,
+    "fixedStepAccumulatorPresent": false,
+    "residualTimePresent": false,
+    "catchUpBudgetPresent": false,
+    "discardedTimeReceiptPresent": false,
+    "visibilityClockSuspensionResultPresent": false,
+    "resumeClockRebaseResultPresent": false,
+    "renderInterpolationDescriptorPresent": false,
+    "firstClockAlignedFrameAckPresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-terrain-presentation-single-owner-retirement-authority-domain",
-    "mainFinding": "The active LOD runtime repairs the previous capacity mismatch but composes the full legacy terrain renderer underneath it, so 25 hidden fixed-grid terrain meshes remain allocated and every patch is uploaded through two independent terrain owners."
+    "parentDomain": "prehistoric-rush-host-clock-fixed-step-frame-authority-domain",
+    "mainFinding": "RAF intervals above 50 ms are clipped and submitted as one tick, while the product run system clips the tick again, so delayed callbacks silently discard wall time and slow simulation pacing."
   },
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
+    "simulationChangedByAudit": false,
     "renderingChangedByAudit": false,
     "packageTestWorkflowDeploymentChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "browserPatchActivationRun": false,
-    "terrainAllocationFixtureRun": false,
-    "uploadTraceRun": false,
-    "restartDisposalFixtureRun": false,
+    "controlledClockFixtureRun": false,
+    "browserScheduleFixtureRun": false,
+    "visibilityResumeFixtureRun": false,
+    "clockAlignedFrameFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
