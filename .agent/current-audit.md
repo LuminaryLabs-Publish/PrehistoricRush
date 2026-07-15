@@ -1,68 +1,72 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-15T10-58-45-04-00`  
+**Timestamp:** `2026-07-15T16-00-32-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `host-clock-fixed-step-frame-authority-audited`
+**Status:** `accessible-gameplay-projection-focus-authority-audited`
 
 ## Summary
 
-The active LOD runtime uses a clipped variable-step clock. Each RAF callback admits at most 50 ms and executes one engine tick. The product run system also caps its tick delta at 50 ms. Delayed callbacks therefore discard elapsed wall time and slow gameplay instead of using bounded fixed steps.
+The game has semantic page labels, menu links and a primary action button, but accepted gameplay status and progress are projected through visual-only DOM updates. The pause overlay is visually interactive but does not own a complete dialog-focus lifecycle.
 
 ## Plan ledger
 
-**Goal:** centralize wall-clock admission, fixed-step execution, overload handling and render alignment.
+**Goal:** centralize semantic gameplay projection, outcome announcements and pause focus around accepted game and pause revisions.
 
-- [x] Inspect host RAF interval handling.
-- [x] Inspect product-domain delta consumption.
-- [x] Trace time into movement, jump, physics, distance, pickups and goal progress.
-- [x] Trace callback cadence into patch streaming and rendering.
-- [x] Define the host-clock authority and fixture boundary.
+- [x] Inspect menu and game entry semantics.
+- [x] Inspect the visual status/progress update path.
+- [x] Inspect start, retry, win and run-over labels.
+- [x] Inspect pause overlay creation, keyboard handling and removal.
+- [x] Define the accessibility authority and fixture boundary.
 - [ ] Implement and execute the authority.
 
 ## Current interaction loop
 
 ```txt
-RAF
-  -> clip wall interval to 0.05
-  -> sample steer and boost
-  -> engine.tick once
-  -> run system clips tick.delta to 0.05
-  -> integrate one gameplay step
-  -> update patch streaming once
-  -> render once with clipped delta
+accepted game revision
+  -> Three.js render
+  -> status.innerHTML replacement
+  -> visual progress width replacement
+  -> primary action text replacement
+
+Escape
+  -> pause snapshot toggles
+  -> labeled section and buttons mount
+  -> no explicit dialog/focus admission
+  -> close removes controls without explicit restoration
 ```
 
 ## Domains in use
 
 ```txt
-browser RAF, performance clock, document lifecycle, input, blur and resize
-Core Input, Physics, Simulation, Motion, Scene, Camera, Graphics and Presentation
-PrehistoricRush run, route, surface, score, outcome, player pose and terrain IK
-host clock interval, fixed-step policy, accumulator, overload, suspension and resume
-patch generation, queue, cache, adoption and release
-terrain LOD and Three.js presentation
-Rapier provider and collision synchronization
+browser document lifecycle, keyboard input, focus, RAF, blur, resize and navigation
+Core Input, Scene, Physics, Simulation, Motion, Camera, Graphics, UI and Presentation
+PrehistoricRush run, progress, score, outcome, pause and restart
+semantic status, progress, announcement, dialog and focus projection
+Three.js rendering, patch streaming and Rapier synchronization
 validation, Pages and central tracking
 ```
 
 ## Current gaps
 
 ```txt
-monotonic HostClockRevision: absent
-fixed-step accumulator: absent
-residual elapsed time: absent
-bounded catch-up batch: absent
-overload classification: absent
-discarded-time receipt: absent
-hidden-document suspension result: absent
-resume clock rebase result: absent
-render interpolation descriptor: absent
-FirstClockAlignedFrameAck: absent
+stable gameplay semantic snapshot: absent
+role=status: absent
+meaningful-change live-region policy: absent
+semantic progressbar range/value: absent
+terminal announcement identity: absent
+pause role=dialog: absent
+accepted aria-modal state: absent
+initial focus result: absent
+focus containment: absent
+background inertness: absent
+focus restoration: absent
+AccessibleGameplayProjectionResult: absent
+FirstAccessibleGameplayFrameAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-host-clock-fixed-step-frame-authority-domain`
+`prehistoric-rush-accessible-gameplay-projection-focus-authority-domain`
 
 ## Boundary
 
