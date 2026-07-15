@@ -1,60 +1,60 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-15T06-39-22-04-00`  
-**Scope:** active terrain LOD runtime, legacy terrain composition, allocation, upload, release and visible-frame evidence
+**Audit timestamp:** `2026-07-15T10-58-45-04-00`  
+**Scope:** RAF interval admission, simulation delta consumption, gameplay pacing, streaming cadence and render alignment
 
 ## Summary
 
-Source review confirms that the repaired LOD runtime now creates the LOD terrain layer and then invokes the full base patch adapter, which independently allocates and updates fixed-grid terrain. The wrapper hides the legacy meshes rather than preventing their construction and upload.
+Source review confirms that the host clips each RAF interval to 50 ms and calls `engine.tick` once. The PrehistoricRush run system clips `tick.delta` to 50 ms before advancing elapsed time, movement, jump physics, distance and goal proposals. No source-backed accumulator, residual, fixed-step batch or overload receipt was found.
 
 ## Plan ledger
 
-**Goal:** distinguish direct source findings from runtime, allocation, visual and deployment checks that were not executed.
+**Goal:** distinguish verified source behavior from runtime, browser, artifact and deployment evidence that was not executed.
 
-- [x] Verify the nine-commit runtime-ahead range from `a882bce...` to `1a37e914...`.
-- [x] Inspect the active LOD runtime, wrapper, terrain layer, geometry and test.
-- [x] Inspect base terrain allocation, activation, release and content services.
-- [x] Count source-defined terrain slot ownership.
-- [x] Preserve the complete inventory and record 66 source-backed surfaces.
+- [x] Compare all 11 Publish repositories and select the oldest synchronized eligible repository.
+- [x] Inspect active LOD host timing.
+- [x] Inspect product run-system timing.
+- [x] Trace time-dependent gameplay and frame presentation.
+- [x] Preserve the complete 66-surface inventory.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute terrain ownership and lifecycle fixtures later.
+- [ ] Execute host-clock fixtures later.
 
 ## Verified source findings
 
 ```txt
-prior repo-local documentation head: a882bce237ae6a404bb3fecf58b38cdf6b580928
-reviewed runtime-ahead head: 1a37e9141c9a3afd28db865d1df9b01cdd4cb7d2
-runtime-ahead commits: 9
-active page boots game-runtime-lod.js: yes
-LOD policy consumed by runtime: yes
-LOD terrain layer created: yes
-clay normal/roughness textures bound: yes
-terrain LOD authority test added to npm test: yes
-base patch adapter still created: yes
-legacy terrain slots allocated: 25
-LOD terrain slots allocated: 25
-total terrain mesh slots allocated: 50
-legacy terrain hidden after activation: yes
-legacy terrain patch upload still executed: yes
-single terrain map: no
-complete adapter disposer: no
+reviewed repository head: 4808f05cff438ff5a9d013cd7ddec5127bbcf213
+host RAF delta cap: 0.05 seconds
+engine ticks per RAF callback: 1
+product run-system delta cap: 0.05 seconds
+elapsed-time accumulator: absent
+fixed-step loop: absent
+residual-time state: absent
+catch-up budget: absent
+overload or discarded-time receipt: absent
+render interpolation descriptor: absent
+FirstClockAlignedFrameAck: absent
 ```
 
-## Source-derived execution path
+## Source-derived pacing examples
 
-`createThreePatchStreamLodAdapter()` first calls `createThreePatchStreamAdapter()`, which allocates the fixed-grid terrain slots. It then creates the LOD layer in the same scene. During activation the LOD layer writes the patch first, then `baseActivatePatch()` writes the same patch into a legacy terrain slot. `hideLegacyTerrain()` suppresses those meshes after the base path completes.
+```txt
+100 ms callback interval -> 50 ms simulation admitted -> 50 ms unrepresented
+200 ms callback interval -> 50 ms simulation admitted -> 150 ms unrepresented
+```
 
-This proves duplicate source work and ownership. It does not measure browser memory, GPU allocation, upload duration or visual output.
+These calculations prove source-defined elapsed-time loss. They do not prove a measured browser frame rate or a reproduced player-visible symptom.
 
 ## Change boundary
 
 ```txt
 documentation changed: yes
-runtime JavaScript changed by audit: no
-HTML or CSS changed by audit: no
-gameplay or rendering changed by audit: no
-packages, tests or workflows changed by audit: no
-deployment changed by audit: no
+runtime JavaScript changed: no
+HTML or CSS changed: no
+simulation or gameplay changed: no
+rendering changed: no
+dependencies or package scripts changed: no
+tests or workflows changed: no
+deployment changed: no
 branch created: no
 pull request created: no
 ```
@@ -63,16 +63,16 @@ pull request created: no
 
 ```txt
 npm test
-controlled Three.js adapter instantiation
-browser boot and patch activation
-terrain mesh allocation count
-CPU/GPU upload trace
-mixed-LOD and geomorph visual checks
-restart and disposal lifecycle
+controlled clock unit fixture
+60/20/10/5 FPS schedule comparison
+500 ms overload fixture
+visibility suspension and resume fixture
+worker/fallback streaming cadence fixture
+clock-aligned render frame fixture
 built-output smoke
-GitHub Pages terrain smoke
+GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No allocation reduction, upload reduction, runtime repair, visual correctness, performance gain, passing test, artifact parity, deployment parity or production readiness is claimed.
+No fixed-step correctness, real-time pacing, deterministic catch-up, overload recovery, lifecycle rebasing, render interpolation, passing test, artifact parity, deployment parity or production readiness is claimed.
