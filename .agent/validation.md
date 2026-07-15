@@ -1,45 +1,49 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-15T00-00-35-04-00`  
-**Scope:** feedback surface creation, removal, controls, semantic status, and frame evidence
+**Audit timestamp:** `2026-07-15T04-03-03-04-00`  
+**Scope:** creator draft, delayed persistence, route navigation, destination profile load, composition, and visible-frame evidence
 
 ## Summary
 
-This documentation-only audit verified that the wrapper removes the runtime feedback `aside` while the frame loop continues updating its detached status and primary action nodes.
+This documentation-only audit verified that creator input updates the draft and preview immediately, persistence is delayed 160 ms, Menu and Play navigation do not flush the pending work, unload cleanup only disposes the preview, and game startup loads the stored profile once before character composition.
 
 ## Plan ledger
 
-**Goal:** distinguish verified source findings from checks that were not executed.
+**Goal:** distinguish verified source findings from runtime and deployment checks that were not executed.
 
 - [x] Verify the selected repository and `main`.
 - [x] Compare the Publish inventory and central tracking.
-- [x] Inspect game entry, wrapper, and MutationObserver behavior.
-- [x] Inspect runtime feedback creation and per-frame updates.
-- [x] Inspect keyboard, pointer, pause, and terminal action paths.
+- [x] Inspect creator controls, draft updates, timer scheduling, and reset behavior.
+- [x] Inspect profile load, save, patch, revision, BroadcastChannel, and storage-event behavior.
+- [x] Inspect Menu, Play, beforeunload, game profile load, composition, and public readback.
 - [x] Preserve the 59-surface inventory.
 - [x] Add the timestamped audit family.
 - [x] Change no runtime, HTML, package, test, workflow, or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute browser feedback and first-frame fixtures later.
+- [ ] Execute navigation durability and first-frame fixtures later.
 
 ## Verified source findings
 
 ```txt
-game-route module preflight: present
-removal of existing asides: present
-observer removal of future asides: present
-runtime status/action aside: present
-per-frame updates to detached nodes: present
-keyboard gameplay controls: present
-non-blocking pause overlay: present
-
-stable feedback descriptors: absent
-surface-specific retirement result: absent
-semantic replacement status: absent
-pointer primary action after removal: absent
-visible terminal action after removal: absent
-feedback generation in public readback: absent
-first feedback frame acknowledgement: absent
+creator draft and preview update on input: present
+Saving status before persistence: present
+160 ms delayed profile patch: present
+prior timer cancellation: present
+reset writes immediately: present
+Menu and Play normal anchors: present
+beforeunload preview disposal: present
+beforeunload profile flush: absent
+pagehide profile settlement: absent
+profile-store normalization and revisions: present
+localStorage write when called: present
+BroadcastChannel and storage-event paths: present
+game loads stored profile before composition: present
+public profile ID/revision readback: present
+public body contentHash readback: present
+typed local commit result: absent
+navigation admission result: absent
+profile-to-body binding receipt: absent
+first committed profile frame acknowledgement: absent
 ```
 
 ## Change boundary
@@ -48,8 +52,7 @@ first feedback frame acknowledgement: absent
 documentation changed: yes
 runtime JavaScript changed: no
 HTML or CSS changed: no
-gameplay changed: no
-rendering changed: no
+profile, gameplay, or rendering behavior changed: no
 dependencies or package scripts changed: no
 tests or workflows changed: no
 deployment changed: no
@@ -61,20 +64,23 @@ pull request created: no
 
 ```txt
 npm test
-DOM connectedness fixture
-observer retirement fixture
-keyboard and pointer action fixtures
-active and terminal semantic-status fixtures
-accessibility-tree fixture
-first feedback frame fixture
+immediate Play fixture
+immediate Menu fixture
+keyboard and repeated activation fixtures
+pagehide and beforeunload fixtures
+storage unavailable and quota-failure fixtures
+pending local versus remote update fixture
+destination profile receipt fixture
+profile-to-body hash fixture
+first visible committed profile frame fixture
 built-output smoke
-GitHub Pages feedback smoke
+GitHub Pages profile-navigation smoke
 ```
 
 ## Commit status
 
-The pre-audit documentation head had no combined commit-status entries.
+No passing CI or deployment-status claim is made for this documentation run.
 
 ## Non-claims
 
-No claim is made for feedback-surface safety, accessible status replacement, pointer action coverage, terminal-action visibility, first-frame convergence, passing tests, artifact parity, deployment parity, or production readiness.
+No claim is made for durable pending-write settlement, storage failure recovery, conflict safety, route admission, profile/body convergence, first-frame convergence, passing tests, artifact parity, deployment parity, or production readiness.
