@@ -1,61 +1,64 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-14T18-58-04-04-00`  
+**Last aligned:** `2026-07-15T00-00-35-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Repository head before audit:** `436aaad739f521f036f14f7f5dd3ab1ff51ecee2`  
+**Repository head before audit:** `3c24168f2b977bea463c5c4ac3bcb243aa811639`  
 **Runtime source revision retained:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
-**Status:** `route-progress-goal-eligibility-authority-central-reconciled`  
-**Technical status:** `route-progress-goal-eligibility-authority-audited`
+**Status:** `game-feedback-control-surface-admission-authority-central-reconciled`  
+**Technical status:** `game-feedback-control-surface-admission-authority-audited`
 
 ## Summary
 
-The current audit covers authored-course progress and finish eligibility. PrehistoricRush computes route index, normalized progress, lateral distance and surface region, but victory uses only cumulative movement distance. Reversing, circling, repeating a segment or leaving the route can therefore advance the win counter.
+The current audit covers the game feedback and primary control surface. The runtime creates an `aside` containing run status, progress, diagnostics, and the Jump/Retry/Run Again button. The active wrapper removes every `aside` under `#app`, so the WebGL game and keyboard controls continue while the feedback/action nodes are detached and updated off-document.
 
 ## Plan ledger
 
-**Goal:** require one versioned course manifest, monotonic accepted route progress, an eligible terminal checkpoint and a matching visible finish frame.
+**Goal:** preserve the intended low-UI presentation through explicit surface identities and policy while guaranteeing semantic state, required actions, device coverage, and first-frame proof.
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm ten eligible ledgers, root `.agent` states and synchronized heads.
+- [x] Confirm ten eligible ledgers, root `.agent` states, and synchronized heads.
 - [x] Select only PrehistoricRush by the oldest eligible timestamp.
-- [x] Trace route generation, movement, goal resolution, HUD, tests and public readback.
+- [x] Trace the page wrapper, MutationObserver, runtime shell, frame updates, controls, pause overlay, and tests.
 - [x] Preserve the complete 59-surface inventory.
-- [x] Add the `2026-07-14T18-58-04-04-00` audit family.
+- [x] Add the `2026-07-15T00-00-35-04-00` audit family.
 - [x] Push only to `main`; create no branch or pull request.
-- [ ] Implement course-progress admission and executable browser proof later.
+- [ ] Implement feedback-surface admission and executable browser proof later.
 
 ## Main finding
 
 ```txt
-routeIndex and routeProgress: computed
-lateral route distance and region: computed
-cumulative movement: computed
-current win predicate: cumulative movement >= 3600
-route progress in win predicate: absent
-direction and checkpoint admission: absent
-finish volume: absent
+runtime status/action aside: created
+wrapper removes all asides: yes
+observer removes future asides: yes
+frame loop updates detached nodes: yes
+WebGL and keyboard gameplay: retained
+visible/semantic run feedback: absent
+pointer/touch primary action: absent
+visible terminal retry action: absent
+typed surface admission result: absent
+first feedback frame acknowledgement: absent
 ```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-14T18-58-04-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-14T18-58-04-04-00.md
-.agent/architecture-audit/2026-07-14T18-58-04-04-00-route-progress-goal-eligibility-dsk-map.md
-.agent/render-audit/2026-07-14T18-58-04-04-00-movement-progress-finish-frame-gap.md
-.agent/gameplay-audit/2026-07-14T18-58-04-04-00-off-route-distance-win-loop.md
-.agent/interaction-audit/2026-07-14T18-58-04-04-00-course-progress-goal-command-result-map.md
-.agent/route-progress-audit/2026-07-14T18-58-04-04-00-checkpoint-direction-finish-eligibility-contract.md
-.agent/deploy-audit/2026-07-14T18-58-04-04-00-course-progress-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-14T18-58-04-04-00-oldest-selection-route-progress-reconciliation.md
+.agent/trackers/2026-07-15T00-00-35-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-15T00-00-35-04-00.md
+.agent/architecture-audit/2026-07-15T00-00-35-04-00-game-feedback-control-surface-dsk-map.md
+.agent/render-audit/2026-07-15T00-00-35-04-00-detached-feedback-first-frame-gap.md
+.agent/gameplay-audit/2026-07-15T00-00-35-04-00-hidden-primary-action-feedback-loop.md
+.agent/interaction-audit/2026-07-15T00-00-35-04-00-feedback-surface-command-result-map.md
+.agent/feedback-surface-audit/2026-07-15T00-00-35-04-00-aside-suppression-status-action-contract.md
+.agent/deploy-audit/2026-07-15T00-00-35-04-00-feedback-surface-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-15T00-00-35-04-00-oldest-selection-feedback-surface-reconciliation.md
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-route-progress-goal-eligibility-authority-domain
+prehistoric-rush-game-feedback-control-surface-admission-authority-domain
 ```
 
 ## Kit census
@@ -67,9 +70,9 @@ product/page/Worker kits:         16
 external/host adapters:            9
 proof kits:                        7
 total surfaces:                   59
-planned route authority surfaces: 22
+planned feedback surfaces:        21
 ```
 
 ## Retained audit families
 
-Runtime-provider convergence, run-outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart and browser-runtime retirement remain separate unresolved boundaries.
+Route progress, runtime-provider convergence, outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate unresolved boundaries.
