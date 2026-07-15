@@ -1,50 +1,52 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-15T05-38-36-04-00`  
-**Authority:** `prehistoric-rush-terrain-lod-patch-render-admission-authority-domain`
+**Audit:** `2026-07-15T06-39-22-04-00`  
+**Authority:** `prehistoric-rush-terrain-presentation-single-owner-retirement-authority-domain`
 
 ## Summary
 
-Repair the producer/consumer contract first. Then connect the existing LOD topology and clay texture helpers to the active Three.js adapter without changing patch, physics or gameplay ownership.
+Keep the base adapter's patch-world services, but remove its terrain renderer from the LOD runtime. Terrain geometry, materials, patch slots, selection and retirement should belong only to the LOD layer.
 
 ## Plan ledger
 
-**Goal:** move from a runtime-breaking terrain field mismatch to validated, atomic and observable LOD patch adoption.
+**Goal:** eliminate hidden legacy terrain work without disturbing vegetation, colliders, pickups, height sampling, camera follow, creature presentation or patch-controller ownership.
 
-### Phase 1: Schema convergence
+### Phase 1: Separate roles
 
-- [ ] Add a versioned terrain patch schema with source resolution, array lengths, material revision and bounds.
-- [ ] Remove the conflicting legacy `cfg.segments` authority or derive it from the accepted policy.
-- [ ] Reject mismatched Worker and synchronous patch results before adapter mutation.
-- [ ] Add typed capacity and schema failures.
+- [ ] Split `createThreePatchStreamAdapter()` into terrain presentation and patch-world-content capabilities.
+- [ ] Keep active patch membership, height sampling, trees, grass, shards, colliders, pickups, player, camera and renderer hosting in the content path.
+- [ ] Move fixed-grid terrain allocation and `applyTerrainPatch()` behind an optional terrain strategy.
+- [ ] Require exactly one terrain strategy per adapter generation.
 
-### Phase 2: Active LOD integration
+### Phase 2: Make LOD exclusive
 
-- [ ] Import `createTerrainLodTopology`, `createTerrainPatchVertexData` and `selectPrehistoricTerrainLodLevel` into the active adapter.
-- [ ] Cache shared topology and per-level index buffers.
-- [ ] Select near, medium or far LOD from one accepted camera/focus snapshot.
-- [ ] Apply hysteresis and geomorph state with explicit patch revisions.
-- [ ] Keep skirts active at mixed-resolution boundaries.
+- [ ] Configure `createThreePatchStreamLodAdapter()` with the LOD terrain strategy only.
+- [ ] Stop allocating `terrainSlots` and `terrainMaterial` for the LOD runtime.
+- [ ] Remove `hideLegacyTerrain()` and scene-traversal suppression.
+- [ ] Remove the legacy `terrainByPatch` map from the LOD composition.
+- [ ] Upload each accepted terrain patch exactly once.
 
-### Phase 3: Material integration
+### Phase 3: Version adoption and retirement
 
-- [ ] Create clay normal and roughness resources once per renderer generation.
-- [ ] Bind world-space UVs, normal map, roughness map and tuned material values.
-- [ ] Dispose textures and geometry deterministically on adapter retirement.
-- [ ] Preserve the predecessor resources if candidate creation fails.
+- [ ] Publish `TerrainPresentationAdoptionResult` per patch with policy, slot, LOD and material revisions.
+- [ ] Bind patch release to one `TerrainPresentationRetirementReceipt`.
+- [ ] Preserve content membership if terrain candidate preparation fails, or reject all participants atomically according to one declared policy.
+- [ ] Reject stale Worker results, duplicate patch generations and late release commands.
+- [ ] Bind `FirstTerrainOwnerFrameAck` to the exact accepted patch revisions.
 
-### Phase 4: Atomic adoption
+### Phase 4: Dispose complete renderer state
 
-- [ ] Stage geometry, attributes, indices, morph data and material before publishing patch membership.
-- [ ] Publish `TerrainPatchRenderAdmissionResult` with schema, policy, level and resource receipts.
-- [ ] Reject stale Worker results and superseded policy generations.
-- [ ] Publish `FirstTerrainLodFrameAck` after the accepted patch is visible.
+- [ ] Add a complete base-adapter `dispose()` contract for renderer, geometry, materials, batches, listeners and canvas ownership.
+- [ ] Ensure the LOD wrapper composes and calls every participant disposer.
+- [ ] Retire clay textures, shared material and all LOD geometries once.
+- [ ] Prove repeated start/stop does not accumulate terrain slots or canvases.
 
 ### Phase 5: Fixtures
 
-- [ ] Add the 30-config/64-source mismatch fixture.
-- [ ] Add near, medium and far topology/capacity fixtures.
-- [ ] Add Worker/synchronous parity and stale-result fixtures.
-- [ ] Add mixed-LOD skirt and geomorph visual fixtures.
-- [ ] Add clay texture creation/disposal fixtures.
-- [ ] Run `npm test`, browser, built-output and Pages checks.
+- [ ] Instantiate the LOD adapter with a controlled Three.js test double and count mesh allocations.
+- [ ] Assert 25 terrain meshes, not 50, for `activeRadius: 2`.
+- [ ] Assert one position/color/normal upload path per patch.
+- [ ] Assert release clears one terrain map and one slot.
+- [ ] Assert no scene traversal is required to hide terrain.
+- [ ] Run `npm test`.
+- [ ] Add browser allocation, mixed-LOD, restart/dispose, built-output and Pages fixtures.
