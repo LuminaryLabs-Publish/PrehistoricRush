@@ -1,46 +1,45 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-14T18-58-04-04-00`  
-**Scope:** authored route progress, direction, checkpoints, goal eligibility and finish-frame documentation
+**Audit timestamp:** `2026-07-15T00-00-35-04-00`  
+**Scope:** feedback surface creation, removal, controls, semantic status, and frame evidence
 
 ## Summary
 
-This was a documentation-only audit. It verified that cumulative movement triggers victory while available route-progress evidence is not used for goal admission.
+This documentation-only audit verified that the wrapper removes the runtime feedback `aside` while the frame loop continues updating its detached status and primary action nodes.
 
 ## Plan ledger
 
-**Goal:** separate source-backed course-completion findings from unexecuted runtime and browser behavior.
+**Goal:** distinguish verified source findings from checks that were not executed.
 
 - [x] Verify the selected repository and `main`.
-- [x] Compare the current Publish inventory and central tracking.
-- [x] Inspect route generation and nearest-sample progress.
-- [x] Inspect movement integration and distance accumulation.
-- [x] Inspect goal proposal, resolution policy and terminal transition.
-- [x] Inspect HUD projection and current tests.
+- [x] Compare the Publish inventory and central tracking.
+- [x] Inspect game entry, wrapper, and MutationObserver behavior.
+- [x] Inspect runtime feedback creation and per-frame updates.
+- [x] Inspect keyboard, pointer, pause, and terminal action paths.
 - [x] Preserve the 59-surface inventory.
-- [x] Add the `2026-07-14T18-58-04-04-00` audit family.
-- [x] Change no runtime, HTML, package, test, workflow or deployment source.
+- [x] Add the timestamped audit family.
+- [x] Change no runtime, HTML, package, test, workflow, or deployment source.
 - [x] Create no branch or pull request.
-- [ ] Execute course-progress and visible-finish fixtures later.
+- [ ] Execute browser feedback and first-frame fixtures later.
 
-## Source findings verified
+## Verified source findings
 
 ```txt
-deterministic authored route: present
-nearest sample lookup: present
-route index and normalized progress: present
-lateral distance and region: present
-cumulative horizontal movement counter: present
-movement-only goal threshold: present
-resolution-policy goal admission: present
-HUD movement-progress projection: present
+game-route module preflight: present
+removal of existing asides: present
+observer removal of future asides: present
+runtime status/action aside: present
+per-frame updates to detached nodes: present
+keyboard gameplay controls: present
+non-blocking pause overlay: present
 
-versioned course manifest: absent
-checkpoint sequence: absent
-monotonic accepted course progress: absent
-direction and lateral eligibility: absent
-typed course-completion result: absent
-eligible finish-frame acknowledgement: absent
+stable feedback descriptors: absent
+surface-specific retirement result: absent
+semantic replacement status: absent
+pointer primary action after removal: absent
+visible terminal action after removal: absent
+feedback generation in public readback: absent
+first feedback frame acknowledgement: absent
 ```
 
 ## Change boundary
@@ -58,19 +57,18 @@ branch created: no
 pull request created: no
 ```
 
-## Commands and fixtures not completed
+## Checks not completed
 
 ```txt
 npm test
-forward traversal fixture
-reverse-route fixture
-start-area circle fixture
-repeated-segment fixture
-off-route movement fixture
-checkpoint and finish-volume fixture
-browser eligible-finish frame fixture
+DOM connectedness fixture
+observer retirement fixture
+keyboard and pointer action fixtures
+active and terminal semantic-status fixtures
+accessibility-tree fixture
+first feedback frame fixture
 built-output smoke
-GitHub Pages smoke
+GitHub Pages feedback smoke
 ```
 
 ## Commit status
@@ -79,4 +77,4 @@ The pre-audit documentation head had no combined commit-status entries.
 
 ## Non-claims
 
-No claim is made for route-correct victory, checkpoint enforcement, direction validation, off-route rejection, course-progress settlement, visible finish convergence, independently passing tests, artifact parity or production readiness.
+No claim is made for feedback-surface safety, accessible status replacement, pointer action coverage, terminal-action visibility, first-frame convergence, passing tests, artifact parity, deployment parity, or production readiness.
