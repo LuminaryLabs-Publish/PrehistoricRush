@@ -1,53 +1,53 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T05-38-36-04-00`  
-**Status:** `terrain-lod-patch-render-admission-authority-audited`
+**Audit:** `2026-07-15T06-39-22-04-00`  
+**Status:** `terrain-single-owner-render-retirement-authority-audited`
 
 ## Summary
 
-The terrain producer and active renderer use different resolutions, while the new LOD topology and clay material helpers are not connected to patch adoption.
+The LOD renderer is active, but it is layered over the complete legacy terrain renderer. Hidden legacy meshes still allocate geometry and receive patch uploads, leaving two terrain owners inside one adapter.
 
 ## Plan ledger
 
-**Goal:** keep every schema, geometry, material, lifecycle and proof gap explicit until the active path is repaired and executed.
+**Goal:** keep duplicate allocation, upload, ownership, lifecycle and proof gaps explicit until one terrain presentation authority remains.
 
-### Schema and capacity
+### Terrain ownership
 
-- [ ] No shared terrain schema revision across generator, Worker, controller and adapter.
-- [ ] Runtime config still declares 30 segments while the generator forces 64.
-- [ ] No array-length or attribute-capacity admission check.
-- [ ] No typed mismatch result before the accepted terrain slot is mutated.
-- [ ] Height sampling still derives indices from the legacy config resolution.
+- [ ] The base adapter always allocates fixed-grid terrain slots.
+- [ ] The LOD wrapper cannot request patch-world services without also creating legacy terrain.
+- [ ] The LOD layer and base adapter maintain separate patch-to-terrain maps.
+- [ ] The runtime has no typed terrain-strategy capability contract.
+- [ ] The test treats `hideLegacyTerrain()` as expected integration rather than proving legacy terrain is absent.
 
-### LOD execution
+### Allocation and upload
 
-- [ ] Registered LOD policy is not consumed by the active adapter.
-- [ ] No accepted focus revision binds a patch to near, medium or far.
-- [ ] No active index-buffer swap, hysteresis or geomorph state.
-- [ ] No active mixed-resolution skirt policy or boundary receipt.
-- [ ] No LOD transition rollback or predecessor preservation.
+- [ ] `activeRadius: 2` allocates 25 legacy terrain meshes and 25 LOD terrain meshes.
+- [ ] Every accepted patch writes terrain positions/colors/normals into both paths.
+- [ ] The hidden legacy material and index buffers remain allocated.
+- [ ] Scene traversal runs after activation to suppress legacy meshes again.
+- [ ] No allocation or upload receipt distinguishes mandatory work from compatibility work.
 
-### Material resources
+### Adoption and release
 
-- [ ] Generated clay normal and roughness textures are not created by the active renderer.
-- [ ] World-space UVs from the LOD geometry helper are not bound.
-- [ ] Terrain material remains vertex-color-only with roughness `0.94`.
-- [ ] No material-generation identity, cache policy or disposal receipt.
+- [ ] Terrain admission and base content adoption remain separate mutable operations.
+- [ ] Rollback releases the LOD candidate if base adoption fails, but there is no immutable combined result.
+- [ ] Patch release mutates both terrain owners independently.
+- [ ] No per-patch retirement receipt proves both owners settled.
+- [ ] `lastVisibleFrameAck` lacks patch IDs, patch generations, renderer generation and draw receipts.
 
-### Patch adoption and presentation
+### Lifecycle
 
-- [ ] Patch membership becomes active before renderer preparation is validated.
-- [ ] No `TerrainPatchRenderAdmissionResult`.
-- [ ] No stale Worker-result rejection bound to policy and adapter generations.
-- [ ] No first matching visible terrain-frame acknowledgement.
-- [ ] No failed-upload predecessor-slot preservation proof.
+- [ ] The wrapper `dispose()` retires only the LOD layer.
+- [ ] The base adapter exposes no complete disposer for renderer, legacy terrain, instanced resources, listeners or canvas ownership.
+- [ ] The host exposes the engine and adapter globally without a retirement path.
+- [ ] No restart/dispose fixture checks accumulated meshes, canvases or listeners.
 
 ### Tests and deployment
 
-- [ ] Existing `npm test` has no terrain LOD integration test.
-- [ ] No producer/consumer resolution fixture.
-- [ ] No near/medium/far capacity fixture.
-- [ ] No mixed-LOD visual, texture lifecycle, built-output or Pages fixture.
+- [ ] The terrain test is primarily geometry assertions and source-regex checks.
+- [ ] No controlled Three.js adapter instance counts actual terrain allocations.
+- [ ] No browser trace measures duplicate patch uploads or scene objects.
+- [ ] No mixed-LOD browser screenshot, GPU resource, built-output or Pages fixture is recorded.
 
 ## Retained gaps
 
