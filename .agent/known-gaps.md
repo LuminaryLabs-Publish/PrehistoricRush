@@ -1,59 +1,61 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T00-00-35-04-00`  
-**Status:** `game-feedback-control-surface-admission-authority-central-reconciled`
+**Audit:** `2026-07-15T04-03-03-04-00`  
+**Status:** `creator-profile-navigation-commit-authority-central-reconciled`
 
 ## Summary
 
-The game wrapper removes the runtime feedback panel through a broad `aside` selector. The runtime continues updating detached status and action nodes, leaving no admitted semantic replacement, pointer/touch primary action, terminal action surface, or matching frame evidence.
+Creator edits can be visible in the preview while their delayed persistence remains pending. Menu and Play navigation are not gated by an accepted commit, so the destination can consume the predecessor stored profile.
 
 ## Plan ledger
 
-**Goal:** keep feedback identity, retirement, accessibility, action coverage, presentation, and proof gaps explicit.
+**Goal:** keep draft, storage, navigation, composition, presentation, and proof gaps explicit.
 
-### Surface identity
+### Draft and scheduler
 
-- [ ] No stable `FeedbackSurfaceDescriptor` identities.
-- [ ] No versioned `FeedbackPolicyDescriptor`.
-- [ ] DOM semantic tags are used as ownership selectors.
-- [ ] No accepted low-UI strategy revision.
-- [ ] No stable replacement-surface relationship.
+- [ ] No stable creator document generation or mutation IDs.
+- [ ] No explicit `DraftRevision` or typed dirty-state result.
+- [ ] The persistence scheduler exposes no `flush`, `getPending`, `cancel`, or verified `dispose` contract.
+- [ ] Timer supersession is implicit through `clearTimeout`.
+- [ ] The status text is not bound to a commit result.
 
-### Retirement and adoption
+### Commit and storage
 
-- [ ] No typed surface-retirement command or result.
-- [ ] No ownership check before removal.
-- [ ] No mandatory-capability replacement predicate.
-- [ ] No stale, duplicate, or superseded retirement rejection.
-- [ ] No atomic adoption or predecessor rollback.
-- [ ] Detached nodes continue receiving updates.
+- [ ] No `CreatorProfileCommitCommand`.
+- [ ] No `CreatorProfileCommitResult`.
+- [ ] No expected-base compare-and-set at local navigation settlement.
+- [ ] No verified readback after storage write.
+- [ ] Storage unavailable and `setItem` failures have no typed terminal result.
+- [ ] No payload fingerprint in commit receipts.
+- [ ] No explicit reconciliation of a remote update with the pending local mutation.
 
-### Accessibility and input
+### Navigation
 
-- [ ] No dedicated semantic active-run status.
-- [ ] No semantic run-over or win result.
-- [ ] Pointer/touch Jump is removed with the feedback panel.
-- [ ] Pointer/touch Retry and Run Again are removed.
-- [ ] Device coverage is not included in an admission result.
-- [ ] No focus or accessibility-tree fixture proves the replacement policy.
+- [ ] Menu and Play remain unconditional anchors while dirty.
+- [ ] No pending-write prerequisite before route transfer.
+- [ ] No duplicate navigation suppression.
+- [ ] No route result carrying profile ID, revision, and payload hash.
+- [ ] `beforeunload` disposes preview resources but does not flush the pending profile mutation.
+- [ ] No pagehide settlement policy.
 
-### Presentation and public readback
+### Game composition and rendering
 
-- [ ] No `FeedbackSurfaceAdmissionResult`.
-- [ ] No `FeedbackProjectionResult`.
-- [ ] No feedback generation or connected-surface list in public readback.
-- [ ] No run/tick/feedback revision correlation.
-- [ ] No `FirstFeedbackSurfaceFrameAck`.
+- [ ] Destination startup does not require an expected profile receipt.
+- [ ] No profile payload hash to creature content-hash binding receipt.
+- [ ] No accepted profile revision to character, player, and run sealing result.
+- [ ] Creator frames do not identify draft versus committed profile state.
+- [ ] No `FirstCommittedProfileFrameAck`.
 
 ### Tests and deployment
 
 - [ ] `npm test` was not run in this audit.
-- [ ] No DOM connectedness fixture.
-- [ ] No MutationObserver retirement fixture.
-- [ ] No keyboard, pointer, or touch coverage fixture.
-- [ ] No active/terminal semantic-status fixture.
-- [ ] No built-output or GitHub Pages feedback-parity fixture.
+- [ ] No immediate Play or Menu fixture within the debounce window.
+- [ ] No keyboard or repeated-activation fixture.
+- [ ] No pagehide or beforeunload fixture.
+- [ ] No storage unavailable or quota-failure fixture.
+- [ ] No BroadcastChannel/storage-event conflict fixture for pending local work.
+- [ ] No destination receipt, body-hash, visible-frame, built-output, or GitHub Pages fixture.
 
 ## Retained gaps
 
-Route progress, runtime-provider convergence, outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate.
+Feedback surfaces, route progress, runtime-provider convergence, outcome settlement, cross-document profile revision admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate.
