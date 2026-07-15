@@ -1,63 +1,63 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-15T10-58-45-04-00`  
+**Last aligned:** `2026-07-15T16-00-32-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed repository head:** `4808f05cff438ff5a9d013cd7ddec5127bbcf213`  
-**Status:** `host-clock-fixed-step-frame-authority-audited`
+**Reviewed current repository head:** `1e947c398512806e2236d07d9d64fae1cccd6677`  
+**Reviewed runtime source revision:** `4808f05cff438ff5a9d013cd7ddec5127bbcf213`  
+**Status:** `accessible-gameplay-projection-focus-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected by the oldest synchronized eligible-repository rule after all 11 accessible Publish repositories were compared with ten central ledgers and current repo-local documentation heads. `TheCavalryOfRome` remained excluded, and no eligible repository was new, missing, undocumented or runtime-ahead.
+PrehistoricRush was selected by the oldest synchronized eligible-repository rule after all 11 accessible Publish repositories were compared with ten central ledgers, root `.agent` entry points and current heads. `TheCavalryOfRome` remained excluded, and no eligible repository was new, missing, undocumented or runtime-ahead.
 
-The active LOD host clips each RAF interval to 50 ms and performs exactly one engine tick. The PrehistoricRush run system clips the admitted tick to 50 ms again. Any callback interval above 50 ms therefore loses wall time instead of producing bounded fixed-step catch-up, residual time or an overload receipt.
+The active game visually replaces run status and progress every RAF callback, but exposes no stable status role, semantic progressbar, meaningful-change live-region policy or one-shot terminal announcement. The pause overlay is labeled, yet has no dialog role, accepted modal state, initial-focus policy, focus containment, inert background or restoration result.
 
 ## Plan ledger
 
-**Goal:** preserve deterministic bounded simulation while preventing low callback rates from silently slowing elapsed time, movement, jumping, distance and goal progress.
+**Goal:** preserve authoritative gameplay while giving keyboard and assistive-technology users a stable semantic and focus-complete interaction loop.
 
 - [x] Compare the complete Publish inventory and central ledger.
 - [x] Select only PrehistoricRush by the oldest synchronized timestamp.
-- [x] Trace RAF timing through input, simulation, physics, streaming and rendering.
+- [x] Trace game boot, keyboard commands, RAF status projection, progress, terminal labels and pause-overlay focus.
 - [x] Preserve all 66 source-backed kits, adapters and proof surfaces.
-- [x] Define one host-clock parent authority with 20 coordinating surfaces.
-- [x] Add the `2026-07-15T10-58-45-04-00` audit family.
+- [x] Define one accessibility parent authority with 21 coordinating surfaces.
+- [x] Add the `2026-07-15T16-00-32-04-00` audit family.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Implement and execute fixed-step, overload, suspension, resume, interpolation and deployment fixtures.
+- [ ] Implement and execute semantic-tree, announcement, focus, artifact and Pages fixtures.
 
 ## Main finding
 
 ```txt
-RAF wall interval
-  -> min(0.05, interval)
-  -> one engine.tick
-  -> product run system min(0.05, tick.delta)
-  -> one gameplay integration
-  -> remainder is not accumulated or reported
-```
+accepted game state
+  -> Three.js visible frame
+  -> plain status div innerHTML replacement every RAF
+  -> visual-only progress strip
+  -> primary action label replacement
+  -> no stable semantic projection or accessible frame acknowledgement
 
-```txt
-10 FPS: 100 ms wall -> 50 ms simulation
-5 FPS: 200 ms wall -> 50 ms simulation
+pause open
+  -> labeled section is appended
+  -> no dialog role, modal adoption, initial focus, containment or restoration
 ```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-15T10-58-45-04-00.md
-.agent/architecture-audit/2026-07-15T10-58-45-04-00-host-clock-fixed-step-frame-dsk-map.md
-.agent/render-audit/2026-07-15T10-58-45-04-00-clock-aligned-render-frame-gap.md
-.agent/gameplay-audit/2026-07-15T10-58-45-04-00-low-fps-slow-run-loop.md
-.agent/interaction-audit/2026-07-15T10-58-45-04-00-host-clock-command-result-map.md
-.agent/simulation-clock-audit/2026-07-15T10-58-45-04-00-raf-delta-accumulator-contract.md
-.agent/deploy-audit/2026-07-15T10-58-45-04-00-host-clock-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-15T10-58-45-04-00-oldest-selection-host-clock-reconciliation.md
+.agent/trackers/2026-07-15T16-00-32-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-15T16-00-32-04-00.md
+.agent/architecture-audit/2026-07-15T16-00-32-04-00-accessible-gameplay-projection-focus-dsk-map.md
+.agent/render-audit/2026-07-15T16-00-32-04-00-visual-only-status-progress-frame-gap.md
+.agent/gameplay-audit/2026-07-15T16-00-32-04-00-unannounced-run-terminal-state-loop.md
+.agent/interaction-audit/2026-07-15T16-00-32-04-00-accessible-projection-command-result-map.md
+.agent/accessibility-audit/2026-07-15T16-00-32-04-00-live-status-progress-pause-focus-contract.md
+.agent/deploy-audit/2026-07-15T16-00-32-04-00-keyboard-screen-reader-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-15T16-00-32-04-00-oldest-selection-accessibility-reconciliation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-host-clock-fixed-step-frame-authority-domain`
+`prehistoric-rush-accessible-gameplay-projection-focus-authority-domain`
 
 ## Kit census
 
@@ -68,13 +68,13 @@ product/page/Worker kits: 17
 external/host/render adapters: 14
 proof kits: 8
 total source-backed surfaces: 66
-planned host-clock surfaces: 20
+planned accessibility surfaces: 21
 ```
 
 ## Next safe ledge
 
-Add a versioned host-clock policy and accumulator above `engine.tick`. Sample input once, execute bounded fixed steps, retain residual time or publish an overload receipt, rebase after suspension, pass explicit budgets to patch streaming and render the accepted simulation revision with an interpolation descriptor.
+Create stable semantic status and progress nodes from accepted game revisions. Announce only authored transitions, adopt pause as a modal dialog with owned focus capture/containment/restoration, and publish a first accessible gameplay frame acknowledgement.
 
 ## Claim boundary
 
-Documentation only. No fixed-step implementation, pacing correction, overload recovery, interpolation, passing test, artifact parity, Pages parity or production readiness is claimed.
+Documentation only. No semantic runtime projection, live announcements, progressbar semantics, pause-focus behavior, accessibility-tree proof, artifact parity, Pages parity or production readiness is claimed.
