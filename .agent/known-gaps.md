@@ -1,62 +1,59 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-14T18-58-04-04-00`  
-**Status:** `route-progress-goal-eligibility-authority-central-reconciled`
+**Audit:** `2026-07-15T00-00-35-04-00`  
+**Status:** `game-feedback-control-surface-admission-authority-central-reconciled`
 
 ## Summary
 
-The game calculates authored-route evidence but does not admit it as authoritative progress. Unrestricted movement controls the progress bar and terminal goal.
+The game wrapper removes the runtime feedback panel through a broad `aside` selector. The runtime continues updating detached status and action nodes, leaving no admitted semantic replacement, pointer/touch primary action, terminal action surface, or matching frame evidence.
 
 ## Plan ledger
 
-**Goal:** keep every course identity, traversal, completion, presentation and proof gap explicit.
+**Goal:** keep feedback identity, retirement, accessibility, action coverage, presentation, and proof gaps explicit.
 
-### Course identity
+### Surface identity
 
-- [ ] No versioned `CourseManifest`.
-- [ ] No stable course-goal identity.
-- [ ] No stable ordered checkpoint descriptors.
-- [ ] No route fingerprint bound to run completion.
-- [ ] No versioned direction or lateral-tolerance policy.
+- [ ] No stable `FeedbackSurfaceDescriptor` identities.
+- [ ] No versioned `FeedbackPolicyDescriptor`.
+- [ ] DOM semantic tags are used as ownership selectors.
+- [ ] No accepted low-UI strategy revision.
+- [ ] No stable replacement-surface relationship.
 
-### Progress settlement
+### Retirement and adoption
 
-- [ ] Total movement and accepted course distance are not separated.
-- [ ] No monotonic `CourseProgressRevision`.
-- [ ] No forward-direction admission.
-- [ ] No off-route rejection.
-- [ ] No repeated-segment or loop suppression.
-- [ ] No skipped-checkpoint rejection.
-- [ ] No stale or duplicate progress-result rejection.
+- [ ] No typed surface-retirement command or result.
+- [ ] No ownership check before removal.
+- [ ] No mandatory-capability replacement predicate.
+- [ ] No stale, duplicate, or superseded retirement rejection.
+- [ ] No atomic adoption or predecessor rollback.
+- [ ] Detached nodes continue receiving updates.
 
-### Goal eligibility
+### Accessibility and input
 
-- [ ] Goal uses `RunState.distance >= 3600` only.
-- [ ] Route index and progress do not gate victory.
-- [ ] No terminal checkpoint or finish volume.
-- [ ] No typed `CourseGoalEligibilityResult`.
-- [ ] No immutable `CourseCompletionResult`.
-- [ ] Terminal result does not cite a course-progress revision.
+- [ ] No dedicated semantic active-run status.
+- [ ] No semantic run-over or win result.
+- [ ] Pointer/touch Jump is removed with the feedback panel.
+- [ ] Pointer/touch Retry and Run Again are removed.
+- [ ] Device coverage is not included in an admission result.
+- [ ] No focus or accessibility-tree fixture proves the replacement policy.
 
-### Presentation
+### Presentation and public readback
 
-- [ ] HUD progress uses unrestricted movement.
-- [ ] Total movement is not labeled separately from course progress.
-- [ ] No course-progress presentation descriptor.
-- [ ] No finish-frame receipt.
-- [ ] No `FirstEligibleFinishFrameAck`.
+- [ ] No `FeedbackSurfaceAdmissionResult`.
+- [ ] No `FeedbackProjectionResult`.
+- [ ] No feedback generation or connected-surface list in public readback.
+- [ ] No run/tick/feedback revision correlation.
+- [ ] No `FirstFeedbackSurfaceFrameAck`.
 
 ### Tests and deployment
 
-- [ ] Existing outcome-policy tests accept a caller-supplied goal boolean.
 - [ ] `npm test` was not run in this audit.
-- [ ] No reverse-route fixture.
-- [ ] No start-area circle fixture.
-- [ ] No repeated-segment fixture.
-- [ ] No off-route distance fixture.
-- [ ] No browser finish-frame fixture.
-- [ ] No built-output or GitHub Pages course-progress parity fixture.
+- [ ] No DOM connectedness fixture.
+- [ ] No MutationObserver retirement fixture.
+- [ ] No keyboard, pointer, or touch coverage fixture.
+- [ ] No active/terminal semantic-status fixture.
+- [ ] No built-output or GitHub Pages feedback-parity fixture.
 
 ## Retained gaps
 
-Runtime-provider convergence, run-outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart and browser-runtime retirement remain separate.
+Route progress, runtime-provider convergence, outcome settlement, player-profile admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate.
