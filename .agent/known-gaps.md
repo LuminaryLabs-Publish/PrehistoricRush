@@ -1,54 +1,47 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T06-39-22-04-00`  
-**Status:** `terrain-single-owner-render-retirement-authority-audited`
+**Audit:** `2026-07-15T10-58-45-04-00`  
+**Status:** `host-clock-fixed-step-frame-authority-audited`
 
 ## Summary
 
-The LOD renderer is active, but it is layered over the complete legacy terrain renderer. Hidden legacy meshes still allocate geometry and receive patch uploads, leaving two terrain owners inside one adapter.
+The browser host and product run system both cap admitted delta at 50 ms, while no accumulator retains the remainder. Simulation pacing can therefore fall behind wall time whenever callbacks arrive below 20 FPS.
 
 ## Plan ledger
 
-**Goal:** keep duplicate allocation, upload, ownership, lifecycle and proof gaps explicit until one terrain presentation authority remains.
+**Goal:** keep timing, lifecycle, overload, streaming and render-evidence gaps explicit until one host-clock authority settles them.
 
-### Terrain ownership
+### Clock admission
 
-- [ ] The base adapter always allocates fixed-grid terrain slots.
-- [ ] The LOD wrapper cannot request patch-world services without also creating legacy terrain.
-- [ ] The LOD layer and base adapter maintain separate patch-to-terrain maps.
-- [ ] The runtime has no typed terrain-strategy capability contract.
-- [ ] The test treats `hideLegacyTerrain()` as expected integration rather than proving legacy terrain is absent.
+- [ ] No monotonic clock revision or callback generation is published.
+- [ ] The host clips wall intervals to 50 ms.
+- [ ] The product run system independently clips tick delta to 50 ms.
+- [ ] No accumulator or residual-time state exists.
+- [ ] No fixed-step batch identity exists.
 
-### Allocation and upload
+### Overload and lifecycle
 
-- [ ] `activeRadius: 2` allocates 25 legacy terrain meshes and 25 LOD terrain meshes.
-- [ ] Every accepted patch writes terrain positions/colors/normals into both paths.
-- [ ] The hidden legacy material and index buffers remain allocated.
-- [ ] Scene traversal runs after activation to suppress legacy meshes again.
-- [ ] No allocation or upload receipt distinguishes mandatory work from compatibility work.
+- [ ] No catch-up step budget is declared.
+- [ ] No overload classification exists.
+- [ ] No discarded-time receipt exists.
+- [ ] Hidden-document behavior has no clock suspension result.
+- [ ] Resume has no one-time clock rebase result.
+- [ ] Late RAF callbacks are not bound to a runtime generation.
 
-### Adoption and release
+### Gameplay and streaming
 
-- [ ] Terrain admission and base content adoption remain separate mutable operations.
-- [ ] Rollback releases the LOD candidate if base adoption fails, but there is no immutable combined result.
-- [ ] Patch release mutates both terrain owners independently.
-- [ ] No per-patch retirement receipt proves both owners settled.
-- [ ] `lastVisibleFrameAck` lacks patch IDs, patch generations, renderer generation and draw receipts.
+- [ ] Elapsed time, movement, jump, distance and goal progress depend on clipped time.
+- [ ] Patch-controller updates and generation/activation budgets are callback-count driven.
+- [ ] No schedule-equivalence fixture compares normal and delayed callbacks.
+- [ ] No terminal-outcome fixture proves pacing equivalence.
 
-### Lifecycle
+### Rendering and proof
 
-- [ ] The wrapper `dispose()` retires only the LOD layer.
-- [ ] The base adapter exposes no complete disposer for renderer, legacy terrain, instanced resources, listeners or canvas ownership.
-- [ ] The host exposes the engine and adapter globally without a retirement path.
-- [ ] No restart/dispose fixture checks accumulated meshes, canvases or listeners.
-
-### Tests and deployment
-
-- [ ] The terrain test is primarily geometry assertions and source-regex checks.
-- [ ] No controlled Three.js adapter instance counts actual terrain allocations.
-- [ ] No browser trace measures duplicate patch uploads or scene objects.
-- [ ] No mixed-LOD browser screenshot, GPU resource, built-output or Pages fixture is recorded.
+- [ ] Rendering receives clipped delta without an interpolation descriptor.
+- [ ] The public host snapshot omits clock revision, residual and overload state.
+- [ ] No `FirstClockAlignedFrameAck` binds clock, simulation and renderer revisions.
+- [ ] No source/build/Pages clock-policy parity fixture exists.
 
 ## Retained gaps
 
-Creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.
+Terrain single-owner retirement, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.
