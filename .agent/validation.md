@@ -1,61 +1,55 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-15T04-03-03-04-00`  
-**Scope:** creator draft, delayed persistence, route navigation, destination profile load, composition, and visible-frame evidence
+**Audit timestamp:** `2026-07-15T05-38-36-04-00`  
+**Scope:** runtime-ahead terrain LOD policy, terrain generation, adapter capacity, material helpers and patch adoption
 
 ## Summary
 
-This documentation-only audit verified that creator input updates the draft and preview immediately, persistence is delayed 160 ms, Menu and Play navigation do not flush the pending work, unload cleanup only disposes the preview, and game startup loads the stored profile once before character composition.
+Source review confirms a 64-segment terrain producer feeding an unchanged 30-segment Three.js terrain consumer. The resulting color and normal arrays contain 12,675 floats each, while the active attributes contain 2,883 floats each.
 
 ## Plan ledger
 
-**Goal:** distinguish verified source findings from runtime and deployment checks that were not executed.
+**Goal:** distinguish direct source findings from runtime, visual and deployment checks that were not executed.
 
-- [x] Verify the selected repository and `main`.
-- [x] Compare the Publish inventory and central tracking.
-- [x] Inspect creator controls, draft updates, timer scheduling, and reset behavior.
-- [x] Inspect profile load, save, patch, revision, BroadcastChannel, and storage-event behavior.
-- [x] Inspect Menu, Play, beforeunload, game profile load, composition, and public readback.
-- [x] Preserve the 59-surface inventory.
-- [x] Add the timestamped audit family.
-- [x] Change no runtime, HTML, package, test, workflow, or deployment source.
-- [x] Create no branch or pull request.
-- [ ] Execute navigation durability and first-frame fixtures later.
+- [x] Verify `main` and the five-commit runtime-ahead range.
+- [x] Compare every changed file.
+- [x] Inspect game configuration, patch generation, Worker transfer, patch controller and active adapter.
+- [x] Inspect LOD policy, topology helper and clay texture helper.
+- [x] Preserve prior services and record the updated 62-surface inventory.
+- [x] Change documentation only and create no branch or pull request.
+- [ ] Execute terrain integration fixtures later.
 
 ## Verified source findings
 
 ```txt
-creator draft and preview update on input: present
-Saving status before persistence: present
-160 ms delayed profile patch: present
-prior timer cancellation: present
-reset writes immediately: present
-Menu and Play normal anchors: present
-beforeunload preview disposal: present
-beforeunload profile flush: absent
-pagehide profile settlement: absent
-profile-store normalization and revisions: present
-localStorage write when called: present
-BroadcastChannel and storage-event paths: present
-game loads stored profile before composition: present
-public profile ID/revision readback: present
-public body contentHash readback: present
-typed local commit result: absent
-navigation admission result: absent
-profile-to-body binding receipt: absent
-first committed profile frame acknowledgement: absent
+recorded documentation head: fb7180ab0d5f11deabde7d62f62d24ad31e5c5b6
+runtime-ahead head: 6b61bf3ec04fec09f11d7c4f60b281e3d8cb71b4
+runtime-ahead commits: 5
+runtime cfg.segments: 30
+patch generator sourceResolution: 64
+adapter vertices: 961
+patch vertices: 4,225
+adapter color/normal floats: 2,883
+patch color/normal floats: 12,675
+active adapter imports LOD geometry helper: no
+active adapter imports clay texture helper: no
+terrain LOD policy registered in Core Graphics: yes
+terrain LOD integration tests added: no
 ```
+
+## Source-derived execution result
+
+JavaScript typed-array `set()` requires the source length plus offset to fit the target. The active `colors.array.set(patch.terrain.colors)` and matching normal copy cannot fit the source arrays in the allocated attributes. This is a direct capacity conflict, not a measured browser performance claim.
 
 ## Change boundary
 
 ```txt
 documentation changed: yes
-runtime JavaScript changed: no
-HTML or CSS changed: no
-profile, gameplay, or rendering behavior changed: no
-dependencies or package scripts changed: no
-tests or workflows changed: no
-deployment changed: no
+runtime JavaScript changed by audit: no
+HTML or CSS changed by audit: no
+gameplay or rendering changed by audit: no
+packages, tests or workflows changed by audit: no
+deployment changed by audit: no
 branch created: no
 pull request created: no
 ```
@@ -64,23 +58,16 @@ pull request created: no
 
 ```txt
 npm test
-immediate Play fixture
-immediate Menu fixture
-keyboard and repeated activation fixtures
-pagehide and beforeunload fixtures
-storage unavailable and quota-failure fixtures
-pending local versus remote update fixture
-destination profile receipt fixture
-profile-to-body hash fixture
-first visible committed profile frame fixture
+browser boot and first patch activation
+Worker and synchronous parity
+near/medium/far LOD selection
+mixed-resolution skirt and geomorph visual checks
+normal/roughness texture generation and disposal
+failed-upload predecessor preservation
 built-output smoke
-GitHub Pages profile-navigation smoke
+GitHub Pages terrain smoke
 ```
-
-## Commit status
-
-No passing CI or deployment-status claim is made for this documentation run.
 
 ## Non-claims
 
-No claim is made for durable pending-write settlement, storage failure recovery, conflict safety, route admission, profile/body convergence, first-frame convergence, passing tests, artifact parity, deployment parity, or production readiness.
+No runtime repair, successful first patch activation, LOD visual correctness, crack-free transitions, material correctness, performance gain, passing CI, artifact parity, deployment parity or production readiness is claimed.

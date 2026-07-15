@@ -1,61 +1,54 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T04-03-03-04-00`  
-**Status:** `creator-profile-navigation-commit-authority-central-reconciled`
+**Audit:** `2026-07-15T05-38-36-04-00`  
+**Status:** `terrain-lod-patch-render-admission-authority-audited`
 
 ## Summary
 
-Creator edits can be visible in the preview while their delayed persistence remains pending. Menu and Play navigation are not gated by an accepted commit, so the destination can consume the predecessor stored profile.
+The terrain producer and active renderer use different resolutions, while the new LOD topology and clay material helpers are not connected to patch adoption.
 
 ## Plan ledger
 
-**Goal:** keep draft, storage, navigation, composition, presentation, and proof gaps explicit.
+**Goal:** keep every schema, geometry, material, lifecycle and proof gap explicit until the active path is repaired and executed.
 
-### Draft and scheduler
+### Schema and capacity
 
-- [ ] No stable creator document generation or mutation IDs.
-- [ ] No explicit `DraftRevision` or typed dirty-state result.
-- [ ] The persistence scheduler exposes no `flush`, `getPending`, `cancel`, or verified `dispose` contract.
-- [ ] Timer supersession is implicit through `clearTimeout`.
-- [ ] The status text is not bound to a commit result.
+- [ ] No shared terrain schema revision across generator, Worker, controller and adapter.
+- [ ] Runtime config still declares 30 segments while the generator forces 64.
+- [ ] No array-length or attribute-capacity admission check.
+- [ ] No typed mismatch result before the accepted terrain slot is mutated.
+- [ ] Height sampling still derives indices from the legacy config resolution.
 
-### Commit and storage
+### LOD execution
 
-- [ ] No `CreatorProfileCommitCommand`.
-- [ ] No `CreatorProfileCommitResult`.
-- [ ] No expected-base compare-and-set at local navigation settlement.
-- [ ] No verified readback after storage write.
-- [ ] Storage unavailable and `setItem` failures have no typed terminal result.
-- [ ] No payload fingerprint in commit receipts.
-- [ ] No explicit reconciliation of a remote update with the pending local mutation.
+- [ ] Registered LOD policy is not consumed by the active adapter.
+- [ ] No accepted focus revision binds a patch to near, medium or far.
+- [ ] No active index-buffer swap, hysteresis or geomorph state.
+- [ ] No active mixed-resolution skirt policy or boundary receipt.
+- [ ] No LOD transition rollback or predecessor preservation.
 
-### Navigation
+### Material resources
 
-- [ ] Menu and Play remain unconditional anchors while dirty.
-- [ ] No pending-write prerequisite before route transfer.
-- [ ] No duplicate navigation suppression.
-- [ ] No route result carrying profile ID, revision, and payload hash.
-- [ ] `beforeunload` disposes preview resources but does not flush the pending profile mutation.
-- [ ] No pagehide settlement policy.
+- [ ] Generated clay normal and roughness textures are not created by the active renderer.
+- [ ] World-space UVs from the LOD geometry helper are not bound.
+- [ ] Terrain material remains vertex-color-only with roughness `0.94`.
+- [ ] No material-generation identity, cache policy or disposal receipt.
 
-### Game composition and rendering
+### Patch adoption and presentation
 
-- [ ] Destination startup does not require an expected profile receipt.
-- [ ] No profile payload hash to creature content-hash binding receipt.
-- [ ] No accepted profile revision to character, player, and run sealing result.
-- [ ] Creator frames do not identify draft versus committed profile state.
-- [ ] No `FirstCommittedProfileFrameAck`.
+- [ ] Patch membership becomes active before renderer preparation is validated.
+- [ ] No `TerrainPatchRenderAdmissionResult`.
+- [ ] No stale Worker-result rejection bound to policy and adapter generations.
+- [ ] No first matching visible terrain-frame acknowledgement.
+- [ ] No failed-upload predecessor-slot preservation proof.
 
 ### Tests and deployment
 
-- [ ] `npm test` was not run in this audit.
-- [ ] No immediate Play or Menu fixture within the debounce window.
-- [ ] No keyboard or repeated-activation fixture.
-- [ ] No pagehide or beforeunload fixture.
-- [ ] No storage unavailable or quota-failure fixture.
-- [ ] No BroadcastChannel/storage-event conflict fixture for pending local work.
-- [ ] No destination receipt, body-hash, visible-frame, built-output, or GitHub Pages fixture.
+- [ ] Existing `npm test` has no terrain LOD integration test.
+- [ ] No producer/consumer resolution fixture.
+- [ ] No near/medium/far capacity fixture.
+- [ ] No mixed-LOD visual, texture lifecycle, built-output or Pages fixture.
 
 ## Retained gaps
 
-Feedback surfaces, route progress, runtime-provider convergence, outcome settlement, cross-document profile revision admission, patch adoption, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run-start/restart, and browser-runtime retirement remain separate.
+Creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.

@@ -1,53 +1,50 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-15T04-03-03-04-00`  
-**Authority:** `prehistoric-rush-creator-profile-navigation-commit-authority-domain`
+**Audit:** `2026-07-15T05-38-36-04-00`  
+**Authority:** `prehistoric-rush-terrain-lod-patch-render-admission-authority-domain`
 
 ## Summary
 
-Keep the responsive creator preview and debounced editing. Make explicit Menu and Play intents flush the complete candidate, verify one stored revision, transfer a receipt, seal the run character to it, and acknowledge the first matching frame.
+Repair the producer/consumer contract first. Then connect the existing LOD topology and clay texture helpers to the active Three.js adapter without changing patch, physics or gameplay ownership.
 
 ## Plan ledger
 
-**Goal:** remove timing-dependent profile loss without broadening Core or replacing the existing profile store.
+**Goal:** move from a runtime-breaking terrain field mismatch to validated, atomic and observable LOD patch adoption.
 
-### Phase 1: Draft and scheduler state
+### Phase 1: Schema convergence
 
-- [ ] Add stable mutation, document-generation, draft-revision, and dirty-state identities.
-- [ ] Replace the raw timeout variable with a scheduler exposing `schedule`, `flush`, `cancel`, `getPending`, and `dispose`.
-- [ ] Normalize the complete candidate before scheduling.
-- [ ] Mark the draft clean only after verified stored readback.
+- [ ] Add a versioned terrain patch schema with source resolution, array lengths, material revision and bounds.
+- [ ] Remove the conflicting legacy `cfg.segments` authority or derive it from the accepted policy.
+- [ ] Reject mismatched Worker and synchronous patch results before adapter mutation.
+- [ ] Add typed capacity and schema failures.
 
-### Phase 2: Commit authority
+### Phase 2: Active LOD integration
 
-- [ ] Add `CreatorProfileCommitCommand` and typed terminal results.
-- [ ] Bind each commit to the expected stored revision and latest mutation ID.
-- [ ] Classify invalid, stale, conflicting, unavailable, quota-failed, duplicate, and superseded work.
-- [ ] Reuse the retained profile-revision authority for concurrent document settlement.
-- [ ] Expose recoverable failure state instead of silently navigating.
+- [ ] Import `createTerrainLodTopology`, `createTerrainPatchVertexData` and `selectPrehistoricTerrainLodLevel` into the active adapter.
+- [ ] Cache shared topology and per-level index buffers.
+- [ ] Select near, medium or far LOD from one accepted camera/focus snapshot.
+- [ ] Apply hysteresis and geomorph state with explicit patch revisions.
+- [ ] Keep skirts active at mixed-resolution boundaries.
 
-### Phase 3: Navigation admission
+### Phase 3: Material integration
 
-- [ ] Convert Menu and Play activation into `CreatorRouteIntent` commands while dirty.
-- [ ] Await an accepted commit result before route ownership changes.
-- [ ] Prevent repeated activation from producing duplicate writes or navigations.
-- [ ] Carry profile ID, revision, and payload hash into destination startup.
-- [ ] Keep pagehide/beforeunload handling as best-effort fallback only.
+- [ ] Create clay normal and roughness resources once per renderer generation.
+- [ ] Bind world-space UVs, normal map, roughness map and tuned material values.
+- [ ] Dispose textures and geometry deterministically on adapter retirement.
+- [ ] Preserve the predecessor resources if candidate creation fails.
 
-### Phase 4: Run sealing and presentation
+### Phase 4: Atomic adoption
 
-- [ ] Verify the destination receipt against stored profile readback.
-- [ ] Seal the accepted profile revision to creature body content hash, character ID, player ID, and run ID.
-- [ ] Expose expected and accepted profile identities through public readback.
-- [ ] Label creator preview frames as draft or committed.
-- [ ] Publish `FirstCommittedProfileFrameAck`.
+- [ ] Stage geometry, attributes, indices, morph data and material before publishing patch membership.
+- [ ] Publish `TerrainPatchRenderAdmissionResult` with schema, policy, level and resource receipts.
+- [ ] Reject stale Worker results and superseded policy generations.
+- [ ] Publish `FirstTerrainLodFrameAck` after the accepted patch is visible.
 
 ### Phase 5: Fixtures
 
-- [ ] Add immediate Play and immediate Menu fixtures after each supported input.
-- [ ] Add keyboard activation, repeated activation, pagehide, and beforeunload fixtures.
-- [ ] Add localStorage unavailable and quota-failure fixtures.
-- [ ] Add BroadcastChannel/storage-event conflict fixtures.
-- [ ] Add destination receipt, body-hash, and visible-frame fixtures.
-- [ ] Run `npm test`.
-- [ ] Run source, static artifact, and GitHub Pages parity checks.
+- [ ] Add the 30-config/64-source mismatch fixture.
+- [ ] Add near, medium and far topology/capacity fixtures.
+- [ ] Add Worker/synchronous parity and stale-result fixtures.
+- [ ] Add mixed-LOD skirt and geomorph visual fixtures.
+- [ ] Add clay texture creation/disposal fixtures.
+- [ ] Run `npm test`, browser, built-output and Pages checks.
