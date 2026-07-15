@@ -1,76 +1,72 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-14T18-58-04-04-00`  
+**Timestamp:** `2026-07-15T00-00-35-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Repository head before audit:** `436aaad739f521f036f14f7f5dd3ab1ff51ecee2`  
+**Repository head before audit:** `3c24168f2b977bea463c5c4ac3bcb243aa811639`  
 **Runtime source revision retained:** `ab3c63fed62b70e776ee56c4295f359bc3660274`  
-**Status:** `route-progress-goal-eligibility-authority-central-reconciled`  
-**Technical status:** `route-progress-goal-eligibility-authority-audited`
+**Status:** `game-feedback-control-surface-admission-authority-central-reconciled`  
+**Technical status:** `game-feedback-control-surface-admission-authority-audited`
 
 ## Summary
 
-The authored route supplies nearest-sample progress and lateral-distance evidence, but the game does not use that evidence to determine course completion. Every horizontal displacement increases `RunState.distance`, and victory is proposed when that unrestricted movement counter reaches `3600`.
+The runtime creates a feedback panel containing run status, progress, diagnostics, and the primary Jump/Retry/Run Again button. The page wrapper removes the panel because it deletes every `aside` under `#app`, while WebGL, keyboard gameplay, and detached-node updates continue.
 
 ## Plan ledger
 
-**Goal:** make movement, accepted course progress, goal eligibility and visible finish state distinct, revisioned participants.
+**Goal:** make feedback visibility, semantic projection, action coverage, surface retirement, and first-frame evidence explicit and revisioned.
 
-- [x] Trace route sample and progress generation.
-- [x] Trace movement and distance accumulation.
-- [x] Trace goal proposal and resolution-policy admission.
-- [x] Trace HUD and terminal projection.
-- [x] Define course-progress, checkpoint and finish-frame authority.
+- [x] Trace the game route and module preflight.
+- [x] Trace feedback-node creation and per-frame updates.
+- [x] Trace broad `aside` removal and MutationObserver ownership.
+- [x] Trace keyboard, pointer, touch, pause, and terminal actions.
+- [x] Define feedback-surface admission and frame acknowledgement.
 - [x] Add timestamped docs and root projections.
-- [ ] Implement and execute fixtures later.
+- [ ] Implement and execute browser fixtures later.
 
 ## Current loop
 
 ```txt
-input
-  -> movement dx/dz
-  -> total distance += hypot(dx, dz)
-  -> nearest route sample
-  -> routeIndex, routeProgress and region update
-  -> route evidence is not used for goal
-  -> goal = total distance >= 3600
-  -> resolution policy trusts goal boolean
-  -> win transition and HUD completion
+game route
+  -> wrapper removes current and future asides
+  -> runtime creates an aside containing status and action controls
+  -> wrapper removes the runtime panel
+  -> engine, streaming, Three.js, and keyboard gameplay continue
+  -> frame loop updates detached status and action nodes
+  -> no typed feedback result or first-frame acknowledgement exists
 ```
 
 ## Domains in use
 
 ```txt
-browser input and frame lifecycle
-Core simulation, physics, motion, scene, player, character and presentation
-product run, route, surface, score, outcome, pose and terrain IK
-authored route geometry, nearest sample, progress, checkpoints and finish eligibility
-seeded patch streaming, Rapier, Worker and Three.js presentation
-profile, creator, validation, build, Pages and central tracking
+browser module loading, DOM, MutationObserver, keyboard, blur, resize, and RAF lifecycle
+Core simulation, physics, motion, scene, player, character, UI, and presentation
+product run, route, surface, score, outcome, pause, pose, and terrain IK
+feedback ownership, semantic status, action routing, accessibility, and device coverage
+profile, creator, streaming, Rapier, Worker, Three.js, validation, Pages, and central tracking
 ```
 
 ## Current gaps
 
 ```txt
-CourseManifestRevision: absent
-stable checkpoint identities: absent
-monotonic accepted route progress: absent
-forward-direction predicate: absent
-lateral eligibility predicate: absent
-repeated-segment rejection: absent
-movement versus course-distance separation: absent
-typed CourseGoalEligibilityResult: absent
-CourseCompletionResult: absent
-HUD progress revision: absent
-FirstEligibleFinishFrameAck: absent
-reverse, circle and off-route fixtures: absent
+FeedbackSurfaceDescriptor: absent
+FeedbackPolicyRevision: absent
+surface-specific retirement: absent
+semantic active and terminal status: absent
+pointer/touch active action after suppression: absent
+visible terminal Retry and Run Again: absent
+FeedbackSurfaceAdmissionResult: absent
+FeedbackProjectionResult: absent
+feedback generation in public readback: absent
+FirstFeedbackSurfaceFrameAck: absent
+browser and Pages fixtures: absent
 ```
 
 ## Required authority
 
 ```txt
-prehistoric-rush-route-progress-goal-eligibility-authority-domain
+prehistoric-rush-game-feedback-control-surface-admission-authority-domain
 ```
 
 ## Current output
 
-See `.agent/trackers/2026-07-14T18-58-04-04-00/project-breakdown.md`.
+See `.agent/trackers/2026-07-15T00-00-35-04-00/project-breakdown.md`.
