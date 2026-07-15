@@ -14,7 +14,7 @@ const hudObserver = new MutationObserver((records) => {
 });
 hudObserver.observe(appRoot, { childList: true, subtree: true });
 
-await import("./game-runtime.js");
+await import("./game-runtime-lod.js");
 
 function createPauseMenuHost(root, pauseMenu) {
   let overlay = null;
