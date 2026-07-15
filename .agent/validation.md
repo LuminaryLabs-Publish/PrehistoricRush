@@ -1,48 +1,51 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-15T10-58-45-04-00`  
-**Scope:** RAF interval admission, simulation delta consumption, gameplay pacing, streaming cadence and render alignment
+**Audit timestamp:** `2026-07-15T16-00-32-04-00`  
+**Scope:** semantic gameplay status, distance progress, terminal announcements, pause dialog and focus lifecycle
 
 ## Summary
 
-Source review confirms that the host clips each RAF interval to 50 ms and calls `engine.tick` once. The PrehistoricRush run system clips `tick.delta` to 50 ms before advancing elapsed time, movement, jump physics, distance and goal proposals. No source-backed accumulator, residual, fixed-step batch or overload receipt was found.
+Source review confirms that the game creates a plain status `div`, replaces its HTML every RAF callback, represents distance with styled nested `div` elements, and changes the primary action label for game, retry and win states. The pause host creates a labeled section but defines no dialog role, modal adoption, initial focus, containment, background inertness or focus restoration.
 
 ## Plan ledger
 
-**Goal:** distinguish verified source behavior from runtime, browser, artifact and deployment evidence that was not executed.
+**Goal:** distinguish verified source behavior from browser accessibility, assistive-technology, artifact and deployment evidence that was not executed.
 
 - [x] Compare all 11 Publish repositories and select the oldest synchronized eligible repository.
-- [x] Inspect active LOD host timing.
-- [x] Inspect product run-system timing.
-- [x] Trace time-dependent gameplay and frame presentation.
+- [x] Inspect the active game shell, RAF status updates and action-label changes.
+- [x] Inspect pause overlay creation, keyboard toggling and removal.
 - [x] Preserve the complete 66-surface inventory.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute host-clock fixtures later.
+- [ ] Execute accessibility fixtures later.
 
 ## Verified source findings
 
 ```txt
-reviewed repository head: 4808f05cff438ff5a9d013cd7ddec5127bbcf213
-host RAF delta cap: 0.05 seconds
-engine ticks per RAF callback: 1
-product run-system delta cap: 0.05 seconds
-elapsed-time accumulator: absent
-fixed-step loop: absent
-residual-time state: absent
-catch-up budget: absent
-overload or discarded-time receipt: absent
-render interpolation descriptor: absent
-FirstClockAlignedFrameAck: absent
+reviewed current repository head: 1e947c398512806e2236d07d9d64fae1cccd6677
+reviewed runtime source revision: 4808f05cff438ff5a9d013cd7ddec5127bbcf213
+game root accessible label: present
+semantic menu links: present
+primary gameplay button: present
+status role/live policy: absent
+semantic progress range/value: absent
+terminal announcement result: absent
+pause accessible label: present
+pause dialog role: absent
+accepted modal state: absent
+initial focus/containment/restoration: absent
+AccessibleGameplayProjectionResult: absent
+FirstAccessibleGameplayFrameAck: absent
 ```
 
-## Source-derived pacing examples
+## Source-derived interaction paths
 
 ```txt
-100 ms callback interval -> 50 ms simulation admitted -> 50 ms unrepresented
-200 ms callback interval -> 50 ms simulation admitted -> 150 ms unrepresented
+RAF -> accepted state -> visible frame -> status HTML replacement -> no semantic frame receipt
+Escape -> pause toggle -> labeled section mount -> no focus admission result
+close -> overlay removal -> no explicit focus restoration result
 ```
 
-These calculations prove source-defined elapsed-time loss. They do not prove a measured browser frame rate or a reproduced player-visible symptom.
+These paths prove missing source-backed authorities. They do not prove a specific screen-reader or keyboard symptom because no browser accessibility fixture was executed.
 
 ## Change boundary
 
@@ -52,6 +55,7 @@ runtime JavaScript changed: no
 HTML or CSS changed: no
 simulation or gameplay changed: no
 rendering changed: no
+accessibility runtime behavior changed: no
 dependencies or package scripts changed: no
 tests or workflows changed: no
 deployment changed: no
@@ -63,16 +67,15 @@ pull request created: no
 
 ```txt
 npm test
-controlled clock unit fixture
-60/20/10/5 FPS schedule comparison
-500 ms overload fixture
-visibility suspension and resume fixture
-worker/fallback streaming cadence fixture
-clock-aligned render frame fixture
+keyboard-only browser fixture
+accessibility-tree capture
+screen-reader announcement fixture
+pause focus entry/containment/restoration fixture
+pagehide and route-retirement focus fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No fixed-step correctness, real-time pacing, deterministic catch-up, overload recovery, lifecycle rebasing, render interpolation, passing test, artifact parity, deployment parity or production readiness is claimed.
+No semantic runtime projection, live-announcement correctness, progressbar correctness, keyboard-focus correctness, assistive-technology compatibility, passing test, artifact parity, deployment parity or production readiness is claimed.
