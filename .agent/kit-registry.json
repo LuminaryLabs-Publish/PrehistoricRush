@@ -1,22 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-15T10-58-45-04-00",
-  "status": "host-clock-fixed-step-frame-authority-audited",
-  "technicalStatus": "host-clock-fixed-step-frame-authority-audited",
-  "repositoryRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
-  "priorDocumentationHead": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
-  "currentAuditedSlice": "RAF Wall Clock / Fixed-Step Accumulation / Low-FPS Pacing / Render Alignment",
-  "latestTracker": ".agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T10-58-45-04-00.md",
+  "generatedAt": "2026-07-15T16-00-32-04-00",
+  "status": "accessible-gameplay-projection-focus-authority-audited",
+  "technicalStatus": "accessible-gameplay-projection-focus-authority-audited",
+  "repositoryRevisionReviewed": "1e947c398512806e2236d07d9d64fae1cccd6677",
+  "runtimeSourceRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
+  "priorDocumentationHead": "1e947c398512806e2236d07d9d64fae1cccd6677",
+  "currentAuditedSlice": "Gameplay Semantic Status / Distance Progress / Terminal Announcements / Pause Dialog Focus",
+  "latestTracker": ".agent/trackers/2026-07-15T16-00-32-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T16-00-32-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-15T10-58-45-04-00-host-clock-fixed-step-frame-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-15T10-58-45-04-00-clock-aligned-render-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-15T10-58-45-04-00-low-fps-slow-run-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-15T10-58-45-04-00-host-clock-command-result-map.md",
-    "simulationClock": ".agent/simulation-clock-audit/2026-07-15T10-58-45-04-00-raf-delta-accumulator-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-15T10-58-45-04-00-host-clock-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-15T10-58-45-04-00-oldest-selection-host-clock-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-15T16-00-32-04-00-accessible-gameplay-projection-focus-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-15T16-00-32-04-00-visual-only-status-progress-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-15T16-00-32-04-00-unannounced-run-terminal-state-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-15T16-00-32-04-00-accessible-projection-command-result-map.md",
+    "accessibility": ".agent/accessibility-audit/2026-07-15T16-00-32-04-00-live-status-progress-pause-focus-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-15T16-00-32-04-00-keyboard-screen-reader-browser-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-15T16-00-32-04-00-oldest-selection-accessibility-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -38,62 +39,85 @@
     "externalHostRenderAdapterCount": 14,
     "proofKitCount": 8,
     "totalSurfaceCount": 66,
-    "plannedHostClockSurfaceCount": 20
+    "plannedAccessibilitySurfaceCount": 21
   },
   "interactionLoop": [
-    "game-runtime-lod samples the RAF wall interval",
-    "the host clips the interval to 0.05 seconds and samples keyboard input",
-    "the host calls engine.tick exactly once",
-    "the PrehistoricRush run system clips tick.delta to 0.05 seconds again",
-    "movement physics pickups and goal proposals settle for one clipped step",
-    "patch streaming updates once and the adapter renders once with the clipped delta"
+    "menu projects the selected procedural raptor and navigation links",
+    "game boot loads pinned providers and creates the engine physics streaming camera and renderer",
+    "keyboard and the primary button submit start steer boost jump and retry intent",
+    "accepted simulation state is rendered through Three.js",
+    "run status progress and primary action text are replaced visually every RAF callback",
+    "Escape mounts or removes a labeled pause section without an owned dialog-focus result"
   ],
   "domainsInUse": [
-    "browser document lifecycle RAF performance clock input blur resize Worker storage and navigation",
+    "browser document lifecycle keyboard focus RAF blur resize Worker storage and navigation",
     "Core input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
     "PrehistoricRush run route surface score outcome pause player composition pose and terrain IK",
-    "host clock interval admission fixed-step accumulation overload suspension resume and interpolation",
+    "semantic gameplay status progress terminal announcement dialog and focus projection",
     "patch generation queue cache Worker adoption and release",
     "terrain LOD Three.js Rapier vegetation pickups validation build Pages and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-15T10-58-45-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "clockSurfaces": {
-      "game-runtime-lod-host-adapter": ["RAF timestamp sampling", "input sampling", "engine tick submission", "patch streaming cadence", "render cadence", "public diagnostics"],
-      "prehistoric-rush-domain-kit": ["elapsed time", "movement", "jump physics", "distance", "physics proposals", "pickup proposals", "goal proposals"],
-      "planned-host-clock-authority": ["fixed-step policy", "accumulator", "catch-up budget", "residual time", "overload receipts", "suspension", "resume rebase", "render interpolation", "frame acknowledgement"]
+    "completeInventory": ".agent/trackers/2026-07-15T16-00-32-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "accessibilitySurfaces": {
+      "game-runtime-lod-host-adapter": [
+        "visual status container",
+        "visual progress strip",
+        "primary action button",
+        "RAF state projection"
+      ],
+      "game-page-entry-kit": [
+        "pause overlay mount and removal",
+        "Escape toggle",
+        "settings and exit buttons"
+      ],
+      "planned-accessibility-authority": [
+        "semantic gameplay snapshot",
+        "status and progress roles",
+        "announcement deduplication",
+        "terminal announcements",
+        "dialog semantics",
+        "focus capture containment and restoration",
+        "accessible frame acknowledgement"
+      ]
     }
   },
-  "clockState": {
-    "hostDeltaCapSeconds": 0.05,
-    "productDeltaCapSeconds": 0.05,
-    "engineTicksPerRafCallback": 1,
-    "fixedStepAccumulatorPresent": false,
-    "residualTimePresent": false,
-    "catchUpBudgetPresent": false,
-    "discardedTimeReceiptPresent": false,
-    "visibilityClockSuspensionResultPresent": false,
-    "resumeClockRebaseResultPresent": false,
-    "renderInterpolationDescriptorPresent": false,
-    "firstClockAlignedFrameAckPresent": false
+  "accessibilityState": {
+    "gameRootAccessibleLabelPresent": true,
+    "menuLinksPresent": true,
+    "primaryGameplayButtonPresent": true,
+    "statusRolePresent": false,
+    "liveRegionPolicyPresent": false,
+    "semanticProgressbarPresent": false,
+    "terminalAnnouncementResultPresent": false,
+    "pauseAccessibleLabelPresent": true,
+    "pauseDialogRolePresent": false,
+    "pauseModalStatePresent": false,
+    "initialFocusPolicyPresent": false,
+    "focusContainmentPresent": false,
+    "backgroundInertPolicyPresent": false,
+    "focusRestorationPresent": false,
+    "accessibleGameplayProjectionResultPresent": false,
+    "firstAccessibleGameplayFrameAckPresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-host-clock-fixed-step-frame-authority-domain",
-    "mainFinding": "RAF intervals above 50 ms are clipped and submitted as one tick, while the product run system clips the tick again, so delayed callbacks silently discard wall time and slow simulation pacing."
+    "parentDomain": "prehistoric-rush-accessible-gameplay-projection-focus-authority-domain",
+    "mainFinding": "Accepted gameplay and pause state is visually projected, but stable semantic status, progress, terminal announcements and dialog-focus settlement are absent."
   },
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
     "simulationChangedByAudit": false,
     "renderingChangedByAudit": false,
+    "accessibilityRuntimeChangedByAudit": false,
     "packageTestWorkflowDeploymentChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "controlledClockFixtureRun": false,
-    "browserScheduleFixtureRun": false,
-    "visibilityResumeFixtureRun": false,
-    "clockAlignedFrameFixtureRun": false,
+    "keyboardOnlyFixtureRun": false,
+    "accessibilityTreeFixtureRun": false,
+    "screenReaderFixtureRun": false,
+    "pauseFocusFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
