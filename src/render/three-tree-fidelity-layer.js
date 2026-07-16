@@ -28,6 +28,53 @@ function projectedPixels(camera, renderer, worldHeight, distance) {
   return worldHeight * viewportHeight / Math.max(0.001, 2 * distance * Math.tan(fov * 0.5));
 }
 
+function normalizedDegrees(value) {
+  return ((Number(value) % 360) + 360) % 360;
+}
+
+export function circularDegreesDistance(left, right) {
+  const delta = Math.abs(normalizedDegrees(left) - normalizedDegrees(right));
+  return Math.min(delta, 360 - delta);
+}
+
+export function resolveTreeImpostorFrame(frames = [], cameraPosition = {}, bounds = {}) {
+  if (!frames.length) return null;
+  const center = bounds.center ?? [0, 0, 0];
+  const dx = Number(cameraPosition.x ?? 0) - Number(center[0] ?? 0);
+  const dy = Number(cameraPosition.y ?? 0) - Number(center[1] ?? 0);
+  const dz = Number(cameraPosition.z ?? 0) - Number(center[2] ?? 0);
+  const horizontal = Math.max(0.000001, Math.hypot(dx, dz));
+  const azimuthDegrees = normalizedDegrees(Math.atan2(dx, dz) * 180 / Math.PI);
+  const elevationDegrees = Math.atan2(dy, horizontal) * 180 / Math.PI;
+  let best = null;
+  frames.forEach((frame, arrayIndex) => {
+    const azimuthError = circularDegreesDistance(azimuthDegrees, Number(frame.azimuthDegrees ?? 0));
+    const elevationError = Math.abs(elevationDegrees - Number(frame.elevationDegrees ?? 0));
+    const score = azimuthError + elevationError * 1.75;
+    if (!best || score < best.score || score === best.score && arrayIndex < best.arrayIndex) {
+      best = {
+        arrayIndex,
+        frameIndex: Number(frame.frameIndex ?? arrayIndex),
+        atlasCell: frame.atlasCell ?? [arrayIndex, 0],
+        frameAzimuthDegrees: Number(frame.azimuthDegrees ?? 0),
+        frameElevationDegrees: Number(frame.elevationDegrees ?? 0),
+        viewAzimuthDegrees: azimuthDegrees,
+        viewElevationDegrees: elevationDegrees,
+        score
+      };
+    }
+  });
+  return best;
+}
+
+function hashFrameBindings(bindings) {
+  let hash = 2166136261;
+  for (const character of bindings.map((entry) => `${entry.treeId}:${entry.formId}:${entry.frameIndex}:${entry.atlasCell.join(",")}`).join("|") ) {
+    hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
 function suppressLegacyTreeMeshes(scene, typeCount) {
   const candidates = [];
   scene.traverse((object) => {
@@ -88,7 +135,7 @@ function createDecodedAtlasTexture(THREE, atlas) {
 }
 
 function createAtlasMaterials(THREE, form, fallbackColor) {
-  const frames = form?.frames ?? [];
+  const sourceFrames = form?.frames?.length ? form.frames : [{ frameIndex: 0, azimuthDegrees: 0, elevationDegrees: 0, atlasCell: [0, 0] }];
   const atlas = form?.atlas;
   const metadata = atlas?.metadata ?? {};
   const columns = Math.max(1, Number(metadata.columns ?? metadata.width / metadata.frameSize) || 1);
@@ -100,24 +147,33 @@ function createAtlasMaterials(THREE, form, fallbackColor) {
     baseTexture.wrapT = THREE.ClampToEdgeWrapping;
     baseTexture.generateMipmaps = true;
   }
-  const baseElevation = Number(frames[0]?.elevationDegrees ?? 0);
-  const count = Math.max(1, frames.filter((frame) => Number(frame.elevationDegrees) === baseElevation).length || columns);
-  return Array.from({ length: count }, (_, index) => {
+  return sourceFrames.map((frame, index) => {
     const texture = index === 0 ? baseTexture : baseTexture?.clone?.() ?? null;
+    const atlasCell = frame.atlasCell ?? [index % columns, Math.floor(index / columns)];
     if (texture) {
       texture.repeat.set(1 / columns, 1 / rows);
-      texture.offset.set((index % columns) / columns, Math.max(0, rows - 1) / rows);
+      texture.offset.set(
+        Math.max(0, Math.min(columns - 1, Number(atlasCell[0]) || 0)) / columns,
+        Math.max(0, rows - 1 - Math.max(0, Math.min(rows - 1, Number(atlasCell[1]) || 0))) / rows
+      );
       texture.needsUpdate = true;
     }
-    return patchDitherMaterial(new THREE.MeshBasicMaterial({
-      color: texture ? 0xffffff : fallbackColor,
-      map: texture,
-      transparent: false,
-      alphaTest: 0.38,
-      side: THREE.DoubleSide,
-      depthWrite: true,
-      fog: true
-    }));
+    return {
+      frame: {
+        ...frame,
+        frameIndex: Number(frame.frameIndex ?? index),
+        atlasCell
+      },
+      material: patchDitherMaterial(new THREE.MeshBasicMaterial({
+        color: texture ? 0xffffff : fallbackColor,
+        map: texture,
+        transparent: false,
+        alphaTest: 0.38,
+        side: THREE.DoubleSide,
+        depthWrite: true,
+        fog: true
+      }))
+    };
   });
 }
 
@@ -141,16 +197,15 @@ function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
 
 function createBillboardBatches(THREE, scene, packageValue, formId, fallbackColor, capacity) {
   const form = packageValue?.forms?.[formId];
-  const materials = createAtlasMaterials(THREE, form, fallbackColor);
-  return materials.map((material, angleIndex) => {
+  return createAtlasMaterials(THREE, form, fallbackColor).map(({ material, frame }, arrayIndex) => {
     const mesh = new THREE.InstancedMesh(createBillboardGeometry(THREE, capacity), material, capacity);
-    mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}-${angleIndex}`;
+    mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}-${frame.frameIndex}`;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
     mesh.frustumCulled = false;
     scene.add(mesh);
-    return mesh;
+    return { mesh, frame, arrayIndex };
   });
 }
 
@@ -241,6 +296,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const layers = treeTypes.map((_, typeIndex) => createTypeLayer(THREE, scene, packages[typeIndex], typeIndex, capacity));
   const suppressedLegacyMeshes = suppressLegacyTreeMeshes(scene, treeTypes.length);
   const generationIds = packages.map((entry) => entry.generation?.id).filter(Boolean);
+  const generationDigest = generationIds.join("|");
   const view = {
     enabled: true,
     activePatches: 0,
@@ -250,7 +306,12 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     transitioning: 0,
     packageCount: packages.length,
     generationIds,
-    generationDigest: generationIds.join("|")
+    generationDigest,
+    frameSelectionRevision: 0,
+    frameBindingCount: 0,
+    frameBindingDigest: "00000000",
+    exactFrameAck: null,
+    frameBindingSample: []
   };
 
   function activatePatch(patch) {
@@ -297,6 +358,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   function update(_state, deltaTime = 1 / 60) {
     const perType = layers.map(() => ({ near: [], medium: [], far: [], horizon: [] }));
     const seen = new Set();
+    const frameBindings = [];
     let transitioning = 0;
 
     for (const patch of patches.values()) {
@@ -367,19 +429,28 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
       }
 
       for (const formId of ["far", "horizon"]) {
-        const meshes = layer[formId];
-        const angleSelections = meshes.map(() => []);
+        const batches = layer[formId];
+        const frameSelections = batches.map(() => []);
         for (const entry of selection[formId]) {
-          const record = entry.record;
-          const dx = camera.position.x - record.bounds.center[0];
-          const dz = camera.position.z - record.bounds.center[2];
-          const angle = (Math.atan2(dx, dz) + Math.PI * 2) % (Math.PI * 2);
-          const angleIndex = meshes.length === 1 ? 0 : Math.round(angle / (Math.PI * 2) * meshes.length) % meshes.length;
-          angleSelections[angleIndex].push(entry);
+          const binding = resolveTreeImpostorFrame(
+            batches.map((batch) => batch.frame),
+            camera.position,
+            entry.record.bounds
+          );
+          if (!binding) continue;
+          frameSelections[binding.arrayIndex].push({ ...entry, binding });
+          frameBindings.push({
+            treeId: entry.record.treeId,
+            formId,
+            frameIndex: binding.frameIndex,
+            atlasCell: binding.atlasCell,
+            frameAzimuthDegrees: binding.frameAzimuthDegrees,
+            frameElevationDegrees: binding.frameElevationDegrees
+          });
         }
         let formCount = 0;
-        angleSelections.forEach((records, angleIndex) => {
-          const mesh = meshes[angleIndex];
+        frameSelections.forEach((records, batchIndex) => {
+          const mesh = batches[batchIndex].mesh;
           const count = Math.min(capacity, records.length);
           for (let index = 0; index < count; index += 1) {
             writeBillboard(mesh, index, records[index].record.bounds);
@@ -394,6 +465,18 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
         view.counts[formId] += formCount;
       }
     });
+
+    frameBindings.sort((left, right) => left.treeId.localeCompare(right.treeId) || left.formId.localeCompare(right.formId) || left.frameIndex - right.frameIndex);
+    view.frameSelectionRevision += 1;
+    view.frameBindingCount = frameBindings.length;
+    view.frameBindingDigest = hashFrameBindings(frameBindings);
+    view.frameBindingSample = frameBindings.slice(0, 32);
+    view.exactFrameAck = Object.freeze({
+      generationDigest,
+      revision: view.frameSelectionRevision,
+      bindingCount: view.frameBindingCount,
+      bindingDigest: view.frameBindingDigest
+    });
     return view;
   }
 
@@ -403,8 +486,8 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     for (const layer of layers) {
       disposeMesh(scene, layer.near);
       disposeMesh(scene, layer.medium);
-      for (const mesh of layer.far) disposeMesh(scene, mesh);
-      for (const mesh of layer.horizon) disposeMesh(scene, mesh);
+      for (const batch of layer.far) disposeMesh(scene, batch.mesh);
+      for (const batch of layer.horizon) disposeMesh(scene, batch.mesh);
     }
   }
 
