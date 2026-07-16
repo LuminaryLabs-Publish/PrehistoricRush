@@ -1,83 +1,111 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-16T12-47-00-04-00`  
-**Scope:** tree generation reconciliation, atlas decoding, decoded-texture admission, view-angle selection, atlas frame addressing, and visible proof
+**Audit timestamp:** `2026-07-16T14-39-29-04-00`  
+**Scope:** runtime-ahead tree reconciliation, exact frame addressing, ecological variation, elevation-row continuity, and visible proof
 
 ## Summary
 
-Source review confirms exact generation identity, generation-bound patch/cache identity, four-form retained state, horizon selection, hysteresis, dither crossfade, required atlas decoding, decoded-image renderer admission, and source checks. It also confirms that far impostors ignore camera elevation and derive texture offsets from inferred atlas layout instead of exact selected frame records.
+Source inspection confirms that the prior exact-frame plan is implemented: camera azimuth and elevation are derived, exact frame records and UV rectangles are bound, adjacent azimuth frames blend, and an exact frame-binding digest and acknowledgement are published. It also confirms that only the single nearest captured elevation row is admitted per frame.
 
 ## Intent
 
-Separate verified fidelity implementation from the remaining frame-addressing and executable visual-proof work.
+Separate verified tree-fidelity implementation from the remaining elevation-row continuity and executable visual-proof work.
 
-## What needs to happen
+## Checklist
 
-- [x] Compare all 11 Publish repositories and select runtime-ahead PrehistoricRush.
-- [x] Inspect the post-ledger delta through `9c62bc402451aea7588373f760883517281b9a39`.
-- [x] Inspect package generation, patch/cache binding, retained forms, horizon, hysteresis, and crossfade.
-- [x] Inspect runtime image decoding and decoded-texture admission.
-- [x] Compare capture frame metadata with runtime frame/material selection.
-- [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute functional browser, artifact, and Pages fixtures.
+- [x] Compare all 11 Publish repositories and exclude Cavalry.
+- [x] Confirm ten eligible central ledgers and root `.agent` states.
+- [x] Select the older runtime-ahead repository only.
+- [x] Compare `36bd09e2..d427de44`.
+- [x] Inspect tree archetypes, patch generation, runtime image hydration, fidelity rendering, tests, package scripts, and CI fixes.
+- [x] Add and route the timestamped audit family on `main`.
+- [ ] Execute source, browser, artifact, and Pages continuity fixtures.
 
-## Verified source findings
+## Confirmed by inspection
 
 ```txt
-exact package generation IDs: present
-generation digest in vegetation identity: present
-near/medium/far/horizon forms: present
-retained form state: present
-hysteresis: present
-dither crossfade: present
-required runtime image decoding: present
-undecoded render rejection: present
-source checks before Pages deploy: present
+reviewed pre-audit repository head: d427de443aea28b256c92a760a8d1c6f6a396efb
+previous documentation head: 36bd09e2f6abc0862dc94955bef55268d0ebf7b6
+runtime ahead by: 14 commits
+changed files: 12
+ten authored tree species: present
+deterministic ecological selection: present
+seeded per-tree variation: present
+stable collision proxy: present
+shared atlas decode/crop: present
+camera azimuth and elevation derivation: present
+exact frame record and UV binding: present
+adjacent azimuth blending: present
+frame-binding digest and exact-frame acknowledgement: present
+source tests for exact addressing and spawn variation: present
 
-camera elevation frame selection: absent
-exact frame-record batch identity: absent
-frame rectangle adoption: absent
-exact selected-frame receipt: absent
-functional rendered-angle fixture: absent
+elevation lower/upper bracket: absent
+elevation interpolation/deadband: absent
+retained row-transition state: absent
+TreeImpostorViewContinuityResult: absent
+FirstContinuousImpostorFrameAck: absent
+browser elevation-boundary fixture: absent
 ```
 
-## Source-derived boundary
+## Source inspection performed
 
 ```txt
-capture emits azimuth/elevation frame records
-  -> hydration decodes atlas images
-  -> renderer admits decoded images
-  -> renderer filters frames to one base elevation
-  -> azimuth chooses a material index
-  -> texture Y offset is inferred from atlas rows
+LuminaryLabs-Publish organization inventory
+LuminaryLabs-Dev/LuminaryLabs Publish ledgers
+compare 36bd09e2..d427de44
+src/shared/tree-archetype-catalog.js
+src/world/prehistoric-patch-generator.js
+src/shared/tree-fidelity-assets.js
+src/shared/tree-fidelity-runtime-images.js
+src/render/three-tree-fidelity-layer.js
+tests/tree-fidelity-assets.mjs
+tests/tree-fidelity-frame-addressing.mjs
+tests/tree-spawn-variation.mjs
+package.json
 ```
 
-This proves a remaining view-selection and atlas-addressing gap. It does not prove a visible defect on a particular browser or camera position.
-
-## Change boundary
+## What is not proven
 
 ```txt
-documentation changed by audit: yes
+that a visible row-switch pop currently occurs
+that an elevation-interpolation policy is correct
+npm test success at the final documentation head
+browser rendered continuity
+built artifact parity
+GitHub Pages parity
+production readiness
+```
+
+## Required fixtures
+
+```txt
+below/at/above every elevation midpoint
+slow elevation sweep
+camera bob around midpoint
+jump, landing, camera reset, and terrain-height changes
+stale package/camera/tree/form transition rejection
+far/horizon and LOD-crossfade composition
+same-trace binding-digest reproducibility
+source/build/Pages rendered parity
+FirstContinuousImpostorFrameAck
+```
+
+## Change scope
+
+```txt
+documentation changed: yes
 runtime JavaScript changed by audit: no
-packages/tests/assets changed by audit: no
-gameplay/rendering/physics changed by audit: no
-workflow/deployment changed by audit: no
+assets or tree content changed by audit: no
+gameplay, rendering, physics, and camera changed by audit: no
+tests or package scripts changed by audit: no
+workflow or deployment changed by audit: no
 branch created: no
 pull request created: no
+
+npm test: not run
+browser fixtures: not run
+built-output smoke: not run
+Pages smoke: not run
 ```
 
-## Checks not completed
-
-```txt
-npm test
-browser azimuth sweep
-browser elevation sweep
-atlas rectangle and row addressing
-far/horizon transition visual fixture
-built-output smoke
-GitHub Pages smoke
-```
-
-## Non-claims
-
-No exact multi-elevation frame selection, atlas-addressing correctness, rendered-angle parity, artifact parity, Pages parity, or production readiness is claimed.
+No elevation-row continuity, rendered transition correctness, artifact parity, Pages parity, or production readiness is claimed.
