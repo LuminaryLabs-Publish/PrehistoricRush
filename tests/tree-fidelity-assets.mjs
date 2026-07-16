@@ -5,6 +5,7 @@ import {
   PREHISTORIC_TREE_TYPES,
   TREE_FIDELITY_BUNDLE_ID,
   TREE_FIDELITY_MANIFEST_ASSET_ID,
+  TREE_FIDELITY_PACKAGE_VERSION,
   TREE_FIDELITY_PROVIDER_ID
 } from "../src/shared/tree-fidelity-assets.js";
 import { NEXUS_COMMIT } from "../src/shared/runtime-versions.js";
@@ -12,6 +13,7 @@ import { NEXUS_COMMIT } from "../src/shared/runtime-versions.js";
 assert.equal(TREE_FIDELITY_BUNDLE_ID, "prehistoric-tree-fidelity");
 assert.equal(TREE_FIDELITY_MANIFEST_ASSET_ID, "prehistoric-tree-fidelity-manifest");
 assert.equal(TREE_FIDELITY_PROVIDER_ID, "prehistoric-tree-fidelity-provider");
+assert.equal(TREE_FIDELITY_PACKAGE_VERSION, "2");
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 5);
 assert.equal(PREHISTORIC_TREE_TYPES.length, PREHISTORIC_TREE_ARCHETYPES.length);
 assert.ok(PREHISTORIC_TREE_ARCHETYPES.every((tree) => tree.id && tree.maxHeight > tree.minHeight && tree.crownRadius > 0));
@@ -25,8 +27,10 @@ const adapterSource = readFileSync(new URL("../src/render/three-patch-stream-lod
 const layerSource = readFileSync(new URL("../src/render/three-tree-fidelity-layer.js", import.meta.url), "utf8");
 
 assert.match(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
+assert.match(menuSource, /unregisterProvider\(TREE_FIDELITY_PROVIDER_ID/);
 assert.match(gameSource, /trackAssetPreparation/);
 assert.match(gameSource, /await prepareTreeAssetsBeforeGame\(\)/);
+assert.match(gameSource, /unregisterProvider\(TREE_FIDELITY_PROVIDER_ID/);
 assert.match(runtimeSource, /treeFidelityPackages/);
 assert.match(runtimeSource, /presentFirstFrame/);
 assert.match(runtimeSource, /startup\.enter/);
@@ -34,5 +38,6 @@ assert.match(adapterSource, /createThreeTreeFidelityLayer/);
 assert.match(layerSource, /projectedPixels/);
 assert.match(layerSource, /multi-angle|billboards/);
 assert.match(layerSource, /suppressLegacyTreeMeshes/);
+assert.match(layerSource, /frustumCulled = false/);
 
 console.log("tree fidelity asset and renderer contract passed");
