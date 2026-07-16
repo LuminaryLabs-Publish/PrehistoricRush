@@ -1,3 +1,9 @@
+import { RUNTIME_URLS } from "./shared/runtime-versions.js";
+import {
+  TREE_FIDELITY_BUNDLE_ID,
+  createPrehistoricTreeFidelityAssetRuntime
+} from "./shared/tree-fidelity-assets.js";
+
 const appRoot = document.querySelector("#app") ?? document.body;
 
 function removeLegacyHud(node) {
@@ -14,6 +20,49 @@ const hudObserver = new MutationObserver((records) => {
 });
 hudObserver.observe(appRoot, { childList: true, subtree: true });
 
+async function prepareTreeAssetsBeforeGame() {
+  appRoot.innerHTML = `
+    <main style="position:fixed;inset:0;display:grid;place-items:center;background:#08130d;color:#fff3c8;font:700 16px system-ui,sans-serif">
+      <section style="width:min(420px,calc(100vw - 40px));text-align:center">
+        <strong style="display:block;font-size:24px;margin-bottom:12px">Preparing prehistoric forest</strong>
+        <div style="height:8px;border-radius:999px;background:#ffffff1f;overflow:hidden"><div id="tree-load-fill" style="height:100%;width:0;background:#69a94d"></div></div>
+        <p id="tree-load-label" style="color:#c1cfbc">Checking tree fidelity cache…</p>
+      </section>
+    </main>
+  `;
+  const fill = document.querySelector("#tree-load-fill");
+  const label = document.querySelector("#tree-load-label");
+  const [NexusEngine, THREE] = await Promise.all([
+    import(RUNTIME_URLS.nexus),
+    import(RUNTIME_URLS.three)
+  ]);
+  const runtime = await createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THREE, { startup: true });
+  runtime.startup.launch({
+    launchId: `prehistoric-rush:game:${Date.now()}`,
+    projectId: "prehistoric-rush",
+    preparations: []
+  });
+  const receipt = await NexusEngine.trackAssetPreparation({
+    startup: runtime.startup,
+    assets: runtime.assets,
+    preparationId: "tree-fidelity",
+    bundleId: TREE_FIDELITY_BUNDLE_ID,
+    label: "Tree LOD and impostor assets",
+    required: true,
+    weight: 4,
+    requestOptions: {
+      priority: "required",
+      onProgress(progress, detail) {
+        if (fill) fill.style.width = `${Math.round(progress * 10000) / 100}%`;
+        if (label) label.textContent = detail ?? `Preparing forest assets · ${Math.round(progress * 100)}%`;
+      }
+    }
+  });
+  globalThis.PrehistoricRushTreeAssetRuntime = Object.freeze({ ...runtime, receipt });
+  return receipt;
+}
+
+await prepareTreeAssetsBeforeGame();
 await import("./game-runtime-lod.js");
 
 function createPauseMenuHost(root, pauseMenu) {
