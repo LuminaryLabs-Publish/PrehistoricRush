@@ -1,4 +1,5 @@
-const DEFAULT_THRESHOLDS = Object.freeze({ near: 120, medium: 42, far: 6 });
+const DEFAULT_THRESHOLDS = Object.freeze({ near: 360, medium: 150, far: 18 });
+const FORM_ORDER = Object.freeze(["near", "medium", "far", "horizon"]);
 
 function combineBounds(trunk, crown) {
   const min = [
@@ -15,6 +16,7 @@ function combineBounds(trunk, crown) {
     min,
     max,
     center: [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5],
+    size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
     width: Math.max(max[0] - min[0], max[2] - min[2]),
     height: max[1] - min[1]
   };
@@ -41,18 +43,47 @@ function suppressLegacyTreeMeshes(scene, typeCount) {
   return Math.min(expected, candidates.length);
 }
 
-function createBillboardGeometry(THREE) {
-  const geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
-  geometry.translate(0, 0.5, 0);
+function patchDitherMaterial(material) {
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace("#include <common>", "#include <common>\nattribute float fidelityFade;\nvarying float vFidelityFade;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvFidelityFade = fidelityFade;");
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nvarying float vFidelityFade;\nfloat fidelityHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}")
+      .replace("#include <clipping_planes_fragment>", "#include <clipping_planes_fragment>\nif (fidelityHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;");
+  };
+  material.customProgramCacheKey = () => "prehistoric-tree-fidelity-dither-v1";
+  return material;
+}
+
+function createGeometryFromPortable(THREE, portable, capacity) {
+  if (!portable?.positions?.length || !portable?.indices?.length) throw new TypeError("Tree mesh form requires portable triangle geometry.");
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(portable.positions, 3));
+  geometry.setIndex(portable.indices);
+  for (const [name, attribute] of Object.entries(portable.attributes ?? {})) {
+    geometry.setAttribute(name, new THREE.Float32BufferAttribute(attribute.values, attribute.itemSize));
+  }
+  if (!geometry.getAttribute("normal")) geometry.computeVertexNormals();
+  geometry.setAttribute("fidelityFade", new THREE.InstancedBufferAttribute(new Float32Array(capacity).fill(1), 1));
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
   return geometry;
 }
 
-function createAtlasMaterials(THREE, packageValue, fallbackColor) {
-  const frames = packageValue?.forms?.far?.frames ?? [];
-  const atlas = packageValue?.forms?.far?.atlas;
+function createBillboardGeometry(THREE, capacity) {
+  const geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+  geometry.translate(0, 0.5, 0);
+  geometry.setAttribute("fidelityFade", new THREE.InstancedBufferAttribute(new Float32Array(capacity).fill(1), 1));
+  return geometry;
+}
+
+function createAtlasMaterials(THREE, form, fallbackColor) {
+  const frames = form?.frames ?? [];
+  const atlas = form?.atlas;
   const metadata = atlas?.metadata ?? {};
-  const columns = Math.max(1, Number(metadata.columns ?? metadata.width / metadata.frameSize) || 8);
-  const rows = Math.max(1, Number(metadata.rows ?? metadata.height / metadata.frameSize) || 2);
+  const columns = Math.max(1, Number(metadata.columns ?? metadata.width / metadata.frameSize) || 1);
+  const rows = Math.max(1, Number(metadata.rows ?? metadata.height / metadata.frameSize) || 1);
   const source = atlas?.assetId;
   const baseTexture = source ? new THREE.TextureLoader().load(source) : null;
   if (baseTexture) {
@@ -61,7 +92,8 @@ function createAtlasMaterials(THREE, packageValue, fallbackColor) {
     baseTexture.wrapT = THREE.ClampToEdgeWrapping;
     baseTexture.generateMipmaps = true;
   }
-  const count = Math.max(1, frames.filter((frame) => Number(frame.elevationDegrees) === Number(frames[0]?.elevationDegrees ?? 0)).length || columns);
+  const baseElevation = Number(frames[0]?.elevationDegrees ?? 0);
+  const count = Math.max(1, frames.filter((frame) => Number(frame.elevationDegrees) === baseElevation).length || columns);
   return Array.from({ length: count }, (_, index) => {
     const texture = baseTexture?.clone?.() ?? null;
     if (texture) {
@@ -69,7 +101,7 @@ function createAtlasMaterials(THREE, packageValue, fallbackColor) {
       texture.offset.set((index % columns) / columns, Math.max(0, rows - 1) / rows);
       texture.needsUpdate = true;
     }
-    return new THREE.MeshBasicMaterial({
+    return patchDitherMaterial(new THREE.MeshBasicMaterial({
       color: texture ? 0xffffff : fallbackColor,
       map: texture,
       transparent: false,
@@ -77,53 +109,34 @@ function createAtlasMaterials(THREE, packageValue, fallbackColor) {
       side: THREE.DoubleSide,
       depthWrite: true,
       fog: true
-    });
+    }));
   });
 }
 
-function createTypeLayer(THREE, scene, packageValue, type, typeIndex, capacity) {
-  const material = packageValue?.material ?? {};
-  const trunkColor = material.trunk?.color ?? 0x6b432b;
-  const crownColor = material.crown?.color ?? type[5] ?? 0x397b3f;
-  const nearTrunk = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(0.7, 1.15, 1, 10, 3),
-    new THREE.MeshStandardMaterial({ color: trunkColor, roughness: material.trunk?.roughness ?? 0.86, metalness: 0 }),
-    capacity
-  );
-  const nearCrown = new THREE.InstancedMesh(
-    new THREE.IcosahedronGeometry(1, 2),
-    new THREE.MeshStandardMaterial({ color: crownColor, roughness: material.crown?.roughness ?? 0.78, metalness: 0 }),
-    capacity
-  );
-  const mediumTrunk = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(0.7, 1.15, 1, 6, 1),
-    new THREE.MeshStandardMaterial({ color: trunkColor, roughness: 0.9, metalness: 0 }),
-    capacity
-  );
-  const mediumCrown = new THREE.InstancedMesh(
-    new THREE.IcosahedronGeometry(1, 1),
-    new THREE.MeshStandardMaterial({ color: crownColor, roughness: 0.84, metalness: 0 }),
-    capacity
-  );
-  nearTrunk.castShadow = nearTrunk.receiveShadow = true;
-  nearCrown.castShadow = false;
-  nearCrown.receiveShadow = true;
-  mediumTrunk.castShadow = false;
-  mediumTrunk.receiveShadow = true;
-  mediumCrown.castShadow = false;
-  mediumCrown.receiveShadow = true;
-  for (const mesh of [nearTrunk, nearCrown, mediumTrunk, mediumCrown]) {
-    mesh.name = `prehistoric-tree-fidelity-${typeIndex}-${mesh.geometry.type}`;
-    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    mesh.frustumCulled = false;
-    scene.add(mesh);
-  }
+function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
+  const form = packageValue?.forms?.[formId];
+  const geometry = createGeometryFromPortable(THREE, form?.geometry, capacity);
+  const material = patchDitherMaterial(new THREE.MeshStandardMaterial({
+    vertexColors: Boolean(geometry.getAttribute("color")),
+    roughness: packageValue?.material?.roughness ?? (formId === "near" ? 0.82 : 0.88),
+    metalness: packageValue?.material?.metalness ?? 0
+  }));
+  const mesh = new THREE.InstancedMesh(geometry, material, capacity);
+  mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}`;
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  mesh.castShadow = formId === "near";
+  mesh.receiveShadow = true;
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  return mesh;
+}
 
-  const billboardGeometry = createBillboardGeometry(THREE);
-  const billboardMaterials = createAtlasMaterials(THREE, packageValue, crownColor);
-  const billboards = billboardMaterials.map((billboardMaterial, angleIndex) => {
-    const mesh = new THREE.InstancedMesh(billboardGeometry, billboardMaterial, capacity);
-    mesh.name = `prehistoric-tree-fidelity-${typeIndex}-impostor-${angleIndex}`;
+function createBillboardBatches(THREE, scene, packageValue, formId, fallbackColor, capacity) {
+  const form = packageValue?.forms?.[formId];
+  const materials = createAtlasMaterials(THREE, form, fallbackColor);
+  return materials.map((material, angleIndex) => {
+    const mesh = new THREE.InstancedMesh(createBillboardGeometry(THREE, capacity), material, capacity);
+    mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}-${angleIndex}`;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
@@ -131,22 +144,31 @@ function createTypeLayer(THREE, scene, packageValue, type, typeIndex, capacity) 
     scene.add(mesh);
     return mesh;
   });
+}
 
+function createTypeLayer(THREE, scene, packageValue, typeIndex, capacity) {
+  if (!packageValue?.forms?.near?.geometry || !packageValue?.forms?.medium?.geometry) {
+    throw new TypeError(`Tree fidelity package ${packageValue?.archetypeId ?? typeIndex} is missing Object Shape mesh forms.`);
+  }
+  const near = createMeshBatch(THREE, scene, packageValue, "near", capacity);
+  const medium = createMeshBatch(THREE, scene, packageValue, "medium", capacity);
+  const fallbackColor = packageValue?.material?.crown?.color ?? 0x397b3f;
+  const far = createBillboardBatches(THREE, scene, packageValue, "far", fallbackColor, capacity);
+  const horizon = createBillboardBatches(THREE, scene, packageValue, "horizon", fallbackColor, capacity);
   return {
     typeIndex,
     packageValue,
-    nearTrunk,
-    nearCrown,
-    mediumTrunk,
-    mediumCrown,
-    billboards,
-    counts: { near: 0, medium: 0, far: 0 }
+    near,
+    medium,
+    far,
+    horizon,
+    counts: { near: 0, medium: 0, far: 0, horizon: 0 }
   };
 }
 
-function disposeMesh(scene, mesh, sharedGeometry = false) {
+function disposeMesh(scene, mesh) {
   scene.remove(mesh);
-  if (!sharedGeometry) mesh.geometry?.dispose?.();
+  mesh.geometry?.dispose?.();
   const materials = Array.isArray(mesh.material) ? mesh.material : mesh.material ? [mesh.material] : [];
   for (const material of materials) {
     material.map?.dispose?.();
@@ -154,24 +176,70 @@ function disposeMesh(scene, mesh, sharedGeometry = false) {
   }
 }
 
+function thresholdSet(packageValue) {
+  return {
+    near: Number(packageValue?.forms?.near?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.near),
+    medium: Number(packageValue?.forms?.medium?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.medium),
+    far: Number(packageValue?.forms?.far?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.far)
+  };
+}
+
+function rawForm(packageValue, pixels) {
+  const thresholds = thresholdSet(packageValue);
+  if (pixels >= thresholds.near) return "near";
+  if (pixels >= thresholds.medium) return "medium";
+  if (pixels >= thresholds.far) return "far";
+  return "horizon";
+}
+
+function retainWithHysteresis(packageValue, pixels, previous) {
+  if (!previous || !FORM_ORDER.includes(previous)) return rawForm(packageValue, pixels);
+  const thresholds = thresholdSet(packageValue);
+  const hysteresis = Math.max(0, Math.min(0.45, Number(packageValue?.change?.hysteresis ?? 0.12)));
+  if (previous === "near" && pixels >= thresholds.near * (1 - hysteresis)) return previous;
+  if (previous === "medium" && pixels >= thresholds.medium * (1 - hysteresis) && pixels < thresholds.near * (1 + hysteresis)) return previous;
+  if (previous === "far" && pixels >= thresholds.far * (1 - hysteresis) && pixels < thresholds.medium * (1 + hysteresis)) return previous;
+  if (previous === "horizon" && pixels < thresholds.far * (1 + hysteresis)) return previous;
+  return rawForm(packageValue, pixels);
+}
+
+function sourceBounds(packageValue) {
+  const bounds = packageValue?.source?.bounds ?? {};
+  const min = bounds.min ?? [-(bounds.width ?? 1) * 0.5, 0, -(bounds.depth ?? bounds.width ?? 1) * 0.5];
+  const size = bounds.size ?? [bounds.width ?? 1, bounds.height ?? 1, bounds.depth ?? bounds.width ?? 1];
+  const center = bounds.center ?? [0, min[1] + size[1] * 0.5, 0];
+  return { min, size, center };
+}
+
+function setFade(mesh, index, value) {
+  const attribute = mesh.geometry.getAttribute("fidelityFade");
+  attribute.setX(index, Math.max(0, Math.min(1, value)));
+}
+
 export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const { scene, camera, renderer, treeTypes = [], packages = [], capacity = 256 } = options;
   if (!scene || !camera || !renderer) throw new TypeError("Tree fidelity layer requires scene, camera, and renderer.");
+  if (packages.length !== treeTypes.length) throw new Error(`Tree fidelity package count ${packages.length} does not match archetype count ${treeTypes.length}.`);
   const patches = new Map();
+  const selections = new Map();
   const matrix = new THREE.Matrix4();
   const position = new THREE.Vector3();
   const scale = new THREE.Vector3();
   const quaternion = new THREE.Quaternion();
   const euler = new THREE.Euler(0, 0, 0, "YXZ");
-  const layers = treeTypes.map((type, typeIndex) => createTypeLayer(THREE, scene, packages[typeIndex] ?? null, type, typeIndex, capacity));
+  const layers = treeTypes.map((_, typeIndex) => createTypeLayer(THREE, scene, packages[typeIndex], typeIndex, capacity));
   const suppressedLegacyMeshes = suppressLegacyTreeMeshes(scene, treeTypes.length);
+  const generationIds = packages.map((entry) => entry.generation?.id).filter(Boolean);
   const view = {
     enabled: true,
     activePatches: 0,
     treeCount: 0,
     suppressedLegacyMeshes,
-    counts: { near: 0, medium: 0, far: 0 },
-    packageCount: packages.filter(Boolean).length
+    counts: { near: 0, medium: 0, far: 0, horizon: 0 },
+    transitioning: 0,
+    packageCount: packages.length,
+    generationIds,
+    generationDigest: generationIds.join("|")
   };
 
   function activatePatch(patch) {
@@ -184,14 +252,25 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     view.activePatches = patches.size;
   }
 
-  function writeMatrix(mesh, index, source) {
-    matrix.fromArray(source);
+  function writeCombinedMatrix(mesh, index, bounds, packageValue) {
+    const source = sourceBounds(packageValue);
+    const sx = bounds.size[0] / Math.max(0.001, source.size[0]);
+    const sy = bounds.size[1] / Math.max(0.001, source.size[1]);
+    const sz = bounds.size[2] / Math.max(0.001, source.size[2]);
+    position.set(
+      bounds.center[0] - source.center[0] * sx,
+      bounds.min[1] - source.min[1] * sy,
+      bounds.center[2] - source.center[2] * sz
+    );
+    scale.set(sx, sy, sz);
+    quaternion.identity();
+    matrix.compose(position, quaternion, scale);
     mesh.setMatrixAt(index, matrix);
   }
 
-  function writeBillboard(mesh, index, bounds, cameraPosition) {
-    const dx = cameraPosition.x - bounds.center[0];
-    const dz = cameraPosition.z - bounds.center[2];
+  function writeBillboard(mesh, index, bounds) {
+    const dx = camera.position.x - bounds.center[0];
+    const dz = camera.position.z - bounds.center[2];
     euler.set(0, Math.atan2(dx, dz), 0);
     quaternion.setFromEuler(euler);
     position.set(bounds.center[0], bounds.min[1], bounds.center[2]);
@@ -200,90 +279,121 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     mesh.setMatrixAt(index, matrix);
   }
 
-  function selectThresholds(packageValue) {
-    return {
-      near: Number(packageValue?.forms?.near?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.near),
-      medium: Number(packageValue?.forms?.medium?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.medium),
-      far: Number(packageValue?.forms?.far?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.far)
-    };
+  function pushRecord(buckets, form, record, fade) {
+    buckets[form].push({ record, fade });
   }
 
-  function update() {
-    const perType = layers.map(() => ({ near: [], medium: [], far: [] }));
+  function update(_state, deltaTime = 1 / 60) {
+    const perType = layers.map(() => ({ near: [], medium: [], far: [], horizon: [] }));
+    const seen = new Set();
+    let transitioning = 0;
+
     for (const patch of patches.values()) {
       patch.trees.forEach((treeSet, typeIndex) => {
-        const target = perType[typeIndex];
         const layer = layers[typeIndex];
-        const thresholds = selectThresholds(layer.packageValue);
         const count = Math.min(treeSet.trunks.length, treeSet.crowns.length);
         for (let index = 0; index < count; index += 1) {
           const trunk = treeSet.trunks[index];
           const crown = treeSet.crowns[index];
+          const treeId = trunk.metadata?.treeId ?? crown.metadata?.treeId ?? trunk.id;
+          seen.add(treeId);
           const bounds = combineBounds(trunk, crown);
           const distance = Math.max(0.001, camera.position.distanceTo(position.set(...bounds.center)));
           const pixels = projectedPixels(camera, renderer, bounds.height, distance);
-          const record = { trunk, crown, bounds, pixels };
-          if (pixels >= thresholds.near) target.near.push(record);
-          else if (pixels >= thresholds.medium) target.medium.push(record);
-          else target.far.push(record);
+          const prior = selections.get(treeId) ?? { form: rawForm(layer.packageValue, pixels), transition: null };
+          const desired = retainWithHysteresis(layer.packageValue, pixels, prior.transition?.to ?? prior.form);
+          if (!prior.transition && desired !== prior.form) {
+            prior.transition = { from: prior.form, to: desired, elapsed: 0 };
+          } else if (prior.transition && desired !== prior.transition.to) {
+            const current = prior.transition.elapsed >= (layer.packageValue.change?.duration ?? 0.22) * 0.5
+              ? prior.transition.to
+              : prior.transition.from;
+            prior.form = current;
+            prior.transition = current === desired ? null : { from: current, to: desired, elapsed: 0 };
+          }
+
+          const record = { trunk, crown, bounds, pixels, treeId };
+          if (prior.transition) {
+            const duration = Math.max(0.001, Number(layer.packageValue.change?.duration ?? 0.22));
+            prior.transition.elapsed += Math.max(0, Number(deltaTime) || 0);
+            const progress = Math.min(1, prior.transition.elapsed / duration);
+            pushRecord(perType[typeIndex], prior.transition.from, record, 1 - progress);
+            pushRecord(perType[typeIndex], prior.transition.to, record, progress);
+            transitioning += 1;
+            if (progress >= 1) {
+              prior.form = prior.transition.to;
+              prior.transition = null;
+            }
+          } else {
+            prior.form = desired;
+            pushRecord(perType[typeIndex], prior.form, record, 1);
+          }
+          selections.set(treeId, prior);
         }
       });
     }
 
-    view.counts = { near: 0, medium: 0, far: 0 };
-    view.treeCount = 0;
+    for (const treeId of selections.keys()) if (!seen.has(treeId)) selections.delete(treeId);
+    view.counts = { near: 0, medium: 0, far: 0, horizon: 0 };
+    view.treeCount = seen.size;
+    view.transitioning = transitioning;
+
     perType.forEach((selection, typeIndex) => {
       const layer = layers[typeIndex];
-      const nearCount = Math.min(capacity, selection.near.length);
-      const mediumCount = Math.min(capacity, selection.medium.length);
-      for (let index = 0; index < nearCount; index += 1) {
-        writeMatrix(layer.nearTrunk, index, selection.near[index].trunk.matrix);
-        writeMatrix(layer.nearCrown, index, selection.near[index].crown.matrix);
-      }
-      for (let index = 0; index < mediumCount; index += 1) {
-        writeMatrix(layer.mediumTrunk, index, selection.medium[index].trunk.matrix);
-        writeMatrix(layer.mediumCrown, index, selection.medium[index].crown.matrix);
-      }
-      layer.nearTrunk.count = layer.nearCrown.count = nearCount;
-      layer.mediumTrunk.count = layer.mediumCrown.count = mediumCount;
-      for (const mesh of [layer.nearTrunk, layer.nearCrown, layer.mediumTrunk, layer.mediumCrown]) mesh.instanceMatrix.needsUpdate = true;
-
-      const angleSelections = layer.billboards.map(() => []);
-      for (const record of selection.far) {
-        const dx = camera.position.x - record.bounds.center[0];
-        const dz = camera.position.z - record.bounds.center[2];
-        const angle = (Math.atan2(dx, dz) + Math.PI * 2) % (Math.PI * 2);
-        const angleIndex = Math.round(angle / (Math.PI * 2) * layer.billboards.length) % layer.billboards.length;
-        angleSelections[angleIndex].push(record);
-      }
-      let farCount = 0;
-      angleSelections.forEach((records, angleIndex) => {
-        const mesh = layer.billboards[angleIndex];
+      for (const formId of ["near", "medium"]) {
+        const mesh = layer[formId];
+        const records = selection[formId];
         const count = Math.min(capacity, records.length);
-        for (let index = 0; index < count; index += 1) writeBillboard(mesh, index, records[index].bounds, camera.position);
+        for (let index = 0; index < count; index += 1) {
+          writeCombinedMatrix(mesh, index, records[index].record.bounds, layer.packageValue);
+          setFade(mesh, index, records[index].fade);
+        }
         mesh.count = count;
         mesh.instanceMatrix.needsUpdate = true;
-        farCount += count;
-      });
-      layer.counts = { near: nearCount, medium: mediumCount, far: farCount };
-      view.counts.near += nearCount;
-      view.counts.medium += mediumCount;
-      view.counts.far += farCount;
-      view.treeCount += nearCount + mediumCount + farCount;
+        mesh.geometry.getAttribute("fidelityFade").needsUpdate = true;
+        layer.counts[formId] = count;
+        view.counts[formId] += count;
+      }
+
+      for (const formId of ["far", "horizon"]) {
+        const meshes = layer[formId];
+        const angleSelections = meshes.map(() => []);
+        for (const entry of selection[formId]) {
+          const record = entry.record;
+          const dx = camera.position.x - record.bounds.center[0];
+          const dz = camera.position.z - record.bounds.center[2];
+          const angle = (Math.atan2(dx, dz) + Math.PI * 2) % (Math.PI * 2);
+          const angleIndex = meshes.length === 1 ? 0 : Math.round(angle / (Math.PI * 2) * meshes.length) % meshes.length;
+          angleSelections[angleIndex].push(entry);
+        }
+        let formCount = 0;
+        angleSelections.forEach((records, angleIndex) => {
+          const mesh = meshes[angleIndex];
+          const count = Math.min(capacity, records.length);
+          for (let index = 0; index < count; index += 1) {
+            writeBillboard(mesh, index, records[index].record.bounds);
+            setFade(mesh, index, records[index].fade);
+          }
+          mesh.count = count;
+          mesh.instanceMatrix.needsUpdate = true;
+          mesh.geometry.getAttribute("fidelityFade").needsUpdate = true;
+          formCount += count;
+        });
+        layer.counts[formId] = formCount;
+        view.counts[formId] += formCount;
+      }
     });
     return view;
   }
 
   function dispose() {
     patches.clear();
+    selections.clear();
     for (const layer of layers) {
-      disposeMesh(scene, layer.nearTrunk);
-      disposeMesh(scene, layer.nearCrown);
-      disposeMesh(scene, layer.mediumTrunk);
-      disposeMesh(scene, layer.mediumCrown);
-      const geometry = layer.billboards[0]?.geometry;
-      for (const mesh of layer.billboards) disposeMesh(scene, mesh, true);
-      geometry?.dispose?.();
+      disposeMesh(scene, layer.near);
+      disposeMesh(scene, layer.medium);
+      for (const mesh of layer.far) disposeMesh(scene, mesh);
+      for (const mesh of layer.horizon) disposeMesh(scene, mesh);
     }
   }
 
