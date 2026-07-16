@@ -1,50 +1,48 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T16-00-32-04-00`  
-**Status:** `accessible-gameplay-projection-focus-authority-audited`
+**Audit:** `2026-07-15T20-59-46-04-00`  
+**Status:** `game-audio-event-projection-authority-audited`
 
 ## Summary
 
-Accepted run and pause state is visible, but no authority binds it to stable semantic status, progress, terminal announcements or dialog-focus results.
+Accepted gameplay meaning exists, but no authority binds it to browser audio, preferences, lifecycle settlement, or audible evidence.
 
 ## Plan ledger
 
-**Goal:** keep semantic projection, announcement, focus, lifecycle and proof gaps explicit until one accessibility authority settles them.
+**Goal:** keep audio admission, cue, spatial, lifecycle, budget, and proof gaps explicit until one authority settles them.
 
-### Gameplay semantics
+### Browser admission and ownership
 
-- [ ] No versioned semantic gameplay snapshot exists.
-- [ ] The active status container has no `status` role.
-- [ ] No authored live-region or atomic-update policy exists.
-- [ ] The visual distance bar has no progressbar role or numeric value contract.
-- [ ] High-frequency values have no announcement-throttling policy.
+- [ ] No browser audio capability snapshot exists.
+- [ ] No accepted user-gesture unlock result exists.
+- [ ] No owned `AudioContext` generation exists.
+- [ ] No suspend, resume, close, or replacement settlement exists.
 
-### Outcomes and actions
+### Semantic cues
 
-- [ ] Start, retry, run-over and win have no semantic transition IDs.
-- [ ] Terminal outcomes have no one-shot announcement result.
-- [ ] Repeated RAF snapshots have no announcement deduplication.
-- [ ] The primary button label has no revision-bound accessible action snapshot.
+- [ ] No stable cue descriptor registry exists.
+- [ ] `RunStarted`, `ShardCollected`, `RunFailed`, and `RunWon` have no audio projector.
+- [ ] Jump, landing, boost, movement, and surface state have no accepted cue policy.
+- [ ] Raw input and accepted result boundaries are not represented for audio.
+- [ ] No duplicate event or snapshot suppression exists.
 
-### Pause focus
+### Spatial, preference, and budget state
 
-- [ ] The pause overlay has no dialog role.
-- [ ] `aria-modal` is not adopted as true for the active pause state.
-- [ ] No prior-focus capture result exists.
-- [ ] No initial-focus policy exists.
-- [ ] No Tab containment exists.
-- [ ] Background gameplay controls are not made inert by an owned result.
-- [ ] Overlay removal has no explicit focus restoration or fallback policy.
-- [ ] Pagehide and route retirement have no focus/inert lease settlement.
+- [ ] No listener revision is bound to the camera.
+- [ ] No spatial-source projection exists.
+- [ ] No master or category volume state exists.
+- [ ] No mute preference or persistence exists.
+- [ ] No voice pools, priorities, or budgets exist.
 
-### Rendering and proof
+### Lifecycle and proof
 
-- [ ] No semantic frame revision is bound to the visible frame.
-- [ ] No `FirstAccessibleGameplayFrameAck` exists.
-- [ ] No keyboard-only browser fixture exists.
-- [ ] No accessibility-tree or screen-reader fixture exists.
-- [ ] No source/build/Pages semantic parity fixture exists.
+- [ ] Movement, boost, and ambience loops have no owned lifecycle.
+- [ ] Pause, blur, visibility, route exit, restart, and runtime replacement have no audio settlement.
+- [ ] No `AudioProjectionResult` exists.
+- [ ] No `FirstAudibleCueAck` exists.
+- [ ] No `FirstAudioVisualConvergenceAck` exists.
+- [ ] No browser, artifact, or Pages audio fixture exists.
 
 ## Retained gaps
 
-Host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause command lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and browser-runtime retirement remain separate.
+Accessibility projection, host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart, and browser-runtime retirement remain separate.
