@@ -21,7 +21,7 @@ function combineBounds(trunk, crown) {
 }
 
 function projectedPixels(camera, renderer, worldHeight, distance) {
-  const viewportHeight = renderer.domElement?.height || renderer.getSize?.({ set() {} })?.height || globalThis.innerHeight || 720;
+  const viewportHeight = renderer.domElement?.height || globalThis.innerHeight || 720;
   const fov = Math.max(1, Number(camera.fov ?? 60)) * Math.PI / 180;
   return worldHeight * viewportHeight / Math.max(0.001, 2 * distance * Math.tan(fov * 0.5));
 }
@@ -115,6 +115,7 @@ function createTypeLayer(THREE, scene, packageValue, type, typeIndex, capacity) 
   for (const mesh of [nearTrunk, nearCrown, mediumTrunk, mediumCrown]) {
     mesh.name = `prehistoric-tree-fidelity-${typeIndex}-${mesh.geometry.type}`;
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    mesh.frustumCulled = false;
     scene.add(mesh);
   }
 
@@ -126,7 +127,7 @@ function createTypeLayer(THREE, scene, packageValue, type, typeIndex, capacity) 
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
-    mesh.frustumCulled = true;
+    mesh.frustumCulled = false;
     scene.add(mesh);
     return mesh;
   });
