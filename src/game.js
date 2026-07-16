@@ -4,6 +4,7 @@ import {
   TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime
 } from "./shared/tree-fidelity-assets.js";
+import { hydrateTreeFidelityRuntimeImages } from "./shared/tree-fidelity-runtime-images.js";
 
 const appRoot = document.querySelector("#app") ?? document.body;
 
@@ -54,11 +55,43 @@ async function prepareTreeAssetsBeforeGame() {
     requestOptions: {
       priority: "required",
       onProgress(progress, detail) {
-        if (fill) fill.style.width = `${Math.round(progress * 10000) / 100}%`;
+        if (fill) fill.style.width = `${Math.round(progress * 8000) / 100}%`;
         if (label) label.textContent = detail ?? `Preparing forest assets · ${Math.round(progress * 100)}%`;
       }
     }
   });
+
+  const imagePreparationId = "tree-fidelity-runtime-images";
+  runtime.startup.addPreparation({
+    id: imagePreparationId,
+    label: "Tree impostor images",
+    required: true,
+    weight: 1
+  });
+  runtime.startup.working(imagePreparationId, 0, "Decoding tree impostor images");
+  try {
+    const hydration = await hydrateTreeFidelityRuntimeImages(runtime, {
+      onProgress(progress, detail) {
+        runtime.startup.working(imagePreparationId, progress, detail);
+        if (fill) fill.style.width = `${80 + Math.round(progress * 2000) / 100}%`;
+        if (label) label.textContent = detail ?? `Decoding tree images · ${Math.round(progress * 100)}%`;
+      }
+    });
+    runtime.startup.ready(imagePreparationId, hydration, "Tree impostor images ready");
+  } catch (error) {
+    runtime.startup.reportPreparation(imagePreparationId, {
+      status: "failed",
+      progress: 0,
+      failure: {
+        code: "tree-fidelity.image-decode.failed",
+        message: error.message,
+        source: imagePreparationId,
+        retryable: true
+      }
+    });
+    throw error;
+  }
+
   runtime.assets.unregisterProvider(TREE_FIDELITY_PROVIDER_ID);
   globalThis.PrehistoricRushTreeAssetRuntime = Object.freeze({ ...runtime, receipt });
   return receipt;
