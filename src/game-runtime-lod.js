@@ -2,6 +2,7 @@ import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehis
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./world/prehistoric-terrain-lod-policy.js";
 import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
+import { PREHISTORIC_TREE_TYPES } from "./shared/tree-fidelity-assets.js";
 import {
   KITS_COMMIT,
   NEXUS_COMMIT,
@@ -28,13 +29,7 @@ const STREAM = {
   generationBudget: 2
 };
 const TREE_BATCH_CAPACITY = 256;
-const treeTypes = [
-  [34, 58, 2.5, 10.5, 18, 0x214f28],
-  [38, 68, 1.8, 7.5, 26, 0x173c26],
-  [14, 24, 1.25, 7.2, 5, 0x2d6638],
-  [28, 48, 2.1, 9.2, 15, 0x315a2d],
-  [30, 52, 2.35, 3.5, 9, 0x5d4933]
-];
+const treeTypes = PREHISTORIC_TREE_TYPES;
 
 const load = async (url) => {
   try {
@@ -99,6 +94,10 @@ function createWorkerExecutor(PatchModule, generatorOptions) {
 async function main() {
   const ui = shell();
   const playerProfile = loadPlayerCharacterProfile();
+  const treeAssetRuntime = globalThis.PrehistoricRushTreeAssetRuntime ?? null;
+  const treeFidelityPackages = treeAssetRuntime?.packageIds
+    ?.map((assetId) => treeAssetRuntime.assets.getValue(assetId))
+    .filter(Boolean) ?? [];
   const [NexusEngine, SeedModule, CreatureModule, BatchModule, PatchModule, CameraModule, THREE, Rapier, RapierKit] = await Promise.all([
     load(CDN.nexus),
     load(CDN.seedKit),
@@ -172,7 +171,7 @@ async function main() {
   const controller = patchControllers.create({
     id: "prehistoric-rush-world",
     worldSeed: String(cfg.seed),
-    generatorVersion: "prehistoric-patch-v2-lod64-clay",
+    generatorVersion: "prehistoric-patch-v3-tree-fidelity",
     patchSize: cfg.chunk,
     activeRadius: STREAM.activeRadius,
     retainRadius: STREAM.retainRadius,
@@ -181,7 +180,7 @@ async function main() {
     activationBudget: STREAM.activationBudget,
     generationBudget: STREAM.generationBudget,
     terrainSettingsHash: `segments-${terrainLodPolicy.sourceResolution}-lod-${terrainLodPolicy.revision}`,
-    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}`,
+    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-fidelity-${treeFidelityPackages.length}`,
     generator,
     executor: workerState.executor
   });
@@ -204,6 +203,7 @@ async function main() {
     config: cfg,
     stream: STREAM,
     treeTypes,
+    treeFidelityPackages,
     treeBatchCapacity: TREE_BATCH_CAPACITY,
     terrainLodPolicy,
     selectTerrainLodLevel: NexusEngine.selectTerrainLodLevel
@@ -277,6 +277,7 @@ async function main() {
   });
 
   let last = performance.now();
+  let startupFrameAcknowledged = false;
   function loop(now) {
     const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
     last = now;
@@ -289,10 +290,24 @@ async function main() {
     updateStreaming(state);
 
     adapter.render(state, dt);
+    if (!startupFrameAcknowledged && treeAssetRuntime?.startup) {
+      treeAssetRuntime.startup.presentFirstFrame({
+        frameId: `prehistoric-rush:frame:${engine.clock?.frame ?? 1}`,
+        presentationId: "prehistoric-rush-game",
+        backend: "webgl2",
+        receipt: {
+          treeFidelityPackageCount: treeFidelityPackages.length,
+          treeCount: adapter.view.treeFidelity?.treeCount ?? 0
+        }
+      });
+      treeAssetRuntime.startup.enter({ inputReady: true });
+      startupFrameAcknowledged = true;
+    }
     const progress = Math.min(1, state.distance / cfg.goal);
     const patchStats = adapter.view.patchStats;
     const lod = adapter.view.terrainLod;
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · LOD ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · morph ${lod.morphing} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    const treeLod = adapter.view.treeFidelity?.counts ?? { near: 0, medium: 0, far: 0 };
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -303,6 +318,7 @@ async function main() {
     adapter,
     patchController: controller,
     cameraFollow,
+    treeAssets: treeAssetRuntime,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
@@ -320,7 +336,9 @@ async function main() {
         policy: terrainLodPolicy,
         view: structuredClone(adapter.view.terrainLod)
       },
-      renderer: "three-patch-quadtree-lod-clay-authoritative-v10"
+      treeFidelity: structuredClone(adapter.view.treeFidelity),
+      assetStartup: treeAssetRuntime?.startup?.getDescriptor?.() ?? null,
+      renderer: "three-patch-quadtree-terrain-tree-fidelity-v11"
     })
   };
   requestAnimationFrame(loop);
