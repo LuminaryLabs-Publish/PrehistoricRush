@@ -1,77 +1,85 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-16T12-47-00-04-00`  
+**Timestamp:** `2026-07-16T14-39-29-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `tree-impostor-view-frame-addressing-authority-audited`
+**Status:** `tree-impostor-elevation-row-continuity-authority-audited`
 
 ## Summary
 
-The runtime now binds exact tree generations to patch identity, retains near/medium/far/horizon form state, crossfades with hysteresis, waits for atlas decoding, and rejects undecoded atlas rendering. Far impostors still collapse a multi-elevation capture set into one elevation row and select frames by azimuth count rather than exact frame metadata.
+The runtime now provides ten tree archetypes, deterministic ecological placement, stable per-tree variation, shared decoded atlases, exact azimuth/elevation frame resolution, adjacent-azimuth blending, exact UV rectangles, frame-binding digests, and exact-frame acknowledgements.
+
+`resolveTreeImpostorBlend()` still chooses one nearest captured elevation row before resolving azimuth neighbors. It does not interpolate or retain continuity across elevation rows.
 
 ## Intent
 
-Make impostor frame selection a deterministic projection from camera pose, package generation, and captured frame records.
+Make camera-elevation changes produce a deterministic, generation-bound transition between captured elevation rows without changing gameplay or tree fidelity-form ownership.
 
 ## What needs to happen
 
 ```txt
-accepted package generation
-  -> exact camera-to-tree view vector
-  -> normalized azimuth and elevation
-  -> nearest or blended captured frame record
-  -> validated atlas rectangle
-  -> render batch assignment
-  -> exact-frame result and visible acknowledgement
+accepted package + camera + tree generations
+  -> sorted elevation bands
+  -> lower/upper row bracket
+  -> deadband or interpolation policy
+  -> azimuth neighbors per admitted row
+  -> normalized exact frame weights
+  -> TreeImpostorViewContinuityResult
+  -> FirstContinuousImpostorFrameAck
 ```
 
 ## Checklist
 
-- [x] Inspect generation, patch/cache identity, form retention, horizon, hysteresis, crossfade, image decode, texture admission, tests, and workflow.
-- [x] Compare capture descriptors with runtime material/frame selection.
-- [x] Confirm far capture requests eight azimuths across two elevations.
-- [x] Confirm runtime only groups the first elevation and assumes one atlas row.
-- [x] Define the remaining authority and proof boundary.
-- [ ] Implement and execute the authority.
+- [x] Inspect the 14-commit post-ledger delta.
+- [x] Confirm exact frame and UV addressing is implemented.
+- [x] Confirm adjacent-azimuth blending is implemented.
+- [x] Confirm ten-species catalog and deterministic variation are implemented.
+- [x] Confirm nearest-row elevation selection remains stateless.
+- [x] Define the continuity authority and proof boundary.
+- [ ] Implement and execute the authority and fixtures.
 
 ## Interaction loop
 
 ```txt
-menu -> background tree bundle preparation
-entry -> required package load/capture -> decode far/horizon atlases
-boot -> validate generation -> bind patch/cache identity -> create fidelity layer
-frame -> select retained form -> select azimuth-only impostor material -> render
-startup -> publish generation and form counts
+asset preparation -> exact packages and decoded atlases
+patch generation -> species ecology and per-tree variation
+streaming -> activate stable tree records
+frame -> retain fidelity form -> resolve nearest elevation row -> blend azimuth neighbors -> bind exact UVs -> render -> exact-frame ack
 ```
 
 ## Domains in use
 
 ```txt
-browser route/module/DOM/canvas/RAF lifecycle
-Core Assets, Core Startup, Core Object, Object Shape, Core Capture and Object Fidelity
-IndexedDB cache, runtime image decoding and Three.js texture admission
-PrehistoricRush run, patch streaming, terrain LOD, physics, player and camera
-four-form tree fidelity, hysteresis, crossfade, billboard view selection and atlas addressing
-tests, Pages deployment, repo-local audit state and central tracking
+browser route, module, input, canvas, RAF, and lifecycle
+Nexus Engine core runtime, simulation, physics, graphics, camera, UI, diagnostics, and presentation
+Core Assets, Startup, Object, Shape, Capture, and Fidelity for tree packages
+NexusEngine-Kits seed, creature, instance, patch, and camera services
+IndexedDB, Worker generation, decoded images, Three.js, and Rapier
+PrehistoricRush run, route, player, terrain, patch, tree, grass, pickup, outcome, and pause systems
+tree ecology, variation, four-form fidelity, exact frame addressing, and elevation continuity
+tests, Pages delivery, and audit governance
 ```
 
 ## Current gap
 
 ```txt
-capture frame records: present
-azimuthDegrees metadata: present
-elevationDegrees metadata: present
-atlas metadata: present
-camera azimuth selection: present
-camera elevation selection: absent
-exact frame identity in selection state: absent
-frame rectangle/row adoption: absent
-frame result and visible acknowledgement: absent
+camera elevation derivation: present
+exact elevation frame metadata: present
+nearest elevation row selection: present
+adjacent azimuth blending: present
+exact frameRect binding: present
+exact-frame acknowledgement: present
+
+elevation bracket: absent
+elevation interpolation/deadband: absent
+retained row transition: absent
+continuity result: absent
+elevation-boundary rendered fixture: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain`
+`prehistoric-rush-tree-impostor-elevation-row-continuity-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime source, gameplay, rendering, tests, and deployment were not changed by this audit.
+Documentation only. Runtime source, tests, gameplay, rendering, physics, and deployment were not changed or executed by this audit.
