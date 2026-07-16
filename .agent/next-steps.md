@@ -1,64 +1,63 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T06-39-16-04-00`  
-**Authority:** `prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain`
+**Audit:** `2026-07-16T12-02-38-04-00`  
+**Authority:** `prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain`
 
 ## Summary
 
-Add one render-generation and resource-rehydration authority around the current Three.js presentation stack.
+Connect the prepared bundle to world generation and rendering before adding more tree fidelity content.
 
 ## Plan ledger
 
-**Goal:** ensure a lost context produces one bounded recovery or fallback result and one coherent replacement frame.
+**Goal:** produce one accepted tree-fidelity generation that controls patch identity, render forms and visible proof.
 
-### Phase 1: Context admission
+### Phase 1: Canonical asset identity
 
-- [ ] Add immutable document, canvas, renderer and resource generation IDs.
-- [ ] Observe `webglcontextlost` and `webglcontextrestored`.
-- [ ] Publish `RenderLossResult` exactly once per generation.
-- [ ] Define presentation, simulation and input policy during loss.
-- [ ] Publish render capability and generation diagnostics.
+- [ ] Make `PREHISTORIC_TREE_ARCHETYPES` the single authored source.
+- [ ] Derive compatibility tuples instead of maintaining an independent game-runtime list.
+- [ ] Validate manifest and all five package dependencies.
+- [ ] Compute package and generation digests.
+- [ ] Publish `TreeFidelityPreparationResult`.
 
-### Phase 2: Resource registry
+### Phase 2: Runtime adoption
 
-- [ ] Register renderer output state and shadow resources.
-- [ ] Register terrain LOD geometries, indices, morph buffers and materials.
-- [ ] Register clay normal and roughness textures.
-- [ ] Register tree, grass and pickup instance resources.
-- [ ] Register player creature geometry, skeleton and materials.
-- [ ] Register camera and active scene bindings.
-- [ ] Add complete retirement and leak checks.
+- [ ] Pass the preparation result into `game-runtime-lod.js` explicitly.
+- [ ] Remove the implicit `globalThis` handoff as the authority boundary.
+- [ ] Publish `TreeFidelityAdoptionCommand` and `TreeFidelityAdoptionResult`.
+- [ ] Bind package generation to game, world-generator and render generations.
+- [ ] Reject stale, partial and mismatched package sets.
 
-### Phase 3: Reconstruction
+### Phase 3: Patch and cache binding
 
-- [ ] Allocate one replacement renderer generation.
-- [ ] Rebuild resources in dependency order.
-- [ ] Replay the current active patch set from controller/cache descriptors.
-- [ ] Restore the accepted player pose and camera snapshot.
-- [ ] Reject work from stale or retired generations.
-- [ ] Adopt replacement resources atomically.
+- [ ] Store `archetypeId`, `packageAssetId` and `packageDigest` in tree records.
+- [ ] Add the fidelity digest to generator and vegetation settings identity.
+- [ ] Invalidate cached patches produced by another package generation.
+- [ ] Preserve deterministic placement and collision semantics.
 
-### Phase 4: Recovery policy
+### Phase 4: Render materialization
 
-- [ ] Add a recovery deadline.
-- [ ] Add a bounded retry budget.
-- [ ] Define fallback behavior when restoration or rehydration fails.
-- [ ] Handle a second loss during recovery.
-- [ ] Handle route exit and pagehide during recovery.
+- [ ] Materialize near and medium mesh recipes.
+- [ ] Materialize far and horizon impostor atlases.
+- [ ] Select forms from projected-size thresholds.
+- [ ] Apply package hysteresis and dither-crossfade policy.
+- [ ] Key GPU resources by package digest and renderer generation.
+- [ ] Preserve instance-batch capacity and release semantics.
 
-### Phase 5: Proof
+### Phase 5: Lifecycle
 
-- [ ] Publish `RenderRecoveryResult` or `RenderFallbackResult`.
-- [ ] Publish `FirstRecoveredFrameAck`.
-- [ ] Include run, simulation, patch, LOD and renderer revisions.
-- [ ] Expose loss count, recovery duration, retries and resource counts.
+- [ ] Share cache warming without sharing route authority.
+- [ ] Cancel outstanding route-owned requests on navigation.
+- [ ] Dispose menu and game capture providers and temporary renderers.
+- [ ] Retire package-bound GPU resources on route or render-generation exit.
+- [ ] Define a typed optional/fallback policy for unavailable capture or cache providers.
 
-### Phase 6: Fixtures
+### Phase 6: Proof
 
-- [ ] Force loss/restoration with `WEBGL_lose_context`.
-- [ ] Test terrain, texture, instances, player and shadow reconstruction.
-- [ ] Test timeout, retry exhaustion and fallback.
-- [ ] Test stale callback and double-loss rejection.
-- [ ] Test route/page lifecycle retirement.
+- [ ] Expand the Node test to validate package schema and dependency graph.
+- [ ] Add deterministic provider and cache fixtures.
+- [ ] Add a browser preparation/adoption fixture.
+- [ ] Force each near/medium/far/horizon form.
+- [ ] Test one form transition and stale-generation rejection.
+- [ ] Publish `FirstTreeFidelityBoundFrameAck`.
 - [ ] Run `npm test`.
 - [ ] Run source, staged artifact and Pages parity fixtures.
