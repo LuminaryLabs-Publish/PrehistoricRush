@@ -1,57 +1,58 @@
-# Gameplay Audit: Startup Waits for an Unused Tree Package
+# Gameplay Audit: Tree Fidelity Generation and Startup Loop
 
 **Timestamp:** `2026-07-16T12-02-38-04-00`
 
 ## Summary
 
-The player cannot enter the run until the required tree bundle is ready, but the run does not consume that bundle. Startup latency and failure are therefore authoritative while gameplay fidelity remains bound to the legacy path.
+Required startup preparation now has a live consumer and the first rendered frame is acknowledged. The remaining gameplay-level issue is that world/cache identity binds only package count, so exact asset changes are not part of deterministic streamed-world identity.
 
 ## Plan ledger
 
-**Goal:** make every required startup preparation correspond to an admitted gameplay or presentation dependency.
+**Goal:** bind the accepted fidelity generation to deterministic patch/cache identity and startup evidence.
 
-- [x] Trace game-route gating.
-- [x] Trace package publication.
-- [x] Trace patch generation and active tree rendering.
-- [x] Define adoption settlement.
-- [ ] Remove the unbound required-preparation state.
+- [x] Trace startup preparation into package consumption.
+- [x] Trace package values into the tree-fidelity renderer.
+- [x] Confirm first-frame acknowledgement.
+- [x] Inspect generator and vegetation identity.
+- [ ] Bind exact package revisions and digests.
 
 ## Current loop
 
 ```txt
-open game route
-  -> create isolated asset/startup engine
-  -> request five packages and manifest
-  -> potentially build and capture five tree objects
-  -> wait until required preparation resolves
-  -> publish receipt to globalThis
-  -> import game runtime
-  -> ignore receipt
-  -> generate patches from local treeTypes
-  -> render legacy tree instances
+game route
+  -> required tree bundle preparation
+  -> provider retirement
+  -> package values retained
+  -> game runtime imports
+  -> canonical treeTypes drive patch generation
+  -> package values drive fidelity rendering
+  -> first frame reports package count and visible tree count
 ```
 
-## Gameplay risks
+## Remaining deterministic gap
 
 ```txt
-startup can be delayed by work that does not affect the run
-capture/provider failure can block the run without a fidelity fallback policy
-menu and game create separate asset runtimes
-package revision is absent from world-generation identity
-patch cache identity does not bind the tree package digest
-same seed can present different intended asset generations without explicit invalidation
-route exit does not settle asset-runtime ownership
+generatorVersion: prehistoric-patch-v3-tree-fidelity
+vegetationSettingsHash: trees + grass + package count
+
+missing:
+bundle version
+manifest revision
+package versions/digests
+capture policy revision
+material/transition policy revision
 ```
+
+Two different five-package generations can therefore share the same vegetation settings hash. Cached patches still contain compatible type indices, but the runtime cannot prove that their semantic tree generation matches the currently adopted package generation.
 
 ## Required settlement
 
 ```txt
-required preparation
-  -> validated TreeFidelityPreparationResult
-  -> accepted TreeFidelityAdoptionResult
-  -> generator/cache identity includes package digest
-  -> renderer adopts matching resources
-  -> FirstTreeFidelityBoundFrameAck
+TreeFidelityGenerationResult
+  -> exact generation digest
+  -> patch controller generator/vegetation identity
+  -> package-bound renderer generation
+  -> first exact-generation frame acknowledgement
 ```
 
-A package that is optional must not block the run. A package marked required must have a proven consumer before startup is declared ready.
+Required startup readiness should remain tied to package preparation, but readiness proof must carry exact generation identity rather than counts alone.
