@@ -4,7 +4,7 @@
 
 ## Summary
 
-PrehistoricRush was selected because its current `main` was ahead of the central documented head. The runtime delta completed the prior generation/form-transition work and added required decoded-atlas readiness. The central record must now retain those completed capabilities and track exact impostor frame addressing as the focused open gap.
+PrehistoricRush was selected because its current `main` was ahead of the central documented head. The runtime delta completed the prior generation/form-transition work and added required decoded-atlas readiness. The product audit, central ledger, and internal change log are now reconciled on `main`.
 
 ## Selection evidence
 
@@ -37,20 +37,21 @@ source test and Pages test gate
 
 Far capture frames include azimuth and elevation metadata, but renderer selection uses horizontal angle only, groups one elevation, and infers atlas offsets rather than adopting the exact frame record.
 
-## Central update required
+## Central records
 
 ```txt
-repo-ledger/LuminaryLabs-Publish/PrehistoricRush.md
-internal-change-log/2026-07-16T12-47-00-04-00-prehistoric-rush-impostor-frame-addressing.md
+updated: repo-ledger/LuminaryLabs-Publish/PrehistoricRush.md
+added: internal-change-log/2026-07-16T12-47-00-04-00-prehistoric-rush-impostor-frame-addressing.md
+central reconciliation commit after change log: cabdd1fa1be78428fd110c5f64e1f60c55b1931c
 ```
 
 ## Checklist
 
 - [x] Repo-local audit family added on `main`.
 - [x] Root `.agent` state refreshed.
-- [ ] Central ledger updated with final repo-local documentation head.
-- [ ] Internal change log added.
-- [ ] Central final head read back.
+- [x] Central ledger updated.
+- [x] Internal change log added.
+- [x] No branch or pull request created.
 
 ## Boundary
 
