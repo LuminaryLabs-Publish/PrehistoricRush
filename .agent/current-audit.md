@@ -1,84 +1,107 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-16T02-03-42-04-00`  
+**Timestamp:** `2026-07-16T06-39-16-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `patch-worker-request-liveness-recovery-authority-audited`
+**Status:** `webgl-context-gpu-resource-recovery-authority-audited`
 
 ## Summary
 
-The active runtime delegates patch generation to a module Worker and the pinned message executor. The host does not wait for the Worker's ready message, observe Worker-level failures, bound request duration, cancel pending work, restart a failed Worker, switch a live controller to fallback generation, reject stale Worker generations, or dispose the executor during document retirement.
+The active runtime creates one WebGL renderer, terrain and LOD resources, deterministic clay textures, instanced vegetation and pickups, a procedural creature, lighting and shadows. It has no product-owned context-loss/restoration event path, render generation, complete resource registry, reconstruction transaction, bounded retry/fallback or recovered-frame acknowledgement.
 
 ## Plan ledger
 
-**Goal:** make asynchronous patch generation readiness and settlement explicit, bounded, recoverable and observable.
+**Goal:** make renderer loss, recovery and first-frame proof explicit, bounded and observable.
 
-- [x] Inspect Worker creation and initialization.
-- [x] Inspect Worker request and response protocol.
-- [x] Inspect pinned executor pending-promise behavior.
-- [x] Inspect controller queue, inflight and ready-state transitions.
-- [x] Inspect active streaming, fallback and retirement paths.
-- [x] Define the patch-worker authority and fixture boundary.
+- [x] Inspect renderer and canvas construction.
+- [x] Inspect RAF rendering and resize behavior.
+- [x] Inspect terrain LOD, texture, instance, creature and shadow resources.
+- [x] Inspect disposal and browser context listeners.
+- [x] Define recovery authority and fixture boundary.
 - [ ] Implement and execute the authority.
 
 ## Current interaction loop
 
 ```txt
-controller queue
-  -> record becomes inflight
-  -> executor posts generate-patch
-  -> Worker generates patch
-  -> matching response settles promise
-  -> controller publishes ready patch
-  -> renderer and physics adopt patch
-```
+menu and creator
+  -> load or edit the selected procedural raptor profile
+  -> enter the game route
 
-## Failure interaction loop
+game boot
+  -> preload pinned Nexus Engine, Kits, Three.js, Rapier and ProtoKit modules
+  -> compose engine, physics, patch controller, camera and Three.js presentation
+  -> create one WebGLRenderer and one GPU-resource graph
+  -> create terrain slots, LOD slots, clay textures, instanced vegetation and pickups
+  -> create the player mesh, lights and shadow resources
+  -> generate the center patch and start RAF
 
-```txt
-Worker crash, hang, messageerror or lost response
-  -> no executor terminal result
-  -> controller record remains inflight
-  -> requeue is suppressed
-  -> host keeps Worker mode
-  -> no restart or synchronous fallback
+normal frame
+  -> collect browser input
+  -> tick simulation and physics
+  -> update streamed patch ownership
+  -> upload or release terrain, instances, pickups and colliders
+  -> update camera, creature pose, LOD morphs and materials
+  -> renderer.render(scene, camera)
+  -> publish DOM telemetry and schedule the next frame
+
+context-loss path today
+  -> no product-owned webglcontextlost result
+  -> no explicit presentation suspension or simulation policy
+  -> no render-generation retirement
+  -> no dependency-ordered GPU-resource reconstruction
+  -> no stale-generation rejection
+  -> no recovery deadline, retry or fallback policy
+  -> no first recovered frame acknowledgement
 ```
 
 ## Domains in use
 
 ```txt
-browser Worker, message, error, messageerror, page lifecycle and RAF
-Core simulation, physics, graphics, presentation and diagnostics
-PrehistoricRush run, route, terrain, patch streaming and terrain LOD
-seeded patch identity, cache, queue, inflight, readiness, activation and release
-Worker generation, readiness, deadlines, cancellation, restart, fallback, retirement and health
-Three.js, Rapier, validation, Pages and central tracking
+browser document, canvas, WebGL context, context loss/restoration, RAF, resize and page lifecycle
+Core Input, Spatial, Scene, Creature, Character, Player, Physics, Simulation, Motion, Camera, Animation, Graphics, Skybox, UI, Diagnostics, Composition and Presentation
+PrehistoricRush run, route, surface, score, outcome, pause, player composition, pose and terrain IK
+seeded patch identity, active/prefetch rings, generation, cache, activation, release and replay of the visible patch set
+Three.js renderer, scene, camera, geometry, materials, textures, shadow maps, instanced meshes and creature resources
+terrain LOD topology, slots, index buffers, morph targets, clay normal/roughness textures and visible-frame acknowledgements
+Rapier bodies and colliders, browser input, diagnostics, build, Pages deployment and central tracking
+render-context generation, loss admission, resource retirement, reconstruction, stale-work rejection, retry, fallback and recovered-frame proof
 ```
 
 ## Current gaps
 
 ```txt
-Worker generation identity: absent
-patch-worker-ready admission: absent
-Worker error observer: absent
-Worker messageerror observer: absent
-request deadline and timeout: absent
-request cancellation: absent
-pending request diagnostics: absent
-stale Worker response rejection: absent
-controller inflight release/requeue result: absent
-bounded Worker restart: absent
-live synchronous fallback transition: absent
-pagehide/route disposal: absent
-PatchWorkerResult: absent
-WorkerHealthSnapshot: absent
-FirstWorkerReadyAck: absent
-FirstRecoveredPatchAck: absent
+WebGLRenderer creation: present
+renderer canvas mounted into the game host: present
+recursive RAF render submission: present
+terrain and LOD geometry buffers: present
+normal and roughness textures: present
+instanced tree, grass and pickup resources: present
+player creature mesh and material resources: present
+shadow-map resources: present
+ordinary terrain LOD disposal: present
+
+webglcontextlost listener: absent
+webglcontextrestored listener: absent
+render-context generation identity: absent
+loss admission result: absent
+explicit presentation suspension: absent
+simulation/input policy during loss: absent
+complete GPU-resource registry: absent
+dependency-ordered reconstruction: absent
+base-adapter disposal: absent
+host adapter disposal call: absent
+stale recovery work rejection: absent
+recovery deadline/retry budget: absent
+fallback result: absent
+RenderLossResult: absent
+RenderRecoveryResult: absent
+FirstRecoveredFrameAck: absent
+forced context-loss fixture: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
+`prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime source, Worker protocol, gameplay, rendering, tests and deployment remain unchanged.
+Documentation only. Runtime source, gameplay, rendering, physics, tests and deployment remain unchanged.
