@@ -1,63 +1,79 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-16T02-03-42-04-00`  
+**Last aligned:** `2026-07-16T06-39-16-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed current repository head:** `07963fd0ebfea6e9abcd6aa595fc91b5b7cd1389`  
+**Reviewed pre-audit repository head:** `5a4d179c09ee9fad4e11a44f42671606a4a6254d`  
 **Reviewed runtime source revision:** `4808f05cff438ff5a9d013cd7ddec5127bbcf213`  
-**Status:** `patch-worker-request-liveness-recovery-authority-audited`
+**Status:** `webgl-context-gpu-resource-recovery-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected by the oldest synchronized eligible-repository rule after the complete Publish inventory was compared with central tracking. The current audit isolates patch Worker liveness: unresolved Worker requests can retain controller inflight ownership indefinitely because readiness, Worker error channels, deadlines, cancellation, restart, fallback, stale-generation rejection, and retirement are not owned by the active host.
+PrehistoricRush was selected by the oldest synchronized eligible-repository rule. The current audit isolates WebGL context and GPU-resource recovery: the game creates a substantial Three.js resource graph and recursively renders it, but owns no context-loss/restoration transaction, replacement renderer generation, reconstruction graph, retry/fallback policy or first recovered frame proof.
 
 ## Plan ledger
 
-**Goal:** guarantee that every admitted patch-generation request reaches one terminal result and that failed Worker generations recover without silently stalling world streaming.
+**Goal:** recover one coherent streamed-world frame after WebGL context loss without moving simulation or gameplay truth into browser event handlers.
 
 - [x] Compare all 11 accessible Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Select only PrehistoricRush by the oldest synchronized timestamp.
-- [x] Trace Worker creation, readiness, request dispatch, controller inflight state, patch activation and retirement.
+- [x] Trace renderer, terrain LOD, textures, instances, player, lights, shadows and RAF.
 - [x] Preserve all 66 implemented kits, adapters and proof surfaces.
-- [x] Define one patch-worker parent authority with 21 coordinating surfaces.
-- [x] Add the `2026-07-16T02-03-42-04-00` audit family.
+- [x] Define one recovery parent authority with 21 coordinating surfaces.
+- [x] Add the `2026-07-16T06-39-16-04-00` audit family.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Implement and execute Worker fault, recovery, artifact and Pages fixtures.
+- [ ] Implement and execute forced-loss, restoration, rehydration, fallback, artifact and Pages fixtures.
 
 ## Main finding
 
 ```txt
-patch request
-  -> controller marks patch inflight
-  -> executor stores pending promise
-  -> Worker normally returns patch-generated or patch-error
+WebGLRenderer creation: present
+renderer canvas mounted into the game host: present
+recursive RAF render submission: present
+terrain and LOD geometry buffers: present
+normal and roughness textures: present
+instanced tree, grass and pickup resources: present
+player creature mesh and material resources: present
+shadow-map resources: present
+ordinary terrain LOD disposal: present
 
-Worker crash, hang, message failure or lost response
-  -> no pending-promise settlement
-  -> no controller inflight release
-  -> duplicate generation remains suppressed
-  -> no restart or synchronous fallback
-  -> no recovered-patch acknowledgement
+webglcontextlost listener: absent
+webglcontextrestored listener: absent
+render-context generation identity: absent
+loss admission result: absent
+explicit presentation suspension: absent
+simulation/input policy during loss: absent
+complete GPU-resource registry: absent
+dependency-ordered reconstruction: absent
+base-adapter disposal: absent
+host adapter disposal call: absent
+stale recovery work rejection: absent
+recovery deadline/retry budget: absent
+fallback result: absent
+RenderLossResult: absent
+RenderRecoveryResult: absent
+FirstRecoveredFrameAck: absent
+forced context-loss fixture: absent
 ```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-16T02-03-42-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-16T02-03-42-04-00.md
-.agent/architecture-audit/2026-07-16T02-03-42-04-00-patch-worker-liveness-recovery-dsk-map.md
-.agent/render-audit/2026-07-16T02-03-42-04-00-stalled-patch-visible-world-gap.md
-.agent/gameplay-audit/2026-07-16T02-03-42-04-00-worker-failure-streaming-stall-loop.md
-.agent/interaction-audit/2026-07-16T02-03-42-04-00-patch-worker-command-result-map.md
-.agent/worker-runtime-audit/2026-07-16T02-03-42-04-00-worker-readiness-timeout-restart-contract.md
-.agent/deploy-audit/2026-07-16T02-03-42-04-00-worker-fault-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-16T02-03-42-04-00-oldest-selection-worker-liveness-reconciliation.md
+.agent/trackers/2026-07-16T06-39-16-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-16T06-39-16-04-00.md
+.agent/architecture-audit/2026-07-16T06-39-16-04-00-webgl-context-gpu-resource-recovery-dsk-map.md
+.agent/render-audit/2026-07-16T06-39-16-04-00-lost-context-visible-world-frame-gap.md
+.agent/gameplay-audit/2026-07-16T06-39-16-04-00-render-loss-active-run-loop.md
+.agent/interaction-audit/2026-07-16T06-39-16-04-00-render-recovery-command-result-map.md
+.agent/renderer-recovery-audit/2026-07-16T06-39-16-04-00-gpu-resource-rehydration-contract.md
+.agent/deploy-audit/2026-07-16T06-39-16-04-00-context-loss-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-16T06-39-16-04-00-oldest-selection-renderer-recovery-reconciliation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
+`prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain`
 
 ## Kit census
 
@@ -68,13 +84,13 @@ product/page/Worker kits: 17
 external/host/render adapters: 14
 proof kits: 8
 total implemented surfaces: 66
-planned patch-worker surfaces: 21
+planned WebGL recovery surfaces: 21
 ```
 
 ## Next safe ledge
 
-Admit a Worker generation only after `patch-worker-ready`, bind every request to a deadline and cancellation owner, settle Worker `error` and `messageerror`, release or requeue controller inflight ownership, apply bounded restart, switch to synchronous generation when recovery is exhausted, and retire all pending work on document exit.
+Add context event admission and immutable render generations, register every GPU resource family, reconstruct from accepted CPU descriptors in dependency order, reject stale recovery work, apply bounded retry/fallback policy and acknowledge the first coherent recovered frame.
 
 ## Claim boundary
 
-Documentation only. No Worker readiness, timeout, cancellation, restart, fallback, inflight recovery, lifecycle retirement, artifact parity, Pages parity, or production readiness is claimed.
+Documentation only. No context recovery, resource rehydration, fallback, artifact parity, Pages parity or production readiness is claimed.
