@@ -1,69 +1,84 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-15T20-59-46-04-00`  
+**Timestamp:** `2026-07-16T02-03-42-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `game-audio-event-projection-authority-audited`
+**Status:** `patch-worker-request-liveness-recovery-authority-audited`
 
 ## Summary
 
-The product domain publishes accepted run-start, shard, failure, and victory events. The browser host renders accepted state through Three.js and DOM, but no domain owns browser-audio admission, cue resolution, playback lifecycle, preferences, deduplication, spatial projection, budgets, or acknowledgements.
+The active runtime delegates patch generation to a module Worker and the pinned message executor. The host does not wait for the Worker's ready message, observe Worker-level failures, bound request duration, cancel pending work, restart a failed Worker, switch a live controller to fallback generation, reject stale Worker generations, or dispose the executor during document retirement.
 
 ## Plan ledger
 
-**Goal:** centralize audible presentation around accepted semantic results and explicit browser lifecycle ownership.
+**Goal:** make asynchronous patch generation readiness and settlement explicit, bounded, recoverable and observable.
 
-- [x] Inspect game boot and loaded providers.
-- [x] Inspect semantic run events and accepted resolution results.
-- [x] Inspect RAF visual projection and public host snapshots.
-- [x] Inspect pause, blur, route, and runtime lifecycle boundaries.
-- [x] Define the audio authority and fixture boundary.
+- [x] Inspect Worker creation and initialization.
+- [x] Inspect Worker request and response protocol.
+- [x] Inspect pinned executor pending-promise behavior.
+- [x] Inspect controller queue, inflight and ready-state transitions.
+- [x] Inspect active streaming, fallback and retirement paths.
+- [x] Define the patch-worker authority and fixture boundary.
 - [ ] Implement and execute the authority.
 
 ## Current interaction loop
 
 ```txt
-intent
-  -> PrehistoricRush proposals
-  -> Core Physics observations
-  -> resolution policy
-  -> committed state and events
-  -> Three.js and DOM projection
-  -> no semantic audio projection
+controller queue
+  -> record becomes inflight
+  -> executor posts generate-patch
+  -> Worker generates patch
+  -> matching response settles promise
+  -> controller publishes ready patch
+  -> renderer and physics adopt patch
+```
+
+## Failure interaction loop
+
+```txt
+Worker crash, hang, messageerror or lost response
+  -> no executor terminal result
+  -> controller record remains inflight
+  -> requeue is suppressed
+  -> host keeps Worker mode
+  -> no restart or synchronous fallback
 ```
 
 ## Domains in use
 
 ```txt
-browser document lifecycle, gesture admission, keyboard, blur, RAF, resize, Worker, storage, and navigation
-Core input, spatial, scene, creature, character, player, physics, simulation, motion, camera, animation, graphics, skybox, UI, diagnostics, composition, and presentation
-PrehistoricRush run, route, surface, score, outcome, pause, character composition, pose, and terrain IK
-semantic audio events, cue descriptors, context lifecycle, listener/source projection, preferences, deduplication, budgets, and audiovisual convergence
-patch streaming, terrain LOD, Three.js, Rapier, validation, Pages, and central tracking
+browser Worker, message, error, messageerror, page lifecycle and RAF
+Core simulation, physics, graphics, presentation and diagnostics
+PrehistoricRush run, route, terrain, patch streaming and terrain LOD
+seeded patch identity, cache, queue, inflight, readiness, activation and release
+Worker generation, readiness, deadlines, cancellation, restart, fallback, retirement and health
+Three.js, Rapier, validation, Pages and central tracking
 ```
 
 ## Current gaps
 
 ```txt
-AudioContext/HTMLAudio owner: absent
-user-gesture unlock admission: absent
-semantic cue registry: absent
-accepted-event projector: absent
-movement, jump, landing, surface, pickup, collision, and win cues: absent
-ambience lifecycle: absent
-listener/source projection: absent
-master/category volume and mute preferences: absent
-snapshot/event deduplication: absent
-voice pooling and budgets: absent
-pause/blur/visibility/route retirement settlement: absent
-AudioProjectionResult: absent
-FirstAudibleCueAck: absent
-FirstAudioVisualConvergenceAck: absent
+Worker generation identity: absent
+patch-worker-ready admission: absent
+Worker error observer: absent
+Worker messageerror observer: absent
+request deadline and timeout: absent
+request cancellation: absent
+pending request diagnostics: absent
+stale Worker response rejection: absent
+controller inflight release/requeue result: absent
+bounded Worker restart: absent
+live synchronous fallback transition: absent
+pagehide/route disposal: absent
+PatchWorkerResult: absent
+WorkerHealthSnapshot: absent
+FirstWorkerReadyAck: absent
+FirstRecoveredPatchAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-game-audio-event-projection-authority-domain`
+`prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime source, gameplay, rendering, audio behavior, tests, and deployment remain unchanged.
+Documentation only. Runtime source, Worker protocol, gameplay, rendering, tests and deployment remain unchanged.
