@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   circularDegreesDistance,
+  resolveTreeImpostorBlend,
   resolveTreeImpostorFrame
 } from "../src/render/three-tree-fidelity-layer.js";
 
@@ -11,7 +12,8 @@ for (const [row, elevationDegrees] of [0, 20].entries()) {
       frameIndex: row * 4 + column,
       azimuthDegrees,
       elevationDegrees,
-      atlasCell: [column, row]
+      atlasCell: [column, row],
+      uvRect: [column * 0.25, row * 0.5, 0.25, 0.5]
     });
   }
 }
@@ -36,4 +38,14 @@ assert.equal(backHigh.frameElevationDegrees, 20);
 const wraparound = resolveTreeImpostorFrame(frames, { x: -1, y: 10, z: 100 }, bounds);
 assert.equal(wraparound.frameIndex, 0);
 
-console.log("tree fidelity exact azimuth/elevation frame addressing passed");
+const diagonalBlend = resolveTreeImpostorBlend(frames, { x: 100, y: 10, z: 100 }, bounds);
+assert.equal(diagonalBlend.length, 2);
+assert.deepEqual(diagonalBlend.map((entry) => entry.frameIndex), [0, 1]);
+assert.ok(Math.abs(diagonalBlend[0].weight - 0.5) < 0.0001);
+assert.ok(Math.abs(diagonalBlend[1].weight - 0.5) < 0.0001);
+assert.ok(Math.abs(diagonalBlend.reduce((sum, entry) => sum + entry.weight, 0) - 1) < 0.0001);
+
+const rotatedTree = resolveTreeImpostorFrame(frames, { x: 0, y: 10, z: 100 }, bounds, 90);
+assert.equal(rotatedTree.frameIndex, 3, "tree yaw rotates the relative capture view");
+
+console.log("tree fidelity exact azimuth/elevation addressing and adjacent-angle blending passed");
