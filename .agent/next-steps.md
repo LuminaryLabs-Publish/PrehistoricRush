@@ -1,57 +1,71 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T12-47-00-04-00`  
-**Authority:** `prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain`
+**Audit:** `2026-07-16T14-39-29-04-00`  
+**Authority:** `prehistoric-rush-tree-impostor-elevation-row-continuity-authority-domain`
 
 ## Summary
 
-Keep the implemented generation, transition, decode, and render-admission path. Add exact view-vector frame resolution and prove it through real rendered pixels.
+Keep the implemented ten-species tree pipeline, exact frame addressing, adjacent-azimuth blending, shared atlas, and exact-frame receipts. Add stateful continuity between captured elevation rows and prove it through rendered sweeps.
 
 ## Intent
 
-Select each far or horizon impostor from captured frame metadata rather than inferred atlas layout.
+Prevent abrupt or alternating capture-row selection when the follow camera moves through an elevation midpoint.
 
 ## What needs to happen
 
-### Phase 1: Normalize capture frames
+### Phase 1: Frame-set admission
 
-- [ ] Publish a stable `frameId` for every captured frame.
-- [ ] Preserve azimuth, elevation, atlas rectangle, observation, content hash, and generation ID.
-- [ ] Validate frame uniqueness and atlas bounds when the package is admitted.
+- [ ] Sort and validate unique captured elevation rows per form.
+- [ ] Validate consistent azimuth coverage, frame IDs, UV rectangles, and generation identity.
+- [ ] Define explicit edge behavior when only one row or incomplete coverage exists.
 
-### Phase 2: Resolve view
+### Phase 2: Elevation continuity
 
-- [ ] Derive camera-to-tree azimuth and elevation in one coordinate convention.
-- [ ] Resolve the nearest captured frame or an explicitly supported blend.
-- [ ] Keep horizon behavior explicit instead of reusing far assumptions.
-- [ ] Publish `TreeImpostorFrameSelectionResult`.
+- [ ] Resolve lower and upper rows around the current view elevation.
+- [ ] Choose and version the deadband/interpolation policy.
+- [ ] Retain continuity state by tree, form, package generation, and camera generation.
+- [ ] Reject stale row transitions after patch, form, package, or camera retirement.
 
-### Phase 3: Bind rendering
+### Phase 3: Combined frame weighting
 
-- [ ] Create batches keyed by exact frame identity, not only angle index.
-- [ ] Use the selected frame rectangle for texture repeat and offset.
-- [ ] Reject stale package generations and missing frame records.
-- [ ] Preserve current hysteresis and dither-crossfade behavior.
+- [ ] Resolve circular azimuth neighbors inside each admitted row.
+- [ ] Combine elevation and azimuth weights into up to four exact frame bindings.
+- [ ] Normalize weights and enforce a predictable per-form instance budget.
+- [ ] Compose continuity weights with existing form-transition fade.
 
-### Phase 4: Receipts and diagnostics
+### Phase 4: Results and diagnostics
 
-- [ ] Expose selected frame IDs and elevation bands in diagnostics.
-- [ ] Add stale/missing-frame counters.
-- [ ] Publish `FirstExactImpostorFrameAck` after the matching frame renders.
+- [ ] Publish `TreeImpostorViewContinuityResult`.
+- [ ] Expose admitted rows, exact frame IDs, normalized weights, policy revision, and transition state.
+- [ ] Extend binding digests to prove continuity state.
+- [ ] Publish `FirstContinuousImpostorFrameAck` after the matching frame renders.
 
 ### Phase 5: Proof
 
-- [ ] Add azimuth sweep fixtures.
-- [ ] Add low/high camera elevation fixtures.
-- [ ] Add atlas rectangle and row-address fixtures.
-- [ ] Add far/horizon transition fixtures.
+- [ ] Add below/at/above midpoint source fixtures.
+- [ ] Add slow elevation sweep and midpoint camera-bob fixtures.
+- [ ] Add jump, terrain-height, camera-reset, and stale-generation fixtures.
+- [ ] Add far/horizon and LOD-crossfade composition fixtures.
 - [ ] Run `npm test`.
-- [ ] Run source, staged artifact, and Pages visual parity fixtures.
+- [ ] Run browser pixel, built-output, and Pages parity fixtures.
 
-## Checklist
+## Recommended file cut
 
-- [x] Exact generation identity implemented in source.
-- [x] Four forms, hysteresis, and crossfade implemented in source.
-- [x] Required atlas decoding and decoded-image admission implemented in source.
-- [ ] Exact capture-frame addressing implemented.
-- [ ] Executable visual proof completed.
+```txt
+src/render/tree-impostor-elevation-continuity-domain.js
+src/render/tree-impostor-elevation-bracket-kit.js
+src/render/tree-impostor-bilinear-frame-weight-kit.js
+src/render/tree-impostor-continuity-state-kit.js
+src/render/tree-impostor-view-continuity-result-kit.js
+
+tests/tree-fidelity-elevation-continuity.mjs
+tests/tree-fidelity-elevation-render-fixture.mjs
+```
+
+## Compatibility constraints
+
+Do not change tree generation seeds, species selection, stable tree/collider identity, package generations, atlas content, fidelity thresholds, LOD hysteresis, dither duration, player physics, terrain, camera behavior, or scoring while introducing this presentation authority.
+
+## Do not claim
+
+Do not claim elevation-row continuity, browser visual correctness, artifact parity, Pages parity, or production readiness until the full fixture matrix passes.
