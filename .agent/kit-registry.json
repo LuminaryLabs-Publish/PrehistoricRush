@@ -1,23 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-16T02-03-42-04-00",
-  "status": "patch-worker-request-liveness-recovery-authority-audited",
-  "technicalStatus": "patch-worker-request-liveness-recovery-authority-audited",
-  "repositoryRevisionReviewed": "07963fd0ebfea6e9abcd6aa595fc91b5b7cd1389",
+  "generatedAt": "2026-07-16T06-39-16-04-00",
+  "status": "webgl-context-gpu-resource-recovery-authority-audited",
+  "technicalStatus": "webgl-context-gpu-resource-recovery-authority-audited",
+  "repositoryRevisionReviewed": "5a4d179c09ee9fad4e11a44f42671606a4a6254d",
   "runtimeSourceRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
-  "priorDocumentationHead": "07963fd0ebfea6e9abcd6aa595fc91b5b7cd1389",
-  "currentAuditedSlice": "Patch Worker Readiness / Request Liveness / Failure Recovery / Fallback / Retirement",
-  "latestTracker": ".agent/trackers/2026-07-16T02-03-42-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T02-03-42-04-00.md",
+  "priorDocumentationHead": "5a4d179c09ee9fad4e11a44f42671606a4a6254d",
+  "currentAuditedSlice": "WebGL Context Loss / GPU Resource Reconstruction / Recovery / Fallback / First Recovered Frame",
+  "latestTracker": ".agent/trackers/2026-07-16T06-39-16-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T06-39-16-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-16T02-03-42-04-00-patch-worker-liveness-recovery-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-16T02-03-42-04-00-stalled-patch-visible-world-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-16T02-03-42-04-00-worker-failure-streaming-stall-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-16T02-03-42-04-00-patch-worker-command-result-map.md",
-    "workerRuntime": ".agent/worker-runtime-audit/2026-07-16T02-03-42-04-00-worker-readiness-timeout-restart-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-16T02-03-42-04-00-worker-fault-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-16T02-03-42-04-00-oldest-selection-worker-liveness-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-16T06-39-16-04-00-webgl-context-gpu-resource-recovery-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-16T06-39-16-04-00-lost-context-visible-world-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-16T06-39-16-04-00-render-loss-active-run-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-16T06-39-16-04-00-render-recovery-command-result-map.md",
+    "rendererRecovery": ".agent/renderer-recovery-audit/2026-07-16T06-39-16-04-00-gpu-resource-rehydration-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-16T06-39-16-04-00-context-loss-browser-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-16T06-39-16-04-00-oldest-selection-renderer-recovery-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -30,9 +30,9 @@
     "runtimeAheadCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "priorCentralTimestamp": "2026-07-15T20-59-46-04-00",
+    "priorCentralTimestamp": "2026-07-16T02-03-42-04-00",
     "nextOldestRepo": "LuminaryLabs-Publish/HorrorCorridor",
-    "nextOldestTimestamp": "2026-07-15T21-39-15-04-00",
+    "nextOldestTimestamp": "2026-07-16T02-40-29-04-00",
     "reason": "PrehistoricRush had the oldest synchronized eligible central timestamp after the full Publish comparison found no higher-priority undocumented repository."
   },
   "census": {
@@ -42,102 +42,117 @@
     "externalHostRenderAdapterCount": 14,
     "proofKitCount": 8,
     "totalSurfaceCount": 66,
-    "plannedPatchWorkerSurfaceCount": 21
+    "plannedWebglRecoverySurfaceCount": 21
   },
   "interactionLoop": [
-    "game boot creates a module Worker and posts init-patch-worker",
-    "the host creates the pinned message Worker executor without admitting patch-worker-ready",
-    "the patch controller marks queued patch records inflight and dispatches generate-patch requests",
-    "matching patch-generated or patch-error messages settle executor promises",
-    "settled successful patches enter the ready queue and are adopted by Three.js and Rapier",
-    "Worker crash hang transport failure or lost response has no timeout restart fallback or retirement settlement"
+    "boot preloads pinned runtime modules and composes engine physics patch streaming and Three.js presentation",
+    "the base adapter creates one WebGLRenderer and GPU resource graph",
+    "the host ticks simulation streaming and render submission recursively through RAF",
+    "browser WebGL context loss/restoration has no product-owned command or result path",
+    "resource reconstruction retry fallback and first recovered frame proof are absent"
   ],
   "domainsInUse": [
-    "browser document module Worker message error messageerror page lifecycle RAF storage and navigation",
+    "browser document canvas WebGL context context loss restoration RAF resize and page lifecycle",
     "Core input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
-    "PrehistoricRush run route surface score outcome pause player composition pose and terrain IK",
-    "seeded patch identity cache active ring prefetch queue inflight readiness activation and release",
-    "Worker generation readiness deadlines cancellation restart fallback stale response rejection retirement health and recovery acknowledgement",
-    "terrain LOD Three.js Rapier vegetation pickups validation build Pages and central tracking"
+    "PrehistoricRush run route surface score outcome pause composition pose and terrain IK",
+    "seeded patch identity active and prefetch rings generation cache activation release and visible-set replay",
+    "Three.js renderer scene camera geometry materials textures shadows instances and procedural creature resources",
+    "terrain LOD topology slots index buffers morph targets clay textures and visible-frame acknowledgements",
+    "Rapier input diagnostics tests build Pages and central tracking",
+    "render generation loss admission resource retirement reconstruction stale rejection retry fallback and recovered-frame proof"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-16T02-03-42-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "workerSurfaces": {
-      "prehistoric-patch-worker": [
-        "initialization",
-        "ready message",
-        "patch request execution",
-        "transferable success response",
-        "per-request generator error response"
+    "completeInventory": ".agent/trackers/2026-07-16T06-39-16-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "recoverySurfaces": {
+      "three-patch-stream-adapter-kit": [
+        "renderer scene camera resource allocation",
+        "patch presentation",
+        "frame submission"
       ],
-      "message-worker-executor-adapter-kit": [
-        "request correlation",
-        "pending promise registry",
-        "matching response settlement",
-        "explicit disposal and Worker termination"
+      "three-terrain-lod-layer": [
+        "LOD geometry",
+        "index and morph buffers",
+        "clay textures",
+        "ordinary disposal"
       ],
-      "seeded-world-patch-controller-kit": [
-        "deterministic patch identity",
-        "generation queue",
-        "inflight ownership",
-        "ready delivery",
-        "activation budget",
-        "cache and release"
+      "game-runtime-lod-host-adapter": [
+        "module loading",
+        "composition",
+        "RAF",
+        "resize",
+        "render submission"
       ],
-      "planned-patch-worker-authority": [
-        "Worker generation and readiness admission",
-        "request deadlines cancellation and terminal results",
-        "error and messageerror settlement",
-        "controller inflight release and requeue",
-        "bounded restart and synchronous fallback",
-        "stale response rejection",
-        "page lifecycle retirement",
-        "health snapshots and recovery acknowledgements"
+      "planned-render-recovery-authority": [
+        "context generation and loss admission",
+        "resource registry and rehydration",
+        "stale rejection",
+        "retry and fallback",
+        "first recovered frame acknowledgement"
       ]
     }
   },
-  "workerState": {
-    "moduleWorkerCreationPresent": true,
-    "initCommandPresent": true,
-    "readyMessagePresent": true,
-    "requestSuccessMessagePresent": true,
-    "requestErrorMessagePresent": true,
-    "executorPendingRegistryPresent": true,
-    "controllerInflightOwnershipPresent": true,
-    "readyAdmissionPresent": false,
-    "workerGenerationIdentityPresent": false,
-    "workerErrorSettlementPresent": false,
-    "messageErrorSettlementPresent": false,
-    "requestDeadlinePresent": false,
-    "requestCancellationPresent": false,
-    "staleResponseRejectionPresent": false,
-    "controllerInflightRequeuePresent": false,
-    "boundedRestartPresent": false,
-    "liveSynchronousFallbackPresent": false,
+  "renderState": {
+    "webglRendererPresent": true,
+    "recursiveRafPresent": true,
+    "terrainLodResourcesPresent": true,
+    "clayTexturesPresent": true,
+    "instancedResourcesPresent": true,
+    "creatureResourcesPresent": true,
+    "shadowResourcesPresent": true,
+    "terrainLodDisposalPresent": true,
+    "contextLostListenerPresent": false,
+    "contextRestoredListenerPresent": false,
+    "rendererGenerationPresent": false,
+    "completeResourceRegistryPresent": false,
+    "dependencyOrderedReconstructionPresent": false,
+    "baseAdapterCompleteDisposalPresent": false,
     "hostDisposalPresent": false,
-    "workerHealthSnapshotPresent": false,
-    "patchWorkerResultPresent": false,
-    "firstWorkerReadyAckPresent": false,
-    "firstRecoveredPatchAckPresent": false
+    "recoveryDeadlinePresent": false,
+    "retryBudgetPresent": false,
+    "fallbackResultPresent": false,
+    "firstRecoveredFrameAckPresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain",
-    "mainFinding": "A Worker request can remain unresolved indefinitely after Worker or transport failure, retaining controller inflight ownership without readiness admission, timeout, cancellation, restart, fallback or retirement settlement."
+    "parentDomain": "prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain",
+    "mainFinding": "The game owns one large Three.js GPU-resource generation but no product-owned WebGL context-loss admission, complete reconstruction transaction, bounded recovery/fallback policy or first recovered frame proof."
   },
+  "retainedStatuses": [
+    "patch-worker-request-liveness-recovery-authority-audited",
+    "game-audio-event-projection-authority-central-reconciled",
+    "accessible-gameplay-projection-focus-authority-central-reconciled",
+    "host-clock-fixed-step-frame-authority-central-reconciled",
+    "terrain-single-owner-render-retirement-authority-central-reconciled",
+    "terrain-lod-patch-render-admission-authority-central-reconciled",
+    "creator-profile-navigation-commit-authority-central-reconciled",
+    "game-feedback-control-surface-admission-authority-central-reconciled",
+    "route-progress-goal-eligibility-authority-central-reconciled",
+    "runtime-provider-revision-convergence-authority-central-reconciled",
+    "run-outcome-score-settlement-authority-central-reconciled",
+    "player-character-profile-revision-admission-authority-central-reconciled",
+    "patch-owned-streaming-adoption-authority-central-reconciled",
+    "non-blocking-pause-menu-command-lifecycle-authority-central-reconciled",
+    "player-character-composition-transition-authority-central-reconciled",
+    "terrain-aware-hind-leg-ik-central-reconciled",
+    "authoritative-player-pose-publication-central-reconciled",
+    "collision-source-convergence-publication-central-reconciled",
+    "browser-input-core-input-adoption-central-reconciled",
+    "game-viewport-render-surface-central-reconciled",
+    "articulated-pose-presentation-authority-audited",
+    "run-start-restart-central-reconciled",
+    "browser-runtime-lifecycle-authority-audited"
+  ],
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
-    "workerProtocolChangedByAudit": false,
-    "streamingChangedByAudit": false,
-    "renderingOrPhysicsChangedByAudit": false,
+    "renderingChangedByAudit": false,
+    "gameplayOrPhysicsChangedByAudit": false,
     "packageTestWorkflowDeploymentChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "workerReadyFixtureRun": false,
-    "workerFaultFixtureRun": false,
-    "timeoutRestartFallbackFixtureRun": false,
-    "retirementFixtureRun": false,
+    "contextLossFixtureRun": false,
+    "resourceRehydrationFixtureRun": false,
+    "fallbackFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
