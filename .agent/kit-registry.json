@@ -2,12 +2,12 @@
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
   "generatedAt": "2026-07-16T12-02-38-04-00",
-  "status": "tree-fidelity-asset-adoption-projection-authority-audited",
-  "technicalStatus": "tree-fidelity-asset-adoption-projection-authority-audited",
-  "repositoryRevisionReviewed": "7159a414ff4e103015ca1b634324b9fd89256cf4",
-  "runtimeSourceRevisionReviewed": "7159a414ff4e103015ca1b634324b9fd89256cf4",
+  "status": "tree-fidelity-generation-form-transition-authority-audited",
+  "technicalStatus": "tree-fidelity-generation-form-transition-authority-audited",
+  "repositoryRevisionReviewed": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
+  "runtimeSourceRevisionReviewed": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
   "priorDocumentationHead": "e83638abab425dc3c54370ad6c3fab17576c3d13",
-  "currentAuditedSlice": "Tree Fidelity Asset Preparation / Adoption / Patch Binding / Render Forms / Visible Frame",
+  "currentAuditedSlice": "Tree Fidelity Exact Generation / Patch Cache Binding / Horizon / Hysteresis / Crossfade / Frame Proof",
   "latestTracker": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md",
   "latestTurnLedger": ".agent/turn-ledger/2026-07-16T12-02-38-04-00.md",
   "audits": {
@@ -30,90 +30,75 @@
     "runtimeAheadCount": 1,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush was six runtime commits ahead of its documented head and therefore took priority over the oldest synchronized selection rule."
+    "reason": "PrehistoricRush was the only runtime-ahead eligible repository."
   },
   "runtimeDelta": {
     "base": "e83638abab425dc3c54370ad6c3fab17576c3d13",
-    "head": "7159a414ff4e103015ca1b634324b9fd89256cf4",
-    "commitCount": 6,
-    "changedFileCount": 6,
-    "changedFiles": [
-      "package.json",
-      "src/game.js",
-      "src/pages/menu.js",
-      "src/shared/runtime-versions.js",
-      "src/shared/tree-fidelity-assets.js",
-      "tests/tree-fidelity-assets.mjs"
-    ]
+    "reviewedRuntimeSource": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
+    "runtimeCommitCount": 13,
+    "runtimeChangedFileCount": 9
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 24,
     "officialNexusEngineKitCount": 5,
     "productPageAssetWorkerKitCount": 22,
-    "externalHostCaptureRenderAdapterCount": 16,
-    "proofKitCount": 8,
-    "totalSurfaceCount": 75,
-    "newAssetStartupSurfaceCount": 9,
-    "plannedTreeFidelityAdoptionSurfaceCount": 20
+    "externalHostCaptureRenderAdapterCount": 17,
+    "proofKitCount": 9,
+    "totalSurfaceCount": 77,
+    "newSurfaceCount": 11,
+    "plannedGenerationFormTransitionSurfaceCount": 20
   },
   "interactionLoop": [
-    "menu creates an asset runtime and background-requests the tree-fidelity bundle",
-    "game entry creates another asset/startup runtime and blocks on required tree-fidelity preparation",
-    "the preparation receipt is stored on globalThis",
-    "game-runtime-lod ignores the receipt and declares independent treeTypes",
-    "patch generation emits legacy typeIndex records",
-    "the Three.js adapter renders cylinder trunks and icosahedron crowns without package identity",
-    "no package-bound visible frame acknowledgement exists"
+    "menu background-requests the tree bundle and retires the capture provider",
+    "game entry performs required tree preparation and retires the provider",
+    "game runtime reads package values and derives tree types from canonical archetypes",
+    "patch streaming feeds a dedicated tree-fidelity layer",
+    "projected pixels select near medium or far resources",
+    "first frame reports package and tree counts to Core Startup",
+    "exact generation identity horizon and transition semantics remain absent"
   ],
   "domainsInUse": [
-    "browser route module DOM canvas global RAF and lifecycle",
-    "Core Assets provider asset bundle request progress cache receipt and snapshot",
-    "Core Startup launch preparation readiness and result",
+    "browser route module DOM canvas RAF and lifecycle",
+    "Core Assets and Core Startup",
     "IndexedDB cache and Three.js object capture",
-    "tree archetype package manifest bundle and provider",
-    "menu preload and game startup preparation",
+    "tree package schema provider manifest bundle and lifecycle",
     "PrehistoricRush simulation patch streaming terrain LOD rendering and physics",
-    "tree preparation adoption patch binding form selection materialization retirement and visible proof",
-    "tests static delivery Pages and central tracking"
+    "tree generation identity patch cache binding horizon hysteresis crossfade and exact frame proof",
+    "tests Pages and central tracking"
   ],
   "serviceInventory": {
     "completeInventory": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "newSurfaces": {
-      "core-assets-kit": ["provider registration", "asset and bundle graph", "request progress", "cache", "receipts"],
-      "core-startup-kit": ["launch", "required preparation tracking", "readiness"],
-      "tree-fidelity-package-schema-kit": ["source bounds", "collision", "four forms", "transition", "materials"],
-      "tree-fidelity-asset-provider-kit": ["temporary object build", "capture", "portable package", "progress", "disposal"],
-      "tree-fidelity-registration-kit": ["provider", "five packages", "manifest dependencies", "bundle"],
-      "tree-fidelity-runtime-composition-kit": ["isolated asset/startup engine", "registration"],
-      "tree-fidelity-route-preparation-kit": ["menu background preload", "game required preparation", "progress", "receipt publication"],
-      "three-object-capture-provider-adapter": ["subject resolution", "framing", "multi-angle observations", "atlas"],
-      "browser-indexeddb-asset-cache-adapter": ["persistent lookup", "write-through cache"]
+    "treeFidelityImplementation": {
+      "core-assets-kit": ["provider and asset graph", "bundle requests", "cache", "progress", "receipts", "values"],
+      "core-startup-kit": ["required preparation", "first frame", "input-ready entry"],
+      "tree-fidelity-asset-provider-kit": ["capture", "portable packages", "progress", "disposal"],
+      "tree-fidelity-route-preparation-kit": ["menu preload", "game required preparation", "provider retirement"],
+      "three-tree-fidelity-layer": ["legacy suppression", "near and medium mesh instances", "far billboards", "form counts", "disposal"]
     }
   },
-  "assetState": {
-    "fiveArchetypesPresent": true,
-    "portablePackageSchemaPresent": true,
-    "nearMediumMeshRecipesPresent": true,
-    "farHorizonImpostorDescriptorsPresent": true,
-    "colorOpacityCapturePresent": true,
+  "treeFidelityState": {
+    "fivePackagesPresent": true,
     "indexedDbCachePresentWhenSupported": true,
-    "menuBackgroundPreloadPresent": true,
-    "gameRequiredPreparationPresent": true,
-    "sourceContractTestPresent": true,
-    "runtimeReceiptConsumptionPresent": false,
-    "singleArchetypeAuthorityPresent": false,
-    "packageIdentityInPatchRecordsPresent": false,
-    "packageDigestInGeneratorCacheIdentityPresent": false,
-    "packageRenderFormMaterializationPresent": false,
-    "capturedAtlasUsedByGameRendererPresent": false,
-    "stalePackageRejectionPresent": false,
-    "routeAssetRuntimeRetirementPresent": false,
-    "treeFidelityAdoptionResultPresent": false,
-    "firstTreeFidelityBoundFrameAckPresent": false
+    "menuAndGamePreparationPresent": true,
+    "providerRetirementPresent": true,
+    "livePackageConsumptionPresent": true,
+    "nearMediumFarRenderingPresent": true,
+    "legacyTreeSuppressionPresent": true,
+    "startupFirstFrameAckPresent": true,
+    "exactGenerationDigestPresent": false,
+    "exactGenerationInPatchCacheIdentityPresent": false,
+    "packageIdentityInTreeRecordsPresent": false,
+    "horizonRenderingPresent": false,
+    "farRangeFullyEnforced": false,
+    "retainedFormStatePresent": false,
+    "hysteresisPresent": false,
+    "ditherCrossfadePresent": false,
+    "exactGenerationFrameAckPresent": false,
+    "functionalBrowserParityFixturePresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain",
-    "mainFinding": "The game blocks on a prepared tree-fidelity bundle but does not adopt its manifest, package payloads, atlas frames or revision into patch generation or live rendering."
+    "parentDomain": "prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain",
+    "mainFinding": "Tree packages are prepared and rendered through near medium and far forms, but exact package generation identity is not bound into patch/cache state and the declared horizon, hysteresis and dither-crossfade policy is not implemented."
   },
   "retainedStatuses": [
     "webgl-context-gpu-resource-recovery-authority-central-reconciled",
@@ -150,9 +135,8 @@
     "branchCreated": false,
     "pullRequestCreated": false,
     "sourceDiffInspected": true,
-    "npmTestRun": false,
-    "browserPackageFixtureRun": false,
-    "adoptionFixtureRun": false,
+    "npmTestRunByAudit": false,
+    "functionalRenderFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
