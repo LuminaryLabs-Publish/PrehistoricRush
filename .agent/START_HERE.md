@@ -1,61 +1,63 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-15T20-59-46-04-00`  
+**Last aligned:** `2026-07-16T02-03-42-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed current repository head:** `bfc51c01a79601686e5fad12ff3240472b3f111c`  
+**Reviewed current repository head:** `07963fd0ebfea6e9abcd6aa595fc91b5b7cd1389`  
 **Reviewed runtime source revision:** `4808f05cff438ff5a9d013cd7ddec5127bbcf213`  
-**Status:** `game-audio-event-projection-authority-audited`
+**Status:** `patch-worker-request-liveness-recovery-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected by the oldest synchronized eligible-repository rule after the complete Publish inventory was compared with the central ledger and root `.agent` states. The simulation already emits accepted run-start, pickup, failure, and victory events, but the active browser host has no owned semantic audio projection or audible-result evidence.
+PrehistoricRush was selected by the oldest synchronized eligible-repository rule after the complete Publish inventory was compared with central tracking. The current audit isolates patch Worker liveness: unresolved Worker requests can retain controller inflight ownership indefinitely because readiness, Worker error channels, deadlines, cancellation, restart, fallback, stale-generation rejection, and retirement are not owned by the active host.
 
 ## Plan ledger
 
-**Goal:** preserve authoritative gameplay while adding one result-driven, lifecycle-safe browser-audio boundary.
+**Goal:** guarantee that every admitted patch-generation request reaches one terminal result and that failed Worker generations recover without silently stalling world streaming.
 
 - [x] Compare all 11 accessible Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Select only PrehistoricRush by the oldest synchronized timestamp.
-- [x] Trace boot, inputs, committed events, visual projection, pause, and lifecycle.
-- [x] Preserve all 66 implemented kits, adapters, and proof surfaces.
-- [x] Define one audio parent authority with 22 coordinating surfaces.
-- [x] Add the `2026-07-15T20-59-46-04-00` audit family.
+- [x] Trace Worker creation, readiness, request dispatch, controller inflight state, patch activation and retirement.
+- [x] Preserve all 66 implemented kits, adapters and proof surfaces.
+- [x] Define one patch-worker parent authority with 21 coordinating surfaces.
+- [x] Add the `2026-07-16T02-03-42-04-00` audit family.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Implement and execute browser-audio, artifact, and Pages fixtures.
+- [ ] Implement and execute Worker fault, recovery, artifact and Pages fixtures.
 
 ## Main finding
 
 ```txt
-accepted run state and events
-  -> Three.js visible frame
-  -> DOM status and action update
-  -> no cue descriptor projection
-  -> no audible acknowledgement
+patch request
+  -> controller marks patch inflight
+  -> executor stores pending promise
+  -> Worker normally returns patch-generated or patch-error
 
-RunStarted / ShardCollected / RunFailed / RunWon
-  -> stable semantic gameplay meaning exists
-  -> no AudioContext owner, cue registry, preferences, deduplication, budgets, or lifecycle settlement exists
+Worker crash, hang, message failure or lost response
+  -> no pending-promise settlement
+  -> no controller inflight release
+  -> duplicate generation remains suppressed
+  -> no restart or synchronous fallback
+  -> no recovered-patch acknowledgement
 ```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-15T20-59-46-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-15T20-59-46-04-00.md
-.agent/architecture-audit/2026-07-15T20-59-46-04-00-game-audio-event-projection-dsk-map.md
-.agent/render-audit/2026-07-15T20-59-46-04-00-silent-audiovisual-frame-gap.md
-.agent/gameplay-audit/2026-07-15T20-59-46-04-00-silent-run-pickup-outcome-loop.md
-.agent/interaction-audit/2026-07-15T20-59-46-04-00-audio-projection-command-result-map.md
-.agent/audio-audit/2026-07-15T20-59-46-04-00-browser-unlock-cue-lifecycle-contract.md
-.agent/deploy-audit/2026-07-15T20-59-46-04-00-game-audio-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-15T20-59-46-04-00-oldest-selection-game-audio-reconciliation.md
+.agent/trackers/2026-07-16T02-03-42-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-16T02-03-42-04-00.md
+.agent/architecture-audit/2026-07-16T02-03-42-04-00-patch-worker-liveness-recovery-dsk-map.md
+.agent/render-audit/2026-07-16T02-03-42-04-00-stalled-patch-visible-world-gap.md
+.agent/gameplay-audit/2026-07-16T02-03-42-04-00-worker-failure-streaming-stall-loop.md
+.agent/interaction-audit/2026-07-16T02-03-42-04-00-patch-worker-command-result-map.md
+.agent/worker-runtime-audit/2026-07-16T02-03-42-04-00-worker-readiness-timeout-restart-contract.md
+.agent/deploy-audit/2026-07-16T02-03-42-04-00-worker-fault-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-16T02-03-42-04-00-oldest-selection-worker-liveness-reconciliation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-game-audio-event-projection-authority-domain`
+`prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
 
 ## Kit census
 
@@ -66,13 +68,13 @@ product/page/Worker kits: 17
 external/host/render adapters: 14
 proof kits: 8
 total implemented surfaces: 66
-planned audio surfaces: 22
+planned patch-worker surfaces: 21
 ```
 
 ## Next safe ledge
 
-Consume accepted semantic events and committed state through an `AudioProjectionAdmissionCommand`, admit browser audio after a user gesture, execute bounded cue descriptors, settle continuous loops across lifecycle transitions, and publish audible and audiovisual acknowledgements.
+Admit a Worker generation only after `patch-worker-ready`, bind every request to a deadline and cancellation owner, settle Worker `error` and `messageerror`, release or requeue controller inflight ownership, apply bounded restart, switch to synchronous generation when recovery is exhausted, and retire all pending work on document exit.
 
 ## Claim boundary
 
-Documentation only. No audio runtime, audible gameplay, browser-unlock reliability, cue correctness, spatial correctness, lifecycle safety, artifact parity, Pages parity, or production readiness is claimed.
+Documentation only. No Worker readiness, timeout, cancellation, restart, fallback, inflight recovery, lifecycle retirement, artifact parity, Pages parity, or production readiness is claimed.
