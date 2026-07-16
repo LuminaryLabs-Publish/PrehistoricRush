@@ -147,7 +147,6 @@ export async function hydrateTreeFidelityRuntimeImages(runtime, options = {}) {
 
   let frameCount = 0;
   for (const packageValue of packageValues) {
-    const processedForms = new Set();
     for (const formId of ["far", "horizon"]) {
       const form = packageValue?.forms?.[formId];
       const atlas = form?.atlas;
@@ -155,9 +154,6 @@ export async function hydrateTreeFidelityRuntimeImages(runtime, options = {}) {
       const image = atlasImages.get(String(atlas.assetId));
       if (!image) throw new Error(`Tree fidelity atlas ${atlas.assetId} was not decoded.`);
       atlas.runtimeImage = image;
-      const identity = `${atlas.assetId}:${form.frames?.map((entry) => entry.frameIndex).join(",")}`;
-      if (processedForms.has(identity)) continue;
-      processedForms.add(identity);
       frameCount += enrichFormFrames(form, image);
     }
   }
