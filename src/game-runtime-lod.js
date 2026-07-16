@@ -225,7 +225,7 @@ async function main() {
   game.setCollisionSampler((state) => {
     if (state.jumpHeight >= 1.05) return null;
     const collider = adapter.view.colliders.find((candidate) =>
-      Math.hypot(candidate.x - state.x, candidate.z - state.z) < collider.radius + Number(playerBody.collision?.radius ?? 0.32)
+      Math.hypot(candidate.x - state.x, candidate.z - state.z) < candidate.radius + Number(playerBody.collision?.radius ?? 0.32)
     );
     return collider ? { kind: "tree-impact", colliderId: collider.id, source: "fallback-collision" } : null;
   });
