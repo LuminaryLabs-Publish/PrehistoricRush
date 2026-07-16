@@ -1,23 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-15T16-00-32-04-00",
-  "status": "accessible-gameplay-projection-focus-authority-audited",
-  "technicalStatus": "accessible-gameplay-projection-focus-authority-audited",
-  "repositoryRevisionReviewed": "1e947c398512806e2236d07d9d64fae1cccd6677",
+  "generatedAt": "2026-07-15T20-59-46-04-00",
+  "status": "game-audio-event-projection-authority-audited",
+  "technicalStatus": "game-audio-event-projection-authority-audited",
+  "repositoryRevisionReviewed": "bfc51c01a79601686e5fad12ff3240472b3f111c",
   "runtimeSourceRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
-  "priorDocumentationHead": "1e947c398512806e2236d07d9d64fae1cccd6677",
-  "currentAuditedSlice": "Gameplay Semantic Status / Distance Progress / Terminal Announcements / Pause Dialog Focus",
-  "latestTracker": ".agent/trackers/2026-07-15T16-00-32-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T16-00-32-04-00.md",
+  "priorDocumentationHead": "bfc51c01a79601686e5fad12ff3240472b3f111c",
+  "currentAuditedSlice": "Accepted Gameplay Events / Browser Audio Admission / Cue Projection / Lifecycle / Audiovisual Convergence",
+  "latestTracker": ".agent/trackers/2026-07-15T20-59-46-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-15T20-59-46-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-15T16-00-32-04-00-accessible-gameplay-projection-focus-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-15T16-00-32-04-00-visual-only-status-progress-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-15T16-00-32-04-00-unannounced-run-terminal-state-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-15T16-00-32-04-00-accessible-projection-command-result-map.md",
-    "accessibility": ".agent/accessibility-audit/2026-07-15T16-00-32-04-00-live-status-progress-pause-focus-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-15T16-00-32-04-00-keyboard-screen-reader-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-15T16-00-32-04-00-oldest-selection-accessibility-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-15T20-59-46-04-00-game-audio-event-projection-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-15T20-59-46-04-00-silent-audiovisual-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-15T20-59-46-04-00-silent-run-pickup-outcome-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-15T20-59-46-04-00-audio-projection-command-result-map.md",
+    "audio": ".agent/audio-audit/2026-07-15T20-59-46-04-00-browser-unlock-cue-lifecycle-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-15T20-59-46-04-00-game-audio-browser-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-15T20-59-46-04-00-oldest-selection-game-audio-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -30,7 +30,10 @@
     "runtimeAheadCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush had the oldest synchronized eligible central timestamp after all current heads matched their repo-local documentation heads."
+    "priorCentralTimestamp": "2026-07-15T16-00-32-04-00",
+    "nextOldestRepo": "LuminaryLabs-Publish/HorrorCorridor",
+    "nextOldestTimestamp": "2026-07-15T16-39-06-04-00",
+    "reason": "PrehistoricRush had the oldest synchronized eligible central timestamp after the full Publish comparison found no higher-priority undocumented repository."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 22,
@@ -39,85 +42,92 @@
     "externalHostRenderAdapterCount": 14,
     "proofKitCount": 8,
     "totalSurfaceCount": 66,
-    "plannedAccessibilitySurfaceCount": 21
+    "plannedAudioSurfaceCount": 22
   },
   "interactionLoop": [
     "menu projects the selected procedural raptor and navigation links",
-    "game boot loads pinned providers and creates the engine physics streaming camera and renderer",
+    "game boot loads pinned engine kits Three.js Rapier and the physics provider",
     "keyboard and the primary button submit start steer boost jump and retry intent",
-    "accepted simulation state is rendered through Three.js",
-    "run status progress and primary action text are replaced visually every RAF callback",
-    "Escape mounts or removes a labeled pause section without an owned dialog-focus result"
+    "Core Simulation commits movement collision pickups goal and scene transitions",
+    "PrehistoricRush publishes RunStarted ShardCollected RunFailed and RunWon events",
+    "Three.js and DOM project accepted state without a semantic audio projection or audible acknowledgement"
   ],
   "domainsInUse": [
-    "browser document lifecycle keyboard focus RAF blur resize Worker storage and navigation",
+    "browser document lifecycle user gesture keyboard blur RAF resize Worker storage and navigation",
     "Core input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
     "PrehistoricRush run route surface score outcome pause player composition pose and terrain IK",
-    "semantic gameplay status progress terminal announcement dialog and focus projection",
+    "semantic game audio admission cue descriptors context lifecycle listener source preferences deduplication budgets and convergence",
     "patch generation queue cache Worker adoption and release",
     "terrain LOD Three.js Rapier vegetation pickups validation build Pages and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-15T16-00-32-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "accessibilitySurfaces": {
+    "completeInventory": ".agent/trackers/2026-07-15T20-59-46-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "audioSurfaces": {
+      "prehistoric-rush-domain-kit": [
+        "RunStarted event",
+        "ShardCollected event",
+        "RunFailed event",
+        "RunWon event",
+        "accepted run and outcome state"
+      ],
       "game-runtime-lod-host-adapter": [
-        "visual status container",
-        "visual progress strip",
-        "primary action button",
-        "RAF state projection"
+        "pinned module loading",
+        "input sampling",
+        "engine ticking",
+        "visual rendering",
+        "DOM status and action projection",
+        "public diagnostics"
       ],
-      "game-page-entry-kit": [
-        "pause overlay mount and removal",
-        "Escape toggle",
-        "settings and exit buttons"
-      ],
-      "planned-accessibility-authority": [
-        "semantic gameplay snapshot",
-        "status and progress roles",
-        "announcement deduplication",
-        "terminal announcements",
-        "dialog semantics",
-        "focus capture containment and restoration",
-        "accessible frame acknowledgement"
+      "planned-audio-authority": [
+        "browser capability and gesture admission",
+        "audio context lifecycle",
+        "semantic cue descriptors",
+        "run movement surface pickup collision victory and ambience cues",
+        "listener and source projection",
+        "preferences and buses",
+        "deduplication pooling and voice budgets",
+        "projection and convergence acknowledgements"
       ]
     }
   },
-  "accessibilityState": {
-    "gameRootAccessibleLabelPresent": true,
-    "menuLinksPresent": true,
-    "primaryGameplayButtonPresent": true,
-    "statusRolePresent": false,
-    "liveRegionPolicyPresent": false,
-    "semanticProgressbarPresent": false,
-    "terminalAnnouncementResultPresent": false,
-    "pauseAccessibleLabelPresent": true,
-    "pauseDialogRolePresent": false,
-    "pauseModalStatePresent": false,
-    "initialFocusPolicyPresent": false,
-    "focusContainmentPresent": false,
-    "backgroundInertPolicyPresent": false,
-    "focusRestorationPresent": false,
-    "accessibleGameplayProjectionResultPresent": false,
-    "firstAccessibleGameplayFrameAckPresent": false
+  "audioState": {
+    "runStartedEventPresent": true,
+    "shardCollectedEventPresent": true,
+    "runFailedEventPresent": true,
+    "runWonEventPresent": true,
+    "audioContextOwnerPresent": false,
+    "htmlAudioOwnerPresent": false,
+    "userGestureAdmissionPresent": false,
+    "semanticCueRegistryPresent": false,
+    "acceptedEventProjectorPresent": false,
+    "ambienceLifecyclePresent": false,
+    "listenerProjectionPresent": false,
+    "spatialSourceProjectionPresent": false,
+    "audioPreferencesPresent": false,
+    "cueDeduplicationPresent": false,
+    "voiceBudgetPresent": false,
+    "audioProjectionResultPresent": false,
+    "firstAudibleCueAckPresent": false,
+    "firstAudioVisualConvergenceAckPresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-accessible-gameplay-projection-focus-authority-domain",
-    "mainFinding": "Accepted gameplay and pause state is visually projected, but stable semantic status, progress, terminal announcements and dialog-focus settlement are absent."
+    "parentDomain": "prehistoric-rush-game-audio-event-projection-authority-domain",
+    "mainFinding": "Accepted run events and state are visually projected, but browser audio admission, cue projection, preferences, lifecycle, budgets, and audible evidence are absent."
   },
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
     "simulationChangedByAudit": false,
     "renderingChangedByAudit": false,
-    "accessibilityRuntimeChangedByAudit": false,
+    "audioRuntimeChangedByAudit": false,
     "packageTestWorkflowDeploymentChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
     "npmTestRun": false,
-    "keyboardOnlyFixtureRun": false,
-    "accessibilityTreeFixtureRun": false,
-    "screenReaderFixtureRun": false,
-    "pauseFocusFixtureRun": false,
+    "browserAudioUnlockFixtureRun": false,
+    "gameCueFixtureRun": false,
+    "audioLifecycleFixtureRun": false,
+    "audioVisualConvergenceFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
