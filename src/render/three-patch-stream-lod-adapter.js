@@ -1,5 +1,6 @@
 import { createThreePatchStreamAdapter as createBasePatchStreamAdapter } from "./three-patch-stream-adapter.js";
 import { createThreeTerrainLodLayer } from "./three-terrain-lod-layer.js";
+import { createThreeTreeFidelityLayer } from "./three-tree-fidelity-layer.js";
 
 function hideLegacyTerrain(scene, expectedVertexCount) {
   let hidden = 0;
@@ -23,7 +24,10 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     terrainLodPolicy,
     selectTerrainLodLevel,
     stream,
-    config
+    config,
+    treeTypes = [],
+    treeFidelityPackages = [],
+    treeBatchCapacity = 256
   } = options;
   if (!terrainLodPolicy) throw new TypeError("Three patch stream LOD adapter requires terrainLodPolicy.");
   const base = createBasePatchStreamAdapter(THREE, options);
@@ -36,7 +40,18 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     slotCount: (stream.activeRadius * 2 + 1) ** 2,
     textureSeed: config.seed
   });
+  const treeFidelity = treeFidelityPackages.length > 0
+    ? createThreeTreeFidelityLayer(THREE, {
+        scene: base.scene,
+        camera: base.camera,
+        renderer: base.renderer,
+        treeTypes,
+        packages: treeFidelityPackages,
+        capacity: treeBatchCapacity
+      })
+    : null;
   base.view.terrainLod = terrain.view;
+  base.view.treeFidelity = treeFidelity?.view ?? { enabled: false, packageCount: 0, counts: { near: 0, medium: 0, far: 0 } };
   base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
 
   const baseActivatePatch = base.activatePatch;
@@ -48,23 +63,27 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     const patch = entry?.patch ?? entry;
     if (!patch?.terrain) throw new TypeError("Terrain patch activation requires terrain fields.");
     const admission = terrain.activatePatch(patch, state);
+    treeFidelity?.activatePatch(patch, state);
     try {
       baseActivatePatch(entry, state);
       base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
       return admission;
     } catch (error) {
       terrain.releasePatches([patch.id]);
+      treeFidelity?.releasePatches([patch.id]);
       throw error;
     }
   }
 
   function releasePatches(ids) {
     terrain.releasePatches(ids);
+    treeFidelity?.releasePatches(ids);
     return baseReleasePatches(ids);
   }
 
   function render(state, deltaTime) {
     terrain.update(state, deltaTime);
+    treeFidelity?.update(state, deltaTime);
     const result = baseRender(state, deltaTime);
     renderedFrame += 1;
     terrain.view.lastVisibleFrameAck = Object.freeze({
@@ -79,10 +98,12 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
   return Object.freeze({
     ...base,
     terrainLod: terrain,
+    treeFidelity,
     activatePatch,
     releasePatches,
     render,
     dispose() {
+      treeFidelity?.dispose();
       terrain.dispose();
     }
   });
