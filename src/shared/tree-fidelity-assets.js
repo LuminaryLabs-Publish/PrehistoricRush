@@ -1,6 +1,7 @@
 export const TREE_FIDELITY_BUNDLE_ID = "prehistoric-tree-fidelity";
 export const TREE_FIDELITY_MANIFEST_ASSET_ID = "prehistoric-tree-fidelity-manifest";
 export const TREE_FIDELITY_PROVIDER_ID = "prehistoric-tree-fidelity-provider";
+export const TREE_FIDELITY_PACKAGE_VERSION = "2";
 
 export const PREHISTORIC_TREE_ARCHETYPES = Object.freeze([
   Object.freeze({ id: "giant-fern-tree", minHeight: 34, maxHeight: 58, trunkRadius: 2.5, crownHeight: 10.5, crownRadius: 18, crownColor: 0x365f35, trunkColor: 0x6b432b }),
@@ -54,7 +55,8 @@ function disposeTree(object) {
 function createPortablePackage(archetype, capture) {
   const averageHeight = (archetype.minHeight + archetype.maxHeight) * 0.5;
   return {
-    schema: "prehistoric-rush.tree-fidelity-package/1",
+    schema: "prehistoric-rush.tree-fidelity-package/2",
+    version: TREE_FIDELITY_PACKAGE_VERSION,
     archetypeId: archetype.id,
     source: {
       bounds: { width: archetype.crownRadius * 2, height: averageHeight + archetype.crownHeight, depth: archetype.crownRadius * 2 },
@@ -64,21 +66,21 @@ function createPortablePackage(archetype, capture) {
     forms: {
       near: {
         kind: "mesh-recipe",
-        minimumProjectedSize: 120,
+        minimumProjectedSize: 360,
         trunk: { radialSegments: 10, heightSegments: 3, taper: 0.68 },
         crowns: [{ detail: 2, scale: [1, archetype.crownHeight / archetype.crownRadius, 1] }, { detail: 1, scale: [0.53, 0.43, 0.53] }]
       },
       medium: {
         kind: "mesh-recipe",
-        minimumProjectedSize: 42,
-        maximumProjectedSize: 132,
+        minimumProjectedSize: 150,
+        maximumProjectedSize: 390,
         trunk: { radialSegments: 6, heightSegments: 1, taper: 0.7 },
         crowns: [{ detail: 1, scale: [1, archetype.crownHeight / archetype.crownRadius, 1] }]
       },
       far: {
         kind: "multi-angle-impostor",
-        minimumProjectedSize: 6,
-        maximumProjectedSize: 48,
+        minimumProjectedSize: 18,
+        maximumProjectedSize: 170,
         atlas: capture.observations.color,
         frames: capture.frames,
         crossedCards: 2
@@ -86,7 +88,7 @@ function createPortablePackage(archetype, capture) {
       horizon: {
         kind: "impostor",
         minimumProjectedSize: 0,
-        maximumProjectedSize: 10,
+        maximumProjectedSize: 24,
         atlas: capture.observations.color,
         frames: capture.frames.slice(0, 1),
         crossedCards: 1
@@ -120,18 +122,18 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, o
 
   return {
     id: TREE_FIDELITY_PROVIDER_ID,
-    version: "1.0.0",
+    version: "1.1.0",
     metadata: { purpose: "Prepare portable PrehistoricRush tree mesh recipes and captured impostor atlases." },
     async load(asset, context) {
       if (asset.metadata.kind === "manifest") {
         return {
           portable: {
-            schema: "prehistoric-rush.tree-fidelity-manifest/1",
+            schema: "prehistoric-rush.tree-fidelity-manifest/2",
             revision: asset.version,
             bundleId: TREE_FIDELITY_BUNDLE_ID,
             archetypes: PREHISTORIC_TREE_ARCHETYPES.map((tree) => ({ id: tree.id, assetId: assetIdFor(tree) }))
           },
-          metadata: { kind: "manifest" }
+          metadata: { kind: "manifest", packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
         };
       }
       const archetype = PREHISTORIC_TREE_ARCHETYPES.find((tree) => tree.id === asset.metadata.archetypeId);
@@ -141,13 +143,13 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, o
       subjects.set(archetype.id, object);
       try {
         const captureResult = await capture.capture({
-          id: `capture:${archetype.id}:v1`,
+          id: `capture:${archetype.id}:v${TREE_FIDELITY_PACKAGE_VERSION}`,
           subject: { objectId: archetype.id },
           viewSet: { pattern: "around-subject", azimuthCount: 8, elevations: [0, 12] },
           framing: { boundsSource: "three-object", preserveGrounding: true, padding: 0.08 },
           observations: ["color", "opacity"],
           output: { kind: "atlas", frameSize: 256 },
-          metadata: { archetypeId: archetype.id }
+          metadata: { archetypeId: archetype.id, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
         }, {
           jobId: context.jobId,
           isCancelled: context.isCancelled,
@@ -158,7 +160,7 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, o
         context.updateProgress(1, 1, `${archetype.id} ready`);
         return {
           portable: createPortablePackage(archetype, captureResult),
-          metadata: { archetypeId: archetype.id, capturedFrames: captureResult.frames.length }
+          metadata: { archetypeId: archetype.id, capturedFrames: captureResult.frames.length, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
         };
       } finally {
         subjects.delete(archetype.id);
@@ -191,24 +193,24 @@ export function installPrehistoricTreeFidelityAssets(NexusEngine, THREE, engine,
     assets.registerAsset({
       id,
       type: "tree-fidelity-package",
-      version: "1",
+      version: TREE_FIDELITY_PACKAGE_VERSION,
       providerId: TREE_FIDELITY_PROVIDER_ID,
-      metadata: { kind: "package", archetypeId: archetype.id }
+      metadata: { kind: "package", archetypeId: archetype.id, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
     });
   }
   assets.registerAsset({
     id: TREE_FIDELITY_MANIFEST_ASSET_ID,
     type: "tree-fidelity-manifest",
-    version: "1",
+    version: TREE_FIDELITY_PACKAGE_VERSION,
     providerId: TREE_FIDELITY_PROVIDER_ID,
     dependencies: packageIds,
-    metadata: { kind: "manifest" }
+    metadata: { kind: "manifest", packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
   });
   assets.registerBundle({
     id: TREE_FIDELITY_BUNDLE_ID,
-    version: "1",
+    version: TREE_FIDELITY_PACKAGE_VERSION,
     assets: [TREE_FIDELITY_MANIFEST_ASSET_ID],
-    metadata: { purpose: "PrehistoricRush tree mesh LOD and impostor fidelity package." }
+    metadata: { purpose: "PrehistoricRush tree mesh LOD and impostor fidelity package.", packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
   });
   return { assets, bundleId: TREE_FIDELITY_BUNDLE_ID, manifestAssetId: TREE_FIDELITY_MANIFEST_ASSET_ID, packageIds };
 }
