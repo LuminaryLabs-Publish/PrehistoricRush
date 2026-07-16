@@ -5,6 +5,7 @@ import {
 import { RUNTIME_URLS } from "../shared/runtime-versions.js";
 import {
   TREE_FIDELITY_BUNDLE_ID,
+  TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime
 } from "../shared/tree-fidelity-assets.js";
 
@@ -64,6 +65,7 @@ async function preloadTreeFidelity() {
         treeAssetsStatus.textContent = `${detail ?? "Preparing forest assets"} · ${Math.round(progress * 100)}%`;
       }
     });
+    runtime.assets.unregisterProvider(TREE_FIDELITY_PROVIDER_ID);
     treeAssetsStatus.textContent = receipt.cached ? "Forest assets cached" : "Forest assets ready";
   } catch (error) {
     console.warn("Tree fidelity preload did not complete in the menu.", error);
