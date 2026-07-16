@@ -1,23 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-16T06-39-16-04-00",
-  "status": "webgl-context-gpu-resource-recovery-authority-audited",
-  "technicalStatus": "webgl-context-gpu-resource-recovery-authority-audited",
-  "repositoryRevisionReviewed": "5a4d179c09ee9fad4e11a44f42671606a4a6254d",
-  "runtimeSourceRevisionReviewed": "4808f05cff438ff5a9d013cd7ddec5127bbcf213",
-  "priorDocumentationHead": "5a4d179c09ee9fad4e11a44f42671606a4a6254d",
-  "currentAuditedSlice": "WebGL Context Loss / GPU Resource Reconstruction / Recovery / Fallback / First Recovered Frame",
-  "latestTracker": ".agent/trackers/2026-07-16T06-39-16-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T06-39-16-04-00.md",
+  "generatedAt": "2026-07-16T12-02-38-04-00",
+  "status": "tree-fidelity-asset-adoption-projection-authority-audited",
+  "technicalStatus": "tree-fidelity-asset-adoption-projection-authority-audited",
+  "repositoryRevisionReviewed": "7159a414ff4e103015ca1b634324b9fd89256cf4",
+  "runtimeSourceRevisionReviewed": "7159a414ff4e103015ca1b634324b9fd89256cf4",
+  "priorDocumentationHead": "e83638abab425dc3c54370ad6c3fab17576c3d13",
+  "currentAuditedSlice": "Tree Fidelity Asset Preparation / Adoption / Patch Binding / Render Forms / Visible Frame",
+  "latestTracker": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T12-02-38-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-16T06-39-16-04-00-webgl-context-gpu-resource-recovery-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-16T06-39-16-04-00-lost-context-visible-world-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-16T06-39-16-04-00-render-loss-active-run-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-16T06-39-16-04-00-render-recovery-command-result-map.md",
-    "rendererRecovery": ".agent/renderer-recovery-audit/2026-07-16T06-39-16-04-00-gpu-resource-rehydration-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-16T06-39-16-04-00-context-loss-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-16T06-39-16-04-00-oldest-selection-renderer-recovery-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-16T12-02-38-04-00-tree-fidelity-asset-adoption-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-16T12-02-38-04-00-prepared-tree-assets-not-presented-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-16T12-02-38-04-00-startup-waits-unused-tree-package-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-16T12-02-38-04-00-tree-asset-preparation-adoption-command-result-map.md",
+    "treeSystem": ".agent/tree-system-audit/2026-07-16T12-02-38-04-00-fidelity-bundle-consumption-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-16T12-02-38-04-00-tree-fidelity-source-build-pages-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-16T12-02-38-04-00-runtime-ahead-tree-fidelity-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -27,97 +27,97 @@
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "undocumentedCount": 0,
-    "runtimeAheadCount": 0,
+    "runtimeAheadCount": 1,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "priorCentralTimestamp": "2026-07-16T02-03-42-04-00",
-    "nextOldestRepo": "LuminaryLabs-Publish/HorrorCorridor",
-    "nextOldestTimestamp": "2026-07-16T02-40-29-04-00",
-    "reason": "PrehistoricRush had the oldest synchronized eligible central timestamp after the full Publish comparison found no higher-priority undocumented repository."
+    "reason": "PrehistoricRush was six runtime commits ahead of its documented head and therefore took priority over the oldest synchronized selection rule."
+  },
+  "runtimeDelta": {
+    "base": "e83638abab425dc3c54370ad6c3fab17576c3d13",
+    "head": "7159a414ff4e103015ca1b634324b9fd89256cf4",
+    "commitCount": 6,
+    "changedFileCount": 6,
+    "changedFiles": [
+      "package.json",
+      "src/game.js",
+      "src/pages/menu.js",
+      "src/shared/runtime-versions.js",
+      "src/shared/tree-fidelity-assets.js",
+      "tests/tree-fidelity-assets.mjs"
+    ]
   },
   "census": {
-    "nexusRootAndSubdomainKitCount": 22,
+    "nexusRootAndSubdomainKitCount": 24,
     "officialNexusEngineKitCount": 5,
-    "productPageWorkerKitCount": 17,
-    "externalHostRenderAdapterCount": 14,
+    "productPageAssetWorkerKitCount": 22,
+    "externalHostCaptureRenderAdapterCount": 16,
     "proofKitCount": 8,
-    "totalSurfaceCount": 66,
-    "plannedWebglRecoverySurfaceCount": 21
+    "totalSurfaceCount": 75,
+    "newAssetStartupSurfaceCount": 9,
+    "plannedTreeFidelityAdoptionSurfaceCount": 20
   },
   "interactionLoop": [
-    "boot preloads pinned runtime modules and composes engine physics patch streaming and Three.js presentation",
-    "the base adapter creates one WebGLRenderer and GPU resource graph",
-    "the host ticks simulation streaming and render submission recursively through RAF",
-    "browser WebGL context loss/restoration has no product-owned command or result path",
-    "resource reconstruction retry fallback and first recovered frame proof are absent"
+    "menu creates an asset runtime and background-requests the tree-fidelity bundle",
+    "game entry creates another asset/startup runtime and blocks on required tree-fidelity preparation",
+    "the preparation receipt is stored on globalThis",
+    "game-runtime-lod ignores the receipt and declares independent treeTypes",
+    "patch generation emits legacy typeIndex records",
+    "the Three.js adapter renders cylinder trunks and icosahedron crowns without package identity",
+    "no package-bound visible frame acknowledgement exists"
   ],
   "domainsInUse": [
-    "browser document canvas WebGL context context loss restoration RAF resize and page lifecycle",
-    "Core input spatial scene creature character player physics simulation motion camera animation graphics skybox UI diagnostics composition and presentation",
-    "PrehistoricRush run route surface score outcome pause composition pose and terrain IK",
-    "seeded patch identity active and prefetch rings generation cache activation release and visible-set replay",
-    "Three.js renderer scene camera geometry materials textures shadows instances and procedural creature resources",
-    "terrain LOD topology slots index buffers morph targets clay textures and visible-frame acknowledgements",
-    "Rapier input diagnostics tests build Pages and central tracking",
-    "render generation loss admission resource retirement reconstruction stale rejection retry fallback and recovered-frame proof"
+    "browser route module DOM canvas global RAF and lifecycle",
+    "Core Assets provider asset bundle request progress cache receipt and snapshot",
+    "Core Startup launch preparation readiness and result",
+    "IndexedDB cache and Three.js object capture",
+    "tree archetype package manifest bundle and provider",
+    "menu preload and game startup preparation",
+    "PrehistoricRush simulation patch streaming terrain LOD rendering and physics",
+    "tree preparation adoption patch binding form selection materialization retirement and visible proof",
+    "tests static delivery Pages and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-16T06-39-16-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "recoverySurfaces": {
-      "three-patch-stream-adapter-kit": [
-        "renderer scene camera resource allocation",
-        "patch presentation",
-        "frame submission"
-      ],
-      "three-terrain-lod-layer": [
-        "LOD geometry",
-        "index and morph buffers",
-        "clay textures",
-        "ordinary disposal"
-      ],
-      "game-runtime-lod-host-adapter": [
-        "module loading",
-        "composition",
-        "RAF",
-        "resize",
-        "render submission"
-      ],
-      "planned-render-recovery-authority": [
-        "context generation and loss admission",
-        "resource registry and rehydration",
-        "stale rejection",
-        "retry and fallback",
-        "first recovered frame acknowledgement"
-      ]
+    "completeInventory": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "newSurfaces": {
+      "core-assets-kit": ["provider registration", "asset and bundle graph", "request progress", "cache", "receipts"],
+      "core-startup-kit": ["launch", "required preparation tracking", "readiness"],
+      "tree-fidelity-package-schema-kit": ["source bounds", "collision", "four forms", "transition", "materials"],
+      "tree-fidelity-asset-provider-kit": ["temporary object build", "capture", "portable package", "progress", "disposal"],
+      "tree-fidelity-registration-kit": ["provider", "five packages", "manifest dependencies", "bundle"],
+      "tree-fidelity-runtime-composition-kit": ["isolated asset/startup engine", "registration"],
+      "tree-fidelity-route-preparation-kit": ["menu background preload", "game required preparation", "progress", "receipt publication"],
+      "three-object-capture-provider-adapter": ["subject resolution", "framing", "multi-angle observations", "atlas"],
+      "browser-indexeddb-asset-cache-adapter": ["persistent lookup", "write-through cache"]
     }
   },
-  "renderState": {
-    "webglRendererPresent": true,
-    "recursiveRafPresent": true,
-    "terrainLodResourcesPresent": true,
-    "clayTexturesPresent": true,
-    "instancedResourcesPresent": true,
-    "creatureResourcesPresent": true,
-    "shadowResourcesPresent": true,
-    "terrainLodDisposalPresent": true,
-    "contextLostListenerPresent": false,
-    "contextRestoredListenerPresent": false,
-    "rendererGenerationPresent": false,
-    "completeResourceRegistryPresent": false,
-    "dependencyOrderedReconstructionPresent": false,
-    "baseAdapterCompleteDisposalPresent": false,
-    "hostDisposalPresent": false,
-    "recoveryDeadlinePresent": false,
-    "retryBudgetPresent": false,
-    "fallbackResultPresent": false,
-    "firstRecoveredFrameAckPresent": false
+  "assetState": {
+    "fiveArchetypesPresent": true,
+    "portablePackageSchemaPresent": true,
+    "nearMediumMeshRecipesPresent": true,
+    "farHorizonImpostorDescriptorsPresent": true,
+    "colorOpacityCapturePresent": true,
+    "indexedDbCachePresentWhenSupported": true,
+    "menuBackgroundPreloadPresent": true,
+    "gameRequiredPreparationPresent": true,
+    "sourceContractTestPresent": true,
+    "runtimeReceiptConsumptionPresent": false,
+    "singleArchetypeAuthorityPresent": false,
+    "packageIdentityInPatchRecordsPresent": false,
+    "packageDigestInGeneratorCacheIdentityPresent": false,
+    "packageRenderFormMaterializationPresent": false,
+    "capturedAtlasUsedByGameRendererPresent": false,
+    "stalePackageRejectionPresent": false,
+    "routeAssetRuntimeRetirementPresent": false,
+    "treeFidelityAdoptionResultPresent": false,
+    "firstTreeFidelityBoundFrameAckPresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain",
-    "mainFinding": "The game owns one large Three.js GPU-resource generation but no product-owned WebGL context-loss admission, complete reconstruction transaction, bounded recovery/fallback policy or first recovered frame proof."
+    "parentDomain": "prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain",
+    "mainFinding": "The game blocks on a prepared tree-fidelity bundle but does not adopt its manifest, package payloads, atlas frames or revision into patch generation or live rendering."
   },
   "retainedStatuses": [
-    "patch-worker-request-liveness-recovery-authority-audited",
+    "webgl-context-gpu-resource-recovery-authority-central-reconciled",
+    "patch-worker-request-liveness-recovery-authority-central-reconciled",
     "game-audio-event-projection-authority-central-reconciled",
     "accessible-gameplay-projection-focus-authority-central-reconciled",
     "host-clock-fixed-step-frame-authority-central-reconciled",
@@ -149,10 +149,10 @@
     "packageTestWorkflowDeploymentChangedByAudit": false,
     "branchCreated": false,
     "pullRequestCreated": false,
+    "sourceDiffInspected": true,
     "npmTestRun": false,
-    "contextLossFixtureRun": false,
-    "resourceRehydrationFixtureRun": false,
-    "fallbackFixtureRun": false,
+    "browserPackageFixtureRun": false,
+    "adoptionFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
