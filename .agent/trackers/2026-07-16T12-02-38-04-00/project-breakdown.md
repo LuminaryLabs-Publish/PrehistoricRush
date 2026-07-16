@@ -5,30 +5,27 @@
 **Branch:** `main`  
 **Selection:** runtime-ahead priority  
 **Reviewed pre-audit documentation head:** `e83638abab425dc3c54370ad6c3fab17576c3d13`  
-**Reviewed runtime head:** `7159a414ff4e103015ca1b634324b9fd89256cf4`  
-**Status:** `tree-fidelity-asset-adoption-projection-authority-audited`
+**Reviewed runtime source revision:** `e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53`  
+**Status:** `tree-fidelity-generation-form-transition-authority-audited`
 
 ## Summary
 
-Six runtime commits added asynchronous tree-fidelity packages, menu preloading, required game-start preparation, an async-asset-enabled Nexus Engine pin and a source contract test. The bundle prepares five archetype packages containing near, medium, far and horizon forms, but the active game runtime never consumes the prepared manifest, package payloads, atlas frames or receipt. It continues to create trees from a separate hard-coded numeric `treeTypes` array and the existing cylinder/icosahedron instanced renderer.
+PrehistoricRush was the only runtime-ahead eligible repository. Thirteen runtime commits added Core Assets/Core Startup tree packages, cache-backed preparation, live package consumption, near/medium/far rendering, startup frame acknowledgement, provider retirement and source contract checks. The focused remaining gap is exact generation and form-transition authority: patch/cache identity uses only package count, horizon is never selected, package hysteresis and dither crossfade are unused, and the first-frame receipt does not identify the exact bundle, manifest or package revisions.
 
 ## Plan ledger
 
-**Goal:** make prepared tree-fidelity packages become the accepted source of tree generation and rendering, with one revision-bound adoption result and one visible frame acknowledgement.
+**Goal:** preserve the implemented tree-fidelity pipeline while making package generation, form selection, transitions and visible proof exact and revision-bound.
 
 - [x] Enumerate all 11 current `LuminaryLabs-Publish` repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Confirm ten eligible central ledgers and root `.agent` states.
-- [x] Detect PrehistoricRush as runtime-ahead by six commits.
-- [x] Select only PrehistoricRush.
-- [x] Review the six runtime commits and six changed files.
-- [x] Identify the complete menu, startup, asset, patch and render interaction loop.
-- [x] Identify all domains, kits, adapters and offered services.
-- [x] Preserve the previous 66-surface inventory and add nine implemented asset/startup surfaces.
-- [x] Define one parent adoption/projection authority and 20 coordinating surfaces.
-- [x] Add the timestamped root `.agent` audit family.
-- [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Implement package adoption, form selection, lifecycle settlement and executable source/build/Pages parity fixtures.
+- [x] Select only runtime-ahead PrehistoricRush.
+- [x] Reconcile thirteen runtime commits and nine changed runtime files.
+- [x] Identify the complete interaction loop, domains, kits and services.
+- [x] Preserve the prior 66 surfaces and document eleven new asset/startup/render/proof surfaces.
+- [x] Define one remaining generation/form-transition authority and 20 coordinating surfaces.
+- [x] Add the timestamped root `.agent` audit family on `main`.
+- [ ] Implement exact package identity, horizon selection, transition state and executable parity fixtures.
 
 ## Selection comparison
 
@@ -41,117 +38,109 @@ new or ledger-missing: 0
 root-agent-missing: 0
 undocumented: 0
 runtime-ahead: 1
-
 selected: LuminaryLabs-Publish/PrehistoricRush
-reason: six runtime commits followed documented head e83638ab
 excluded: LuminaryLabs-Publish/TheCavalryOfRome
 ```
 
-## Runtime changes reconciled
+## Runtime implementation reconciled
 
 ```txt
-d573eec3 feat(trees): add async fidelity asset packages
-09b3dea6 feat(menu): preload tree fidelity assets
-e7611dc6 feat(startup): wait for tree fidelity bundle
-1d7a6efb chore(runtime): pin async asset-enabled NexusEngine
-889441a4 test(trees): cover fidelity asset contract
-7159a414 test(trees): run fidelity asset contract
-```
-
-Changed files:
-
-```txt
-package.json
-src/game.js
-src/pages/menu.js
-src/shared/runtime-versions.js
-src/shared/tree-fidelity-assets.js
-tests/tree-fidelity-assets.mjs
+Core Assets and optional Core Startup runtime
+five canonical tree archetypes and derived compatibility tuples
+five portable package assets plus manifest and bundle
+near and medium mesh recipes
+far multi-angle and horizon impostor descriptors
+Three.js color/opacity object capture
+IndexedDB package cache
+menu background preload
+game required preparation
+provider retirement after preparation
+live package lookup and renderer admission
+near/medium/far dynamic tree-fidelity layer
+legacy tree suppression
+startup first-frame acknowledgement
+source contract coverage
 ```
 
 ## Complete interaction loop
 
 ```txt
-menu route
-  -> load selected raptor profile
-  -> create a separate Core Assets runtime
-  -> install IndexedDB cache when available
-  -> register tree-fidelity provider, assets and bundle
+menu
+  -> create asset runtime
+  -> register provider, five packages, manifest and bundle
   -> background-request the bundle
-  -> render progress, cached or ready status
-  -> retain runtime on globalThis
+  -> warm IndexedDB cache when available
+  -> project progress/result
+  -> unregister the capture provider
 
-game route entry
-  -> import pinned Nexus Engine and Three.js
-  -> create another Core Assets + Core Startup runtime
+game entry
+  -> create asset + startup runtime
   -> launch startup
-  -> register the same provider, assets and bundle
-  -> track the tree bundle as a required preparation
-  -> capture five tree archetypes into atlas packages when uncached
-  -> store runtime and receipt on globalThis
-  -> wait for preparation completion
-  -> import game-runtime-lod.js
+  -> request the tree bundle as required preparation
+  -> load cached packages or capture them
+  -> unregister the capture provider
+  -> retain package values and startup state
+  -> import the main game runtime
 
-active game composition
-  -> create the normal realtime game engine
-  -> define a separate hard-coded treeTypes array
-  -> pass treeTypes to patch generation
-  -> pass treeTypes to the Three.js patch-stream adapter
-  -> create cylinder trunks and icosahedron crowns as instanced meshes
-  -> stream patches and update instance matrices
-  -> render the legacy tree representation
+game boot
+  -> derive treeTypes from canonical archetypes
+  -> read five prepared package values
+  -> include tree-fidelity package count in vegetation identity
+  -> create realtime game, physics, patch controller and renderer
+  -> create the tree-fidelity layer when package values exist
+  -> suppress legacy tree meshes
 
-missing adoption bridge
-  -> game-runtime-lod.js does not read PrehistoricRushTreeAssetRuntime
-  -> no manifest or package revision is admitted
-  -> no near/medium/far/horizon form is selected from the prepared package
-  -> no captured atlas is bound to a renderer material
-  -> no TreeFidelityAdoptionResult exists
-  -> no FirstTreeFidelityBoundFrameAck exists
+normal frame
+  -> simulation and patch streaming advance
+  -> active patches enter the fidelity layer
+  -> projected tree height selects near, medium or far
+  -> matching dynamic mesh or billboard instances update
+  -> scene renders
+  -> first rendered frame reports package count and visible tree count to Core Startup
+  -> UI reports near/medium/far counts
+
+remaining gap
+  -> exact package versions/digests are not in patch or cache identity
+  -> far minimum threshold is not enforced
+  -> horizon form is never selected
+  -> package hysteresis and dither-crossfade are not applied
+  -> startup acknowledgement cannot prove the exact package generation
 ```
 
 ## Main source-backed finding
 
-The new asset module defines five archetypes and creates portable packages with four forms:
+The current runtime now consumes prepared package values and creates a dedicated `three-tree-fidelity-layer`. This closes the earlier preparation-to-render adoption gap. The remaining contract is weaker than the package schema:
 
 ```txt
-near: mesh recipe
-medium: mesh recipe
-far: multi-angle impostor atlas
-horizon: single impostor atlas
-transition: dither crossfade with hysteresis
+vegetation cache identity: package count only
+patch tree identity: type index, no package digest
+render states: near / medium / far only
+horizon package form: declared but unused
+far minimumProjectedSize: read but not used in classification
+change.hysteresis: declared but unused
+change.mode dither-crossfade: declared but unused
+transition duration: declared but unused
+startup receipt: package count + tree count only
+functional browser/render parity fixture: absent
 ```
 
-The game entry waits for the required bundle and publishes its receipt only through `globalThis.PrehistoricRushTreeAssetRuntime`. The imported runtime then declares an independent `treeTypes` array, passes it to both the patch generator and render adapter, and never reads the prepared runtime or receipt.
-
-The active render adapter still constructs:
-
-```txt
-trunk: InstancedMesh(CylinderGeometry)
-crown: InstancedMesh(IcosahedronGeometry)
-color: treeTypes[typeIndex][5]
-```
-
-Therefore preparation completion does not prove adoption or visible fidelity. The new contract test proves identifiers, five archetypes, frozen six-field type tuples and the pinned Nexus revision. It does not request a bundle, inspect package payloads, verify atlas output, bind a package to the live renderer or compare a presented frame.
-
-This is a source-backed application and convergence gap. It does not prove that asset generation is broken, and no visual regression was reproduced.
+Per-frame threshold selection has no retained form state. A tree near a threshold can switch forms repeatedly as projected size changes, and all trees below the medium threshold are assigned to far regardless of the package far/horizon ranges. This is a source-backed identity and presentation-coherence gap, not a reproduced visual defect.
 
 ## Domains in use
 
 ```txt
-browser route, ES module, DOM, canvas, global lifecycle and requestAnimationFrame
-Core Assets registry, providers, assets, bundles, requests, progress, caching and receipts
-Core Startup launch, required preparation tracking and readiness
-IndexedDB cache capability, database/store ownership and cached package retrieval
-Three.js offscreen object capture, subject resolution, framing, multi-angle observation and atlas output
+browser route, modules, DOM, canvas, global lifecycle and RAF
+Core Assets registry, providers, dependency graph, requests, progress, cache and receipts
+Core Startup launch, required preparation, first-frame presentation and input-ready entry
+IndexedDB cache and Three.js object capture
 prehistoric tree archetypes, package schema, manifest, bundle and provider lifecycle
-menu background preloading and game required startup preparation
-PrehistoricRush run, route, surface, score, outcome, pause, player, pose and terrain IK
-seeded patch generation, cache, activation, release, visible-set replay and Worker execution
-Three.js renderer, scene, camera, terrain, instanced vegetation, pickups and procedural creature
-Rapier bodies and colliders, terrain LOD, camera follow, browser input and diagnostics
-asset preparation identity, package adoption, render-form selection, stale revision rejection, lifecycle retirement and visible-frame proof
-tests, static delivery, Pages deployment, repo-local audit state and central tracking
+menu preload and game startup preparation
+PrehistoricRush run, route, surface, outcome, player, pause, pose and terrain IK
+seeded patch generation, Worker execution, cache, activation, release and replay
+Three.js terrain, tree-fidelity mesh/impostor rendering, camera, instances and creature
+Rapier physics, terrain LOD, camera follow, input and diagnostics
+tree generation identity, package-to-patch binding, form state, horizon, hysteresis, crossfade and exact-frame proof
+tests, Pages deployment, repo-local audit state and central tracking
 ```
 
 ## Complete kit and offered-service inventory
@@ -159,91 +148,92 @@ tests, static delivery, Pages deployment, repo-local audit state and central tra
 ### Nexus Engine root and subdomain kits: 24
 
 ```txt
-core-assets-kit: provider, asset and bundle registration; request scheduling; dependency resolution; progress; cache; receipts; snapshots
-core-startup-kit: launch identity, preparation registration, required readiness, progress and startup result
-core-input-kit: actions, axes, bindings and input snapshots
+core-assets-kit: providers, assets, bundles, dependencies, requests, cache, progress, receipts and values
+core-startup-kit: launch, required preparations, progress, first-frame presentation, input-ready entry and descriptors
+core-input-kit: actions, axes, bindings and snapshots
 core-spatial-kit: transforms and spatial state
 core-scene-kit: scene registry and transitions
 core-creature-kit: creature definitions, registry, snapshots and reset
 core-character-kit: character registry, bindings, status, snapshots and reset
 core-player-kit: player registry, possession, control and spawn generations
-core-physics-kit: provider-backed bodies, colliders, motion requests, stepping and frames
-articulated-dynamics-domain-kit: articulated constraints and physics-provider integration
+core-physics-kit: provider-backed bodies, colliders, stepping and frames
+articulated-dynamics-domain-kit: articulated constraints and provider integration
 core-simulation-kit: proposals, observations, resolution, events and committed frames
-core-motion-kit: motion intents, requests and committed motion frames
-articulated-motion-domain-kit: rigs, FK, targets, IK solve and snapshots
+core-motion-kit: motion intents, requests and committed frames
+articulated-motion-domain-kit: rigs, FK, targets, IK and snapshots
 core-camera-kit: camera descriptors and state
 core-animation-kit: animation descriptors and state
-core-graphics-kit: renderer-neutral descriptors and terrain LOD policy registration
+core-graphics-kit: renderer-neutral descriptors and terrain LOD policy
 core-skybox-kit: skybox presets and state
 core-ui-kit: UI descriptors and registry
 core-diagnostics-kit: diagnostics state and snapshots
 core-composition-kit: game composition capabilities
-core-presentation-domain: presentation composition graph and snapshots
-core-presentation-output-kit: surface input, viewport policy, render resolution and safe area
-core-ui-scale-kit: reference resolution, viewport scale and scale policy
-core-camera-framing-kit: subject framing, projection fit, damping and clipping policy
+core-presentation-domain: presentation graph and snapshots
+core-presentation-output-kit: viewport, render resolution and safe area
+core-ui-scale-kit: reference resolution and scale policy
+core-camera-framing-kit: framing, projection fit, damping and clipping
 ```
 
 ### Official NexusEngine-Kits: 5
 
 ```txt
-seed-kit: deterministic world seeds and named random streams
+seed-kit: deterministic seeds and named streams
 procedural-creature-body-kit: geometry, skeleton, skinning, collision and descriptors
-instanced-render-batch-kit: batch registry, stable ranges, cell membership, flush and diagnostics
-seeded-world-patch-controller-kit: patch identity, active/prefetch rings, cache, generation, ready delivery, activation and release
+instanced-render-batch-kit: stable instance ranges, cells, flush and diagnostics
+seeded-world-patch-controller-kit: patch identity, rings, cache, generation, activation and release
 camera-smooth-follow-kit: damped follow, reset, bounded delta and snapshots
 ```
 
 ### Product, page, asset and Worker kits: 22
 
 ```txt
-prehistoric-rush-domain-kit: run, route, surface, score, accepted outcomes, semantic events, player, pose and ground IK
-prehistoric-rush-pause-menu-domain-kit: pause state, commands, events and snapshot
-prehistoric-rush-terrain-lod-policy-kit: LOD policy registration, query, snapshot and reset
-prehistoric-rush-resolution-policy: movement, collision, pickup, goal, event and transition resolution
+prehistoric-rush-domain-kit: run, route, surface, score, outcomes, player, pose and IK
+prehistoric-rush-pause-menu-domain-kit: pause commands, state, events and snapshot
+prehistoric-rush-terrain-lod-policy-kit: LOD policy registration and query
+prehistoric-rush-resolution-policy: movement, collision, pickups, goals and transitions
 player-character-composition-kit: body, rig, creature, character and possession
-player-articulation-adapter-kit: legacy pose conversion and terrain foot targets
+player-articulation-adapter-kit: pose conversion and terrain foot targets
 player-character-schema-kit: profile normalization and validation
-player-character-profile-store-kit: localStorage, revisions, broadcasts, save, patch, reset and subscriptions
-menu-page-kit: title, selected-profile projection and navigation
-character-creator-page-kit: controls, draft, debounce, reset, external updates, navigation and preview
-character-preview-transition-kit: morph, crossfade, pose and resource lifecycle
-three-procedural-creature-adapter-kit: mesh creation, pose application and disposal
-game-page-entry-kit: dependency preflight, runtime entry, feedback cleanup and pause host
-player-raptor-preset-kit: authored player creature content
-drunk-route-generator: deterministic route samples, nearest query, classification and progress
-prehistoric-patch-generator: terrain fields, trees, grass, pickups and colliders
-prehistoric-patch-worker: initialization, ready message, request execution, transferable success and per-request error response
-tree-fidelity-package-schema-kit: archetype source bounds, collision, four render forms, transition and material descriptors
-tree-fidelity-asset-provider-kit: manifest/package load, object construction, capture, progress, portable result and disposal
-tree-fidelity-registration-kit: provider, five package assets, manifest dependency graph and bundle registration
-tree-fidelity-runtime-composition-kit: isolated Core Assets/Core Startup engine creation and route registration
-tree-fidelity-route-preparation-kit: menu background preload, game required preparation, progress projection and receipt publication
+player-character-profile-store-kit: persistence, revisions, broadcasts and subscriptions
+menu-page-kit: profile projection, navigation and asset-preload status
+character-creator-page-kit: controls, draft, persistence and preview
+character-preview-transition-kit: morph, crossfade, pose and lifecycle
+three-procedural-creature-adapter-kit: creature mesh, pose and disposal
+game-page-entry-kit: dependency preflight, required asset preparation and pause host
+player-raptor-preset-kit: authored creature content
+drunk-route-generator: deterministic route and progress queries
+prehistoric-patch-generator: terrain, trees, grass, pickups and colliders
+prehistoric-patch-worker: initialization, requests and transferable results
+tree-fidelity-package-schema-kit: source, collision, four forms, transitions and materials
+tree-fidelity-asset-provider-kit: object build, capture, portable package, progress and disposal
+tree-fidelity-registration-kit: provider, packages, manifest and bundle
+tree-fidelity-runtime-composition-kit: isolated Core Assets/Core Startup composition
+tree-fidelity-route-preparation-kit: preload, required preparation, provider retirement and receipt publication
 ```
 
-### External, host, capture and renderer adapters: 16
+### External, host, capture and render adapters: 17
 
 ```txt
 three-runtime-module: scene, resources and render submission
-rapier-physics-domain-kit: Core Physics to Rapier provider bridge
-rapier-runtime-module: Rapier initialization and runtime types
-message-worker-executor-adapter-kit: request correlation, pending registry, response settlement and disposal
-three-patch-stream-adapter-kit: renderer, scene, camera, terrain, content, instances, colliders, pickups and frame submission
-terrain-lod-geometry-adapter: topology, indices, skirts, UVs, morph offsets and bounds
-three-clay-surface-texture-adapter: deterministic normal/roughness generation, setup and disposal
-creator-viewport-framing-adapter: creator camera and viewport projection
-creator-persistence-scheduler: delayed profile writes and timer replacement
-browser-input-adapter: keyboard, blur, jump, boost, steer, start and restart projection
-creature-camera-render-host-adapters: pose, camera, feedback and diagnostics projection
-game-runtime-lod-host-adapter: module loading, engine composition, streaming, input, RAF, resize and visual status
-three-patch-stream-lod-adapter: LOD/base composition, activation, suppression, release, partial disposal and frame acknowledgement
-three-terrain-lod-layer: allocation, upload, selection, geomorph, material, textures, release and disposal
-three-object-capture-provider-adapter: subject resolution, framing, multi-angle color/opacity capture, atlas packing and disposal
-browser-indexeddb-asset-cache-adapter: persistent package lookup and write-through cache by asset identity/version
+rapier-physics-domain-kit: Core Physics provider bridge
+rapier-runtime-module: Rapier runtime
+message-worker-executor-adapter-kit: request correlation and settlement
+three-patch-stream-adapter-kit: base terrain, instances, colliders, pickups and rendering
+terrain-lod-geometry-adapter: terrain topology and morph data
+three-clay-surface-texture-adapter: deterministic surface textures
+creator-viewport-framing-adapter: creator camera framing
+creator-persistence-scheduler: delayed profile writes
+browser-input-adapter: keyboard and action projection
+creature-camera-render-host-adapters: pose, camera and diagnostics
+game-runtime-lod-host-adapter: composition, streaming, RAF, startup receipt and status
+three-patch-stream-lod-adapter: terrain/tree fidelity composition, activation, release and disposal
+three-terrain-lod-layer: allocation, selection, morphing and disposal
+three-object-capture-provider-adapter: framing, multi-angle observations and atlas output
+browser-indexeddb-asset-cache-adapter: persistent package cache
+three-tree-fidelity-layer: legacy suppression, near/medium mesh instances, far billboards, form counts and disposal
 ```
 
-### Proof kits: 8
+### Proof kits: 9
 
 ```txt
 prehistoric-rush-resolution-policy-test-kit
@@ -254,89 +244,74 @@ character-creator-authority-test-kit
 pause-menu-authority-test-kit
 patch-owned-streaming-authority-test-kit
 terrain-lod-renderer-authority-test-kit
-```
-
-Additional source contract:
-
-```txt
-tree-fidelity-assets-test: identifiers, archetype count, frozen type tuples and pinned Nexus revision
+tree-fidelity-assets-test-kit
 ```
 
 ```txt
 previous implemented surfaces: 66
-new implemented asset/startup surfaces: 9
-total active named surfaces: 75
-planned tree-fidelity adoption surfaces: 20
+new asset/startup/render/proof surfaces: 11
+total active named surfaces: 77
+planned generation/form-transition surfaces: 20
 ```
 
 ## Required authority
 
-`prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain`
+`prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain`
 
 ```txt
-TreeFidelityPreparationCommand
-  -> bind route, asset runtime, provider, cache, bundle and request generations
-  -> request and validate the manifest and five packages
-  -> verify schema, dependencies, frame counts and package digests
-  -> publish TreeFidelityPreparationResult
+TreeFidelityGenerationAdmissionCommand
+  -> bind bundle, manifest, package, provider, cache, game, patch and renderer revisions
+  -> compute and validate exact package digests
+  -> include the generation digest in patch and vegetation-cache identity
+  -> reject stale or mixed package generations
+  -> publish TreeFidelityGenerationResult
 
-TreeFidelityAdoptionCommand
-  -> bind the accepted preparation result to one game and render generation
-  -> replace duplicate hard-coded archetype/type authority
-  -> bind package IDs to generated patch tree descriptors
-  -> resolve near, medium, far and horizon forms from projected size
-  -> allocate mesh and impostor resources from accepted packages
-  -> apply crossfade and hysteresis policy
-  -> reject stale, partial or mismatched package revisions
-  -> publish TreeFidelityAdoptionResult
-
-TreeFidelityProjectionCommand
-  -> consume only the adopted generation
-  -> render one frame containing package-bound tree instances
-  -> publish FirstTreeFidelityBoundFrameAck
-  -> retire route, capture renderer, cache request and GPU resources deterministically
+TreeFidelityFormProjectionCommand
+  -> retain per-tree accepted form state
+  -> apply near, medium, far and horizon ranges
+  -> apply package hysteresis
+  -> execute bounded dither-crossfade transitions
+  -> publish TreeFidelityProjectionResult
+  -> acknowledge the first frame containing the exact generation and form snapshot
 ```
 
 ## Planned authority surfaces
 
 ```txt
-prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain
-tree-fidelity-preparation-command-kit
-tree-fidelity-preparation-result-kit
-tree-fidelity-package-validation-kit
+prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain
+tree-fidelity-generation-id-kit
+tree-fidelity-bundle-revision-kit
 tree-fidelity-package-digest-kit
-tree-fidelity-manifest-resolution-kit
-tree-archetype-single-source-kit
-tree-package-patch-binding-kit
-tree-render-form-selection-kit
-tree-mesh-recipe-materialization-kit
-tree-impostor-atlas-materialization-kit
-tree-fidelity-transition-policy-kit
-tree-fidelity-adoption-command-kit
-tree-fidelity-adoption-result-kit
-tree-fidelity-render-generation-kit
-tree-fidelity-stale-revision-rejection-kit
-tree-fidelity-route-retirement-kit
+tree-fidelity-generation-admission-kit
+tree-fidelity-generation-result-kit
+tree-fidelity-cache-identity-kit
+tree-fidelity-patch-binding-kit
+tree-fidelity-stale-generation-rejection-kit
+tree-fidelity-form-state-kit
+tree-fidelity-projected-range-kit
+tree-fidelity-horizon-form-kit
+tree-fidelity-hysteresis-kit
+tree-fidelity-dither-crossfade-kit
+tree-fidelity-transition-budget-kit
+tree-fidelity-startup-receipt-kit
 tree-fidelity-diagnostics-kit
-first-tree-fidelity-bound-frame-ack-kit
+first-exact-tree-fidelity-frame-ack-kit
+tree-fidelity-functional-render-fixture-kit
 tree-fidelity-source-build-pages-parity-fixture-kit
 ```
 
 ## Validation boundary
 
 ```txt
-source diff inspected: yes
-new asset module inspected: yes
-menu preload inspected: yes
-game required preparation inspected: yes
-active game tree source inspected: yes
-active Three.js tree allocation inspected: yes
-new source contract test inspected: yes
+source and commit delta inspected: yes
+live package consumption inspected: yes
+dynamic fidelity renderer inspected: yes
+provider retirement inspected: yes
+source contract test inspected: yes
 runtime code changed by this audit: no
 npm test run by this audit: no
-browser capture/package fixture run: no
-visible package adoption fixture run: no
-build or Pages smoke run: no
+browser form/transition fixture: not run
+artifact or Pages smoke: not run
 ```
 
-No package adoption, atlas rendering, visible fidelity improvement, lifecycle safety, source/build parity, Pages parity or production readiness is claimed.
+No exact generation identity, horizon rendering, hysteresis, crossfade correctness, functional render proof, artifact parity, Pages parity or production readiness is claimed.
