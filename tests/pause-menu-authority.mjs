@@ -83,7 +83,7 @@ assert.doesNotMatch(
   "the public game entry contains no always-visible gameplay HUD"
 );
 assert.match(gameEntry, /id="tree-load-fill"/, "startup may present required asset readiness progress");
-assert.match(gameEntry, /data\.presentationId = "prehistoric-rush-pause-overlay"/, "the public entry may render the requested pause overlay");
+assert.match(gameEntry, /dataset\.presentationId = "prehistoric-rush-pause-overlay"/, "the public entry may render the requested pause overlay");
 assert.match(gameEntry, /event\.code !== "Escape"/, "Escape toggles the menu host");
 assert.match(gameEntry, /pauseMenu\.toggle\(\)/, "Escape delegates to the pause-menu DSK");
 assert.match(gameEntry, /pauseMenu\.showSettings\(\)/, "Settings delegates to the pause-menu DSK");
