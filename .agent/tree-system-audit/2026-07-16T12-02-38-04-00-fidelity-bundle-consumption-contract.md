@@ -1,95 +1,88 @@
-# Tree System Audit: Fidelity Bundle Consumption Contract
+# Tree System Audit: Exact Fidelity Generation and Four-Form Contract
 
 **Timestamp:** `2026-07-16T12-02-38-04-00`
 
 ## Summary
 
-The tree-fidelity package is a strong portable descriptor, but it currently terminates at asset preparation. This contract defines how one accepted package generation must become patch identity, render resources and visible proof.
+Bundle consumption and three-form rendering are implemented. This contract covers the remaining exact generation identity and package-defined horizon/transition behavior.
 
 ## Plan ledger
 
-**Goal:** establish one source of truth from archetype registration through visible tree form selection.
+**Goal:** make one immutable fidelity generation control deterministic patch identity and stable four-form rendering.
 
-- [x] Inspect archetype, package, manifest and bundle schemas.
-- [x] Inspect patch tree records and renderer inputs.
-- [x] Define the consumption contract.
-- [ ] Implement and validate the contract.
+- [x] Inspect package, patch and render inputs.
+- [x] Confirm package consumption and provider retirement.
+- [x] Compare package form policy with renderer behavior.
+- [x] Define the remaining contract.
+- [ ] Implement and validate it.
 
-## Canonical identity
+## Canonical generation
 
 ```txt
 TreeFidelityGeneration
-  bundleId
-  bundleVersion
-  manifestAssetId
-  manifestRevision
-  packageDigests by archetypeId
-  providerId and version
-  capture policy revision
-  material policy revision
+  bundleId and version
+  manifestAssetId and revision
+  provider ID and version
+  package ID/version/digest by archetype
+  capture-policy revision
+  material-policy revision
+  form-transition-policy revision
+  combined digest
 ```
 
-The numeric six-field tuple may remain as a derived compatibility view. It must not remain an independent authored source.
+The combined digest must enter generator and vegetation cache identity. Type tuples remain a derived compatibility projection only.
 
 ## Patch contract
-
-Each generated tree record must contain:
 
 ```txt
 treeId
 patchId
 archetypeId
+typeIndex
+fidelityGenerationDigest
 packageAssetId
 packageDigest
-position
-rotation
-scale
-collision descriptor
+transform
+bounds
+collision
 ```
 
-Patch controller identity must include the accepted fidelity generation digest so cached patches cannot silently outlive the package generation that defined their tree records.
+A cached patch from another fidelity generation must be regenerated or explicitly migrated.
 
-## Render contract
+## Four-form contract
 
 ```txt
-near
-  -> materialize package near mesh recipe
-medium
-  -> materialize package medium mesh recipe
-far
-  -> use multi-angle atlas and crossed cards
-horizon
-  -> use single-frame atlas and one card
+near     -> package near mesh recipe
+medium   -> package medium mesh recipe
+far      -> multi-angle impostor within declared range
+horizon  -> horizon impostor below far range
 ```
 
-Selection uses projected size and the package thresholds. Cross-form changes use package hysteresis and dither-crossfade policy. Each render resource is keyed by package digest and renderer generation.
+Each tree retains its accepted form. Crossing a threshold first satisfies package hysteresis, then runs the package transition mode/duration. Old and new forms coexist only within a bounded transition budget.
 
-## Failure contract
+## Current deviation
 
 ```txt
-cache miss -> provider generation
-capture unavailable -> typed fallback or startup failure according to required policy
-invalid package -> reject preparation
-partial materialization -> reject adoption
-stale package -> reject patch/render work
-route exit -> cancel request and retire provider/capture/renderer resources
+near/medium/far: implemented
+horizon: not implemented
+far minimum: not enforced
+hysteresis: not implemented
+dither crossfade: not implemented
+exact generation digest: not implemented
 ```
 
-## Diagnostics
+## Diagnostics and proof
 
 ```txt
-preparation result and duration
-cache hits/misses
-provider generation count
-package IDs and digests
-patches by package generation
-visible trees by form
-active transitions
-materialized GPU resources
-retired resources
-first bound frame acknowledgement
+generation digest and package revisions
+patches by generation
+visible near/medium/far/horizon counts
+active transitions and budget pressure
+stale-generation rejections
+first exact-generation frame acknowledgement
+source/build/Pages parity
 ```
 
-## Proof
+## Claim boundary
 
-A valid fixture must request the bundle, inspect all five package payloads, generate a patch using package-bound records, render at least two forms, cross one threshold, acknowledge a frame and repeat from the staged build and Pages origin.
+No four-form or transition fixture was executed.
