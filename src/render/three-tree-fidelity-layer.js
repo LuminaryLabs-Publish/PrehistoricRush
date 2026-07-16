@@ -78,14 +78,22 @@ function createBillboardGeometry(THREE, capacity) {
   return geometry;
 }
 
+function createDecodedAtlasTexture(THREE, atlas) {
+  if (atlas?.runtimeImage) {
+    const texture = new THREE.Texture(atlas.runtimeImage);
+    texture.needsUpdate = true;
+    return texture;
+  }
+  return atlas?.assetId ? new THREE.TextureLoader().load(atlas.assetId) : null;
+}
+
 function createAtlasMaterials(THREE, form, fallbackColor) {
   const frames = form?.frames ?? [];
   const atlas = form?.atlas;
   const metadata = atlas?.metadata ?? {};
   const columns = Math.max(1, Number(metadata.columns ?? metadata.width / metadata.frameSize) || 1);
   const rows = Math.max(1, Number(metadata.rows ?? metadata.height / metadata.frameSize) || 1);
-  const source = atlas?.assetId;
-  const baseTexture = source ? new THREE.TextureLoader().load(source) : null;
+  const baseTexture = createDecodedAtlasTexture(THREE, atlas);
   if (baseTexture) {
     baseTexture.colorSpace = THREE.SRGBColorSpace;
     baseTexture.wrapS = THREE.ClampToEdgeWrapping;
@@ -95,7 +103,7 @@ function createAtlasMaterials(THREE, form, fallbackColor) {
   const baseElevation = Number(frames[0]?.elevationDegrees ?? 0);
   const count = Math.max(1, frames.filter((frame) => Number(frame.elevationDegrees) === baseElevation).length || columns);
   return Array.from({ length: count }, (_, index) => {
-    const texture = baseTexture?.clone?.() ?? null;
+    const texture = index === 0 ? baseTexture : baseTexture?.clone?.() ?? null;
     if (texture) {
       texture.repeat.set(1 / columns, 1 / rows);
       texture.offset.set((index % columns) / columns, Math.max(0, rows - 1) / rows);
@@ -149,6 +157,9 @@ function createBillboardBatches(THREE, scene, packageValue, formId, fallbackColo
 function createTypeLayer(THREE, scene, packageValue, typeIndex, capacity) {
   if (!packageValue?.forms?.near?.geometry || !packageValue?.forms?.medium?.geometry) {
     throw new TypeError(`Tree fidelity package ${packageValue?.archetypeId ?? typeIndex} is missing Object Shape mesh forms.`);
+  }
+  if (!packageValue?.forms?.far?.atlas?.runtimeImage || !packageValue?.forms?.horizon?.atlas?.runtimeImage) {
+    throw new Error(`Tree fidelity package ${packageValue.archetypeId} entered rendering before atlas decoding completed.`);
   }
   const near = createMeshBatch(THREE, scene, packageValue, "near", capacity);
   const medium = createMeshBatch(THREE, scene, packageValue, "medium", capacity);
