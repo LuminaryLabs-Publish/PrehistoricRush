@@ -301,8 +301,12 @@ async function main() {
     adapter.render(state, dt);
     if (!startupFrameAcknowledged && treeAssetRuntime?.startup) {
       const treeFidelityView = adapter.view.treeFidelity;
+      const exactFrameAck = treeFidelityView?.exactFrameAck;
       if (treeFidelityView?.generationDigest !== treeFidelityGenerationDigest) {
         throw new Error("Presented tree fidelity generation does not match the startup asset generation.");
+      }
+      if (!exactFrameAck || exactFrameAck.generationDigest !== treeFidelityGenerationDigest) {
+        throw new Error("Presented tree impostors do not have an exact generation-bound frame acknowledgement.");
       }
       treeAssetRuntime.startup.presentFirstFrame({
         frameId: `prehistoric-rush:frame:${engine.clock?.frame ?? 1}`,
@@ -314,7 +318,8 @@ async function main() {
           treeFidelityPackageCount: treeFidelityPackages.length,
           treeCount: treeFidelityView.treeCount,
           formCounts: structuredClone(treeFidelityView.counts),
-          transitioning: treeFidelityView.transitioning
+          transitioning: treeFidelityView.transitioning,
+          exactImpostorFrameAck: structuredClone(exactFrameAck)
         }
       });
       treeAssetRuntime.startup.enter({ inputReady: true });
@@ -324,7 +329,7 @@ async function main() {
     const patchStats = adapter.view.patchStats;
     const lod = adapter.view.terrainLod;
     const treeLod = adapter.view.treeFidelity?.counts ?? { near: 0, medium: 0, far: 0, horizon: 0 };
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · frames ${adapter.view.treeFidelity?.frameBindingCount ?? 0} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -356,7 +361,7 @@ async function main() {
       treeFidelity: structuredClone(adapter.view.treeFidelity),
       treeFidelityGenerationDigest,
       assetStartup: treeAssetRuntime?.startup?.getDescriptor?.() ?? null,
-      renderer: "three-patch-quadtree-object-shape-fidelity-v12"
+      renderer: "three-patch-quadtree-object-shape-fidelity-v13"
     })
   };
   requestAnimationFrame(loop);
