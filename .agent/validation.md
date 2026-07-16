@@ -1,80 +1,82 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-16T06-39-16-04-00`  
-**Scope:** WebGL context loss, GPU-resource reconstruction, recovery policy and first recovered frame evidence
+**Audit timestamp:** `2026-07-16T12-02-38-04-00`  
+**Scope:** tree-fidelity asset preparation, adoption, patch binding, render forms and visible-frame proof
 
 ## Summary
 
-Source review confirms one Three.js renderer, recursive RAF submission and a broad GPU-resource graph. The host does not observe WebGL loss/restoration or publish recovery results. The LOD layer can ordinarily dispose its own resources, but the base adapter has no complete disposal/reconstruction contract and the host does not execute one.
+Source review confirms five portable tree packages, menu background preload, game required preparation, IndexedDB caching and a source contract test. Source review also confirms that active patch generation and Three.js tree rendering still use an independent hard-coded tuple list and legacy instanced geometry.
 
 ## Plan ledger
 
-**Goal:** distinguish verified source behavior from recovery behavior that was not executed.
+**Goal:** separate verified asset preparation from unverified package adoption and visual presentation.
 
-- [x] Compare all 11 Publish repositories and select the oldest synchronized eligible repository.
-- [x] Inspect renderer construction and canvas mounting.
-- [x] Inspect frame submission, resize and host listeners.
-- [x] Inspect terrain, LOD, texture, instance, creature, light and shadow resources.
-- [x] Inspect disposal and test coverage.
-- [x] Preserve the complete 66-surface inventory.
+- [x] Compare all 11 Publish repositories and select runtime-ahead PrehistoricRush.
+- [x] Compare documented head `e83638ab` with runtime head `7159a414`.
+- [x] Inspect all six changed files.
+- [x] Inspect asset provider, package schema, manifest, bundle and cache setup.
+- [x] Inspect menu and game startup integration.
+- [x] Inspect patch tree inputs and renderer tree allocation.
+- [x] Inspect the new source contract test.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute context-loss and deployment fixtures later.
+- [ ] Execute package, browser, build and Pages fixtures later.
 
 ## Verified source findings
 
 ```txt
-WebGLRenderer creation: present
-renderer canvas mounted into the game host: present
-recursive RAF render submission: present
-terrain and LOD geometry buffers: present
-normal and roughness textures: present
-instanced tree, grass and pickup resources: present
-player creature mesh and material resources: present
-shadow-map resources: present
-ordinary terrain LOD disposal: present
+Core Assets runtime: present
+Core Startup runtime for game route: present
+five tree archetypes: present
+five package assets: present
+manifest dependency graph: present
+bundle registration: present
+near and medium mesh recipes: present
+far and horizon impostor descriptors: present
+color and opacity capture request: present
+IndexedDB cache adapter: present when supported
+menu background request: present
+game required preparation: present
+progress projection: present
+source contract test in npm test: present
 
-webglcontextlost listener: absent
-webglcontextrestored listener: absent
-render-context generation identity: absent
-loss admission result: absent
-explicit presentation suspension: absent
-simulation/input policy during loss: absent
-complete GPU-resource registry: absent
-dependency-ordered reconstruction: absent
-base-adapter disposal: absent
-host adapter disposal call: absent
-stale recovery work rejection: absent
-recovery deadline/retry budget: absent
-fallback result: absent
-RenderLossResult: absent
-RenderRecoveryResult: absent
-FirstRecoveredFrameAck: absent
-forced context-loss fixture: absent
+runtime preparation-result input: absent
+runtime receipt lookup: absent
+single archetype/type source: absent
+package identity in patch records: absent
+package digest in cache/generator identity: absent
+package mesh recipe materialization: absent
+package atlas materialization: absent
+projected-size form selection: absent
+transition policy application: absent
+stale package rejection: absent
+route/provider retirement result: absent
+TreeFidelityAdoptionResult: absent
+FirstTreeFidelityBoundFrameAck: absent
+browser/build/Pages fixture: absent
 ```
 
 ## Source-derived failure boundary
 
 ```txt
-context is lost
-  -> no product result or render generation retirement
-  -> RAF remains owned by the same host
-  -> no explicit resource reconstruction transaction
-  -> no bounded retry or fallback
-  -> no matching recovered frame acknowledgement
+required preparation resolves
+  -> receipt is stored globally
+  -> game runtime imports
+  -> independent treeTypes are used
+  -> legacy tree resources are created
+  -> frame contains no accepted package identity
 ```
 
-This proves a missing product-owned recovery authority. It does not prove a specific browser-visible defect or negate Three.js internal recovery behavior.
+This proves a missing adoption/projection contract. It does not prove provider failure, cache failure or a specific visual defect.
 
 ## Change boundary
 
 ```txt
-documentation changed: yes
-runtime JavaScript changed: no
-HTML CSS shaders or assets changed: no
-gameplay simulation input rendering or physics changed: no
-dependencies or package scripts changed: no
-tests or workflows changed: no
-deployment changed: no
+documentation changed by audit: yes
+runtime JavaScript changed by audit: no
+package or test changed by audit: no
+asset schema changed by audit: no
+gameplay, rendering or physics changed by audit: no
+workflow or deployment changed by audit: no
 branch created: no
 pull request created: no
 ```
@@ -83,18 +85,19 @@ pull request created: no
 
 ```txt
 npm test
-forced WEBGL_lose_context fixture
-context restoration fixture
-resource reconstruction fixture
-stale-generation fixture
-double-loss fixture
-retry and fallback fixture
-route/page retirement fixture
-first recovered frame fixture
+provider package-generation fixture
+manifest dependency fixture
+IndexedDB miss/hit fixture
+menu-to-game cache handoff fixture
+package adoption fixture
+near/medium/far/horizon render fixture
+transition fixture
+stale generation fixture
+route retirement fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No context-loss recovery, resource rehydration, stale-generation rejection, fallback correctness, first-recovered-frame convergence, artifact parity, Pages parity or production readiness is claimed.
+No runtime package adoption, tree-fidelity visual improvement, cache correctness, lifecycle correctness, artifact parity, Pages parity or production readiness is claimed.
