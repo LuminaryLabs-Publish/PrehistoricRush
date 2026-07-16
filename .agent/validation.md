@@ -1,82 +1,69 @@
 # PrehistoricRush Validation
 
 **Audit timestamp:** `2026-07-16T12-02-38-04-00`  
-**Scope:** tree-fidelity asset preparation, adoption, patch binding, render forms and visible-frame proof
+**Scope:** tree-fidelity generation identity, patch/cache binding, four-form selection, transitions and frame proof
 
 ## Summary
 
-Source review confirms five portable tree packages, menu background preload, game required preparation, IndexedDB caching and a source contract test. Source review also confirms that active patch generation and Three.js tree rendering still use an independent hard-coded tuple list and legacy instanced geometry.
+Source review confirms package preparation, live package consumption, near/medium/far rendering, legacy suppression, provider retirement and startup acknowledgement. It also confirms that exact package revisions are not bound into cache identity and that horizon, hysteresis and dither crossfade are not implemented.
 
 ## Plan ledger
 
-**Goal:** separate verified asset preparation from unverified package adoption and visual presentation.
+**Goal:** distinguish verified tree-fidelity implementation from remaining generation and transition work.
 
 - [x] Compare all 11 Publish repositories and select runtime-ahead PrehistoricRush.
-- [x] Compare documented head `e83638ab` with runtime head `7159a414`.
-- [x] Inspect all six changed files.
-- [x] Inspect asset provider, package schema, manifest, bundle and cache setup.
-- [x] Inspect menu and game startup integration.
-- [x] Inspect patch tree inputs and renderer tree allocation.
-- [x] Inspect the new source contract test.
+- [x] Inspect the complete runtime delta through `e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53`.
+- [x] Inspect asset preparation, cache, provider retirement and package values.
+- [x] Inspect patch/cache identity and tree-fidelity rendering.
+- [x] Inspect startup acknowledgement and source tests.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute package, browser, build and Pages fixtures later.
+- [ ] Execute functional browser, artifact and Pages fixtures.
 
 ## Verified source findings
 
 ```txt
-Core Assets runtime: present
-Core Startup runtime for game route: present
-five tree archetypes: present
-five package assets: present
-manifest dependency graph: present
-bundle registration: present
-near and medium mesh recipes: present
-far and horizon impostor descriptors: present
-color and opacity capture request: present
-IndexedDB cache adapter: present when supported
-menu background request: present
-game required preparation: present
-progress projection: present
-source contract test in npm test: present
+five canonical archetypes and derived tuples: present
+five packages, manifest and bundle: present
+menu/game preparation: present
+provider retirement: present
+live package value consumption: present
+near/medium/far fidelity layer: present
+legacy tree suppression: present
+startup first-frame acknowledgement: present
+source wiring checks in npm test: present
 
-runtime preparation-result input: absent
-runtime receipt lookup: absent
-single archetype/type source: absent
+exact package generation digest: absent
+exact generation in patch/cache identity: absent
 package identity in patch records: absent
-package digest in cache/generator identity: absent
-package mesh recipe materialization: absent
-package atlas materialization: absent
-projected-size form selection: absent
-transition policy application: absent
-stale package rejection: absent
-route/provider retirement result: absent
-TreeFidelityAdoptionResult: absent
-FirstTreeFidelityBoundFrameAck: absent
-browser/build/Pages fixture: absent
+horizon form rendering: absent
+far minimum range enforcement: absent
+retained per-tree form state: absent
+hysteresis: absent
+dither crossfade: absent
+exact generation frame receipt: absent
+functional browser/render fixture: absent
 ```
 
-## Source-derived failure boundary
+## Source-derived boundary
 
 ```txt
-required preparation resolves
-  -> receipt is stored globally
-  -> game runtime imports
-  -> independent treeTypes are used
-  -> legacy tree resources are created
-  -> frame contains no accepted package identity
+five-package generation is prepared and consumed
+  -> package count enters vegetation identity
+  -> projected pixels select near/medium/far statelessly
+  -> horizon and transition descriptors are ignored
+  -> first frame reports counts without exact package revisions
 ```
 
-This proves a missing adoption/projection contract. It does not prove provider failure, cache failure or a specific visual defect.
+This proves a remaining identity and policy gap. It does not prove a visible defect or negate the implemented fidelity improvement.
 
 ## Change boundary
 
 ```txt
 documentation changed by audit: yes
 runtime JavaScript changed by audit: no
-package or test changed by audit: no
-asset schema changed by audit: no
-gameplay, rendering or physics changed by audit: no
-workflow or deployment changed by audit: no
+packages/tests/assets changed by audit: no
+gameplay/rendering/physics changed by audit: no
+workflow/deployment changed by audit: no
 branch created: no
 pull request created: no
 ```
@@ -85,19 +72,16 @@ pull request created: no
 
 ```txt
 npm test
-provider package-generation fixture
-manifest dependency fixture
+functional package/capture fixture
 IndexedDB miss/hit fixture
-menu-to-game cache handoff fixture
-package adoption fixture
-near/medium/far/horizon render fixture
-transition fixture
-stale generation fixture
-route retirement fixture
+exact generation/cache invalidation fixture
+horizon form fixture
+hysteresis/crossfade fixture
+first exact-generation frame fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No runtime package adoption, tree-fidelity visual improvement, cache correctness, lifecycle correctness, artifact parity, Pages parity or production readiness is claimed.
+No exact generation correctness, horizon rendering, transition correctness, cache invalidation, artifact parity, Pages parity or production readiness is claimed.
