@@ -4,39 +4,35 @@
 
 ## Summary
 
-PrehistoricRush was selected before the oldest-documented fallback because six commits followed its documented head. This audit reconciles the async tree-fidelity asset system and records the remaining preparation-to-projection gap.
+PrehistoricRush was selected because it was runtime-ahead. The full runtime now prepares, adopts and renders tree-fidelity packages. Central reconciliation records the smaller remaining exact-generation and four-form transition gap.
 
 ## Plan ledger
 
-**Goal:** preserve exact selection evidence and the central status transition.
+**Goal:** bind the final repo-local audit to current runtime implementation and central tracking.
 
 - [x] Enumerate 11 Publish repositories.
 - [x] Exclude `TheCavalryOfRome`.
-- [x] Confirm ten central ledger entries.
-- [x] Confirm ten root `.agent` states.
-- [x] Detect one runtime-ahead repository.
-- [x] Select only PrehistoricRush.
-- [x] Review runtime head `7159a414ff4e103015ca1b634324b9fd89256cf4`.
-- [x] Add repo-local audit records.
+- [x] Confirm ten central ledgers and root `.agent` states.
+- [x] Select only runtime-ahead PrehistoricRush.
+- [x] Reconcile asset preparation, package consumption, fidelity rendering and provider retirement.
+- [x] Replace the superseded no-adoption finding with the current generation/transition finding.
 - [ ] Bind the final repo-local documentation head in the central ledger.
 - [ ] Add the central internal change log.
 
 ## Comparison
 
 ```txt
-previous repo-local documentation head: e83638abab425dc3c54370ad6c3fab17576c3d13
-reviewed runtime head:                 7159a414ff4e103015ca1b634324b9fd89256cf4
-ahead by:                              6 commits
-changed files:                         6
-priority class:                        runtime-ahead
+prior documentation head: e83638abab425dc3c54370ad6c3fab17576c3d13
+reviewed runtime source: e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53
+runtime commits reconciled: 13
+runtime files changed: 9
+priority class: runtime-ahead
 ```
 
 ## Central status
 
-```txt
-tree-fidelity-asset-adoption-projection-authority-central-reconciled
-```
+`tree-fidelity-generation-form-transition-authority-central-reconciled`
 
 ## Central finding
 
-Tree packages are prepared and required before gameplay, but the active patch generator and Three.js tree renderer remain bound to independent hard-coded type tuples and legacy geometry. Central tracking must distinguish asset preparation from actual package adoption and visible-frame convergence.
+Tree package preparation, consumption and near/medium/far projection are implemented. Exact package revisions/digests are not bound into patch/cache identity; horizon, hysteresis and dither-crossfade remain absent; and first-frame proof carries counts rather than the exact generation.
