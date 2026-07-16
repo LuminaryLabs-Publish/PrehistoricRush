@@ -1,59 +1,57 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T12-02-38-04-00`  
-**Authority:** `prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain`
+**Audit:** `2026-07-16T12-47-00-04-00`  
+**Authority:** `prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain`
 
 ## Summary
 
-Keep the working asset and renderer path. Add exact revision identity and implement the package’s missing horizon and transition semantics.
+Keep the implemented generation, transition, decode, and render-admission path. Add exact view-vector frame resolution and prove it through real rendered pixels.
 
-## Plan ledger
+## Intent
 
-**Goal:** bind one immutable fidelity generation to deterministic patches and stable four-form presentation.
+Select each far or horizon impostor from captured frame metadata rather than inferred atlas layout.
 
-### Phase 1: Exact generation
+## What needs to happen
 
-- [ ] Publish bundle, manifest, provider and package revisions.
-- [ ] Compute package digests and one combined fidelity-generation digest.
-- [ ] Validate all five packages belong to one generation.
-- [ ] Publish `TreeFidelityGenerationResult`.
-- [ ] Reject stale or mixed generations.
+### Phase 1: Normalize capture frames
 
-### Phase 2: Patch and cache binding
+- [ ] Publish a stable `frameId` for every captured frame.
+- [ ] Preserve azimuth, elevation, atlas rectangle, observation, content hash, and generation ID.
+- [ ] Validate frame uniqueness and atlas bounds when the package is admitted.
 
-- [ ] Add fidelity-generation digest to generator and vegetation settings identity.
-- [ ] Add archetype/package identity to tree records.
-- [ ] Invalidate or migrate cached patches from another generation.
-- [ ] Preserve deterministic placement, transforms and collision.
+### Phase 2: Resolve view
 
-### Phase 3: Four-form state
+- [ ] Derive camera-to-tree azimuth and elevation in one coordinate convention.
+- [ ] Resolve the nearest captured frame or an explicitly supported blend.
+- [ ] Keep horizon behavior explicit instead of reusing far assumptions.
+- [ ] Publish `TreeImpostorFrameSelectionResult`.
 
-- [ ] Retain accepted form per visible tree.
-- [ ] Enforce package near, medium, far and horizon ranges.
-- [ ] Use far minimum/maximum thresholds.
-- [ ] Materialize the horizon package form.
-- [ ] Expose all four form counts.
+### Phase 3: Bind rendering
 
-### Phase 4: Transitions
+- [ ] Create batches keyed by exact frame identity, not only angle index.
+- [ ] Use the selected frame rectangle for texture repeat and offset.
+- [ ] Reject stale package generations and missing frame records.
+- [ ] Preserve current hysteresis and dither-crossfade behavior.
 
-- [ ] Apply package hysteresis before changing form.
-- [ ] Implement dither-crossfade using package duration.
-- [ ] Bound concurrent transitions.
-- [ ] Handle rapid camera movement and patch release during transition.
-- [ ] Reject transition work from stale render generations.
+### Phase 4: Receipts and diagnostics
 
-### Phase 5: Receipts and diagnostics
+- [ ] Expose selected frame IDs and elevation bands in diagnostics.
+- [ ] Add stale/missing-frame counters.
+- [ ] Publish `FirstExactImpostorFrameAck` after the matching frame renders.
 
-- [ ] Enrich startup receipt with exact generation identity.
-- [ ] Publish `TreeFidelityProjectionResult`.
-- [ ] Publish `FirstExactTreeFidelityFrameAck`.
-- [ ] Expose patch generation, form counts, transitions and stale rejections.
+### Phase 5: Proof
 
-### Phase 6: Proof
-
-- [ ] Add functional package and cache fixtures.
-- [ ] Add live near/medium/far/horizon selection fixtures.
-- [ ] Add threshold oscillation and crossfade fixtures.
-- [ ] Add stale generation and cache invalidation fixtures.
+- [ ] Add azimuth sweep fixtures.
+- [ ] Add low/high camera elevation fixtures.
+- [ ] Add atlas rectangle and row-address fixtures.
+- [ ] Add far/horizon transition fixtures.
 - [ ] Run `npm test`.
-- [ ] Run source, staged artifact and Pages parity fixtures.
+- [ ] Run source, staged artifact, and Pages visual parity fixtures.
+
+## Checklist
+
+- [x] Exact generation identity implemented in source.
+- [x] Four forms, hysteresis, and crossfade implemented in source.
+- [x] Required atlas decoding and decoded-image admission implemented in source.
+- [ ] Exact capture-frame addressing implemented.
+- [ ] Executable visual proof completed.
