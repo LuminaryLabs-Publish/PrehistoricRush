@@ -79,7 +79,18 @@ assert.match(wrapperSource, /lastVisibleFrameAck/, "the first matching terrain f
 assert.match(textureSource, /options\.resolution \?\? 2048/, "renderer generates 2K texture outputs");
 assert.match(textureSource, /workingResolution \?\? 1024/, "texture generation uses bounded working detail");
 assert.match(runtimeSource, /createThreePatchStreamLodAdapter/, "the active runtime selects the LOD adapter");
-assert.match(runtimeSource, /prehistoric-patch-v2-lod64-clay/, "stream cache identity changes with the terrain schema");
+const generatorVersion = runtimeSource.match(/generatorVersion:\s*"([^"]+)"/)?.[1];
+assert.match(generatorVersion ?? "", /^prehistoric-patch-v\d+-[a-z0-9-]+$/, "stream cache identity declares a versioned patch schema");
+assert.match(
+  runtimeSource,
+  /terrainSettingsHash:\s*`segments-\$\{terrainLodPolicy\.sourceResolution\}-lod-\$\{terrainLodPolicy\.revision\}`/,
+  "stream cache identity includes the terrain resolution and LOD policy revision"
+);
+assert.match(
+  runtimeSource,
+  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
+  "stream cache identity includes the exact tree-fidelity generation"
+);
 assert.match(runtimeSource, /selectTerrainLodLevel: NexusEngine\.selectTerrainLodLevel/, "Core Graphics selects LOD levels");
 assert.match(gameSource, /game-runtime-lod\.js/, "the page boots the LOD runtime");
 assert.match(generatorSource, /function surfaceColor\(/, "terrain color uses continuous world-space blending");
