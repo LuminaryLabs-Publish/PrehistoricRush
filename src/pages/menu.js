@@ -2,6 +2,11 @@ import {
   loadPlayerCharacterProfile,
   subscribePlayerCharacterProfile
 } from "../shared/player-character-store.js";
+import { RUNTIME_URLS } from "../shared/runtime-versions.js";
+import {
+  TREE_FIDELITY_BUNDLE_ID,
+  createPrehistoricTreeFidelityAssetRuntime
+} from "../shared/tree-fidelity-assets.js";
 
 const root = document.querySelector("#app") ?? document.body;
 
@@ -20,15 +25,17 @@ root.innerHTML = `
       <h1 style="margin:0;font-size:clamp(42px,8vw,82px);line-height:.92">Prehistoric<br>Rush</h1>
       <p style="max-width:560px;color:#d7e3cf;font-size:18px;line-height:1.55">Run a custom procedural raptor through a deterministic prehistoric forest.</p>
       <div id="profile-card" style="margin:24px 0;padding:18px;border-radius:18px;background:#ffffff0b;border:1px solid #ffffff17"></div>
-      <nav style="display:flex;flex-wrap:wrap;gap:12px">
+      <nav style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
         <a href="./game.html" style="padding:13px 20px;border-radius:999px;background:#ffd37a;color:#211704;text-decoration:none;font-weight:900">Start Run</a>
         <a href="./charactercreator.html" style="padding:13px 20px;border-radius:999px;background:#69a94d;color:#071008;text-decoration:none;font-weight:900">Character Creator</a>
+        <span id="tree-assets-status" style="font-size:13px;color:#aebca9">Preparing forest assets…</span>
       </nav>
     </section>
   </main>
 `;
 
 const card = document.querySelector("#profile-card");
+const treeAssetsStatus = document.querySelector("#tree-assets-status");
 
 function renderProfile(profile) {
   const preset = profile.creature.preset;
@@ -43,5 +50,27 @@ function renderProfile(profile) {
   `;
 }
 
+async function preloadTreeFidelity() {
+  try {
+    const [NexusEngine, THREE] = await Promise.all([
+      import(RUNTIME_URLS.nexus),
+      import(RUNTIME_URLS.three)
+    ]);
+    const runtime = await createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THREE);
+    globalThis.PrehistoricRushMenuAssetRuntime = runtime;
+    const receipt = await runtime.assets.requestBundle(TREE_FIDELITY_BUNDLE_ID, {
+      priority: "background",
+      onProgress(progress, detail) {
+        treeAssetsStatus.textContent = `${detail ?? "Preparing forest assets"} · ${Math.round(progress * 100)}%`;
+      }
+    });
+    treeAssetsStatus.textContent = receipt.cached ? "Forest assets cached" : "Forest assets ready";
+  } catch (error) {
+    console.warn("Tree fidelity preload did not complete in the menu.", error);
+    treeAssetsStatus.textContent = "Forest assets will finish when the run starts";
+  }
+}
+
 renderProfile(loadPlayerCharacterProfile());
 subscribePlayerCharacterProfile(({ profile }) => renderProfile(profile));
+requestAnimationFrame(() => preloadTreeFidelity());
