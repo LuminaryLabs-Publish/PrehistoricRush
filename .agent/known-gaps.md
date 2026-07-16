@@ -1,48 +1,59 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-15T20-59-46-04-00`  
-**Status:** `game-audio-event-projection-authority-audited`
+**Audit:** `2026-07-16T02-03-42-04-00`  
+**Status:** `patch-worker-request-liveness-recovery-authority-audited`
 
 ## Summary
 
-Accepted gameplay meaning exists, but no authority binds it to browser audio, preferences, lifecycle settlement, or audible evidence.
+Patch identity and generation requests exist, but Worker readiness, request lifetime, failure settlement, restart, fallback and retirement are not owned as one recoverable authority.
 
 ## Plan ledger
 
-**Goal:** keep audio admission, cue, spatial, lifecycle, budget, and proof gaps explicit until one authority settles them.
+**Goal:** keep Worker liveness and recovery gaps explicit until every admitted request has a bounded terminal result.
 
-### Browser admission and ownership
+### Worker admission
 
-- [ ] No browser audio capability snapshot exists.
-- [ ] No accepted user-gesture unlock result exists.
-- [ ] No owned `AudioContext` generation exists.
-- [ ] No suspend, resume, close, or replacement settlement exists.
+- [ ] No immutable Worker-generation identity exists.
+- [ ] The host does not consume `patch-worker-ready`.
+- [ ] No readiness deadline or start-failure result exists.
+- [ ] Dispatch eligibility is inferred from Worker object presence.
 
-### Semantic cues
+### Request settlement
 
-- [ ] No stable cue descriptor registry exists.
-- [ ] `RunStarted`, `ShardCollected`, `RunFailed`, and `RunWon` have no audio projector.
-- [ ] Jump, landing, boost, movement, and surface state have no accepted cue policy.
-- [ ] Raw input and accepted result boundaries are not represented for audio.
-- [ ] No duplicate event or snapshot suppression exists.
+- [ ] No request deadline exists.
+- [ ] No timeout result exists.
+- [ ] No cancellation owner exists.
+- [ ] No Worker `error` observer settles pending requests.
+- [ ] No Worker `messageerror` observer settles pending requests.
+- [ ] No synchronous `postMessage` failure result exists.
+- [ ] No stale or duplicate response rejection by Worker generation exists.
 
-### Spatial, preference, and budget state
+### Controller recovery
 
-- [ ] No listener revision is bound to the camera.
-- [ ] No spatial-source projection exists.
-- [ ] No master or category volume state exists.
-- [ ] No mute preference or persistence exists.
-- [ ] No voice pools, priorities, or budgets exist.
+- [ ] An unresolved executor promise can retain a patch as inflight indefinitely.
+- [ ] No typed inflight release or requeue result exists.
+- [ ] No bounded retry attempt is recorded.
+- [ ] No active-ring coverage policy reacts to unresolved generation.
+
+### Restart and fallback
+
+- [ ] No Worker crash retirement result exists.
+- [ ] No bounded Worker restart budget exists.
+- [ ] No replacement readiness admission exists.
+- [ ] No live transition to deferred synchronous generation exists.
+- [ ] No fallback failure policy protects gameplay from unsafe world coverage.
 
 ### Lifecycle and proof
 
-- [ ] Movement, boost, and ambience loops have no owned lifecycle.
-- [ ] Pause, blur, visibility, route exit, restart, and runtime replacement have no audio settlement.
-- [ ] No `AudioProjectionResult` exists.
-- [ ] No `FirstAudibleCueAck` exists.
-- [ ] No `FirstAudioVisualConvergenceAck` exists.
-- [ ] No browser, artifact, or Pages audio fixture exists.
+- [ ] The host does not call executor `dispose()`.
+- [ ] The host does not terminate the Worker on route or document retirement.
+- [ ] Pending timers, requests and listeners have no lifecycle settlement.
+- [ ] No `WorkerHealthSnapshot` exists.
+- [ ] No `PatchWorkerResult` exists.
+- [ ] No `FirstWorkerReadyAck` exists.
+- [ ] No `FirstRecoveredPatchAck` exists.
+- [ ] No Worker fault, artifact or Pages fixture exists.
 
 ## Retained gaps
 
-Accessibility projection, host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart, and browser-runtime retirement remain separate.
+Game audio, accessibility projection, host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and general browser-runtime retirement remain separate retained audit families.
