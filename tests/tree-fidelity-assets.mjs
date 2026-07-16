@@ -21,6 +21,7 @@ assert.ok(PREHISTORIC_TREE_TYPES.every((tree) => Object.isFrozen(tree) && tree.l
 assert.equal(NEXUS_COMMIT, "80146b8947e0877e26b851563bd17f5cdfcbf38a");
 
 const assetSource = readFileSync(new URL("../src/shared/tree-fidelity-assets.js", import.meta.url), "utf8");
+const imageSource = readFileSync(new URL("../src/shared/tree-fidelity-runtime-images.js", import.meta.url), "utf8");
 const menuSource = readFileSync(new URL("../src/pages/menu.js", import.meta.url), "utf8");
 const gameSource = readFileSync(new URL("../src/game.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/game-runtime-lod.js", import.meta.url), "utf8");
@@ -35,9 +36,13 @@ assert.match(assetSource, /createReferenceObjectShapeProvider/);
 assert.match(assetSource, /createObjectShapeFidelityAdapterKit/);
 assert.match(assetSource, /objectFidelity\.requestBuild/);
 assert.match(assetSource, /generationId/);
+assert.match(imageSource, /createImageBitmap/);
+assert.match(imageSource, /runtimeImage/);
 assert.match(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
 assert.match(menuSource, /unregisterProvider\(TREE_FIDELITY_PROVIDER_ID/);
 assert.match(gameSource, /trackAssetPreparation/);
+assert.match(gameSource, /hydrateTreeFidelityRuntimeImages/);
+assert.match(gameSource, /tree-fidelity-runtime-images/);
 assert.match(gameSource, /await prepareTreeAssetsBeforeGame\(\)/);
 assert.match(gameSource, /unregisterProvider\(TREE_FIDELITY_PROVIDER_ID/);
 assert.match(runtimeSource, /treeFidelityGenerationDigest/);
@@ -47,8 +52,10 @@ assert.match(adapterSource, /createThreeTreeFidelityLayer/);
 assert.match(layerSource, /projectedPixels/);
 assert.match(layerSource, /retainWithHysteresis/);
 assert.match(layerSource, /patchDitherMaterial/);
+assert.match(layerSource, /runtimeImage/);
+assert.match(layerSource, /entered rendering before atlas decoding completed/);
 assert.match(layerSource, /horizon/);
 assert.match(layerSource, /suppressLegacyTreeMeshes/);
 assert.match(layerSource, /frustumCulled = false/);
 
-console.log("tree fidelity domains, assets, startup, renderer, and transition contract passed");
+console.log("tree fidelity domains, assets, startup, decoded images, renderer, and transition contract passed");
