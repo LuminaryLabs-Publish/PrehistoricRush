@@ -1,80 +1,74 @@
-# Render Audit: Prepared Tree Assets Not Presented
+# Render Audit: Tree Fidelity Form Transition Gap
 
 **Timestamp:** `2026-07-16T12-02-38-04-00`
 
 ## Summary
 
-The startup path can finish preparing captured tree packages while the first and every later gameplay frame still use the pre-existing instanced cylinder and icosahedron trees.
+Prepared packages are now presented through near, medium and far resources. The renderer does not implement the package horizon form or transition descriptor, and the visible frame does not identify the exact package generation.
 
 ## Plan ledger
 
-**Goal:** require visible rendering to identify the accepted tree package generation it presents.
+**Goal:** make every visible tree form and transition consume the accepted package revision and publish matching frame evidence.
 
-- [x] Inspect package render forms.
-- [x] Inspect active tree geometry and materials.
-- [x] Compare package data with live renderer inputs.
-- [x] Define visible-frame proof.
-- [ ] Implement and execute the proof.
+- [x] Inspect current package materialization.
+- [x] Inspect projected-size classification.
+- [x] Inspect startup and diagnostics receipts.
+- [x] Identify horizon and transition gaps.
+- [ ] Implement and execute four-form transition proof.
 
-## Prepared render data
-
-```txt
-near mesh recipe
-medium mesh recipe
-far multi-angle impostor atlas
-horizon impostor atlas
-dither-crossfade transition
-hysteresis
-trunk and crown material descriptors
-```
-
-## Active render data
+## Implemented rendering
 
 ```txt
-hard-coded treeTypes tuples
-CylinderGeometry trunk
-IcosahedronGeometry crown
-one crown color per type
-InstancedMesh batches
-no package ID
-no package digest
-no atlas texture
-no form selection
-no package transition state
+legacy tree suppression
+near trunk/crown instances
+medium trunk/crown instances
+far angle-selected billboards
+package colors and roughness
+projected-pixel classification
+near/medium/far counts
+resource disposal
 ```
 
-## Visible gap
+## Remaining render gap
 
 ```txt
-required preparation completes
-  -> game route imports
-  -> renderer allocates legacy tree resources
-  -> patch typeIndex selects legacy tuple
-  -> frame presents legacy trees
-  -> no evidence links the frame to the prepared bundle
+horizon descriptor: present in package, absent in renderer
+far minimum threshold: loaded, not used for classification
+maximum thresholds: not enforced
+form state retained per tree: absent
+hysteresis: absent
+dither crossfade: absent
+transition duration: absent
+transition budget: absent
+exact package IDs/digests in renderer view: absent
+exact-generation first frame acknowledgement: absent
 ```
+
+Current classification is stateless:
+
+```txt
+pixels >= near minimum   -> near
+pixels >= medium minimum -> medium
+otherwise                -> far
+```
+
+This permits abrupt form changes and threshold oscillation. It also assigns horizon-scale trees to far instead of the declared horizon form.
 
 ## Required frame receipt
 
-`FirstTreeFidelityBoundFrameAck`
-
-Required fields:
+`FirstExactTreeFidelityFrameAck`
 
 ```txt
-routeGeneration
-gameGeneration
-assetRuntimeGeneration
-bundleId
-manifestRevision
-packageDigests
-renderGeneration
-activePatchRevision
-visibleTreeCount
-formCounts: near / medium / far / horizon
-transitionCount
-presentedFrameId
+frameId
+route/game/render generations
+bundle and manifest revisions
+package digests by archetype
+active patch revision
+visible near/medium/far/horizon counts
+active transition count
+transition policy revision
 ```
 
 ## Claim boundary
 
-No screenshot comparison or browser rendering fixture was run. The source proves missing package consumption, not a quantified visual difference.
+No visual comparison, threshold-oscillation reproduction, crossfade fixture or deployed browser smoke was run.
