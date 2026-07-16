@@ -1,92 +1,78 @@
-# START HERE: PrehistoricRush
+# START HERE: PrehistoricRush Tree Impostor Elevation Continuity
 
-**Last aligned:** `2026-07-16T12-47-00-04-00`  
+**Last aligned:** `2026-07-16T14-39-29-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed pre-audit documentation head:** `4c353057e1aa58d71c917a5aa4c1b4afa4d7e886`  
-**Reviewed runtime source revision:** `9c62bc402451aea7588373f760883517281b9a39`  
-**Status:** `tree-impostor-view-frame-addressing-authority-audited`
+**Previous repo-local documentation head:** `36bd09e2f6abc0862dc94955bef55268d0ebf7b6`  
+**Reviewed pre-audit repository head:** `d427de443aea28b256c92a760a8d1c6f6a396efb`  
+**Status:** `tree-impostor-elevation-row-continuity-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected as the only runtime-ahead eligible repository. Exact tree generation identity, four-form selection, hysteresis, dither crossfade, required atlas decoding, and decoded-image renderer admission are now implemented in source. The focused remaining gap is impostor view addressing: far captures contain multiple elevations, but rendering selects only azimuth and assumes one atlas row instead of resolving an exact frame record.
+PrehistoricRush was selected as the older of two runtime-ahead eligible Publish repositories. Fourteen new commits complete exact impostor frame addressing and add ten deterministic prehistoric tree archetypes with ecological placement and per-tree variation.
+
+The remaining focused gap is elevation continuity. The renderer selects the nearest captured elevation row and blends adjacent azimuth frames only inside that row. Crossing a row midpoint can replace the selected row without interpolation, deadband, retained transition state, or a continuity result.
 
 ## Intent
 
-Preserve the working tree-fidelity pipeline while making every far or horizon billboard select one revision-bound atlas frame from camera azimuth and elevation.
+Preserve exact generations, exact UV addressing, adjacent-azimuth blending, four fidelity forms, tree diversity, and collision identity while making capture-row transitions continuous and provable.
 
 ## What needs to happen
 
 ```txt
-camera + tree bounds
-  -> derive azimuth and elevation
-  -> resolve an exact package frame record
-  -> validate atlas rectangle and generation
-  -> bind the frame to the billboard batch
-  -> render and acknowledge the matching frame
+camera + tree + accepted frame set
+  -> elevation bracket
+  -> deadband or row interpolation
+  -> azimuth neighbors per admitted row
+  -> normalized exact-frame weights
+  -> UV and generation binding
+  -> TreeImpostorViewContinuityResult
+  -> rendered frame
+  -> FirstContinuousImpostorFrameAck
 ```
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Select only runtime-ahead PrehistoricRush.
-- [x] Reconcile nine post-ledger runtime commits.
-- [x] Trace generation identity, four-form transitions, atlas decoding, texture admission, rendering, tests, and Pages workflow.
-- [x] Document all 78 active named surfaces and services.
-- [x] Define one impostor view/frame-addressing authority with 18 coordinating surfaces.
-- [x] Add the `2026-07-16T12-47-00-04-00` audit family on `main`.
-- [ ] Implement exact elevation-aware frame addressing and executable browser/build/Pages fixtures.
+- [x] Confirm ten eligible central ledgers and root `.agent` states.
+- [x] Identify PrehistoricRush and TheOpenAbove as runtime-ahead.
+- [x] Select only PrehistoricRush by the older unmatched timestamp.
+- [x] Reconcile 14 commits and 12 changed files.
+- [x] Document the interaction loop, domains, 81 active surfaces, and services.
+- [x] Add the `2026-07-16T14-39-29-04-00` audit family on `main`.
+- [ ] Implement elevation-row continuity and execute browser, artifact, and Pages fixtures.
 
-## Main finding
-
-```txt
-multi-angle far capture: present
-multiple far elevations: present
-horizon capture: present
-required image decoding: present
-decoded-image render admission: present
-azimuth selection: present
-
-camera elevation selection: absent
-exact frame-record selection: absent
-frame rectangle adoption: absent
-atlas row derived from frame metadata: absent
-frame-generation result: absent
-FirstExactImpostorFrameAck: absent
-functional visual fixture: absent
-```
-
-## Current audit family
+## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-16T12-47-00-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-16T12-47-00-04-00.md
-.agent/architecture-audit/2026-07-16T12-47-00-04-00-tree-impostor-view-addressing-dsk-map.md
-.agent/render-audit/2026-07-16T12-47-00-04-00-atlas-frame-visible-view-gap.md
-.agent/gameplay-audit/2026-07-16T12-47-00-04-00-camera-elevation-impostor-loop.md
-.agent/interaction-audit/2026-07-16T12-47-00-04-00-impostor-frame-command-result-map.md
-.agent/tree-system-audit/2026-07-16T12-47-00-04-00-impostor-frame-addressing-contract.md
-.agent/deploy-audit/2026-07-16T12-47-00-04-00-impostor-angle-fixture-gate.md
-.agent/central-sync-audit/2026-07-16T12-47-00-04-00-runtime-ahead-impostor-frame-reconciliation.md
+.agent/trackers/2026-07-16T14-39-29-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-16T14-39-29-04-00.md
+.agent/architecture-audit/2026-07-16T14-39-29-04-00-tree-impostor-elevation-continuity-dsk-map.md
+.agent/render-audit/2026-07-16T14-39-29-04-00-elevation-row-visible-transition-gap.md
+.agent/gameplay-audit/2026-07-16T14-39-29-04-00-camera-height-impostor-row-switch-loop.md
+.agent/interaction-audit/2026-07-16T14-39-29-04-00-impostor-view-continuity-command-result-map.md
+.agent/tree-system-audit/2026-07-16T14-39-29-04-00-elevation-row-blend-contract.md
+.agent/deploy-audit/2026-07-16T14-39-29-04-00-impostor-elevation-sweep-fixture-gate.md
+.agent/central-sync-audit/2026-07-16T14-39-29-04-00-runtime-ahead-elevation-continuity-reconciliation.md
 ```
 
-## Required authority
+## Required parent domain
 
-`prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain`
+`prehistoric-rush-tree-impostor-elevation-row-continuity-authority-domain`
 
-## Kit census
+## Census
 
 ```txt
 Nexus Engine root/subdomain kits: 24
 official NexusEngine-Kits: 5
-product/page/asset/Worker kits: 23
+product/page/asset/Worker kits: 24
 external/host/capture/render adapters: 17
-proof kits: 9
-total active named surfaces: 78
-planned view/frame-addressing surfaces: 18
+proof kits: 11
+active named surfaces: 81
+planned continuity surfaces: 18
 ```
 
 ## Claim boundary
 
-Documentation only. No elevation-aware frame selection, exact atlas-addressing correctness, artifact parity, Pages parity, or production readiness is claimed.
+Documentation only. No elevation-row continuity, rendered transition correctness, artifact parity, Pages parity, or production readiness is claimed.
