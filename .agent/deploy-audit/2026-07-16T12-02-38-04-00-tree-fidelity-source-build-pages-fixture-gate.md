@@ -1,73 +1,67 @@
-# Deploy Audit: Tree Fidelity Source, Build and Pages Fixture Gate
+# Deploy Audit: Tree Fidelity Functional and Pages Fixture Gate
 
 **Timestamp:** `2026-07-16T12-02-38-04-00`
 
 ## Summary
 
-The new Node contract test validates constants and source data only. Deployment proof must cover module loading, browser capture, IndexedDB caching, startup readiness, package adoption and a visible package-bound frame.
+Source checks now prove that preparation, package lookup, fidelity-layer creation and startup acknowledgement are wired. They do not execute capture, caching, form selection, horizon behavior, transitions or deployed rendering.
 
 ## Plan ledger
 
-**Goal:** prove the same tree-fidelity generation is prepared, adopted and presented from source, staged output and the deployed Pages origin.
+**Goal:** prove the exact same tree-fidelity generation and form behavior from source, staged output and GitHub Pages.
 
-- [x] Inspect current test coverage.
-- [x] Identify browser-only provider and cache behavior.
-- [x] Define fixture gates.
+- [x] Inspect current source-test coverage.
+- [x] Identify browser-only behavior.
+- [x] Define functional and parity gates.
 - [ ] Execute the gates.
 
 ## Current proof
 
 ```txt
-bundle/provider/manifest IDs: asserted
-five archetypes: asserted
-frozen six-field type tuples: asserted
-pinned Nexus commit: asserted
-npm test includes source contract: present
-browser bundle request: not proven
-capture provider output: not proven
-IndexedDB cache hit: not proven
-startup readiness: not proven
-live package adoption: not proven
-visible frame binding: not proven
+constant and archetype assertions: present
+source regex for bundle request: present
+source regex for required preparation: present
+source regex for package consumption: present
+source regex for fidelity layer: present
+source regex for startup receipt: present
+
+real package generation: not proven
+IndexedDB miss/hit: not proven
+actual atlas decode: not proven
+near/medium/far runtime selection: not proven
+horizon selection: absent
+hysteresis/crossfade: absent
+exact generation identity: absent
 build/Pages parity: not proven
 ```
 
-## Required source fixture
+## Required functional fixture
 
 ```txt
-request the bundle with a deterministic capture provider
-inspect manifest and five package payloads
-validate near/medium/far/horizon forms
-validate frame counts and atlas metadata
-validate cancellation and provider failure
-validate cache miss then cache hit
-```
-
-## Required live-browser fixture
-
-```txt
-open menu
-observe background progress and cache settlement
-navigate to game
-observe required preparation settlement
-assert adopted package digest in runtime diagnostics
-force near, medium, far and horizon selections
-assert FirstTreeFidelityBoundFrameAck
-exit route and assert resource retirement
+request five packages through deterministic provider
+verify manifest, versions and package digests
+exercise cache miss then hit
+create patch-bound tree records
+render near, medium, far and horizon forms
+cross thresholds in both directions
+verify hysteresis and bounded crossfade
+reject a stale package generation
+publish FirstExactTreeFidelityFrameAck
+retire all route/provider/GPU resources
 ```
 
 ## Required parity fixture
 
-Run the same browser fixture against:
+Run the same fixture against:
 
 ```txt
-source development server
-staged/static artifact
+source server
+staged static artifact
 GitHub Pages origin
 ```
 
-The gate passes only when bundle, manifest, package, patch-binding, render-generation and frame-ack identities match across all three surfaces.
+The gate passes only when generation digest, package revisions, patch identity, form counts, transition receipts and first-frame acknowledgement match.
 
 ## Non-claims
 
-No browser capture, IndexedDB, startup, adoption, rendered-form, artifact or deployed-origin fixture was executed by this documentation audit.
+No functional browser, artifact or deployed-origin fixture was run by this audit.
