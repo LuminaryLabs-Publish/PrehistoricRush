@@ -1,23 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-16T12-02-38-04-00",
-  "status": "tree-fidelity-generation-form-transition-authority-audited",
-  "technicalStatus": "tree-fidelity-generation-form-transition-authority-audited",
-  "repositoryRevisionReviewed": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
-  "runtimeSourceRevisionReviewed": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
-  "priorDocumentationHead": "e83638abab425dc3c54370ad6c3fab17576c3d13",
-  "currentAuditedSlice": "Tree Fidelity Exact Generation / Patch Cache Binding / Horizon / Hysteresis / Crossfade / Frame Proof",
-  "latestTracker": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T12-02-38-04-00.md",
+  "generatedAt": "2026-07-16T12-47-00-04-00",
+  "status": "tree-impostor-view-frame-addressing-authority-audited",
+  "technicalStatus": "tree-impostor-view-frame-addressing-authority-audited",
+  "repositoryRevisionReviewed": "9c62bc402451aea7588373f760883517281b9a39",
+  "runtimeSourceRevisionReviewed": "9c62bc402451aea7588373f760883517281b9a39",
+  "priorDocumentationHead": "4c353057e1aa58d71c917a5aa4c1b4afa4d7e886",
+  "currentAuditedSlice": "Tree Impostor Camera View / Elevation / Exact Capture Frame / Atlas Addressing / Visible Frame Proof",
+  "latestTracker": ".agent/trackers/2026-07-16T12-47-00-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-16T12-47-00-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-16T12-02-38-04-00-tree-fidelity-asset-adoption-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-16T12-02-38-04-00-prepared-tree-assets-not-presented-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-16T12-02-38-04-00-startup-waits-unused-tree-package-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-16T12-02-38-04-00-tree-asset-preparation-adoption-command-result-map.md",
-    "treeSystem": ".agent/tree-system-audit/2026-07-16T12-02-38-04-00-fidelity-bundle-consumption-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-16T12-02-38-04-00-tree-fidelity-source-build-pages-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-16T12-02-38-04-00-runtime-ahead-tree-fidelity-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-16T12-47-00-04-00-tree-impostor-view-addressing-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-16T12-47-00-04-00-atlas-frame-visible-view-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-16T12-47-00-04-00-camera-elevation-impostor-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-16T12-47-00-04-00-impostor-frame-command-result-map.md",
+    "treeSystem": ".agent/tree-system-audit/2026-07-16T12-47-00-04-00-impostor-frame-addressing-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-16T12-47-00-04-00-impostor-angle-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-16T12-47-00-04-00-runtime-ahead-impostor-frame-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -33,74 +33,67 @@
     "reason": "PrehistoricRush was the only runtime-ahead eligible repository."
   },
   "runtimeDelta": {
-    "base": "e83638abab425dc3c54370ad6c3fab17576c3d13",
-    "reviewedRuntimeSource": "e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53",
-    "runtimeCommitCount": 13,
-    "runtimeChangedFileCount": 9
+    "base": "4c353057e1aa58d71c917a5aa4c1b4afa4d7e886",
+    "reviewedRuntimeSource": "9c62bc402451aea7588373f760883517281b9a39",
+    "runtimeCommitCount": 10,
+    "runtimeChangedFileCount": 7
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 24,
     "officialNexusEngineKitCount": 5,
-    "productPageAssetWorkerKitCount": 22,
+    "productPageAssetWorkerKitCount": 23,
     "externalHostCaptureRenderAdapterCount": 17,
     "proofKitCount": 9,
-    "totalSurfaceCount": 77,
-    "newSurfaceCount": 11,
-    "plannedGenerationFormTransitionSurfaceCount": 20
+    "totalSurfaceCount": 78,
+    "newSurfaceCount": 1,
+    "plannedViewFrameAddressingSurfaceCount": 18
   },
   "interactionLoop": [
-    "menu background-requests the tree bundle and retires the capture provider",
-    "game entry performs required tree preparation and retires the provider",
-    "game runtime reads package values and derives tree types from canonical archetypes",
-    "patch streaming feeds a dedicated tree-fidelity layer",
-    "projected pixels select near medium or far resources",
-    "first frame reports package and tree counts to Core Startup",
-    "exact generation identity horizon and transition semantics remain absent"
+    "menu background-requests the tree bundle",
+    "game entry requires package preparation and decodes far and horizon atlases",
+    "game runtime validates one exact fidelity generation and binds it into patch identity",
+    "patch streaming feeds retained near medium far and horizon form state",
+    "camera azimuth selects an impostor material while camera elevation is ignored",
+    "first frame reports generation and form counts",
+    "exact selected capture-frame identity and atlas rectangle remain absent"
   ],
   "domainsInUse": [
     "browser route module DOM canvas RAF and lifecycle",
-    "Core Assets and Core Startup",
-    "IndexedDB cache and Three.js object capture",
-    "tree package schema provider manifest bundle and lifecycle",
+    "Core Assets Core Startup Core Object Object Shape Core Capture and Object Fidelity",
+    "IndexedDB cache runtime image decoding and Three.js texture admission",
     "PrehistoricRush simulation patch streaming terrain LOD rendering and physics",
-    "tree generation identity patch cache binding horizon hysteresis crossfade and exact frame proof",
+    "tree generation four-form transition camera view resolution atlas addressing and exact frame proof",
     "tests Pages and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "treeFidelityImplementation": {
-      "core-assets-kit": ["provider and asset graph", "bundle requests", "cache", "progress", "receipts", "values"],
-      "core-startup-kit": ["required preparation", "first frame", "input-ready entry"],
-      "tree-fidelity-asset-provider-kit": ["capture", "portable packages", "progress", "disposal"],
-      "tree-fidelity-route-preparation-kit": ["menu preload", "game required preparation", "provider retirement"],
-      "three-tree-fidelity-layer": ["legacy suppression", "near and medium mesh instances", "far billboards", "form counts", "disposal"]
+    "completeInventory": ".agent/trackers/2026-07-16T12-47-00-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "newlyReconciled": {
+      "tree-fidelity-runtime-image-hydration-kit": ["far and horizon atlas discovery", "browser decode", "startup progress", "runtimeImage binding", "typed failure propagation"],
+      "three-tree-fidelity-layer": ["exact generation view", "four-form retention", "hysteresis", "dither crossfade", "decoded texture admission", "azimuth selection", "batch disposal"]
     }
   },
   "treeFidelityState": {
-    "fivePackagesPresent": true,
-    "indexedDbCachePresentWhenSupported": true,
-    "menuAndGamePreparationPresent": true,
-    "providerRetirementPresent": true,
-    "livePackageConsumptionPresent": true,
-    "nearMediumFarRenderingPresent": true,
-    "legacyTreeSuppressionPresent": true,
-    "startupFirstFrameAckPresent": true,
-    "exactGenerationDigestPresent": false,
-    "exactGenerationInPatchCacheIdentityPresent": false,
-    "packageIdentityInTreeRecordsPresent": false,
-    "horizonRenderingPresent": false,
-    "farRangeFullyEnforced": false,
-    "retainedFormStatePresent": false,
-    "hysteresisPresent": false,
-    "ditherCrossfadePresent": false,
-    "exactGenerationFrameAckPresent": false,
-    "functionalBrowserParityFixturePresent": false
+    "exactGenerationDigestPresent": true,
+    "generationInPatchCacheIdentityPresent": true,
+    "nearMediumFarHorizonRenderingPresent": true,
+    "retainedFormStatePresent": true,
+    "hysteresisPresent": true,
+    "ditherCrossfadePresent": true,
+    "requiredAtlasDecodePresent": true,
+    "decodedTextureAdmissionPresent": true,
+    "cameraAzimuthSelectionPresent": true,
+    "cameraElevationSelectionPresent": false,
+    "exactFrameRecordSelectionPresent": false,
+    "frameRectangleAdoptionPresent": false,
+    "exactImpostorFrameAckPresent": false,
+    "functionalVisualParityFixturePresent": false
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain",
-    "mainFinding": "Tree packages are prepared and rendered through near medium and far forms, but exact package generation identity is not bound into patch/cache state and the declared horizon, hysteresis and dither-crossfade policy is not implemented."
+    "parentDomain": "prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain",
+    "mainFinding": "Far capture packages contain azimuth and elevation frame records, but the renderer selects only azimuth, filters to one base elevation, and infers texture offsets instead of adopting an exact selected frame record."
   },
   "retainedStatuses": [
+    "tree-fidelity-generation-form-transition-authority-central-reconciled",
     "webgl-context-gpu-resource-recovery-authority-central-reconciled",
     "patch-worker-request-liveness-recovery-authority-central-reconciled",
     "game-audio-event-projection-authority-central-reconciled",
