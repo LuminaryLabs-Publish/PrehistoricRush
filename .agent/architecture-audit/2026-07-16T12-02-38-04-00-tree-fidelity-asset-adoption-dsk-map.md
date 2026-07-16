@@ -1,144 +1,124 @@
-# Architecture Audit: Tree Fidelity Asset Adoption DSK Map
+# Architecture Audit: Tree Fidelity Generation and Form Transition DSK Map
 
 **Timestamp:** `2026-07-16T12-02-38-04-00`  
-**Status:** `tree-fidelity-asset-adoption-projection-authority-audited`
+**Status:** `tree-fidelity-generation-form-transition-authority-audited`
 
 ## Summary
 
-Core Assets and Core Startup now prepare a portable tree bundle, but no domain owns the transition from `AssetReceipt` to accepted patch and renderer state.
+Preparation, package consumption and three-form rendering are implemented. The architectural gap is now exact generation identity and stateful four-form transition ownership.
 
 ## Plan ledger
 
-**Goal:** assign preparation, adoption, projection and retirement to explicit DSK boundaries.
+**Goal:** preserve implemented boundaries and add only the missing generation and transition authority.
 
-- [x] Map the implemented asset graph.
-- [x] Map the current patch/render graph.
-- [x] Locate the missing authority between them.
-- [x] Define command, result and acknowledgement surfaces.
-- [ ] Implement the authority.
+- [x] Map Core Assets and Core Startup preparation.
+- [x] Map live package adoption and tree-fidelity rendering.
+- [x] Map provider retirement and startup acknowledgement.
+- [x] Isolate generation, horizon and transition gaps.
+- [ ] Implement the remaining DSK boundary.
 
 ## Implemented graph
 
 ```txt
 Core Assets
-  -> IndexedDB cache adapter
-  -> prehistoric tree provider
-  -> five package assets
-  -> manifest with package dependencies
-  -> tree-fidelity bundle
+  -> IndexedDB cache
+  -> tree capture provider
+  -> five packages + manifest + bundle
+  -> package values and receipts
 
 Core Startup
-  -> launch
-  -> required tree-fidelity preparation
-  -> progress projection
-  -> preparation receipt
+  -> required preparation
+  -> first frame presentation
+  -> input-ready entry
 
-Three capture provider
-  -> temporary archetype object
-  -> around-subject views
-  -> color and opacity observations
-  -> 256px atlas frames
-  -> portable package
-
-Current game
-  -> separate numeric treeTypes authority
-  -> patch tree typeIndex
-  -> cylinder trunk instances
-  -> icosahedron crown instances
+Game runtime
+  -> canonical archetypes -> derived treeTypes
+  -> package values -> patch-stream LOD adapter
+  -> dedicated fidelity layer
+  -> near / medium / far instances
+  -> legacy tree suppression
+  -> form counts and startup receipt
 ```
 
-## Missing DSK boundary
+## Missing boundary
 
 ```txt
-AssetReceipt
-  -X-> accepted TreeFidelityGeneration
-  -X-> patch archetype asset ID
-  -X-> projected-size form choice
-  -X-> mesh/impostor materialization
-  -X-> visible-frame acknowledgement
+package count
+  -X-> exact immutable generation digest
+  -X-> patch/cache revision binding
+
+per-frame projected pixels
+  -X-> retained form state
+  -X-> horizon range
+  -X-> hysteresis
+  -X-> dither crossfade
+  -X-> exact-generation frame acknowledgement
 ```
 
-## Proposed domain
+## Required domain
 
-`prehistoric-rush-tree-fidelity-asset-adoption-projection-authority-domain`
+`prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain`
 
-### Preparation subdomain
+### Generation subdomain
 
 ```txt
-tree-fidelity-preparation-command-kit
-tree-fidelity-package-validation-kit
+tree-fidelity-generation-id-kit
+tree-fidelity-bundle-revision-kit
 tree-fidelity-package-digest-kit
-tree-fidelity-manifest-resolution-kit
-tree-fidelity-preparation-result-kit
+tree-fidelity-generation-admission-kit
+tree-fidelity-generation-result-kit
+tree-fidelity-cache-identity-kit
+tree-fidelity-patch-binding-kit
+tree-fidelity-stale-generation-rejection-kit
 ```
 
 Services:
 
 ```txt
-bind provider/cache/bundle/request generations
-validate package schema and dependency completeness
-verify archetype IDs, form descriptors and frame counts
-publish immutable preparation result and digest
+bind bundle/manifest/package/provider/cache revisions
+compute one immutable generation digest
+bind patch controller and vegetation cache identity
+reject mixed, stale or partial generations
 ```
 
-### Adoption subdomain
+### Form-transition subdomain
 
 ```txt
-tree-archetype-single-source-kit
-tree-package-patch-binding-kit
-tree-fidelity-adoption-command-kit
-tree-fidelity-adoption-result-kit
-tree-fidelity-stale-revision-rejection-kit
-```
-
-Services:
-
-```txt
-remove duplicate hard-coded archetype authority
-bind patch tree records to package asset IDs
-admit one package generation into one game generation
-reject stale, partial and mismatched revisions
-```
-
-### Projection subdomain
-
-```txt
-tree-render-form-selection-kit
-tree-mesh-recipe-materialization-kit
-tree-impostor-atlas-materialization-kit
-tree-fidelity-transition-policy-kit
-tree-fidelity-render-generation-kit
-first-tree-fidelity-bound-frame-ack-kit
+tree-fidelity-form-state-kit
+tree-fidelity-projected-range-kit
+tree-fidelity-horizon-form-kit
+tree-fidelity-hysteresis-kit
+tree-fidelity-dither-crossfade-kit
+tree-fidelity-transition-budget-kit
 ```
 
 Services:
 
 ```txt
-select near, medium, far or horizon by projected size
-materialize mesh recipes and impostor resources
-apply dither crossfade and hysteresis
-bind renderer resources to adopted package digest
-acknowledge the first matching presented frame
+retain accepted form per tree
+apply near/medium/far/horizon ranges
+prevent threshold thrashing
+crossfade old/new forms within bounded budgets
 ```
 
-### Lifecycle and proof subdomain
+### Proof subdomain
 
 ```txt
-tree-fidelity-route-retirement-kit
+tree-fidelity-startup-receipt-kit
 tree-fidelity-diagnostics-kit
+first-exact-tree-fidelity-frame-ack-kit
+tree-fidelity-functional-render-fixture-kit
 tree-fidelity-source-build-pages-parity-fixture-kit
 ```
 
 Services:
 
 ```txt
-retire menu/game asset runtimes and capture renderers
-cancel outstanding requests
-release GPU resources and cache handles
-report preparation/adoption/projection revisions
-prove source, build and deployed parity
+publish exact generation and form counts
+acknowledge one matching visible frame
+prove cache, render, transition and deployment parity
 ```
 
 ## Ownership rule
 
-Asset providers prepare portable data. Patch generation consumes accepted archetype identities. Rendering consumes adopted package forms. No browser route, global variable or renderer callback may silently become semantic adoption authority.
+Core Assets owns portable values and receipts. Patch generation owns deterministic tree records. The tree-fidelity presentation domain owns form state and transitions. Route code may coordinate these authorities but may not replace revision identity with globals or package counts.
