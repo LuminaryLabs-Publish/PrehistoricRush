@@ -1,51 +1,51 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-15T16-00-32-04-00`  
-**Scope:** semantic gameplay status, distance progress, terminal announcements, pause dialog and focus lifecycle
+**Audit timestamp:** `2026-07-15T20-59-46-04-00`  
+**Scope:** semantic gameplay events, browser audio admission, cue projection, lifecycle, budgets, and audiovisual convergence
 
 ## Summary
 
-Source review confirms that the game creates a plain status `div`, replaces its HTML every RAF callback, represents distance with styled nested `div` elements, and changes the primary action label for game, retry and win states. The pause host creates a labeled section but defines no dialog role, modal adoption, initial focus, containment, background inertness or focus restoration.
+Source review confirms that the product domain defines and emits accepted run-start, shard-collection, failure, and victory events. The browser runtime renders accepted state through Three.js and DOM, while the active boot/runtime surfaces expose no audio provider, cue registry, context lifecycle, preferences, deduplication, voice budget, or audible acknowledgement.
 
 ## Plan ledger
 
-**Goal:** distinguish verified source behavior from browser accessibility, assistive-technology, artifact and deployment evidence that was not executed.
+**Goal:** distinguish verified source behavior from audible browser, artifact, and deployment evidence that was not executed.
 
 - [x] Compare all 11 Publish repositories and select the oldest synchronized eligible repository.
-- [x] Inspect the active game shell, RAF status updates and action-label changes.
-- [x] Inspect pause overlay creation, keyboard toggling and removal.
+- [x] Inspect active boot modules and runtime composition.
+- [x] Inspect accepted run events and resolution results.
+- [x] Inspect visual RAF projection and host snapshots.
 - [x] Preserve the complete 66-surface inventory.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute accessibility fixtures later.
+- [ ] Execute browser audio fixtures later.
 
 ## Verified source findings
 
 ```txt
-reviewed current repository head: 1e947c398512806e2236d07d9d64fae1cccd6677
+reviewed current repository head: bfc51c01a79601686e5fad12ff3240472b3f111c
 reviewed runtime source revision: 4808f05cff438ff5a9d013cd7ddec5127bbcf213
-game root accessible label: present
-semantic menu links: present
-primary gameplay button: present
-status role/live policy: absent
-semantic progress range/value: absent
-terminal announcement result: absent
-pause accessible label: present
-pause dialog role: absent
-accepted modal state: absent
-initial focus/containment/restoration: absent
-AccessibleGameplayProjectionResult: absent
-FirstAccessibleGameplayFrameAck: absent
+RunStarted semantic event: present
+ShardCollected semantic event: present
+RunFailed semantic event: present
+RunWon semantic event: present
+accepted event publication: present
+Three.js and DOM state projection: present
+AudioContext or HTML audio owner: absent in reviewed active surfaces
+semantic cue registry/projector: absent
+browser unlock/context lifecycle: absent
+preferences/deduplication/budgets: absent
+AudioProjectionResult: absent
+FirstAudibleCueAck: absent
+FirstAudioVisualConvergenceAck: absent
 ```
 
-## Source-derived interaction paths
+## Source-derived interaction path
 
 ```txt
-RAF -> accepted state -> visible frame -> status HTML replacement -> no semantic frame receipt
-Escape -> pause toggle -> labeled section mount -> no focus admission result
-close -> overlay removal -> no explicit focus restoration result
+intent -> committed simulation result -> semantic event/state -> visible projection -> no audio projection receipt
 ```
 
-These paths prove missing source-backed authorities. They do not prove a specific screen-reader or keyboard symptom because no browser accessibility fixture was executed.
+This proves a missing source-backed authority. It does not prove a specific audible symptom because no browser or physical listening fixture was executed.
 
 ## Change boundary
 
@@ -55,7 +55,7 @@ runtime JavaScript changed: no
 HTML or CSS changed: no
 simulation or gameplay changed: no
 rendering changed: no
-accessibility runtime behavior changed: no
+audio behavior changed: no
 dependencies or package scripts changed: no
 tests or workflows changed: no
 deployment changed: no
@@ -67,15 +67,16 @@ pull request created: no
 
 ```txt
 npm test
-keyboard-only browser fixture
-accessibility-tree capture
-screen-reader announcement fixture
-pause focus entry/containment/restoration fixture
-pagehide and route-retirement focus fixture
+browser user-gesture unlock fixture
+run/pickup/failure/win cue fixture
+movement/jump/landing/surface cue fixture
+pause/blur/visibility/route lifecycle fixture
+deduplication and voice-budget fixture
+audiovisual convergence fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No semantic runtime projection, live-announcement correctness, progressbar correctness, keyboard-focus correctness, assistive-technology compatibility, passing test, artifact parity, deployment parity or production readiness is claimed.
+No audio runtime, audible gameplay, browser-unlock reliability, cue correctness, spatial correctness, lifecycle safety, preference persistence, budget correctness, artifact parity, deployment parity, or production readiness is claimed.
