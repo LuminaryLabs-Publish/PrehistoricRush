@@ -1,52 +1,62 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-15T20-59-46-04-00`  
-**Authority:** `prehistoric-rush-game-audio-event-projection-authority-domain`
+**Audit:** `2026-07-16T02-03-42-04-00`  
+**Authority:** `prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
 
 ## Summary
 
-Add one revision-bound audio projection layer downstream of accepted gameplay events and state.
+Add one bounded Worker-generation authority around the existing patch controller and deterministic generator.
 
 ## Plan ledger
 
-**Goal:** deliver reliable, bounded, lifecycle-safe game audio without coupling success cues to raw input or RAF frequency.
+**Goal:** ensure every patch request settles, failed Worker generations recover, and controller inflight ownership cannot become permanent.
 
-### Phase 1: Admission and context
+### Phase 1: Generation and readiness
 
-- [ ] Add browser audio capability observation.
-- [ ] Add explicit user-gesture unlock admission.
-- [ ] Own one `AudioContext` generation with suspend, resume, close, and replacement results.
-- [ ] Add master, category volume, and mute preferences.
+- [ ] Add immutable Worker-generation identity.
+- [ ] Add capability and module-load observation.
+- [ ] Require a matching `PatchWorkerReadyResult` before asynchronous dispatch.
+- [ ] Expose Worker state through `WorkerHealthSnapshot`.
 
-### Phase 2: Semantic cue projection
+### Phase 2: Request settlement
 
-- [ ] Add `AudioProjectionAdmissionCommand` and `AudioProjectionResult`.
-- [ ] Bind document, runtime, run, committed-frame, event, camera, and policy revisions.
-- [ ] Create stable cue descriptors for run start, movement, boost, jump, landing, surfaces, shard pickup, collision failure, victory, UI, and ambience.
-- [ ] Consume accepted semantic events and committed state only.
-- [ ] Reject stale, duplicate, muted, suspended, and retired work.
+- [ ] Add `PatchWorkerAdmissionCommand` and `PatchWorkerResult`.
+- [ ] Bind controller, Worker, request, patch, cache-key and attempt identities.
+- [ ] Add deadlines and timeout settlement.
+- [ ] Add cancellation ownership.
+- [ ] Observe `error`, `messageerror` and synchronous `postMessage` failure.
+- [ ] Guarantee exactly one terminal result per admitted request.
 
-### Phase 3: Spatial and continuous audio
+### Phase 3: Controller recovery
 
-- [ ] Project listener transforms from the accepted camera revision.
-- [ ] Project world-source transforms where spatial audio is authored.
-- [ ] Key movement, boost, and ambience loops by run and projection generation.
-- [ ] Settle loops on pause, blur, visibility, route exit, restart, and runtime replacement.
+- [ ] Release controller inflight ownership for every non-success result.
+- [ ] Requeue unresolved active-ring work with bounded attempts.
+- [ ] Reject late or duplicate responses from retired Worker generations.
+- [ ] Preserve deterministic patch identity and cache keys across retries.
 
-### Phase 4: Budgets and acknowledgements
+### Phase 4: Restart and fallback
 
-- [ ] Add bounded pools, priorities, and voice budgets.
-- [ ] Deduplicate by run, semantic event, cue descriptor, and policy revision.
-- [ ] Publish `FirstAudibleCueAck`.
-- [ ] Publish `FirstAudioVisualConvergenceAck`.
-- [ ] Expose context, loop, cue, and budget diagnostics through the host snapshot.
+- [ ] Add a bounded Worker restart budget.
+- [ ] Retire listeners, pending requests and process state before replacement.
+- [ ] Admit replacement only after readiness.
+- [ ] Switch the controller to deferred synchronous generation when restart is exhausted.
+- [ ] Publish `PatchWorkerFallbackResult` and degraded-stream diagnostics.
 
-### Phase 5: Fixtures
+### Phase 5: Lifecycle and proof
 
-- [ ] Test unlock and rejected pre-unlock playback.
-- [ ] Test start, jump, landing, boost, pickup, failure, win, and ambience cues.
-- [ ] Test duplicate event and snapshot suppression.
-- [ ] Test lifecycle settlement and run replacement.
-- [ ] Test mute, volume, and budget persistence.
+- [ ] Dispose the executor on pagehide, route exit and runtime replacement.
+- [ ] Terminate the Worker and clear deadlines/cancellation registrations.
+- [ ] Publish `FirstWorkerReadyAck`.
+- [ ] Publish `FirstRecoveredPatchAck` and a matching visible-frame acknowledgement.
+- [ ] Add pending age, failures, restarts and fallback state to public diagnostics.
+
+### Phase 6: Fixtures
+
+- [ ] Test readiness gating.
+- [ ] Test generator error, Worker error and messageerror.
+- [ ] Test timeout, cancellation and late-response rejection.
+- [ ] Test restart success and restart-budget exhaustion.
+- [ ] Test synchronous fallback and active-ring recovery.
+- [ ] Test pagehide and route retirement with pending requests.
 - [ ] Run `npm test`.
-- [ ] Run source, built-output, and Pages parity fixtures.
+- [ ] Run source, artifact and Pages parity fixtures.
