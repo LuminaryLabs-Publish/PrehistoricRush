@@ -77,7 +77,13 @@ assert.deepEqual(pauseMenu.getState(), { open: false, view: "main", selectedActi
 const gameEntry = await readFile(new URL("../src/game.js", import.meta.url), "utf8");
 const gameRuntime = await readFile(new URL("../src/game-runtime.js", import.meta.url), "utf8");
 const domainEntry = await readFile(new URL("../src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js", import.meta.url), "utf8");
-assert.doesNotMatch(gameEntry, /progress|patchStats|ui\.status|ui\.button|const panel = document\.createElement\("aside"\)/, "the public game entry contains no HUD");
+assert.doesNotMatch(
+  gameEntry,
+  /\bpatchStats\b|ui\.status|ui\.button|const panel = document\.createElement\("aside"\)|<b[^>]*>Prehistoric Rush<\/b>/,
+  "the public game entry contains no always-visible gameplay HUD"
+);
+assert.match(gameEntry, /id="tree-load-fill"/, "startup may present required asset readiness progress");
+assert.match(gameEntry, /data\.presentationId = "prehistoric-rush-pause-overlay"/, "the public entry may render the requested pause overlay");
 assert.match(gameEntry, /event\.code !== "Escape"/, "Escape toggles the menu host");
 assert.match(gameEntry, /pauseMenu\.toggle\(\)/, "Escape delegates to the pause-menu DSK");
 assert.match(gameEntry, /pauseMenu\.showSettings\(\)/, "Settings delegates to the pause-menu DSK");
