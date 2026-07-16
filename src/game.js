@@ -1,6 +1,7 @@
 import { RUNTIME_URLS } from "./shared/runtime-versions.js";
 import {
   TREE_FIDELITY_BUNDLE_ID,
+  TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime
 } from "./shared/tree-fidelity-assets.js";
 
@@ -58,6 +59,7 @@ async function prepareTreeAssetsBeforeGame() {
       }
     }
   });
+  runtime.assets.unregisterProvider(TREE_FIDELITY_PROVIDER_ID);
   globalThis.PrehistoricRushTreeAssetRuntime = Object.freeze({ ...runtime, receipt });
   return receipt;
 }
