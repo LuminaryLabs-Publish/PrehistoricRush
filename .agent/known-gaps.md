@@ -1,59 +1,53 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-16T02-03-42-04-00`  
-**Status:** `patch-worker-request-liveness-recovery-authority-audited`
+**Audit:** `2026-07-16T06-39-16-04-00`  
+**Status:** `webgl-context-gpu-resource-recovery-authority-audited`
 
 ## Summary
 
-Patch identity and generation requests exist, but Worker readiness, request lifetime, failure settlement, restart, fallback and retirement are not owned as one recoverable authority.
+The renderer and resources exist, but context loss, generation replacement, complete reconstruction and recovered-frame proof are not owned as one authority.
 
 ## Plan ledger
 
-**Goal:** keep Worker liveness and recovery gaps explicit until every admitted request has a bounded terminal result.
+**Goal:** keep recovery gaps explicit until one forced-loss fixture reaches a terminal recovered or fallback result.
 
-### Worker admission
+### Context lifecycle
 
-- [ ] No immutable Worker-generation identity exists.
-- [ ] The host does not consume `patch-worker-ready`.
-- [ ] No readiness deadline or start-failure result exists.
-- [ ] Dispatch eligibility is inferred from Worker object presence.
+- [ ] No `webglcontextlost` listener exists.
+- [ ] No `webglcontextrestored` listener exists.
+- [ ] No immutable renderer/context generation exists.
+- [ ] No typed loss admission result exists.
+- [ ] No explicit render suspension exists.
+- [ ] Simulation and input behavior during loss are undefined.
 
-### Request settlement
+### Resource ownership
 
-- [ ] No request deadline exists.
-- [ ] No timeout result exists.
-- [ ] No cancellation owner exists.
-- [ ] No Worker `error` observer settles pending requests.
-- [ ] No Worker `messageerror` observer settles pending requests.
-- [ ] No synchronous `postMessage` failure result exists.
-- [ ] No stale or duplicate response rejection by Worker generation exists.
+- [ ] No complete GPU-resource registry exists.
+- [ ] Base terrain, LOD terrain and instance resources have no shared recovery graph.
+- [ ] Clay textures have no generation-bound reconstruction receipt.
+- [ ] Player creature, light and shadow resources have no recovery receipt.
+- [ ] The base adapter exposes no complete disposal contract.
+- [ ] The host does not call adapter disposal.
 
-### Controller recovery
+### Recovery settlement
 
-- [ ] An unresolved executor promise can retain a patch as inflight indefinitely.
-- [ ] No typed inflight release or requeue result exists.
-- [ ] No bounded retry attempt is recorded.
-- [ ] No active-ring coverage policy reacts to unresolved generation.
+- [ ] No dependency-ordered reconstruction transaction exists.
+- [ ] No stale-generation rejection exists.
+- [ ] No recovery deadline exists.
+- [ ] No bounded retry budget exists.
+- [ ] No fallback result exists.
+- [ ] No second-loss-during-recovery policy exists.
+- [ ] No route/page retirement result exists.
 
-### Restart and fallback
+### Proof
 
-- [ ] No Worker crash retirement result exists.
-- [ ] No bounded Worker restart budget exists.
-- [ ] No replacement readiness admission exists.
-- [ ] No live transition to deferred synchronous generation exists.
-- [ ] No fallback failure policy protects gameplay from unsafe world coverage.
-
-### Lifecycle and proof
-
-- [ ] The host does not call executor `dispose()`.
-- [ ] The host does not terminate the Worker on route or document retirement.
-- [ ] Pending timers, requests and listeners have no lifecycle settlement.
-- [ ] No `WorkerHealthSnapshot` exists.
-- [ ] No `PatchWorkerResult` exists.
-- [ ] No `FirstWorkerReadyAck` exists.
-- [ ] No `FirstRecoveredPatchAck` exists.
-- [ ] No Worker fault, artifact or Pages fixture exists.
+- [ ] No `RenderLossResult` exists.
+- [ ] No `RenderRecoveryResult` exists.
+- [ ] No `RenderFallbackResult` exists.
+- [ ] No `FirstRecoveredFrameAck` exists.
+- [ ] No forced context-loss browser fixture exists.
+- [ ] No staged artifact or Pages recovery fixture exists.
 
 ## Retained gaps
 
-Game audio, accessibility projection, host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and general browser-runtime retirement remain separate retained audit families.
+Worker liveness, game audio, accessibility projection, host-clock pacing, terrain ownership, terrain LOD, creator profile settlement, feedback surfaces, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart and general browser-runtime retirement remain separate retained audit families.
