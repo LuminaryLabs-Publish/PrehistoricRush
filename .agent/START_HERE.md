@@ -1,85 +1,92 @@
 # START HERE: PrehistoricRush
 
-**Last aligned:** `2026-07-16T12-02-38-04-00`  
+**Last aligned:** `2026-07-16T12-47-00-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed pre-audit documentation head:** `e83638abab425dc3c54370ad6c3fab17576c3d13`  
-**Reviewed runtime source revision:** `e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53`  
-**Status:** `tree-fidelity-generation-form-transition-authority-audited`
+**Reviewed pre-audit documentation head:** `4c353057e1aa58d71c917a5aa4c1b4afa4d7e886`  
+**Reviewed runtime source revision:** `9c62bc402451aea7588373f760883517281b9a39`  
+**Status:** `tree-impostor-view-frame-addressing-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected as the only runtime-ahead eligible repository. The current runtime prepares, caches, consumes and renders five tree-fidelity packages through near, medium and far forms. The remaining gap is exact generation and package-defined transition authority: cache identity uses package count, horizon is unused, and hysteresis/dither crossfade are absent.
+PrehistoricRush was selected as the only runtime-ahead eligible repository. Exact tree generation identity, four-form selection, hysteresis, dither crossfade, required atlas decoding, and decoded-image renderer admission are now implemented in source. The focused remaining gap is impostor view addressing: far captures contain multiple elevations, but rendering selects only azimuth and assumes one atlas row instead of resolving an exact frame record.
 
-## Plan ledger
+## Intent
 
-**Goal:** preserve the implemented tree pipeline while making package identity, four-form selection, transitions and first-frame proof exact.
+Preserve the working tree-fidelity pipeline while making every far or horizon billboard select one revision-bound atlas frame from camera azimuth and elevation.
+
+## What needs to happen
+
+```txt
+camera + tree bounds
+  -> derive azimuth and elevation
+  -> resolve an exact package frame record
+  -> validate atlas rectangle and generation
+  -> bind the frame to the billboard batch
+  -> render and acknowledge the matching frame
+```
+
+## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Select only runtime-ahead PrehistoricRush.
-- [x] Reconcile thirteen runtime commits and nine runtime files.
-- [x] Trace preparation, adoption, rendering, startup acknowledgement and provider retirement.
-- [x] Document all 77 active surfaces and services.
-- [x] Define one generation/form-transition authority with 20 coordinating surfaces.
-- [x] Add the `2026-07-16T12-02-38-04-00` audit family on `main`.
-- [ ] Implement exact generation identity, horizon, hysteresis, crossfade and functional parity fixtures.
+- [x] Reconcile nine post-ledger runtime commits.
+- [x] Trace generation identity, four-form transitions, atlas decoding, texture admission, rendering, tests, and Pages workflow.
+- [x] Document all 78 active named surfaces and services.
+- [x] Define one impostor view/frame-addressing authority with 18 coordinating surfaces.
+- [x] Add the `2026-07-16T12-47-00-04-00` audit family on `main`.
+- [ ] Implement exact elevation-aware frame addressing and executable browser/build/Pages fixtures.
 
 ## Main finding
 
 ```txt
-portable packages: present
-menu/game preparation: present
-live package consumption: present
-near/medium/far fidelity rendering: present
-legacy tree suppression: present
-provider retirement: present
-startup first-frame acknowledgement: present
+multi-angle far capture: present
+multiple far elevations: present
+horizon capture: present
+required image decoding: present
+decoded-image render admission: present
+azimuth selection: present
 
-exact package digest in patch/cache identity: absent
-horizon form: absent
-far minimum enforcement: absent
-retained form state: absent
-hysteresis: absent
-dither crossfade: absent
-exact generation in first-frame receipt: absent
-functional browser/build/Pages proof: absent
+camera elevation selection: absent
+exact frame-record selection: absent
+frame rectangle adoption: absent
+atlas row derived from frame metadata: absent
+frame-generation result: absent
+FirstExactImpostorFrameAck: absent
+functional visual fixture: absent
 ```
 
 ## Current audit family
 
 ```txt
-.agent/trackers/2026-07-16T12-02-38-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-16T12-02-38-04-00.md
-.agent/architecture-audit/2026-07-16T12-02-38-04-00-tree-fidelity-asset-adoption-dsk-map.md
-.agent/render-audit/2026-07-16T12-02-38-04-00-prepared-tree-assets-not-presented-gap.md
-.agent/gameplay-audit/2026-07-16T12-02-38-04-00-startup-waits-unused-tree-package-loop.md
-.agent/interaction-audit/2026-07-16T12-02-38-04-00-tree-asset-preparation-adoption-command-result-map.md
-.agent/tree-system-audit/2026-07-16T12-02-38-04-00-fidelity-bundle-consumption-contract.md
-.agent/deploy-audit/2026-07-16T12-02-38-04-00-tree-fidelity-source-build-pages-fixture-gate.md
-.agent/central-sync-audit/2026-07-16T12-02-38-04-00-runtime-ahead-tree-fidelity-reconciliation.md
+.agent/trackers/2026-07-16T12-47-00-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-16T12-47-00-04-00.md
+.agent/architecture-audit/2026-07-16T12-47-00-04-00-tree-impostor-view-addressing-dsk-map.md
+.agent/render-audit/2026-07-16T12-47-00-04-00-atlas-frame-visible-view-gap.md
+.agent/gameplay-audit/2026-07-16T12-47-00-04-00-camera-elevation-impostor-loop.md
+.agent/interaction-audit/2026-07-16T12-47-00-04-00-impostor-frame-command-result-map.md
+.agent/tree-system-audit/2026-07-16T12-47-00-04-00-impostor-frame-addressing-contract.md
+.agent/deploy-audit/2026-07-16T12-47-00-04-00-impostor-angle-fixture-gate.md
+.agent/central-sync-audit/2026-07-16T12-47-00-04-00-runtime-ahead-impostor-frame-reconciliation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-tree-fidelity-generation-form-transition-authority-domain`
+`prehistoric-rush-tree-impostor-view-frame-addressing-authority-domain`
 
 ## Kit census
 
 ```txt
 Nexus Engine root/subdomain kits: 24
 official NexusEngine-Kits: 5
-product/page/asset/Worker kits: 22
+product/page/asset/Worker kits: 23
 external/host/capture/render adapters: 17
 proof kits: 9
-total active named surfaces: 77
-planned generation/form-transition surfaces: 20
+total active named surfaces: 78
+planned view/frame-addressing surfaces: 18
 ```
-
-## Next safe ledge
-
-Compute one bundle/manifest/package generation digest, bind it into patch and vegetation-cache identity, retain per-tree form state, implement horizon plus hysteresis/crossfade, and acknowledge the first frame carrying the exact generation and transition snapshot.
 
 ## Claim boundary
 
-Documentation only. No exact generation identity, horizon rendering, transition correctness, artifact parity, Pages parity or production readiness is claimed.
+Documentation only. No elevation-aware frame selection, exact atlas-addressing correctness, artifact parity, Pages parity, or production readiness is claimed.
