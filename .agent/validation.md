@@ -1,60 +1,58 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-16T12-02-38-04-00`  
-**Scope:** tree-fidelity generation identity, patch/cache binding, four-form selection, transitions and frame proof
+**Audit timestamp:** `2026-07-16T12-47-00-04-00`  
+**Scope:** tree generation reconciliation, atlas decoding, decoded-texture admission, view-angle selection, atlas frame addressing, and visible proof
 
 ## Summary
 
-Source review confirms package preparation, live package consumption, near/medium/far rendering, legacy suppression, provider retirement and startup acknowledgement. It also confirms that exact package revisions are not bound into cache identity and that horizon, hysteresis and dither crossfade are not implemented.
+Source review confirms exact generation identity, generation-bound patch/cache identity, four-form retained state, horizon selection, hysteresis, dither crossfade, required atlas decoding, decoded-image renderer admission, and source checks. It also confirms that far impostors ignore camera elevation and derive texture offsets from inferred atlas layout instead of exact selected frame records.
 
-## Plan ledger
+## Intent
 
-**Goal:** distinguish verified tree-fidelity implementation from remaining generation and transition work.
+Separate verified fidelity implementation from the remaining frame-addressing and executable visual-proof work.
+
+## What needs to happen
 
 - [x] Compare all 11 Publish repositories and select runtime-ahead PrehistoricRush.
-- [x] Inspect the complete runtime delta through `e2ad9fa17f1d05c488ee640a4e5738bbbdd8ca53`.
-- [x] Inspect asset preparation, cache, provider retirement and package values.
-- [x] Inspect patch/cache identity and tree-fidelity rendering.
-- [x] Inspect startup acknowledgement and source tests.
+- [x] Inspect the post-ledger delta through `9c62bc402451aea7588373f760883517281b9a39`.
+- [x] Inspect package generation, patch/cache binding, retained forms, horizon, hysteresis, and crossfade.
+- [x] Inspect runtime image decoding and decoded-texture admission.
+- [x] Compare capture frame metadata with runtime frame/material selection.
 - [x] Change documentation only on `main`; create no branch or pull request.
-- [ ] Execute functional browser, artifact and Pages fixtures.
+- [ ] Execute functional browser, artifact, and Pages fixtures.
 
 ## Verified source findings
 
 ```txt
-five canonical archetypes and derived tuples: present
-five packages, manifest and bundle: present
-menu/game preparation: present
-provider retirement: present
-live package value consumption: present
-near/medium/far fidelity layer: present
-legacy tree suppression: present
-startup first-frame acknowledgement: present
-source wiring checks in npm test: present
+exact package generation IDs: present
+generation digest in vegetation identity: present
+near/medium/far/horizon forms: present
+retained form state: present
+hysteresis: present
+dither crossfade: present
+required runtime image decoding: present
+undecoded render rejection: present
+source checks before Pages deploy: present
 
-exact package generation digest: absent
-exact generation in patch/cache identity: absent
-package identity in patch records: absent
-horizon form rendering: absent
-far minimum range enforcement: absent
-retained per-tree form state: absent
-hysteresis: absent
-dither crossfade: absent
-exact generation frame receipt: absent
-functional browser/render fixture: absent
+camera elevation frame selection: absent
+exact frame-record batch identity: absent
+frame rectangle adoption: absent
+exact selected-frame receipt: absent
+functional rendered-angle fixture: absent
 ```
 
 ## Source-derived boundary
 
 ```txt
-five-package generation is prepared and consumed
-  -> package count enters vegetation identity
-  -> projected pixels select near/medium/far statelessly
-  -> horizon and transition descriptors are ignored
-  -> first frame reports counts without exact package revisions
+capture emits azimuth/elevation frame records
+  -> hydration decodes atlas images
+  -> renderer admits decoded images
+  -> renderer filters frames to one base elevation
+  -> azimuth chooses a material index
+  -> texture Y offset is inferred from atlas rows
 ```
 
-This proves a remaining identity and policy gap. It does not prove a visible defect or negate the implemented fidelity improvement.
+This proves a remaining view-selection and atlas-addressing gap. It does not prove a visible defect on a particular browser or camera position.
 
 ## Change boundary
 
@@ -72,16 +70,14 @@ pull request created: no
 
 ```txt
 npm test
-functional package/capture fixture
-IndexedDB miss/hit fixture
-exact generation/cache invalidation fixture
-horizon form fixture
-hysteresis/crossfade fixture
-first exact-generation frame fixture
+browser azimuth sweep
+browser elevation sweep
+atlas rectangle and row addressing
+far/horizon transition visual fixture
 built-output smoke
 GitHub Pages smoke
 ```
 
 ## Non-claims
 
-No exact generation correctness, horizon rendering, transition correctness, cache invalidation, artifact parity, Pages parity or production readiness is claimed.
+No exact multi-elevation frame selection, atlas-addressing correctness, rendered-angle parity, artifact parity, Pages parity, or production readiness is claimed.
