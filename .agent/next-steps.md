@@ -1,54 +1,52 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-15T16-00-32-04-00`  
-**Authority:** `prehistoric-rush-accessible-gameplay-projection-focus-authority-domain`
+**Audit:** `2026-07-15T20-59-46-04-00`  
+**Authority:** `prehistoric-rush-game-audio-event-projection-authority-domain`
 
 ## Summary
 
-Add one revision-bound accessibility projection layer for gameplay status, distance progress, terminal transitions and pause-dialog focus.
+Add one revision-bound audio projection layer downstream of accepted gameplay events and state.
 
 ## Plan ledger
 
-**Goal:** make the complete run and pause loop observable and operable through keyboard and assistive technology without announcing high-frequency frame data.
+**Goal:** deliver reliable, bounded, lifecycle-safe game audio without coupling success cues to raw input or RAF frequency.
 
-### Phase 1: Semantic snapshot
+### Phase 1: Admission and context
 
-- [ ] Add `AccessibleGameplayProjectionCommand` and `AccessibleGameplayProjectionResult`.
-- [ ] Bind document, game, committed-frame, outcome, pause and projection revisions.
-- [ ] Derive one stable semantic snapshot from accepted engine state.
-- [ ] Reject stale, duplicate and retired projections.
+- [ ] Add browser audio capability observation.
+- [ ] Add explicit user-gesture unlock admission.
+- [ ] Own one `AudioContext` generation with suspend, resume, close, and replacement results.
+- [ ] Add master, category volume, and mute preferences.
 
-### Phase 2: Status and progress
+### Phase 2: Semantic cue projection
 
-- [ ] Preserve stable status and progress DOM identities.
-- [ ] Add `role=status` with an authored live/atomic policy.
-- [ ] Add semantic progress minimum, maximum, current and value text.
-- [ ] Update semantic values without replacing the complete node tree every RAF.
-- [ ] Keep speed, patch and LOD diagnostics outside the default announcement stream.
+- [ ] Add `AudioProjectionAdmissionCommand` and `AudioProjectionResult`.
+- [ ] Bind document, runtime, run, committed-frame, event, camera, and policy revisions.
+- [ ] Create stable cue descriptors for run start, movement, boost, jump, landing, surfaces, shard pickup, collision failure, victory, UI, and ambience.
+- [ ] Consume accepted semantic events and committed state only.
+- [ ] Reject stale, duplicate, muted, suspended, and retired work.
 
-### Phase 3: Outcome announcements
+### Phase 3: Spatial and continuous audio
 
-- [ ] Publish one announcement ID for start, retry, run-over and win transitions.
-- [ ] Deduplicate repeated snapshots and RAF callbacks.
-- [ ] Bind the primary action label and accessible name to the accepted action state.
-- [ ] Publish a terminal semantic-frame acknowledgement.
+- [ ] Project listener transforms from the accepted camera revision.
+- [ ] Project world-source transforms where spatial audio is authored.
+- [ ] Key movement, boost, and ambience loops by run and projection generation.
+- [ ] Settle loops on pause, blur, visibility, route exit, restart, and runtime replacement.
 
-### Phase 4: Pause focus
+### Phase 4: Budgets and acknowledgements
 
-- [ ] Adopt the pause surface as a labeled modal dialog.
-- [ ] Capture the prior accepted focus target before mounting.
-- [ ] Focus the authored first action after adoption.
-- [ ] Contain Tab and Shift+Tab inside the active dialog.
-- [ ] Make background gameplay controls inert while paused.
-- [ ] Restore prior focus or an explicit fallback on close.
-- [ ] Clear focus and inert leases on pagehide, route exit and runtime retirement.
+- [ ] Add bounded pools, priorities, and voice budgets.
+- [ ] Deduplicate by run, semantic event, cue descriptor, and policy revision.
+- [ ] Publish `FirstAudibleCueAck`.
+- [ ] Publish `FirstAudioVisualConvergenceAck`.
+- [ ] Expose context, loop, cue, and budget diagnostics through the host snapshot.
 
 ### Phase 5: Fixtures
 
-- [ ] Run keyboard-only start, jump, pause, settings, exit, retry and run-again fixtures.
-- [ ] Capture and compare the accessibility tree.
-- [ ] Verify no RAF-frequency announcement spam.
-- [ ] Verify one terminal announcement per accepted outcome.
-- [ ] Verify pause focus entry, containment, Escape and restoration.
+- [ ] Test unlock and rejected pre-unlock playback.
+- [ ] Test start, jump, landing, boost, pickup, failure, win, and ambience cues.
+- [ ] Test duplicate event and snapshot suppression.
+- [ ] Test lifecycle settlement and run replacement.
+- [ ] Test mute, volume, and budget persistence.
 - [ ] Run `npm test`.
-- [ ] Run source, built-output and Pages parity fixtures.
+- [ ] Run source, built-output, and Pages parity fixtures.
