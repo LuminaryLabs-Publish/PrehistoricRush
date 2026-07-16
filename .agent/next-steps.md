@@ -1,62 +1,64 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T02-03-42-04-00`  
-**Authority:** `prehistoric-rush-patch-worker-request-liveness-recovery-authority-domain`
+**Audit:** `2026-07-16T06-39-16-04-00`  
+**Authority:** `prehistoric-rush-webgl-context-gpu-resource-recovery-authority-domain`
 
 ## Summary
 
-Add one bounded Worker-generation authority around the existing patch controller and deterministic generator.
+Add one render-generation and resource-rehydration authority around the current Three.js presentation stack.
 
 ## Plan ledger
 
-**Goal:** ensure every patch request settles, failed Worker generations recover, and controller inflight ownership cannot become permanent.
+**Goal:** ensure a lost context produces one bounded recovery or fallback result and one coherent replacement frame.
 
-### Phase 1: Generation and readiness
+### Phase 1: Context admission
 
-- [ ] Add immutable Worker-generation identity.
-- [ ] Add capability and module-load observation.
-- [ ] Require a matching `PatchWorkerReadyResult` before asynchronous dispatch.
-- [ ] Expose Worker state through `WorkerHealthSnapshot`.
+- [ ] Add immutable document, canvas, renderer and resource generation IDs.
+- [ ] Observe `webglcontextlost` and `webglcontextrestored`.
+- [ ] Publish `RenderLossResult` exactly once per generation.
+- [ ] Define presentation, simulation and input policy during loss.
+- [ ] Publish render capability and generation diagnostics.
 
-### Phase 2: Request settlement
+### Phase 2: Resource registry
 
-- [ ] Add `PatchWorkerAdmissionCommand` and `PatchWorkerResult`.
-- [ ] Bind controller, Worker, request, patch, cache-key and attempt identities.
-- [ ] Add deadlines and timeout settlement.
-- [ ] Add cancellation ownership.
-- [ ] Observe `error`, `messageerror` and synchronous `postMessage` failure.
-- [ ] Guarantee exactly one terminal result per admitted request.
+- [ ] Register renderer output state and shadow resources.
+- [ ] Register terrain LOD geometries, indices, morph buffers and materials.
+- [ ] Register clay normal and roughness textures.
+- [ ] Register tree, grass and pickup instance resources.
+- [ ] Register player creature geometry, skeleton and materials.
+- [ ] Register camera and active scene bindings.
+- [ ] Add complete retirement and leak checks.
 
-### Phase 3: Controller recovery
+### Phase 3: Reconstruction
 
-- [ ] Release controller inflight ownership for every non-success result.
-- [ ] Requeue unresolved active-ring work with bounded attempts.
-- [ ] Reject late or duplicate responses from retired Worker generations.
-- [ ] Preserve deterministic patch identity and cache keys across retries.
+- [ ] Allocate one replacement renderer generation.
+- [ ] Rebuild resources in dependency order.
+- [ ] Replay the current active patch set from controller/cache descriptors.
+- [ ] Restore the accepted player pose and camera snapshot.
+- [ ] Reject work from stale or retired generations.
+- [ ] Adopt replacement resources atomically.
 
-### Phase 4: Restart and fallback
+### Phase 4: Recovery policy
 
-- [ ] Add a bounded Worker restart budget.
-- [ ] Retire listeners, pending requests and process state before replacement.
-- [ ] Admit replacement only after readiness.
-- [ ] Switch the controller to deferred synchronous generation when restart is exhausted.
-- [ ] Publish `PatchWorkerFallbackResult` and degraded-stream diagnostics.
+- [ ] Add a recovery deadline.
+- [ ] Add a bounded retry budget.
+- [ ] Define fallback behavior when restoration or rehydration fails.
+- [ ] Handle a second loss during recovery.
+- [ ] Handle route exit and pagehide during recovery.
 
-### Phase 5: Lifecycle and proof
+### Phase 5: Proof
 
-- [ ] Dispose the executor on pagehide, route exit and runtime replacement.
-- [ ] Terminate the Worker and clear deadlines/cancellation registrations.
-- [ ] Publish `FirstWorkerReadyAck`.
-- [ ] Publish `FirstRecoveredPatchAck` and a matching visible-frame acknowledgement.
-- [ ] Add pending age, failures, restarts and fallback state to public diagnostics.
+- [ ] Publish `RenderRecoveryResult` or `RenderFallbackResult`.
+- [ ] Publish `FirstRecoveredFrameAck`.
+- [ ] Include run, simulation, patch, LOD and renderer revisions.
+- [ ] Expose loss count, recovery duration, retries and resource counts.
 
 ### Phase 6: Fixtures
 
-- [ ] Test readiness gating.
-- [ ] Test generator error, Worker error and messageerror.
-- [ ] Test timeout, cancellation and late-response rejection.
-- [ ] Test restart success and restart-budget exhaustion.
-- [ ] Test synchronous fallback and active-ring recovery.
-- [ ] Test pagehide and route retirement with pending requests.
+- [ ] Force loss/restoration with `WEBGL_lose_context`.
+- [ ] Test terrain, texture, instances, player and shadow reconstruction.
+- [ ] Test timeout, retry exhaustion and fallback.
+- [ ] Test stale callback and double-loss rejection.
+- [ ] Test route/page lifecycle retirement.
 - [ ] Run `npm test`.
-- [ ] Run source, artifact and Pages parity fixtures.
+- [ ] Run source, staged artifact and Pages parity fixtures.
