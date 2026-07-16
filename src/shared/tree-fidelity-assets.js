@@ -1,28 +1,24 @@
+import {
+  PREHISTORIC_TREE_ARCHETYPES,
+  PREHISTORIC_TREE_TYPES,
+  TREE_FIDELITY_PACKAGE_VERSION,
+  createPrehistoricTreeObject
+} from "./tree-archetype-catalog.js";
+
+export {
+  PREHISTORIC_TREE_ARCHETYPES,
+  PREHISTORIC_TREE_TYPES,
+  TREE_FIDELITY_PACKAGE_VERSION,
+  createPrehistoricTreeObject
+} from "./tree-archetype-catalog.js";
+
 export const TREE_FIDELITY_BUNDLE_ID = "prehistoric-tree-fidelity";
 export const TREE_FIDELITY_MANIFEST_ASSET_ID = "prehistoric-tree-fidelity-manifest";
 export const TREE_FIDELITY_PROVIDER_ID = "prehistoric-tree-fidelity-provider";
-export const TREE_FIDELITY_PACKAGE_VERSION = "3";
 
 const TREE_SHAPE_PROVIDER_ID = "prehistoric-tree-shape-provider";
 const TREE_CAPTURE_PROVIDER_ID = "prehistoric-tree-capture-provider";
 const TREE_SHAPE_PROFILE_ID = "prehistoric-tree-shape-profile";
-
-export const PREHISTORIC_TREE_ARCHETYPES = Object.freeze([
-  Object.freeze({ id: "giant-fern-tree", minHeight: 34, maxHeight: 58, trunkRadius: 2.5, crownHeight: 10.5, crownRadius: 18, crownColor: 0x365f35, trunkColor: 0x6b432b }),
-  Object.freeze({ id: "tower-conifer", minHeight: 38, maxHeight: 68, trunkRadius: 1.8, crownHeight: 7.5, crownRadius: 26, crownColor: 0x345c4a, trunkColor: 0x744236 }),
-  Object.freeze({ id: "understory-cycad", minHeight: 14, maxHeight: 24, trunkRadius: 1.25, crownHeight: 7.2, crownRadius: 5, crownColor: 0x72aa54, trunkColor: 0x51513a }),
-  Object.freeze({ id: "broad-canopy", minHeight: 28, maxHeight: 48, trunkRadius: 2.1, crownHeight: 9.2, crownRadius: 15, crownColor: 0x478b49, trunkColor: 0x6b432b }),
-  Object.freeze({ id: "moss-column", minHeight: 30, maxHeight: 52, trunkRadius: 2.35, crownHeight: 3.5, crownRadius: 9, crownColor: 0x5e984a, trunkColor: 0x51513a })
-]);
-
-export const PREHISTORIC_TREE_TYPES = Object.freeze(PREHISTORIC_TREE_ARCHETYPES.map((tree) => Object.freeze([
-  tree.minHeight,
-  tree.maxHeight,
-  tree.trunkRadius,
-  tree.crownHeight,
-  tree.crownRadius,
-  tree.crownColor
-])));
 
 function assetIdFor(archetype) {
   return `prehistoric-tree-fidelity:${archetype.id}`;
@@ -38,29 +34,6 @@ function sourceShapeIdFor(archetype) {
 
 function fidelityProfileIdFor(archetype) {
   return `prehistoric-tree-fidelity-profile:${archetype.id}`;
-}
-
-function createTreeObject(THREE, archetype) {
-  const group = new THREE.Group();
-  group.name = archetype.id;
-  const height = (archetype.minHeight + archetype.maxHeight) * 0.5;
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(archetype.trunkRadius * 0.68, archetype.trunkRadius, height, 10, 3),
-    new THREE.MeshStandardMaterial({ color: archetype.trunkColor, roughness: 0.86, metalness: 0 })
-  );
-  trunk.name = `${archetype.id}:trunk`;
-  trunk.position.y = height * 0.5;
-  const crownMaterial = new THREE.MeshStandardMaterial({ color: archetype.crownColor, roughness: 0.78, metalness: 0 });
-  const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(archetype.crownRadius, 2), crownMaterial);
-  crown.name = `${archetype.id}:crown`;
-  crown.scale.set(1, Math.max(0.5, archetype.crownHeight / archetype.crownRadius), 1);
-  crown.position.y = height - archetype.crownHeight * 0.35;
-  const crownTop = new THREE.Mesh(new THREE.IcosahedronGeometry(archetype.crownRadius * 0.62, 1), crownMaterial);
-  crownTop.name = `${archetype.id}:crown-top`;
-  crownTop.scale.set(0.85, 0.7, 0.85);
-  crownTop.position.set(archetype.crownRadius * 0.18, height + archetype.crownHeight * 0.18, -archetype.crownRadius * 0.08);
-  group.add(trunk, crown, crownTop);
-  return group;
 }
 
 function disposeTree(object) {
@@ -92,10 +65,11 @@ function portableGeometryFromObject(THREE, object) {
     const position = geometry.getAttribute("position");
     if (!position) return;
     const normalAttribute = geometry.getAttribute("normal");
+    const colorAttribute = geometry.getAttribute("color");
     const baseVertex = positions.length / 3;
     normalMatrix.getNormalMatrix(mesh.matrixWorld);
     const material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-    const color = material?.color ?? new THREE.Color(0xffffff);
+    const fallbackColor = material?.color ?? new THREE.Color(0xffffff);
 
     for (let index = 0; index < position.count; index += 1) {
       vertex.fromBufferAttribute(position, index).applyMatrix4(mesh.matrixWorld);
@@ -106,7 +80,11 @@ function portableGeometryFromObject(THREE, object) {
       } else {
         normals.push(0, 1, 0);
       }
-      colors.push(color.r, color.g, color.b);
+      if (colorAttribute) {
+        colors.push(colorAttribute.getX(index), colorAttribute.getY(index), colorAttribute.getZ(index));
+      } else {
+        colors.push(fallbackColor.r, fallbackColor.g, fallbackColor.b);
+      }
     }
 
     if (geometry.index) {
@@ -140,7 +118,7 @@ function treeShapeProfile() {
     },
     targets: [
       { id: "near", ratio: 1, mode: "source", maximumDeviation: 0 },
-      { id: "medium", ratio: 0.34, mode: "simplify", maximumDeviation: 0.035, preserve: { borders: true, vertexColors: true } }
+      { id: "medium", ratio: 0.32, mode: "simplify", maximumDeviation: 0.032, preserve: { borders: true, vertexColors: true } }
     ],
     metadata: { purpose: "PrehistoricRush tree near and medium geometry." }
   };
@@ -155,7 +133,7 @@ function captureDescriptor(archetype, kind) {
       azimuthCount: horizon ? 1 : 8,
       elevations: horizon ? [6] : [0, 12]
     },
-    framing: { boundsSource: "core-object", preserveGrounding: true, padding: 0.08 },
+    framing: { boundsSource: "core-object", preserveGrounding: true, padding: 0.05 },
     observations: ["color", "opacity"],
     output: { kind: "atlas", frameSize: horizon ? 128 : 256 },
     metadata: {
@@ -203,7 +181,7 @@ function treeFidelityProfile(archetype, sourceShapeId) {
         required: true,
         order: 1,
         minimumProjectedSize: 150,
-        maximumProjectedSize: 390,
+        maximumProjectedSize: 410,
         qualities: ["high"],
         requiredTraits: ["geometry", "vertex-color"],
         metadata: shapeMetadata("medium")
@@ -215,7 +193,7 @@ function treeFidelityProfile(archetype, sourceShapeId) {
         required: true,
         order: 2,
         minimumProjectedSize: 18,
-        maximumProjectedSize: 170,
+        maximumProjectedSize: 175,
         qualities: ["high"],
         requiredTraits: ["color", "opacity"],
         capture: captureDescriptor(archetype, "far")
@@ -227,14 +205,18 @@ function treeFidelityProfile(archetype, sourceShapeId) {
         required: true,
         order: 3,
         minimumProjectedSize: 0,
-        maximumProjectedSize: 24,
+        maximumProjectedSize: 26,
         qualities: ["high"],
         requiredTraits: ["color", "opacity"],
         capture: captureDescriptor(archetype, "horizon")
       }
     ],
-    change: { mode: "dither-crossfade", duration: 0.22, hysteresis: 0.12 },
-    metadata: { archetypeId: archetype.id, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
+    change: { mode: "dither-crossfade", duration: 0.35, hysteresis: 0.16 },
+    metadata: {
+      archetypeId: archetype.id,
+      packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+      stableSelectionFrames: 2
+    }
   };
 }
 
@@ -245,12 +227,14 @@ function enrichedAtlas(result) {
     ...color,
     metadata: {
       ...(color.metadata ?? {}),
-      ...(result.metadata?.atlas ?? {})
+      ...(result.metadata?.atlas ?? {}),
+      captureBounds: result.metadata?.bounds ?? null,
+      padding: 0.05
     }
   };
 }
 
-function meshGeometryForForm(NexusEngine, engine, form) {
+function meshGeometryForForm(engine, form) {
   const layer = form.layers.find((entry) => entry.role === "structure") ?? form.layers[0];
   const shapeId = layer?.metadata?.shapeId ?? layer?.reference?.descriptorId;
   const shape = engine.n.objectShape.getShape(shapeId);
@@ -272,7 +256,7 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   const farForm = engine.n.objectFidelity.getForm(packageValue.forms.far);
   const horizonForm = engine.n.objectFidelity.getForm(packageValue.forms.horizon);
   const farCapture = captureResultForForm(engine, farForm);
-  const horizonCapture = captureResultForForm(engine, horizonForm);
+  captureResultForForm(engine, horizonForm);
   const generationInput = {
     objectId: object.id,
     objectContentHash: object.contentHash,
@@ -282,6 +266,7 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
     fidelityPackageHash: packageValue.contentHash,
     buildId: build.id,
     packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+    archetypeId: archetype.id,
     forms: {
       near: nearForm.contentHash,
       medium: mediumForm.contentHash,
@@ -291,8 +276,10 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   };
   const generationId = `tree-fidelity:${NexusEngine.hashFidelityValue(generationInput)}`;
   const sourceBounds = object.bounds;
+  const sharedAtlas = enrichedAtlas(farCapture);
+  const farFrames = farCapture.frames.map((frame) => ({ ...frame }));
   return {
-    schema: "prehistoric-rush.tree-fidelity-package/3",
+    schema: "prehistoric-rush.tree-fidelity-package/4",
     version: TREE_FIDELITY_PACKAGE_VERSION,
     archetypeId: archetype.id,
     generation: { id: generationId, ...generationInput },
@@ -308,13 +295,13 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
       },
       pivot: object.pivot,
       groundAnchor: object.groundAnchor,
-      collision: { radius: archetype.trunkRadius, height: (archetype.minHeight + archetype.maxHeight) * 0.5 }
+      collision: { radius: archetype.trunkRadius, height: archetype.averageHeight }
     },
     forms: {
       near: {
         kind: "mesh",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "near").minimumProjectedSize,
-        geometry: meshGeometryForForm(NexusEngine, engine, nearForm),
+        geometry: meshGeometryForForm(engine, nearForm),
         formId: nearForm.id,
         contentHash: nearForm.contentHash
       },
@@ -322,7 +309,7 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
         kind: "mesh",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "medium").minimumProjectedSize,
         maximumProjectedSize: profile.forms.find((entry) => entry.id === "medium").maximumProjectedSize,
-        geometry: meshGeometryForForm(NexusEngine, engine, mediumForm),
+        geometry: meshGeometryForForm(engine, mediumForm),
         formId: mediumForm.id,
         contentHash: mediumForm.contentHash
       },
@@ -330,8 +317,8 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
         kind: "multi-angle-impostor",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "far").minimumProjectedSize,
         maximumProjectedSize: profile.forms.find((entry) => entry.id === "far").maximumProjectedSize,
-        atlas: enrichedAtlas(farCapture),
-        frames: farCapture.frames,
+        atlas: sharedAtlas,
+        frames: farFrames,
         formId: farForm.id,
         contentHash: farForm.contentHash
       },
@@ -339,17 +326,27 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
         kind: "horizon-impostor",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "horizon").minimumProjectedSize,
         maximumProjectedSize: profile.forms.find((entry) => entry.id === "horizon").maximumProjectedSize,
-        atlas: enrichedAtlas(horizonCapture),
-        frames: horizonCapture.frames,
+        atlas: sharedAtlas,
+        frames: farFrames,
         formId: horizonForm.id,
         contentHash: horizonForm.contentHash
       }
     },
-    change: profile.change,
+    change: { ...profile.change, stableSelectionFrames: 2 },
     material: {
       vertexColors: true,
       roughness: 0.82,
-      metalness: 0
+      metalness: 0,
+      barkColor: archetype.barkColor,
+      foliageColor: archetype.foliageColor,
+      accentColor: archetype.accentColor,
+      barkTexture: archetype.barkTexture,
+      foliageTexture: archetype.foliageTexture
+    },
+    ecology: archetype.ecology,
+    spawn: {
+      averageHeight: archetype.averageHeight,
+      distributionWeight: archetype.distributionWeight
     }
   };
 }
@@ -357,13 +354,13 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
 async function registerAndBuildTree(NexusEngine, THREE, engine, subjects, archetype, context) {
   const objectId = objectIdFor(archetype);
   const sourceShapeId = sourceShapeIdFor(archetype);
-  const treeObject = createTreeObject(THREE, archetype);
+  const treeObject = createPrehistoricTreeObject(THREE, archetype);
   const portableGeometry = portableGeometryFromObject(THREE, treeObject);
   const metrics = NexusEngine.computeShapeMetrics(portableGeometry);
   subjects.set(objectId, treeObject);
 
   try {
-    context.updateProgress(0.08, 1, `Registering ${archetype.id}`);
+    context.updateProgress(0.08, 1, `Registering ${archetype.label}`);
     engine.n.objectShape.registerProfile(treeShapeProfile());
     const object = engine.n.coreObject.register({
       id: objectId,
@@ -376,7 +373,12 @@ async function registerAndBuildTree(NexusEngine, THREE, engine, subjects, archet
       collision: { provider: "prehistoric-rush", descriptorId: `${archetype.id}:collision` },
       lod: { provider: "core-object-fidelity", descriptorId: fidelityProfileIdFor(archetype) },
       capture: { provider: "core-capture", descriptorId: `${archetype.id}:capture` },
-      metadata: { archetypeId: archetype.id, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
+      metadata: {
+        archetypeId: archetype.id,
+        label: archetype.label,
+        shape: archetype.shape,
+        packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+      }
     });
     engine.n.objectShape.registerSource({
       id: sourceShapeId,
@@ -384,17 +386,17 @@ async function registerAndBuildTree(NexusEngine, THREE, engine, subjects, archet
       objectContentHash: object.contentHash,
       kind: "triangle-mesh",
       geometry: portableGeometry,
-      metadata: { archetypeId: archetype.id }
+      metadata: { archetypeId: archetype.id, shape: archetype.shape }
     });
     engine.n.objectFidelity.registerProfile(treeFidelityProfile(archetype, sourceShapeId));
-    context.updateProgress(0.16, 1, `Deriving ${archetype.id} mesh LODs`);
+    context.updateProgress(0.16, 1, `Deriving ${archetype.label} mesh LODs`);
     const build = await engine.n.objectFidelity.requestBuild({
       objectId: object.id,
       profileId: fidelityProfileIdFor(archetype),
       quality: "high"
     });
     if (build.state !== "ready") throw new Error(`Object Fidelity build ${build.id} finished in state ${build.state}.`);
-    context.updateProgress(0.96, 1, `Committing ${archetype.id} fidelity package`);
+    context.updateProgress(0.96, 1, `Committing ${archetype.label} fidelity package`);
     const packageValue = engine.n.objectFidelity.getActivePackage(object.id);
     if (!packageValue?.readiness?.complete) throw new Error(`Object Fidelity package for ${archetype.id} is incomplete.`);
     return portablePackageFromFidelity(NexusEngine, engine, archetype, object, build, packageValue);
@@ -423,7 +425,7 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, e
 
   return {
     id: TREE_FIDELITY_PROVIDER_ID,
-    version: "2.0.0",
+    version: "3.0.0",
     metadata: {
       purpose: "Coordinate Core Object, Object Shape, Core Capture, and Object Fidelity into portable PrehistoricRush tree packages.",
       domains: ["n:core-object", "n:object:shape", "n:capture", "n:object:fidelity"]
@@ -432,10 +434,16 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, e
       if (asset.metadata.kind === "manifest") {
         return {
           portable: {
-            schema: "prehistoric-rush.tree-fidelity-manifest/3",
+            schema: "prehistoric-rush.tree-fidelity-manifest/4",
             revision: asset.version,
             bundleId: TREE_FIDELITY_BUNDLE_ID,
-            archetypes: PREHISTORIC_TREE_ARCHETYPES.map((tree) => ({ id: tree.id, assetId: assetIdFor(tree) }))
+            archetypes: PREHISTORIC_TREE_ARCHETYPES.map((tree) => ({
+              id: tree.id,
+              label: tree.label,
+              assetId: assetIdFor(tree),
+              averageHeight: tree.averageHeight,
+              shape: tree.shape
+            }))
           },
           metadata: { kind: "manifest", packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
         };
@@ -443,7 +451,7 @@ export function createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, e
       const archetype = PREHISTORIC_TREE_ARCHETYPES.find((tree) => tree.id === asset.metadata.archetypeId);
       if (!archetype) throw new RangeError(`Unknown tree archetype: ${asset.metadata.archetypeId}`);
       const portable = await registerAndBuildTree(NexusEngine, THREE, engine, subjects, archetype, context);
-      context.updateProgress(1, 1, `${archetype.id} ready`);
+      context.updateProgress(1, 1, `${archetype.label} ready`);
       return {
         portable,
         metadata: {
@@ -469,7 +477,7 @@ export function installPrehistoricTreeFidelityAssets(NexusEngine, THREE, engine,
     assets.setCacheProvider(NexusEngine.createBrowserIndexedDbAssetCacheAdapter({
       databaseName: options.databaseName ?? "prehistoric-rush-assets",
       storeName: "tree-fidelity",
-      version: 1
+      version: Number(TREE_FIDELITY_PACKAGE_VERSION)
     }));
   }
   assets.registerProvider(createPrehistoricTreeFidelityAssetProvider(NexusEngine, THREE, engine, options));
@@ -482,7 +490,12 @@ export function installPrehistoricTreeFidelityAssets(NexusEngine, THREE, engine,
       type: "tree-fidelity-package",
       version: TREE_FIDELITY_PACKAGE_VERSION,
       providerId: TREE_FIDELITY_PROVIDER_ID,
-      metadata: { kind: "package", archetypeId: archetype.id, packageVersion: TREE_FIDELITY_PACKAGE_VERSION }
+      metadata: {
+        kind: "package",
+        archetypeId: archetype.id,
+        shape: archetype.shape,
+        packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+      }
     });
   }
   assets.registerAsset({
@@ -499,7 +512,8 @@ export function installPrehistoricTreeFidelityAssets(NexusEngine, THREE, engine,
     assets: [TREE_FIDELITY_MANIFEST_ASSET_ID],
     metadata: {
       purpose: "PrehistoricRush Object Shape, Capture, and Fidelity tree package.",
-      packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+      packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+      archetypeCount: PREHISTORIC_TREE_ARCHETYPES.length
     }
   });
   return { assets, bundleId: TREE_FIDELITY_BUNDLE_ID, manifestAssetId: TREE_FIDELITY_MANIFEST_ASSET_ID, packageIds };
