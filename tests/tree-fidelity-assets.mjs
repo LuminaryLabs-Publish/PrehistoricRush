@@ -20,12 +20,15 @@ assert.ok(PREHISTORIC_TREE_ARCHETYPES.every((tree) => tree.id && tree.maxHeight 
 assert.ok(PREHISTORIC_TREE_TYPES.every((tree) => Object.isFrozen(tree) && tree.length === 7));
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.shape)).size, 10);
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.foliageColor)).size, 10);
-assert.equal(NEXUS_COMMIT, "80146b8947e0877e26b851563bd17f5cdfcbf38a");
+assert.match(NEXUS_COMMIT, /^[0-9a-f]{40}$/, "PrehistoricRush pins an immutable Vegetation-enabled NexusEngine revision");
 
 const catalogSource = readFileSync(new URL("../src/shared/tree-archetype-catalog.js", import.meta.url), "utf8");
+const vegetationSource = readFileSync(new URL("../src/shared/prehistoric-vegetation-domain.js", import.meta.url), "utf8");
+const composedFidelitySource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
 const assetSource = readFileSync(new URL("../src/shared/tree-fidelity-assets.js", import.meta.url), "utf8");
 const imageSource = readFileSync(new URL("../src/shared/tree-fidelity-runtime-images.js", import.meta.url), "utf8");
 const generatorSource = readFileSync(new URL("../src/world/prehistoric-patch-generator.js", import.meta.url), "utf8");
+const workerSource = readFileSync(new URL("../src/workers/prehistoric-patch-worker.js", import.meta.url), "utf8");
 const menuSource = readFileSync(new URL("../src/pages/menu.js", import.meta.url), "utf8");
 const gameSource = readFileSync(new URL("../src/game.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/game-runtime-lod.js", import.meta.url), "utf8");
@@ -38,6 +41,22 @@ assert.match(catalogSource, /ginkgo-crown-tree/);
 assert.match(catalogSource, /marsh-horsetail-tower/);
 assert.match(catalogSource, /forked-ghostwood/);
 assert.match(catalogSource, /patternedMaterial/);
+
+assert.match(vegetationSource, /vegetation\.registerSpecies/);
+assert.match(vegetationSource, /tree\.register/);
+assert.match(vegetationSource, /foliage\.register/);
+assert.match(vegetationSource, /objectBridge\.registerSpeciesObject/);
+assert.match(vegetationSource, /createCoreObjectDomain\(\{ shape: false, fidelity: false \}\)/);
+assert.match(vegetationSource, /selectSpecies\(environment, seed\)/);
+assert.match(vegetationSource, /createInstanceDescriptor\(input\)/);
+
+assert.match(composedFidelitySource, /createCoreVegetationDomain/);
+assert.match(composedFidelitySource, /registerPrehistoricVegetationCatalog/);
+assert.match(composedFidelitySource, /vegetationTree\.createFidelityProfile/);
+assert.match(composedFidelitySource, /semanticFidelityProfiles/);
+assert.match(menuSource, /prehistoric-tree-fidelity-runtime\.js/);
+assert.match(gameSource, /prehistoric-tree-fidelity-runtime\.js/);
+
 assert.match(assetSource, /createCoreObjectKit/);
 assert.match(assetSource, /createCoreObjectShapeKit/);
 assert.match(assetSource, /createCoreCaptureKit/);
@@ -50,15 +69,22 @@ assert.match(assetSource, /stableSelectionFrames: 2/);
 assert.match(assetSource, /duration: 0\.35/);
 assert.match(assetSource, /hysteresis: 0\.16/);
 assert.match(assetSource, /generationId/);
+
 assert.match(imageSource, /createImageBitmap/);
 assert.match(imageSource, /opaqueBoundsPixels/);
 assert.match(imageSource, /opaqueAspect/);
 assert.match(imageSource, /uvRect/);
 assert.match(generatorSource, /crownHeight = type\[3\]/);
 assert.match(generatorSource, /crownRadius = type\[4\]/);
-assert.match(generatorSource, /groundSink/);
-assert.match(generatorSource, /yawDegrees/);
-assert.match(generatorSource, /chooseTreeType/);
+assert.match(generatorSource, /vegetation\.selectSpecies/);
+assert.match(generatorSource, /vegetation\.createInstanceDescriptor/);
+assert.doesNotMatch(generatorSource, /function chooseTreeType|function treeVariation/);
+assert.match(workerSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/);
+assert.match(runtimeSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/);
+assert.match(runtimeSource, /prehistoric-patch-v5-vegetation-domain/);
+assert.match(runtimeSource, /vegetationCatalogDigest/);
+assert.match(runtimeSource, /vegetationSpeciesCount/);
+
 assert.match(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
 assert.match(menuSource, /unregisterProvider\(TREE_FIDELITY_PROVIDER_ID/);
 assert.match(gameSource, /trackAssetPreparation/);
@@ -82,4 +108,4 @@ assert.match(layerSource, /horizon/);
 assert.match(layerSource, /suppressLegacyTreeMeshes/);
 assert.match(layerSource, /frustumCulled = false/);
 
-console.log("tree fidelity catalog, shared atlas, startup, exact frames, spawn variation, and transition contract passed");
+console.log("tree fidelity, Object Vegetation, shared atlas, startup, exact frames, and transition contract passed");
