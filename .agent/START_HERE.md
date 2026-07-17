@@ -1,68 +1,59 @@
-# START HERE: PrehistoricRush Render Host Generation Retirement
+# START HERE: PrehistoricRush Pause Input and Simulation Arbitration
 
-**Last aligned:** `2026-07-17T06-23-59-04-00`  
+**Last aligned:** `2026-07-17T10-59-32-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed repository head:** `3b26af5116d4735564a2da109b36d32ed7b95a0b`  
-**Reviewed runtime source head:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
-**Previous central repo-local documentation head:** `dafa3f08261ffac5767c4d75f404a7d477db2466`  
-**Status:** `render-host-generation-retirement-authority-audited`
+**Reviewed repository head:** `0194fc7b3962528cb5233d0180f7b33a30eb5050`  
+**Reviewed runtime source revision:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
+**Status:** `pause-overlay-input-context-simulation-arbitration-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected through runtime-ahead priority. The jungle foliage and ground-cover pipeline is integrated and source-gated from semantic catalogs through main-thread/Worker patches, tree fidelity, procedural atlas, card layers, atmosphere, diagnostics, syntax checks, deterministic fixtures and a generation-bound visible-frame acknowledgement.
-
-The focused remaining gap is parent render-host retirement. Child LOD and jungle layers dispose, but the base Three.js adapter, renderer/canvas, base scene resources, atmosphere state, RAF, Worker, browser listeners and stale results are not settled through one apply-once generation result.
+PrehistoricRush was selected as the oldest synchronized eligible Publish repository. The current Pause interface is explicitly non-modal and non-blocking: its full-screen overlay captures pointer input, but gameplay keyboard listeners and `engine.tick(dt)` remain active.
 
 ## Intent
 
-Make one render-host generation own and retire every base and jungle-specific browser, patch, scene, GPU, atmosphere, callback and visible-frame resource exactly once.
+Make the menu’s semantic promise, input ownership, simulation participation, focus behavior and visible frame agree through one pause generation.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Work only on PrehistoricRush.
-- [x] Reconcile the 32-commit delta through reviewed head `3b26af5…`.
-- [x] Review runtime integration through source head `4b2e184…`.
-- [x] Identify the complete interaction loop and active domains.
-- [x] Document all 97 active kits, adapters and fixtures with their services.
-- [x] Add the timestamped tracker and focused audit family.
-- [ ] Implement complete parent render-host generation retirement.
-- [ ] Execute repeated-construction, restart, remount, WebGL recovery, artifact and Pages fixtures.
+- [x] Preserve the complete 97-surface kit/service inventory.
+- [x] Document the active pause interaction loop and source fixture.
+- [x] Add the `2026-07-17T10-59-32-04-00` tracker and focused audit family.
+- [ ] Implement accepted pause or explicit non-pausing-menu semantics.
+- [ ] Execute browser, artifact and Pages fixtures.
+- [ ] Complete the retained render-host retirement work.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-17T06-23-59-04-00/project-breakdown.md
-.agent/trackers/2026-07-17T06-23-59-04-00/final-reconciliation.md
-.agent/turn-ledger/2026-07-17T06-23-59-04-00.md
-.agent/architecture-audit/2026-07-17T06-23-59-04-00-render-host-generation-retirement-dsk-map.md
-.agent/render-audit/2026-07-17T06-23-59-04-00-parent-render-host-retirement-gap.md
-.agent/gameplay-audit/2026-07-17T06-23-59-04-00-run-restart-render-generation-loop.md
-.agent/interaction-audit/2026-07-17T06-23-59-04-00-render-host-command-result-map.md
-.agent/render-host-audit/2026-07-17T06-23-59-04-00-generation-ownership-retirement-contract.md
-.agent/deploy-audit/2026-07-17T06-23-59-04-00-render-host-retirement-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-17T06-23-59-04-00-runtime-ahead-render-host-retirement-reconciliation.md
+.agent/trackers/2026-07-17T10-59-32-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-17T10-59-32-04-00.md
+.agent/architecture-audit/2026-07-17T10-59-32-04-00-pause-input-simulation-dsk-map.md
+.agent/render-audit/2026-07-17T10-59-32-04-00-pause-overlay-moving-world-frame-gap.md
+.agent/gameplay-audit/2026-07-17T10-59-32-04-00-menu-open-active-run-loop.md
+.agent/interaction-audit/2026-07-17T10-59-32-04-00-pause-context-command-result-map.md
+.agent/pause-system-audit/2026-07-17T10-59-32-04-00-input-simulation-focus-contract.md
+.agent/deploy-audit/2026-07-17T10-59-32-04-00-pause-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-17T10-59-32-04-00-oldest-selection-pause-arbitration-reconciliation.md
 .agent/validation.md
 ```
 
-## Required parent domain
+## Required authority
 
-`prehistoric-rush-render-host-generation-retirement-authority-domain`
+`prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain`
 
 ## Census
 
 ```txt
-Nexus Engine root/subdomain kits: 29
-official NexusEngine-Kits: 5
-product/page/asset/Worker kits: 28
-external/host/capture/render adapters: 21
-proof kits and fixtures: 14
-active named surfaces: 97
-planned render-host-retirement surfaces: 19
+implemented named surfaces: 97
+planned pause-arbitration surfaces: 19
+retained planned render-host-retirement surfaces: 19
 ```
 
 ## Claim boundary
 
-Jungle runtime integration and source fixture wiring are confirmed by inspection. Complete host retirement, repeated-generation safety, WebGL recovery, executable browser behavior, artifact parity, Pages parity and production readiness are not claimed.
+The pause policy mismatch is confirmed by source inspection. No runtime behavior changed, no incident was reproduced, and true-pause correctness, focus behavior, artifact parity, Pages parity and production readiness are not claimed.
