@@ -1,4 +1,4 @@
-export const FOLIAGE_ATLAS_REVISION = "prehistoric-foliage-cards-v1";
+export const FOLIAGE_ATLAS_REVISION = "prehistoric-foliage-cards-v2";
 export const FOLIAGE_ATLAS_COLUMNS = 4;
 export const FOLIAGE_ATLAS_ROWS = 2;
 
