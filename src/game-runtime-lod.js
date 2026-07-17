@@ -1,6 +1,7 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./world/prehistoric-terrain-lod-policy.js";
+import { createPrehistoricVegetationRuntime } from "./shared/prehistoric-vegetation-domain.js";
 import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
 import { PREHISTORIC_TREE_TYPES } from "./shared/tree-fidelity-assets.js";
 import {
@@ -77,13 +78,13 @@ function shell() {
   return { host, status, button };
 }
 
-function createWorkerExecutor(PatchModule, generatorOptions) {
+function createWorkerExecutor(PatchModule, serializableGeneratorOptions) {
   if (typeof Worker !== "function" || typeof PatchModule.createMessageWorkerExecutor !== "function") {
     return { executor: null, worker: null };
   }
   try {
     const worker = new Worker(new URL("./workers/prehistoric-patch-worker.js", import.meta.url), { type: "module" });
-    worker.postMessage({ type: "init-patch-worker", payload: generatorOptions });
+    worker.postMessage({ type: "init-patch-worker", payload: serializableGeneratorOptions });
     return { executor: PatchModule.createMessageWorkerExecutor(worker), worker };
   } catch (error) {
     console.warn("patch worker unavailable; using deferred synchronous generation", error);
@@ -121,14 +122,16 @@ async function main() {
   if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !CameraModule || !THREE || !Rapier || !RapierKit) {
     throw new Error("Required pinned runtime module failed to load.");
   }
-  if (typeof NexusEngine.selectTerrainLodLevel !== "function") {
-    throw new Error("Pinned NexusEngine module does not expose terrain LOD selection.");
+  if (typeof NexusEngine.selectTerrainLodLevel !== "function" || typeof NexusEngine.createCoreVegetationDomain !== "function") {
+    throw new Error("Pinned NexusEngine module does not expose terrain LOD and Object Vegetation.");
   }
   if (Rapier.init) await Rapier.init();
   if (typeof RapierKit.createRapierPhysicsProvider !== "function") {
     throw new Error("Pinned Rapier ProtoKit does not expose createRapierPhysicsProvider().");
   }
 
+  const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
+  const vegetationCatalogDigest = vegetationRuntime.catalog.species.map((species) => species.contentHash).join("|");
   const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule, ...CameraModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, {
@@ -170,17 +173,21 @@ async function main() {
     tags: ["player", "dino"]
   }]);
 
-  const generatorOptions = {
+  const serializableGeneratorOptions = {
     config: { ...cfg, shardsPerPatch: 2 },
-    treeTypes,
     routeSamples: game.route.samples
   };
+  const generatorOptions = {
+    ...serializableGeneratorOptions,
+    treeTypes: vegetationRuntime.catalog.treeTypes,
+    vegetation: vegetationRuntime.placement
+  };
   const generator = createPrehistoricPatchGenerator(generatorOptions);
-  const workerState = createWorkerExecutor(PatchModule, generatorOptions);
+  const workerState = createWorkerExecutor(PatchModule, serializableGeneratorOptions);
   const controller = patchControllers.create({
     id: "prehistoric-rush-world",
     worldSeed: String(cfg.seed),
-    generatorVersion: "prehistoric-patch-v4-object-fidelity",
+    generatorVersion: "prehistoric-patch-v5-vegetation-domain",
     patchSize: cfg.chunk,
     activeRadius: STREAM.activeRadius,
     retainRadius: STREAM.retainRadius,
@@ -189,7 +196,7 @@ async function main() {
     activationBudget: STREAM.activationBudget,
     generationBudget: STREAM.generationBudget,
     terrainSettingsHash: `segments-${terrainLodPolicy.sourceResolution}-lod-${terrainLodPolicy.revision}`,
-    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-fidelity-${treeFidelityGenerationDigest}`,
+    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-catalog-${vegetationCatalogDigest}-fidelity-${treeFidelityGenerationDigest}`,
     generator,
     executor: workerState.executor
   });
@@ -211,7 +218,7 @@ async function main() {
     cameraFollow,
     config: cfg,
     stream: STREAM,
-    treeTypes,
+    treeTypes: vegetationRuntime.catalog.treeTypes,
     treeFidelityPackages,
     treeBatchCapacity: TREE_BATCH_CAPACITY,
     terrainLodPolicy,
@@ -315,6 +322,8 @@ async function main() {
         receipt: {
           treeFidelityGenerationDigest,
           treeFidelityGenerationIds,
+          vegetationCatalogDigest,
+          vegetationSpeciesCount: vegetationRuntime.catalog.species.length,
           treeFidelityPackageCount: treeFidelityPackages.length,
           treeCount: treeFidelityView.treeCount,
           formCounts: structuredClone(treeFidelityView.counts),
@@ -329,7 +338,7 @@ async function main() {
     const patchStats = adapter.view.patchStats;
     const lod = adapter.view.terrainLod;
     const treeLod = adapter.view.treeFidelity?.counts ?? { near: 0, medium: 0, far: 0, horizon: 0 };
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · frames ${adapter.view.treeFidelity?.frameBindingCount ?? 0} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · species ${vegetationRuntime.catalog.species.length} · frames ${adapter.view.treeFidelity?.frameBindingCount ?? 0} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -341,6 +350,7 @@ async function main() {
     patchController: controller,
     cameraFollow,
     treeAssets: treeAssetRuntime,
+    vegetation: vegetationRuntime,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
@@ -358,10 +368,16 @@ async function main() {
         policy: terrainLodPolicy,
         view: structuredClone(adapter.view.terrainLod)
       },
+      vegetation: {
+        species: vegetationRuntime.vegetation.listSpecies(),
+        trees: vegetationRuntime.tree.list(),
+        foliage: vegetationRuntime.foliage.list(),
+        catalogDigest: vegetationCatalogDigest
+      },
       treeFidelity: structuredClone(adapter.view.treeFidelity),
       treeFidelityGenerationDigest,
       assetStartup: treeAssetRuntime?.startup?.getDescriptor?.() ?? null,
-      renderer: "three-patch-quadtree-object-shape-fidelity-v13"
+      renderer: "three-patch-quadtree-object-vegetation-fidelity-v14"
     })
   };
   requestAnimationFrame(loop);
