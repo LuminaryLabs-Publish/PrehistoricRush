@@ -25,6 +25,7 @@ assert.match(NEXUS_COMMIT, /^[0-9a-f]{40}$/, "PrehistoricRush pins an immutable 
 const catalogSource = readFileSync(new URL("../src/shared/tree-archetype-catalog.js", import.meta.url), "utf8");
 const vegetationSource = readFileSync(new URL("../src/shared/prehistoric-vegetation-domain.js", import.meta.url), "utf8");
 const composedFidelitySource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
+const vegetationProviderSource = readFileSync(new URL("../src/shared/vegetation-tree-fidelity-provider.js", import.meta.url), "utf8");
 const assetSource = readFileSync(new URL("../src/shared/tree-fidelity-assets.js", import.meta.url), "utf8");
 const imageSource = readFileSync(new URL("../src/shared/tree-fidelity-runtime-images.js", import.meta.url), "utf8");
 const generatorSource = readFileSync(new URL("../src/world/prehistoric-patch-generator.js", import.meta.url), "utf8");
@@ -52,10 +53,23 @@ assert.match(vegetationSource, /createInstanceDescriptor\(input\)/);
 
 assert.match(composedFidelitySource, /createCoreVegetationDomain/);
 assert.match(composedFidelitySource, /registerPrehistoricVegetationCatalog/);
+assert.match(composedFidelitySource, /replaceTreeFidelityProviderWithVegetation/);
+assert.match(composedFidelitySource, /VEGETATION_PROVIDER_REVISION = "object-vegetation-v1"/);
+assert.match(composedFidelitySource, /rebindVegetationAssetDescriptors/);
+assert.match(composedFidelitySource, /vegetationDomain: "n:object:vegetation"/);
 assert.match(composedFidelitySource, /vegetationTree\.createFidelityProfile/);
 assert.match(composedFidelitySource, /semanticFidelityProfiles/);
 assert.match(menuSource, /prehistoric-tree-fidelity-runtime\.js/);
 assert.match(gameSource, /prehistoric-tree-fidelity-runtime\.js/);
+
+assert.match(vegetationProviderSource, /vegetationTree\.createShapeRecipe/);
+assert.match(vegetationProviderSource, /vegetationTree\.createFidelityProfile/);
+assert.match(vegetationProviderSource, /vegetationFoliage\.get/);
+assert.match(vegetationProviderSource, /vegetation\.getSpecies/);
+assert.match(vegetationProviderSource, /vegetationSpeciesHash/);
+assert.match(vegetationProviderSource, /replaceTreeFidelityProviderWithVegetation/);
+assert.match(vegetationProviderSource, /runtime\.assets\.unregisterProvider\(TREE_FIDELITY_PROVIDER_ID\)/);
+assert.match(vegetationProviderSource, /Object Vegetation, Tree, Foliage, Object Shape, Capture, and Object Fidelity/);
 
 assert.match(assetSource, /createCoreObjectKit/);
 assert.match(assetSource, /createCoreObjectShapeKit/);
@@ -108,4 +122,4 @@ assert.match(layerSource, /horizon/);
 assert.match(layerSource, /suppressLegacyTreeMeshes/);
 assert.match(layerSource, /frustumCulled = false/);
 
-console.log("tree fidelity, Object Vegetation, shared atlas, startup, exact frames, and transition contract passed");
+console.log("tree fidelity, Object Vegetation provider, shared atlas, startup, exact frames, and transition contract passed");
