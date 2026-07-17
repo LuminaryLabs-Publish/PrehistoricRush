@@ -18,6 +18,7 @@ function between(seed, salt, minimum, maximum) {
 
 export function createVegetationPlacementFixture(archetypes) {
   const species = archetypes.map((entry, typeIndex) => ({
+    schema: "nexus-vegetation-species/1",
     id: entry.id,
     kind: "tree",
     metadata: {
@@ -41,6 +42,7 @@ export function createVegetationPlacementFixture(archetypes) {
       const hueShift = between(seed, "hue", -0.05, 0.05);
       const valueShift = between(seed, "value", -0.08, 0.08);
       return {
+        schema: "nexus-vegetation-instance/1",
         id: input.id,
         speciesId: selected.id,
         seed,
