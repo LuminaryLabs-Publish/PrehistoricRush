@@ -4,6 +4,7 @@ import {
   PREHISTORIC_TREE_ARCHETYPES,
   PREHISTORIC_TREE_TYPES
 } from "../src/shared/tree-archetype-catalog.js";
+import { createVegetationPlacementFixture } from "./helpers/vegetation-placement-fixture.mjs";
 
 const routeSamples = Array.from({ length: 600 }, (_, index) => ({
   x: 0,
@@ -13,6 +14,7 @@ const routeSamples = Array.from({ length: 600 }, (_, index) => ({
 const options = {
   config: { seed: 238991, chunk: 56, trees: 20, grass: 0, shardsPerPatch: 0 },
   treeTypes: PREHISTORIC_TREE_TYPES,
+  vegetation: createVegetationPlacementFixture(PREHISTORIC_TREE_ARCHETYPES),
   routeSamples
 };
 const generator = createPrehistoricPatchGenerator(options);
@@ -32,9 +34,12 @@ for (let chunkX = -5; chunkX <= 5; chunkX += 1) {
       for (const trunk of type.trunks) {
         treeCount += 1;
         const variation = trunk.metadata.variation;
+        const instance = trunk.metadata.vegetationInstance;
         const collider = colliderById.get(trunk.metadata.treeId);
         species.add(trunk.metadata.speciesId);
         assert.ok(collider, "every visible tree retains one stable collision proxy");
+        assert.equal(instance.schema ?? "fixture", "fixture", "offline test fixture marks domain-shaped instances explicitly");
+        assert.equal(instance.speciesId, trunk.metadata.speciesId);
         assert.ok(variation.yawDegrees >= 0 && variation.yawDegrees < 360);
         assert.ok(variation.leanXDegrees >= -5 && variation.leanXDegrees <= 5);
         assert.ok(variation.leanZDegrees >= -5 && variation.leanZDegrees <= 5);
@@ -53,9 +58,9 @@ for (let chunkX = -5; chunkX <= 5; chunkX += 1) {
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 10);
 assert.equal(PREHISTORIC_TREE_TYPES.length, 10);
 assert.ok(treeCount > 500, "fixture exercises a dense deterministic forest");
-assert.equal(species.size, 10, "ecological placement admits all ten tree species");
+assert.equal(species.size, 10, "vegetation placement admits all ten tree species");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.shape)).size, 10, "each archetype has a distinct silhouette recipe");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.foliageColor)).size, 10, "each archetype has a distinct foliage palette");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.averageHeight)).size, 10, "each archetype owns a distinct average height");
 
-console.log("tree archetype diversity and seeded spawn variation passed");
+console.log("tree archetype diversity and domain-shaped spawn variation passed");
