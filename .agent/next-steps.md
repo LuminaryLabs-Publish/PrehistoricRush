@@ -1,74 +1,71 @@
 # PrehistoricRush Next Steps
 
 **Audit:** `2026-07-17T05-58-55-04-00`  
-**Authority:** `prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain`
+**Authority:** `prehistoric-rush-render-host-generation-retirement-authority-domain`
 
 ## Intent
 
-Carry the now-registered card-backed tree and ground-cover catalogs through patch generation, Worker parity, GPU projection, atmosphere lifecycle, and exact-frame proof.
+Complete ownership settlement for the now-integrated jungle renderer without restructuring Vegetation, patch generation, fidelity, or gameplay.
 
 ## Checklist
 
-### Phase 1: Validate completed semantic registration
+### Phase 1: Base host disposal
 
-- [x] Import foliage recipes into the product vegetation domain.
-- [x] Register card-backed foliage for ten tree species.
-- [x] Register six ground-cover species, foliage descriptors, and object bridges.
-- [x] Publish ground-cover catalogs and atlas revision through generator options.
-- [ ] Add both new modules and expanded catalogs to syntax/import fixtures.
-- [ ] Execute `createPrehistoricVegetationRuntime()` and assert all registrations.
+- [ ] Add `dispose()` to `createThreePatchStreamAdapter()`.
+- [ ] Stop new render and patch admissions before disposal.
+- [ ] Release active patch memberships and instance-batch cells.
+- [ ] Dispose base terrain geometries/materials.
+- [ ] Dispose legacy trunk/crown geometries and materials.
+- [ ] Dispose grass geometries/materials and shard resources.
+- [ ] Dispose player render resources.
+- [ ] Remove base scene lights and targets.
+- [ ] Dispose the WebGL renderer and detach its canvas.
 
-### Phase 2: Patch and Worker projection
+### Phase 2: Jungle atmosphere retirement
 
-- [ ] Extend `prehistoric-patch-generator.js` to consume `groundCoverSpecies` and `groundCoverArchetypes`.
-- [ ] Emit patch-owned foliage-card and ground-cover instance payloads.
-- [ ] Include patch, species, tree-instance, and local-card identity in deterministic seeds.
-- [ ] Add explicit near, medium, far, and culled budgets.
-- [ ] Apply moisture, elevation, slope, clustering, terrain-height, and route-clearance policy.
-- [ ] Carry the same catalog generation through the production Worker handshake.
-- [ ] Publish `FoliagePatchProjectionResult`, parity result, and `FirstJunglePatchAck`.
+- [ ] Make `applyLushJungleAtmosphere()` return a retirement/restore command.
+- [ ] Snapshot predecessor background, fog, exposure, lights, and shadow settings.
+- [ ] Remove owned fill and canopy-bounce lights exactly once.
+- [ ] Restore predecessor state or mark it explicitly superseded.
+- [ ] Make repeated application idempotent for one scene/renderer generation.
 
-### Phase 3: GPU and atmosphere ownership
+### Phase 3: Parent generation authority
 
-- [ ] Bind the 4×2 atlas revision to decoded texture and material generations.
-- [ ] Project cards and ground cover through stable patch-owned instance batches.
-- [ ] Apply atmosphere once per scene/renderer generation.
-- [ ] Reuse or replace owned fill/bounce lights by stable IDs.
-- [ ] Snapshot predecessor background, fog, exposure, light, and shadow state.
-- [ ] Add quality-aware fog and shadow-map budgets.
-- [ ] Retire predecessor GPU and scene resources exactly once.
+- [ ] Bind base and child resources to one `RenderHostGeneration`.
+- [ ] Have LOD adapter disposal call child disposal and `base.dispose()`.
+- [ ] Reject stale RAF, render, patch-activation, and Worker results after retirement.
+- [ ] Publish `RenderHostRetirementResult` and `FirstRetiredRenderHostAck`.
 
-### Phase 4: Frame proof
+### Phase 4: Fixtures
 
-- [ ] Bind catalog, patch, Worker, card batch, atlas material, atmosphere, renderer, and viewport revisions.
-- [ ] Publish `JunglePresentationProjectionResult`.
-- [ ] Publish `FirstJunglePresentationFrameAck` from the exact rendered frame.
-- [ ] Prove scene replacement and run restart do not accumulate lights or stale resources.
+- [ ] Construct, render, dispose, and reconstruct in one browser session.
+- [ ] Assert one canvas, renderer generation, and atmosphere light pair.
+- [ ] Assert old GPU resources and patch memberships are retired.
+- [ ] Exercise run restart, route remount, and WebGL recovery.
+- [ ] Run source, built artifact, and Pages-subpath parity checks.
 
-### Phase 5: Release parity
+### Retained validation work
 
-- [ ] Run source-origin browser fixtures.
-- [ ] Run built/static artifact fixtures.
-- [ ] Run GitHub Pages subpath fixtures.
-- [ ] Fail closed on catalog, Worker, atlas, resource, or frame mismatch.
+- [ ] Add syntax/import coverage for all new foliage render modules.
+- [ ] Execute the actual product Vegetation runtime fixture.
+- [ ] Add main-thread/Worker lush patch parity assertions.
+- [ ] Validate the generation-bound lush first-frame acknowledgement in browser.
 
 ## Recommended file cut
 
 ```txt
-src/world/prehistoric-patch-generator.js
-src/workers/prehistoric-patch-worker.js
-src/render/three-foliage-card-layer.js
-src/render/jungle-atmosphere-controller.js
-tests/vegetation-product-runtime.mjs
-tests/foliage-main-worker-parity.mjs
-tests/jungle-atmosphere-lifecycle.mjs
-tests/browser/jungle-presentation-frame.html
+src/render/three-patch-stream-adapter.js
+src/render/three-patch-stream-lod-adapter.js
+src/render/lush-jungle-atmosphere.js
+src/game-runtime-lod.js
+tests/render-host-retirement.mjs
+tests/browser/render-host-restart.html
 ```
 
 ## Compatibility constraints
 
-Preserve existing seeds, route clearance, terrain topology, tree collisions, grass ownership, package forms, transitions, player motion, camera, score, pause, and outcomes. Keep cards and ground cover presentation-only unless a separate collision command explicitly admits them.
+Preserve current catalogs, seeds, ecological placement, card LOD/hysteresis, atlas revision, tree fidelity, collision, route, player, camera, score, pause, outcomes, and startup frame admission.
 
 ## Claim boundary
 
-Do not claim the jungle upgrade is visible or shipped until production patch/Worker projection, GPU lifecycle, atmosphere ownership, and exact-frame fixtures pass on the same revision.
+Do not claim restart/remount/recovery safety until complete parent disposal and repeated-generation fixtures pass.
