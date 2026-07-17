@@ -1,98 +1,79 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-17T02-02-06-04-00`  
+**Timestamp:** `2026-07-17T02-50-44-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed runtime head:** `25691598bd4ff5fd38bfdd25c46edb8a9e2cfece`  
-**Status:** `semantic-vegetation-fidelity-generation-authority-audited`
+**Reviewed runtime head:** `b87cdad1f1666b089935bb221f7daf9bc4f6a779`  
+**Status:** `product-vegetation-runtime-fixture-authority-audited`
 
 ## Summary
 
-PrehistoricRush now composes the Nexus Engine Object Vegetation domain in tree asset preparation, the game host, and the patch Worker. Patch generation delegates ecological species selection and deterministic variation to the domain. The latest reviewed runtime also preserves instance scale in tree collider radius.
+The latest five commits strengthen source-level Vegetation testing. Product module exports are imported from the actual checked-in graph, catalog constants are clone-checked, the deterministic placement fixture now carries the complete Vegetation instance envelope, generated trees must preserve that envelope, and the new fixture runs inside `npm test`.
 
-The semantic catalog is not yet one authoritative generation. The three runtime contexts register independent catalogs. The asset wrapper derives semantic fidelity profiles after the base asset runtime is created, but the provider still registers and builds from the older local fidelity profile. Package generation omits semantic descriptor hashes, Worker readiness omits its catalog digest, and the renderer proves only the package generation.
+The tests still stop before product runtime construction. The import fixture checks function types but does not call them. The dense spawn fixture injects a test-owned placement API rather than `createPrehistoricVegetationRuntime()` backed by the pinned Nexus Engine implementation.
 
 ## Intent
 
-Bind species, tree, foliage, object, fidelity profile, package, cache, Worker, patch, collision, and frame identities into one admitted `VegetationGeneration`.
+Bind source, pinned engine, catalog, main-thread patch, Worker patch, collision, package, browser origin, and rendered-frame evidence into one `ProductVegetationFixtureResult`.
 
 ## Checklist
 
 - [x] Inspect the full Publish inventory and central ledger state.
-- [x] Select only the newest runtime-ahead repository.
-- [x] Review eleven runtime commits and ten changed files.
-- [x] Inspect vegetation catalog registration and services.
-- [x] Inspect main-thread and Worker patch generation.
-- [x] Inspect asset preparation and portable package generation.
-- [x] Inspect patch cache identity and startup frame receipt.
-- [x] Inspect instance-scaled collision-radius settlement.
-- [x] Preserve the complete 90-surface inventory.
-- [ ] Register and use semantic fidelity profiles for package builds.
-- [ ] Admit one composite generation in host and Worker.
-- [ ] Prove species/package/cache/patch/collision/frame convergence.
+- [x] Select only PrehistoricRush through runtime-ahead priority.
+- [x] Review five commits and four changed files.
+- [x] Inspect module-import and deterministic spawn fixtures.
+- [x] Preserve the complete 91-surface inventory.
+- [ ] Execute the actual product runtime against the pinned engine.
+- [ ] Compare main-thread and production Worker results.
+- [ ] Prove browser, artifact, Pages, and frame convergence.
 
-## Complete interaction loop
+## Interaction loop
 
 ```txt
-menu/game preparation
-  -> create base Assets/Object/Shape/Capture/Fidelity runtime
-  -> install Core Vegetation domain
-  -> register semantic species/tree/foliage/object catalog
-  -> derive semantic fidelity profiles
-  -> build or load packages through the local profile provider
+source modules
+  -> local export import fixture
+  -> catalog cloneability checks
+  -> test-owned placement fixture
+  -> deterministic patch and collider assertions
 
-host
-  -> create independent vegetation runtime and catalog
-  -> compute species-only digest
-  -> bind digest and package digest into patch-cache settings
-
-Worker
-  -> import Nexus Engine
-  -> create independent vegetation runtime and catalog
-  -> return domain path only
-  -> generate patches with domain selection and variation
-
-patch/frame
-  -> create varied tree geometry and matching scaled collider radius
-  -> activate patch
-  -> map species typeIndex to package
-  -> render exact package generation
-  -> record catalog digest separately
+production path
+  -> pinned Nexus Engine module
+  -> actual Core Vegetation composition
+  -> semantic catalog registration
+  -> main-thread and Worker patch generation
+  -> package and exact frame binding
+  -> browser and Pages presentation
 ```
 
 ## Domains in use
 
 ```txt
-browser routes, module cache, DOM, input, lifecycle, RAF, storage, and IndexedDB
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, and presentation
-Core Assets, Startup, Object, Shape, Capture, and Fidelity
-Core Vegetation, Vegetation Ecology, Vegetation Tree, Vegetation Foliage, and Vegetation Object Bridge
-NexusEngine-Kits seed, creature, instance batch, patch streaming, and camera follow
-PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause, and outcome
-semantic catalog registration, ecological placement, deterministic variation, collision projection, fidelity packages, and generation evidence
-Three.js, Rapier, Worker execution, tests, Pages, and audit governance
+browser routes, module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker, CDN
+Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition, presentation
+Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage, Object Bridge
+NexusEngine-Kits seed, creature, instance batch, patch streaming, camera follow
+PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause, outcome
+Three.js, Rapier, source tests, static delivery, Pages, audit governance
 ```
 
 ## Current gap
 
 ```txt
-one immutable VegetationGeneration: absent
-semantic profile registration into Object Fidelity: absent
-semantic descriptor hashes in package generation: absent
-Worker catalog digest handshake: absent
-patch result generation digest: absent
-speciesId-to-package generation table: absent
-typeIndex mismatch rejection: absent
-stale semantic cache retirement: absent
-VegetationGenerationAdmissionResult: absent
-FirstDomainBoundAssetAck: absent
-FirstDomainBoundPatchAck: absent
-FirstDomainBoundTreeFrameAck: absent
+actual product runtime construction fixture: absent
+actual semantic catalog registration fixture: absent
+actual placement API in dense spawn test: absent
+production Worker runtime fixture: absent
+main-thread/Worker parity result: absent
+browser/CDN module graph fixture: absent
+Pages-origin module graph fixture: absent
+ProductVegetationFixtureResult: absent
+FirstProductVegetationPatchAck: absent
+FirstProductVegetationFrameAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain`
+`prehistoric-rush-product-vegetation-runtime-fixture-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime, packages, caches, Worker protocol, gameplay, rendering, tests, workflows, and deployment were not changed or executed by this audit.
+Documentation only. Runtime, tests, gameplay, rendering, Worker behavior, workflows, and deployment were not changed or executed by this audit.
