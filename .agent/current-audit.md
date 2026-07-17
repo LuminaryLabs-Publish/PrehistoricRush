@@ -2,50 +2,43 @@
 
 **Timestamp:** `2026-07-17T05-58-55-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed runtime head:** `9eea125435e51ab0c492a071e5a9f70301f52cd6`  
-**Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
+**Reviewed runtime head:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
+**Status:** `jungle-runtime-integrated-render-host-retirement-authority-audited`
 
 ## Summary
 
-The three-commit delta adds foliage-card and ground-cover recipes, a jungle-atmosphere helper, and product vegetation-domain registration. Ten tree species now expose card families and clusters; six ground-cover species receive foliage descriptors and object bridges; generator options publish the ground-cover catalogs and atlas revision.
+The jungle presentation is now integrated. Core Vegetation registers card-backed tree foliage and six ground-cover species; main-thread and Worker patch generation carry ecological ground cover; tree fidelity builds card-backed packages; Three.js creates a procedural foliage atlas, lush foliage and ground-cover layers, atmosphere state, diagnostics, and a foliage-revision-bound frame acknowledgement.
 
-Adoption stops before patch and frame projection. `prehistoric-patch-generator.js` still selects only trees and returns trunks/crowns, legacy grass, pickups, and colliders. It does not consume the published ground-cover arrays or emit card/ground-cover instances. The atmosphere helper remains outside production composition.
+The current gap is retirement. `createThreePatchStreamLodAdapter().dispose()` releases the added terrain/fidelity/foliage/ground-cover/atlas layers, but the base adapter has no disposal service. Base renderer, canvas, scene meshes/materials, grass, shards, player resources, base lights, atmosphere lights, predecessor scene state, and stale render callbacks are not settled through one generation result.
 
 ## Intent
 
-Bind semantic catalogs, patch/Worker data, atlas materials, GPU batches, atmosphere state, lifecycle, and frame evidence into one `JunglePresentationProjectionResult`.
+Bind every render resource and callback to one host generation and retire it exactly once before restart, remount, route exit, or WebGL recovery.
 
 ## Checklist
 
 - [x] Inspect the full Publish inventory and central ledger state.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Review three commits and three files.
-- [x] Confirm semantic tree and ground-cover registration.
-- [x] Confirm generator-option publication.
-- [x] Reconcile the complete 93-surface inventory.
-- [ ] Consume card and ground-cover catalogs in the production patch/Worker path.
-- [ ] Prove atlas/material, GPU, atmosphere, browser, artifact, Pages, and frame convergence.
+- [x] Reconcile semantic, patch, Worker, fidelity, GPU, atmosphere, and frame integration.
+- [x] Preserve the complete 96-surface inventory.
+- [x] Identify the render-host retirement boundary.
+- [ ] Implement parent host disposal and atmosphere restoration.
+- [ ] Prove repeated construction, restart, recovery, browser, artifact, and Pages behavior.
 
 ## Interaction loop
 
 ```txt
-foliage recipes
-  -> product vegetation-domain import
-  -> ten card-backed tree descriptors
-  -> six ground-cover species/foliage/object descriptors
-  -> runtime selectors and generator options
+catalog registration
+  -> Worker/main-thread patch generation
+  -> ecological ground cover and tree instances
+  -> tree-fidelity packages and captures
+  -> foliage atlas, lush card layer, ground-cover layer, atmosphere
+  -> projected-size LOD, hysteresis, crossfade, wind, tint
+  -> lushVegetationFrameAck and startup admission
 
-patch runtime
-  -> tree species selection only
-  -> trunk/crown matrix output
-  -> legacy grass output
-  -> no card/ground-cover patch payload
-
-render runtime
-  -> existing tree-fidelity and patch rendering
-  -> no proved atlas material or card batch
-  -> atmosphere helper not adopted
-  -> no matching jungle frame acknowledgement
+retirement today
+  -> child jungle layers dispose
+  -> base host and atmosphere ownership remain unsettled
 ```
 
 ## Domains in use
@@ -56,33 +49,33 @@ Nexus Engine runtime, scene, spatial, creature, character, player, physics, simu
 Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage, Object Bridge
 NexusEngine-Kits seed, creature, instance batch, patch streaming, camera follow
 PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, foliage cards, ground cover, pickup, outcome
-Three.js scene, fog, lighting, shadows, materials, instancing, GPU lifecycle
+Three.js renderer, canvas, scene, fog, lighting, shadows, materials, atlas, instancing, GPU lifecycle
 Rapier, source tests, static delivery, Pages, audit governance
 ```
 
 ## Current gap
 
 ```txt
-semantic tree foliage registration: present
-semantic ground-cover registration: present
-generator-option publication: present
-patch consumption of ground cover: absent
-patch emission of foliage-card instances: absent
-patch emission of ground-cover instances: absent
-main-thread/Worker foliage parity: absent
-atlas texture/material binding: absent
-card instance-batch projection: absent
-atmosphere consumer and lifecycle: absent
-actual runtime-construction fixture: absent
-JunglePresentationProjectionResult: absent
-FirstJunglePatchAck: absent
-FirstJunglePresentationFrameAck: absent
+jungle semantic/runtime integration: present
+main-thread and Worker ground-cover generation: present
+foliage atlas and card layers: present
+atmosphere composition: present
+lush frame acknowledgement: present
+
+base adapter dispose service: absent
+base renderer/context retirement: absent
+canvas host detachment: absent
+base geometry/material/player retirement: absent
+atmosphere light removal/restoration: absent
+stale frame rejection after retirement: absent
+RenderHostRetirementResult: absent
+FirstRetiredRenderHostAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain`
+`prehistoric-rush-render-host-generation-retirement-authority-domain`
 
 ## Boundary
 
-Semantic registration is source-backed. Runtime patch projection, visible rendering, Worker parity, atmosphere adoption, lifecycle correctness, and release parity remain unproven.
+Source inspection confirms integration and incomplete retirement. Runtime cleanup and executable fixtures were not changed or run by this audit.
