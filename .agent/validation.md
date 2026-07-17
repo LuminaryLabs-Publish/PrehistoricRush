@@ -1,50 +1,47 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-16T14-39-29-04-00`  
-**Scope:** runtime-ahead tree reconciliation, exact frame addressing, ecological variation, elevation-row continuity, and visible proof
+**Audit timestamp:** `2026-07-16T20-01-41-04-00`  
+**Scope:** organization selection, route import maps, shared runtime URLs, official-kit linkage, runtime generation admission, and deployment proof
 
 ## Summary
 
-Source inspection confirms that the prior exact-frame plan is implemented: camera azimuth and elevation are derived, exact frame records and UV rectangles are bound, adjacent azimuth frames blend, and an exact frame-binding digest and acknowledgement are published. It also confirms that only the single nearest captured elevation row is admitted per frame.
+Source inspection confirms three Nexus Engine commit declarations across the creator, game, and shared dynamic runtime. It also confirms that official NexusEngine-Kits import the bare `nexusengine` specifier while the host pages dynamically import another Nexus Engine URL.
 
-## Intent
+## Goal
 
-Separate verified tree-fidelity implementation from the remaining elevation-row continuity and executable visual-proof work.
+Separate the source-proven mixed-generation contract from unproven browser failure and define the exact fixture boundary required for a single-runtime-generation claim.
 
-## Checklist
+## Plan ledger
 
 - [x] Compare all 11 Publish repositories and exclude Cavalry.
-- [x] Confirm ten eligible central ledgers and root `.agent` states.
-- [x] Select the older runtime-ahead repository only.
-- [x] Compare `36bd09e2..d427de44`.
-- [x] Inspect tree archetypes, patch generation, runtime image hydration, fidelity rendering, tests, package scripts, and CI fixes.
+- [x] Verify ten central ledgers and ten synchronized current heads.
+- [x] Select PrehistoricRush through the oldest documented timestamp rule.
+- [x] Inspect route import maps and shared runtime version declarations.
+- [x] Inspect game and creator dynamic import paths.
+- [x] Inspect official seed and creature kit imports.
+- [x] Inspect product kit composition.
 - [x] Add and route the timestamped audit family on `main`.
-- [ ] Execute source, browser, artifact, and Pages continuity fixtures.
+- [ ] Execute source, browser, built-output, and Pages module-identity fixtures.
 
 ## Confirmed by inspection
 
 ```txt
-reviewed pre-audit repository head: d427de443aea28b256c92a760a8d1c6f6a396efb
-previous documentation head: 36bd09e2f6abc0862dc94955bef55268d0ebf7b6
-runtime ahead by: 14 commits
-changed files: 12
-ten authored tree species: present
-deterministic ecological selection: present
-seeded per-tree variation: present
-stable collision proxy: present
-shared atlas decode/crop: present
-camera azimuth and elevation derivation: present
-exact frame record and UV binding: present
-adjacent azimuth blending: present
-frame-binding digest and exact-frame acknowledgement: present
-source tests for exact addressing and spawn variation: present
+reviewed repository head: 94fec638a76d6c39034fe993396edf12e95638fb
+shared Nexus Engine commit: 80146b8947e0877e26b851563bd17f5cdfcbf38a
+game import-map commit: 06375f213b9fcd96257c0cf6980d65ec7ca2f3d3
+creator import-map commit: cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1
 
-elevation lower/upper bracket: absent
-elevation interpolation/deadband: absent
-retained row-transition state: absent
-TreeImpostorViewContinuityResult: absent
-FirstContinuousImpostorFrameAck: absent
-browser elevation-boundary fixture: absent
+shared runtime dynamically imported by game: yes
+shared runtime dynamically imported by creator: yes
+official seed kit imports bare nexusengine: yes
+official creature kit imports bare nexusengine: yes
+product engine created from shared runtime namespace: yes
+official kit factories composed into product engine: yes
+
+single canonical manifest: absent
+runtime generation admission result: absent
+mixed generation rejection: absent
+creator/game matching frame acknowledgements: absent
 ```
 
 ## Source inspection performed
@@ -52,25 +49,29 @@ browser elevation-boundary fixture: absent
 ```txt
 LuminaryLabs-Publish organization inventory
 LuminaryLabs-Dev/LuminaryLabs Publish ledgers
-compare 36bd09e2..d427de44
-src/shared/tree-archetype-catalog.js
-src/world/prehistoric-patch-generator.js
-src/shared/tree-fidelity-assets.js
-src/shared/tree-fidelity-runtime-images.js
-src/render/three-tree-fidelity-layer.js
-tests/tree-fidelity-assets.mjs
-tests/tree-fidelity-frame-addressing.mjs
-tests/tree-spawn-variation.mjs
+current main heads for all ten eligible repositories
+game.html
+charactercreator.html
+src/shared/runtime-versions.js
+src/pages/game.js
+src/game.js
+src/game-runtime-lod.js
+src/pages/character-creator.js
+src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js
+src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js
+NexusEngine-Kits seed-kit at 9fd5b100…
+NexusEngine-Kits procedural-creature-body-kit at 9fd5b100…
 package.json
 ```
 
 ## What is not proven
 
 ```txt
-that a visible row-switch pop currently occurs
-that an elevation-interpolation policy is correct
+that the current browser route throws or visibly malfunctions
+that descriptor objects are incompatible between the declared commits
+that a CDN or service worker currently serves stale modules
 npm test success at the final documentation head
-browser rendered continuity
+browser module graph identity
 built artifact parity
 GitHub Pages parity
 production readiness
@@ -79,15 +80,17 @@ production readiness
 ## Required fixtures
 
 ```txt
-below/at/above every elevation midpoint
-slow elevation sweep
-camera bob around midpoint
-jump, landing, camera reset, and terrain-height changes
-stale package/camera/tree/form transition rejection
-far/horizon and LOD-crossfade composition
-same-trace binding-digest reproducibility
-source/build/Pages rendered parity
-FirstContinuousImpostorFrameAck
+source import-map/runtime-manifest equality
+all official kit bare-import resolution identities
+creator hard reload and menu-to-creator navigation
+game hard reload and menu-to-game navigation
+creator-to-game navigation with cache retained
+duplicate runtime namespace rejection
+stale CDN/module-cache generation rejection
+startup receipt generation digest
+FirstSingleRuntimeCreatorFrameAck
+FirstSingleRuntimeGameFrameAck
+source/build/Pages module graph parity
 ```
 
 ## Change scope
@@ -95,8 +98,8 @@ FirstContinuousImpostorFrameAck
 ```txt
 documentation changed: yes
 runtime JavaScript changed by audit: no
-assets or tree content changed by audit: no
-gameplay, rendering, physics, and camera changed by audit: no
+HTML import maps changed by audit: no
+gameplay, rendering, physics, assets, and camera changed by audit: no
 tests or package scripts changed by audit: no
 workflow or deployment changed by audit: no
 branch created: no
@@ -108,4 +111,4 @@ built-output smoke: not run
 Pages smoke: not run
 ```
 
-No elevation-row continuity, rendered transition correctness, artifact parity, Pages parity, or production readiness is claimed.
+No current runtime failure, single-generation guarantee, browser cache coherence, cross-route parity, artifact parity, Pages parity, or production readiness is claimed.
