@@ -1,79 +1,91 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-17T02-50-44-04-00`  
+**Timestamp:** `2026-07-17T05-58-55-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed runtime head:** `b87cdad1f1666b089935bb221f7daf9bc4f6a779`  
-**Status:** `product-vegetation-runtime-fixture-authority-audited`
+**Reviewed runtime head:** `248586fb4774c9219fb2ce0aaeec2b46bf3b69de`  
+**Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
 
 ## Summary
 
-The latest five commits strengthen source-level Vegetation testing. Product module exports are imported from the actual checked-in graph, catalog constants are clone-checked, the deterministic placement fixture now carries the complete Vegetation instance envelope, generated trees must preserve that envelope, and the new fixture runs inside `npm test`.
+Two runtime commits add `prehistoric-foliage-card-recipes.js` and `lush-jungle-atmosphere.js`. The first defines an atlas revision, eight card families, deterministic tree-card recipes and six ground-cover archetypes. The second mutates Three.js background, fog, exposure, existing lights, sun shadows and adds fill/bounce lights.
 
-The tests still stop before product runtime construction. The import fixture checks function types but does not call them. The dense spawn fixture injects a test-owned placement API rather than `createPrehistoricVegetationRuntime()` backed by the pinned Nexus Engine implementation.
+The delta contains no changed consumer. No patch, Worker, renderer, test, package or deployment path is revised to admit, execute, retire or visibly acknowledge these capabilities.
 
 ## Intent
 
-Bind source, pinned engine, catalog, main-thread patch, Worker patch, collision, package, browser origin, and rendered-frame evidence into one `ProductVegetationFixtureResult`.
+Bind source, catalog, patch, Worker, atlas material, atmosphere, renderer, quality, lifecycle and frame evidence into one `JunglePresentationProjectionResult`.
 
 ## Checklist
 
 - [x] Inspect the full Publish inventory and central ledger state.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Review five commits and four changed files.
-- [x] Inspect module-import and deterministic spawn fixtures.
-- [x] Preserve the complete 91-surface inventory.
-- [ ] Execute the actual product runtime against the pinned engine.
-- [ ] Compare main-thread and production Worker results.
-- [ ] Prove browser, artifact, Pages, and frame convergence.
+- [x] Review two commits and two added files.
+- [x] Inspect the new catalog, placement and atmosphere services.
+- [x] Reconcile the complete 93-surface inventory.
+- [ ] Install the new modules in actual product composition.
+- [ ] Prove main-thread/Worker, GPU, browser, artifact, Pages and frame convergence.
 
 ## Interaction loop
 
 ```txt
-source modules
-  -> local export import fixture
-  -> catalog cloneability checks
-  -> test-owned placement fixture
-  -> deterministic patch and collider assertions
+current production
+  -> Core Vegetation semantic species
+  -> Worker-backed patch generation
+  -> tree-fidelity package/form selection
+  -> Three.js scene submission
+  -> gameplay and frame settlement
 
-production path
-  -> pinned Nexus Engine module
-  -> actual Core Vegetation composition
-  -> semantic catalog registration
-  -> main-thread and Worker patch generation
-  -> package and exact frame binding
-  -> browser and Pages presentation
+new source
+  -> foliage-card and ground-cover catalogs
+  -> jungle-atmosphere scene mutation
+  -> no changed consumer in the two-commit delta
+  -> no accepted runtime generation
+  -> no matching visible frame
+
+required
+  -> JunglePresentationAdmissionCommand
+  -> catalog registration
+  -> bounded patch/Worker projection
+  -> atlas/material and card-batch binding
+  -> idempotent atmosphere projection
+  -> resource retirement
+  -> FirstJunglePresentationFrameAck
 ```
 
 ## Domains in use
 
 ```txt
-browser routes, module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker, CDN
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition, presentation
-Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage, Object Bridge
-NexusEngine-Kits seed, creature, instance batch, patch streaming, camera follow
-PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause, outcome
-Three.js, Rapier, source tests, static delivery, Pages, audit governance
+browser routes, module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker and CDN
+Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition and presentation
+Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage and Object Bridge
+NexusEngine-Kits seed, creature, instance batch, patch streaming and camera follow
+PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, foliage cards, ground cover, pickup and outcome
+Three.js scene, fog, lighting, shadows, materials, instancing and GPU lifecycle
+Rapier, source tests, static delivery, Pages and audit governance
 ```
 
 ## Current gap
 
 ```txt
-actual product runtime construction fixture: absent
-actual semantic catalog registration fixture: absent
-actual placement API in dense spawn test: absent
-production Worker runtime fixture: absent
-main-thread/Worker parity result: absent
-browser/CDN module graph fixture: absent
-Pages-origin module graph fixture: absent
-ProductVegetationFixtureResult: absent
-FirstProductVegetationPatchAck: absent
-FirstProductVegetationFrameAck: absent
+production imports for new modules: not established by delta
+foliage catalog generation/result: absent
+ground-cover patch adoption: absent
+main-thread/Worker foliage parity: absent
+atlas texture/material binding: absent
+far-quality card budget: absent
+atmosphere apply-once generation: absent
+duplicate-light prevention: absent
+predecessor scene-state snapshot: absent
+resource retirement result: absent
+JunglePresentationProjectionResult: absent
+FirstJunglePatchAck: absent
+FirstJunglePresentationFrameAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-product-vegetation-runtime-fixture-authority-domain`
+`prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime, tests, gameplay, rendering, Worker behavior, workflows, and deployment were not changed or executed by this audit.
+Documentation only. Runtime, tests, gameplay, rendering, Worker behavior, workflows and deployment were not changed or executed by this audit.
