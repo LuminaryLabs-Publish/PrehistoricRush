@@ -1,53 +1,54 @@
 # PrehistoricRush Validation
 
 **Audit timestamp:** `2026-07-17T05-58-55-04-00`  
-**Scope:** organization selection, three-commit jungle delta, foliage-card and ground-cover semantic registration, patch/Worker adoption, atmosphere mutation, GPU lifecycle, rendered-frame proof, and deployment parity
+**Scope:** organization selection, jungle runtime integration through `4b2e184…`, complete kit/service inventory, render-host retirement, and release-proof boundaries
 
 ## Summary
 
-Source inspection confirms that the complete delta contains three commits across three files. The late commit imports the foliage recipes into the product vegetation domain and registers ten card-backed tree foliage descriptors plus six ground-cover species/foliage/object bridges. Generator options publish the new catalogs and atlas revision.
+Source inspection confirms end-to-end jungle integration: semantic catalogs, Worker/main-thread ecological patch generation, foliage-card packages, procedural atlas, lush tree cards, ground cover, atmosphere, runtime diagnostics, and a generation-bound lush first-frame acknowledgement.
 
-Inspection also confirms that the production patch generator still selects only tree species and emits trunks/crowns, legacy grass, pickups, and colliders. It does not consume or emit ground-cover/card payloads. The atmosphere helper remains outside production composition.
+Inspection also confirms incomplete host retirement. Child LOD and jungle layers expose disposal, but the base adapter has no disposal service. The parent LOD adapter does not retire base renderer/canvas/scene resources, and atmosphere state has no removal/restoration command.
 
 ## Intent
 
-Separate completed semantic catalog adoption from unproven patch/Worker projection, atlas/GPU binding, atmosphere lifecycle, browser delivery, and exact-frame convergence.
+Separate implemented jungle presentation from unproven complete cleanup, repeated-generation safety, browser execution, and deployment parity.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories and exclude Cavalry.
 - [x] Confirm ten eligible central ledgers and root `.agent` states.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Compare prior documentation head with current runtime head.
-- [x] Inspect three commits and three changed files.
-- [x] Inspect product vegetation registration and patch generator consumption.
-- [x] Add and route the timestamped audit family on `main`.
-- [ ] Execute runtime, Worker, browser, build, and Pages fixtures.
+- [x] Inspect runtime changes through head `4b2e184…`.
+- [x] Reconcile 96 implemented kits/adapters/fixtures and services.
+- [x] Inspect base and LOD adapter retirement surfaces.
+- [x] Add and route the final timestamped reconciliation.
+- [ ] Execute tests, browser fixtures, build smoke, and Pages smoke.
 
 ## Confirmed by inspection
 
 ```txt
-reviewed runtime head: 9eea125435e51ab0c492a071e5a9f70301f52cd6
+reviewed runtime head: 4b2e1842dc6f8e47fe537260e4282518e09537e2
 previous documentation head: e7c5d238d7ba406ecf02b8d91416161f03201147
-runtime delta: 3 commits / 3 files / +608 / -23
 
-foliage atlas revision and 4x2 dimensions: present
-eight foliage-card families: present
+foliage-card recipes and eight families: present
 six ground-cover archetypes: present
-product vegetation import of recipes: present
-ten tree foliage registrations: present
-six ground-cover species/foliage/object registrations: present
-ground-cover selector: present
-generator-option publication: present
+semantic tree/ground-cover registration: present
+main-thread ground-cover patch generation: present
+Worker vegetation catalog initialization: present
+card-backed tree packages/captures: present
+procedural foliage atlas: present
+lush foliage layer: present
+ground-cover render layer: present
+jungle atmosphere composition: present
+lush frame acknowledgement: present
+startup atlas-revision admission: present
 
-patch consumption of ground-cover catalogs: no
-patch emission of foliage-card instances: no
-patch emission of ground-cover instances: no
-atlas texture/material binding: no
-atmosphere production consumer: no
-atmosphere lifecycle result: no
-actual runtime-construction fixture: no
-matching rendered-frame acknowledgement: no
+child jungle-layer disposal: present
+base patch-stream adapter dispose service: absent
+base renderer/canvas/resource retirement: absent
+atmosphere restoration/removal service: absent
+parent RenderHostRetirementResult: absent
+FirstRetiredRenderHostAck: absent
 ```
 
 ## Source inspection performed
@@ -55,55 +56,56 @@ matching rendered-frame acknowledgement: no
 ```txt
 LuminaryLabs-Publish organization inventory
 LuminaryLabs-Dev/LuminaryLabs PrehistoricRush ledger
-PrehistoricRush compare from e7c5d23 to 248586f
-late commit 9eea125435e51ab0c492a071e5a9f70301f52cd6
+runtime commits and compare history through 4b2e184
 src/shared/prehistoric-foliage-card-recipes.js
-src/render/lush-jungle-atmosphere.js
 src/shared/prehistoric-vegetation-domain.js
 src/world/prehistoric-patch-generator.js
-tests/vegetation-module-imports.mjs
+src/workers/prehistoric-patch-worker.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+src/shared/vegetation-tree-fidelity-provider.js
+src/render/prehistoric-foliage-atlas.js
+src/render/three-lush-foliage-layer.js
+src/render/three-ground-cover-layer.js
+src/render/lush-jungle-atmosphere.js
+src/render/three-patch-stream-adapter.js
+src/render/three-patch-stream-lod-adapter.js
+src/game-runtime-lod.js
+src/shared/runtime-versions.js
 package.json
-prior tracker and kit registry
 ```
 
 ## Required fixtures
 
 ```txt
-actual product vegetation runtime construction
-16-species and foliage/object registration assertions
-new module syntax/import coverage
-instance-specific card-placement determinism
-near/medium/far/culled budget bounds
-ground-cover ecology, terrain, and route exclusion
-production Worker catalog handshake
-main-thread/Worker card and ground-cover parity
-atlas decode and material binding
-atmosphere apply-twice idempotency
-scene replacement and renderer disposal
-quality-tier fog and shadow budgets
-source, artifact, and Pages first accepted patch/frame
-catalog/patch/GPU/atmosphere/frame digest convergence
+new render-module syntax/import coverage
+actual product Vegetation runtime construction
+main-thread/Worker lush patch parity
+browser lush first-frame admission
+construct-render-retire-reconstruct
+run restart and route remount cleanup
+WebGL context loss/recovery
+canvas, light, resource, and callback retirement
+source, built artifact, and Pages cleanup parity
 ```
 
 ## Change scope
 
 ```txt
 documentation changed: yes
-runtime JavaScript changed by audit: no
-tests or package scripts changed by audit: no
-gameplay, rendering, physics, or camera changed by audit: no
-Worker protocol changed by audit: no
-workflow or deployment changed by audit: no
+runtime JavaScript changed by this audit: no
+tests or package scripts changed by this audit: no
+gameplay, rendering, physics, or camera changed by this audit: no
+Worker protocol changed by this audit: no
+workflow or deployment changed by this audit: no
 branch created: no
 pull request created: no
 
 npm test: not run
-new module syntax checks: not run
-runtime construction fixture: unavailable
-Worker parity fixture: unavailable
-browser frame fixture: unavailable
+browser runtime fixture: not run
+retirement fixture: unavailable
+WebGL recovery fixture: unavailable
 built-output smoke: not run
 Pages smoke: not run
 ```
 
-Semantic catalog registration is confirmed by source. Visible jungle projection, Worker parity, GPU lifecycle correctness, browser/CDN integrity, artifact parity, Pages parity, and production readiness are not claimed.
+Jungle runtime integration is source-confirmed. Complete cleanup, restart/remount safety, WebGL recovery, artifact parity, Pages parity, and production readiness are not claimed.
