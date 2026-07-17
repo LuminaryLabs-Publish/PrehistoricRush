@@ -19,6 +19,56 @@ export {
   TREE_FIDELITY_PROVIDER_ID
 };
 
+const VEGETATION_PROVIDER_REVISION = "object-vegetation-v1";
+const packageAssetId = (archetype) => `prehistoric-tree-fidelity:${archetype.id}`;
+
+function rebindVegetationAssetDescriptors(runtime) {
+  const packageIds = PREHISTORIC_TREE_ARCHETYPES.map((archetype) => packageAssetId(archetype));
+  for (const archetype of PREHISTORIC_TREE_ARCHETYPES) {
+    runtime.assets.registerAsset({
+      id: packageAssetId(archetype),
+      type: "tree-fidelity-package",
+      version: `${TREE_FIDELITY_PACKAGE_VERSION}-${VEGETATION_PROVIDER_REVISION}`,
+      providerId: TREE_FIDELITY_PROVIDER_ID,
+      metadata: {
+        kind: "package",
+        archetypeId: archetype.id,
+        speciesId: archetype.id,
+        shape: archetype.shape,
+        packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+        providerRevision: VEGETATION_PROVIDER_REVISION,
+        vegetationDomain: "n:object:vegetation"
+      }
+    });
+  }
+  runtime.assets.registerAsset({
+    id: TREE_FIDELITY_MANIFEST_ASSET_ID,
+    type: "tree-fidelity-manifest",
+    version: `${TREE_FIDELITY_PACKAGE_VERSION}-${VEGETATION_PROVIDER_REVISION}`,
+    providerId: TREE_FIDELITY_PROVIDER_ID,
+    dependencies: packageIds,
+    metadata: {
+      kind: "manifest",
+      packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+      providerRevision: VEGETATION_PROVIDER_REVISION,
+      vegetationDomain: "n:object:vegetation"
+    }
+  });
+  runtime.assets.registerBundle({
+    id: TREE_FIDELITY_BUNDLE_ID,
+    version: `${TREE_FIDELITY_PACKAGE_VERSION}-${VEGETATION_PROVIDER_REVISION}`,
+    assets: [TREE_FIDELITY_MANIFEST_ASSET_ID],
+    metadata: {
+      purpose: "PrehistoricRush Object Vegetation, Shape, Capture, and Fidelity tree package.",
+      packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+      providerRevision: VEGETATION_PROVIDER_REVISION,
+      vegetationDomain: "n:object:vegetation",
+      speciesCount: PREHISTORIC_TREE_ARCHETYPES.length
+    }
+  });
+  return packageIds;
+}
+
 export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THREE, options = {}) {
   if (typeof NexusEngine.createCoreVegetationDomain !== "function") {
     throw new TypeError("Pinned NexusEngine is missing createCoreVegetationDomain().");
@@ -53,9 +103,11 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
     vegetationEcology: runtime.engine.n.vegetationEcology,
     vegetationObjectBridge: runtime.engine.n.vegetationObjectBridge,
     vegetationCatalog,
-    semanticFidelityProfiles
+    semanticFidelityProfiles,
+    vegetationProviderRevision: VEGETATION_PROVIDER_REVISION
   };
   replaceTreeFidelityProviderWithVegetation(NexusEngine, THREE, composed, options);
+  composed.packageIds = rebindVegetationAssetDescriptors(composed);
   return Object.freeze(composed);
 }
 
