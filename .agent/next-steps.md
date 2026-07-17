@@ -5,40 +5,42 @@
 
 ## Intent
 
-Adopt the new foliage-card, ground-cover and atmosphere modules through the existing Vegetation, patch, Worker, Graphics and Three.js ownership boundaries.
+Carry the now-registered card-backed tree and ground-cover catalogs through patch generation, Worker parity, GPU projection, atmosphere lifecycle, and exact-frame proof.
 
 ## Checklist
 
-### Phase 1: Source and catalog admission
+### Phase 1: Validate completed semantic registration
 
-- [ ] Add both new modules to syntax/import fixtures.
-- [ ] Validate atlas revision, dimensions, unique family IDs and unique in-range atlas cells.
-- [ ] Validate scalar ranges, cloneability and catalog immutability.
-- [ ] Register foliage-card and ground-cover descriptors through existing Core Vegetation composition.
-- [ ] Publish one catalog generation and digest.
+- [x] Import foliage recipes into the product vegetation domain.
+- [x] Register card-backed foliage for ten tree species.
+- [x] Register six ground-cover species, foliage descriptors, and object bridges.
+- [x] Publish ground-cover catalogs and atlas revision through generator options.
+- [ ] Add both new modules and expanded catalogs to syntax/import fixtures.
+- [ ] Execute `createPrehistoricVegetationRuntime()` and assert all registrations.
 
-### Phase 2: Patch and Worker adoption
+### Phase 2: Patch and Worker projection
 
-- [ ] Include patch, species and tree-instance identity in tree-card placement seeds.
-- [ ] Add explicit near, medium, far and culled budgets.
-- [ ] Apply moisture, elevation, slope, clustering and route-clearance rules to ground cover.
-- [ ] Add the accepted catalogs to the production Worker handshake.
-- [ ] Compare main-thread and Worker card/ground-cover payloads.
-- [ ] Publish `FoliagePatchProjectionResult` and `FirstJunglePatchAck`.
+- [ ] Extend `prehistoric-patch-generator.js` to consume `groundCoverSpecies` and `groundCoverArchetypes`.
+- [ ] Emit patch-owned foliage-card and ground-cover instance payloads.
+- [ ] Include patch, species, tree-instance, and local-card identity in deterministic seeds.
+- [ ] Add explicit near, medium, far, and culled budgets.
+- [ ] Apply moisture, elevation, slope, clustering, terrain-height, and route-clearance policy.
+- [ ] Carry the same catalog generation through the production Worker handshake.
+- [ ] Publish `FoliagePatchProjectionResult`, parity result, and `FirstJunglePatchAck`.
 
 ### Phase 3: GPU and atmosphere ownership
 
 - [ ] Bind the 4×2 atlas revision to decoded texture and material generations.
-- [ ] Project foliage cards through stable instance batches with patch-owned release.
+- [ ] Project cards and ground cover through stable patch-owned instance batches.
 - [ ] Apply atmosphere once per scene/renderer generation.
 - [ ] Reuse or replace owned fill/bounce lights by stable IDs.
-- [ ] Snapshot predecessor background, fog, exposure, light and shadow state.
+- [ ] Snapshot predecessor background, fog, exposure, light, and shadow state.
 - [ ] Add quality-aware fog and shadow-map budgets.
 - [ ] Retire predecessor GPU and scene resources exactly once.
 
 ### Phase 4: Frame proof
 
-- [ ] Bind catalog, patch, card batch, atlas material, atmosphere, renderer and viewport revisions.
+- [ ] Bind catalog, patch, Worker, card batch, atlas material, atmosphere, renderer, and viewport revisions.
 - [ ] Publish `JunglePresentationProjectionResult`.
 - [ ] Publish `FirstJunglePresentationFrameAck` from the exact rendered frame.
 - [ ] Prove scene replacement and run restart do not accumulate lights or stale resources.
@@ -48,22 +50,16 @@ Adopt the new foliage-card, ground-cover and atmosphere modules through the exis
 - [ ] Run source-origin browser fixtures.
 - [ ] Run built/static artifact fixtures.
 - [ ] Run GitHub Pages subpath fixtures.
-- [ ] Fail closed on revision, Worker, atlas, resource or frame mismatch.
-
-### Retained prior fixture work
-
-- [ ] Execute the actual pinned Core Vegetation runtime fixture.
-- [ ] Keep the fast test-owned deterministic placement fixture.
-- [ ] Prove actual product runtime, Worker, package and frame convergence.
+- [ ] Fail closed on catalog, Worker, atlas, resource, or frame mismatch.
 
 ## Recommended file cut
 
 ```txt
-src/shared/prehistoric-jungle-presentation-domain.js
+src/world/prehistoric-patch-generator.js
+src/workers/prehistoric-patch-worker.js
 src/render/three-foliage-card-layer.js
 src/render/jungle-atmosphere-controller.js
-src/workers/prehistoric-patch-worker.js
-tests/foliage-card-catalog.mjs
+tests/vegetation-product-runtime.mjs
 tests/foliage-main-worker-parity.mjs
 tests/jungle-atmosphere-lifecycle.mjs
 tests/browser/jungle-presentation-frame.html
@@ -71,8 +67,8 @@ tests/browser/jungle-presentation-frame.html
 
 ## Compatibility constraints
 
-Preserve existing seeds, route clearance, terrain topology, tree collisions, grass ownership, package forms, transition policy, player motion, camera, score, pause and outcome behavior. Keep foliage cards and ground cover presentation-only unless a separate collision command explicitly admits them.
+Preserve existing seeds, route clearance, terrain topology, tree collisions, grass ownership, package forms, transitions, player motion, camera, score, pause, and outcomes. Keep cards and ground cover presentation-only unless a separate collision command explicitly admits them.
 
 ## Claim boundary
 
-Do not claim the jungle upgrade is shipped until the production composition, Worker, GPU lifecycle and exact-frame fixture matrix passes on the same revision.
+Do not claim the jungle upgrade is visible or shipped until production patch/Worker projection, GPU lifecycle, atmosphere ownership, and exact-frame fixtures pass on the same revision.
