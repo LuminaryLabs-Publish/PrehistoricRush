@@ -1,79 +1,72 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-17T02-02-06-04-00`  
-**Status:** `semantic-vegetation-fidelity-generation-authority-audited`
+**Audit:** `2026-07-17T02-50-44-04-00`  
+**Status:** `product-vegetation-runtime-fixture-authority-audited`
 
 ## Summary
 
-Object Vegetation now owns species, deterministic variation, ecology, tree structures, foliage descriptors, and Core Object bridges. The asset runtime, game host, and patch Worker still reconstruct that semantic state independently, while portable fidelity packages are built from a duplicated local profile and carry no semantic vegetation descriptor hashes.
+The new tests prove local module resolution, catalog cardinality, cloneability, deterministic patch output, Vegetation instance envelopes, variation ranges, collider presence, and species diversity. They do not execute the actual product Vegetation runtime or production browser/Worker path.
 
 ## Intent
 
-Keep semantic vegetation/fidelity generation coherence explicitly unsupported until one admitted generation binds asset preparation, caches, Worker patches, package selection, and rendered frames.
+Keep product-runtime conformance explicitly unsupported until one executable fixture reaches actual domain construction, main-thread and Worker generation, browser loading, package binding, and the first rendered frame.
 
 ## Checklist
 
-- [x] Confirm domain-backed species selection and variation.
-- [x] Confirm three independently created vegetation runtimes.
-- [x] Confirm semantic profiles are derived but not used by the package provider.
-- [x] Confirm Worker readiness omits catalog identity.
-- [x] Confirm the frame receipt records catalog and package digests separately.
-- [ ] Implement and prove one composite generation.
+- [x] Confirm the product import fixture is included in `npm test`.
+- [x] Confirm the import fixture checks function types rather than executing constructors.
+- [x] Confirm the dense spawn fixture uses a test-owned placement API.
+- [x] Confirm generated trees carry the Vegetation instance schema.
+- [ ] Execute and prove the actual product runtime path.
 
-## Generation gaps
-
-```txt
-canonical semantic generation manifest: absent
-composite VegetationGeneration digest: absent
-archetype source revision binding: absent
-species descriptor hash set: partial host-only digest
-tree structure hash binding: absent
-foliage descriptor hash binding: absent
-vegetation object hash binding: absent
-semantic fidelity profile registration proof: absent
-```
-
-## Package and cache gaps
+## Runtime fixture gaps
 
 ```txt
-semantic descriptor hashes in package generation: absent
-speciesId-to-package generation binding: absent
-typeIndex mismatch rejection: absent
-composite generation in bundle identity: absent
-composite generation in IndexedDB cache identity: absent
-stale semantic cache retirement: absent
+pinned Nexus Engine import fixture: absent
+actual createPrehistoricVegetationRuntime execution: absent
+actual catalog registration fixture: absent
+actual placement API in dense patch test: absent
+actual tree-fidelity provider replacement fixture: absent
 ```
 
 ## Worker and patch gaps
 
 ```txt
-expected generation in Worker init: absent
-Worker catalog digest response: absent
-Worker generation mismatch rejection: absent
-patch request generation binding: absent
-patch result generation receipt: absent
-main-thread/Worker generation parity result: absent
+production Worker initialization fixture: absent
+main-thread/Worker instance parity: absent
+main-thread/Worker collider parity: absent
+Worker module URL and revision proof: absent
+FirstProductVegetationPatchAck: absent
 ```
 
-## Projection and proof gaps
+## Browser and render gaps
 
 ```txt
-VegetationGenerationAdmissionResult: absent
-FirstDomainBoundMenuAssetAck: absent
-FirstDomainBoundGameAssetAck: absent
-FirstDomainBoundPatchAck: absent
-FirstDomainBoundTreeFrameAck: absent
-source/browser/build/Pages generation parity: absent
+browser import-map fixture: absent
+CDN module graph fixture: absent
+built-output module graph fixture: absent
+Pages-subpath module graph fixture: absent
+species/package/frame binding fixture: absent
+FirstProductVegetationFrameAck: absent
+```
+
+## Evidence classification gap
+
+```txt
+test-double evidence classification: implicit
+product-runtime conformance result: absent
+fixture revision manifest: absent
+source/artifact/Pages parity result: absent
 ```
 
 ## Current risk boundary
 
-The source proves that semantic catalogs, package generations, and Worker state are not joined by one contract. It does not prove a current visible failure. All contexts currently derive from the same checked-in archetype source, which can mask the gap until a semantic descriptor, package, cache, or Worker revision changes independently.
+No current product failure was reproduced. The risk is that source tests may remain green when actual Nexus Engine exports, domain installation, Worker imports, browser URL resolution, package hydration, or rendered-frame binding fail.
 
 ## Retained gaps
 
-Runtime-module identity, tree elevation continuity, tree form transitions, WebGL recovery, Worker liveness, game audio, accessibility, fixed-step pacing, terrain ownership and LOD, creator settlement, feedback, route progress, provider convergence, outcome settlement, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart, and browser lifecycle remain separate retained audit families.
+Semantic vegetation generation identity, tree elevation continuity, form transitions, WebGL recovery, Worker liveness, audio, accessibility, fixed-step pacing, terrain ownership and LOD, creator settlement, feedback, route progress, provider convergence, outcomes, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart, and browser lifecycle remain separate audit families.
 
 ## Claim boundary
 
-Do not claim semantic profile adoption, composite generation authority, Worker equality, cache invalidation correctness, species-package convergence, artifact parity, Pages parity, or production readiness until executable fixtures pass.
+Do not claim product-runtime, Worker, browser, artifact, Pages, or rendered-frame conformance until executable fixtures pass.
