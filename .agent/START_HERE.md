@@ -1,66 +1,64 @@
-# START HERE: PrehistoricRush Runtime Module Identity
+# START HERE: PrehistoricRush Semantic Vegetation Generation
 
-**Last aligned:** `2026-07-16T20-01-41-04-00`  
+**Last aligned:** `2026-07-17T02-02-06-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed repository head:** `94fec638a76d6c39034fe993396edf12e95638fb`  
-**Status:** `runtime-module-generation-identity-authority-audited`
+**Reviewed runtime head:** `55118e0c874697b767db69575687dfa1390958f9`  
+**Previous documentation head:** `946290c5af573ee14026cbde80f37c7591d8ed52`  
+**Status:** `semantic-vegetation-fidelity-generation-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected through the oldest synchronized eligible-repository rule. The complete Publish comparison found 11 repositories, ten eligible after excluding `LuminaryLabs-Publish/TheCavalryOfRome`, ten central ledgers, ten root `.agent` states, and no runtime-ahead repository.
+PrehistoricRush was selected as the newest runtime-ahead eligible repository. Ten runtime/test commits added Nexus Engine Object Vegetation composition, domain-selected species and variation, Worker adoption, semantic tree/foliage descriptors, and vegetation-aware tree asset preparation.
 
-The focused gap is runtime module identity. `runtime-versions.js` dynamically loads Nexus Engine commit `80146b8…`, while `game.html` maps the bare `nexusengine` specifier to `06375f2…` and `charactercreator.html` maps it to `cf2fe3d…`. Official NexusEngine-Kits import that bare specifier, so the game and creator can compose kit descriptors and object primitives from a different Nexus Engine generation than the host engine.
+The remaining gap is generation binding. Asset preparation, the game host, and the patch Worker create independent vegetation catalogs. Semantic fidelity profiles are derived but the portable package provider still registers the older local profile. Fidelity package generations omit semantic descriptor hashes, and the Worker does not publish its catalog digest. The frame receipt records catalog and package digests separately without proving a per-species match.
 
-## Goal
+## Intent
 
-Make every route admit one exact Nexus Engine generation before any external kit, descriptor factory, engine composition, asset runtime, simulation, or rendered frame is created.
+Make one semantic vegetation generation authoritative across catalog descriptors, fidelity packages, caches, Worker patches, tree rendering, and first-frame evidence.
 
-## Plan ledger
+## Checklist
 
-- [x] Compare the full 11-repository Publish inventory.
+- [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Verify all ten eligible ledger records and current repository heads.
-- [x] Select only PrehistoricRush as the oldest synchronized repository.
-- [x] Identify the full menu, creator, game, asset, simulation, streaming, render, and deployment loops.
-- [x] Preserve the complete 81-surface kit and service census.
-- [x] Confirm three distinct Nexus Engine commit declarations across shared runtime URLs and route import maps.
-- [x] Confirm official kit modules import the bare `nexusengine` specifier.
-- [x] Define one runtime-module generation authority and 20 coordinating surfaces.
+- [x] Confirm ten eligible ledgers and root `.agent` states.
+- [x] Identify two runtime-ahead repositories.
+- [x] Work only on PrehistoricRush.
+- [x] Review the ten-commit Object Vegetation delta.
+- [x] Document the full interaction loop, domains, 90 active surfaces, and services.
 - [x] Add the timestamped tracker and focused audit family.
-- [ ] Unify route import maps and dynamic imports under one generated runtime manifest.
-- [ ] Execute source, browser, built-output, and Pages module-identity fixtures.
+- [ ] Implement one composite generation and executable fixture matrix.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-16T20-01-41-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-16T20-01-41-04-00.md
-.agent/architecture-audit/2026-07-16T20-01-41-04-00-runtime-module-generation-dsk-map.md
-.agent/render-audit/2026-07-16T20-01-41-04-00-mixed-runtime-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-16T20-01-41-04-00-mixed-runtime-composition-loop.md
-.agent/interaction-audit/2026-07-16T20-01-41-04-00-runtime-admission-command-result-map.md
-.agent/runtime-module-audit/2026-07-16T20-01-41-04-00-route-import-map-runtime-identity-contract.md
-.agent/deploy-audit/2026-07-16T20-01-41-04-00-runtime-module-source-build-pages-fixture-gate.md
-.agent/central-sync-audit/2026-07-16T20-01-41-04-00-oldest-selection-runtime-module-reconciliation.md
+.agent/trackers/2026-07-17T02-02-06-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-17T02-02-06-04-00.md
+.agent/architecture-audit/2026-07-17T02-02-06-04-00-semantic-vegetation-fidelity-generation-dsk-map.md
+.agent/render-audit/2026-07-17T02-02-06-04-00-species-package-generation-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-17T02-02-06-04-00-domain-selected-tree-fidelity-binding-loop.md
+.agent/interaction-audit/2026-07-17T02-02-06-04-00-vegetation-generation-command-result-map.md
+.agent/vegetation-system-audit/2026-07-17T02-02-06-04-00-catalog-worker-fidelity-generation-contract.md
+.agent/deploy-audit/2026-07-17T02-02-06-04-00-vegetation-generation-source-browser-pages-fixture-gate.md
+.agent/central-sync-audit/2026-07-17T02-02-06-04-00-runtime-ahead-vegetation-domain-reconciliation.md
 ```
 
 ## Required parent domain
 
-`prehistoric-rush-runtime-module-generation-identity-authority-domain`
+`prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain`
 
 ## Census
 
 ```txt
-Nexus Engine root/subdomain kits: 24
+Nexus Engine root/subdomain kits: 29
 official NexusEngine-Kits: 5
-product/page/asset/Worker kits: 24
+product/page/asset/Worker kits: 27
 external/host/capture/render adapters: 17
-proof kits: 11
-active named surfaces: 81
-planned module-identity surfaces: 20
+proof kits and fixtures: 12
+active named surfaces: 90
+planned generation surfaces: 22
 ```
 
 ## Claim boundary
 
-Documentation only. No single-runtime-generation guarantee, module-cache coherence, cross-route parity, browser proof, built-output parity, Pages parity, or production readiness is claimed.
+Documentation only. No current visual defect, semantic profile adoption, Worker catalog equality, composite generation guarantee, cache correctness, species-package convergence, artifact parity, Pages parity, or production readiness is claimed.
