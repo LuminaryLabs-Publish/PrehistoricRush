@@ -208,9 +208,29 @@ function treeInput(archetype) {
   };
 }
 
-function foliageInput(archetype) {
+export function createPrehistoricTreeFoliageInput(archetype) {
   const family = getPrehistoricFoliageCardFamily(foliageFamilyIdForArchetype(archetype));
+  if (!family) {
+    throw new Error(`Tree ${archetype.id} references an unknown primary foliage family.`);
+  }
+
   const nearPlacements = createTreeFoliageCardPlacements(archetype, "near");
+  const familyIds = new Set([
+    family.id,
+    ...nearPlacements.map((placement) => placement.familyId)
+  ]);
+  const cardFamilies = [...familyIds].map((familyId) => {
+    const cardFamily = getPrehistoricFoliageCardFamily(familyId);
+    if (!cardFamily) {
+      throw new Error(`Tree ${archetype.id} references unknown foliage family ${familyId}.`);
+    }
+    return cardFamilyInput(
+      cardFamily,
+      archetype.foliageColor,
+      archetype.accentColor,
+      { speciesId: archetype.id }
+    );
+  });
   const clusters = nearPlacements.map((placement, index) => ({
     id: `${archetype.id}:foliage-cluster:${index}`,
     familyId: placement.familyId,
@@ -232,7 +252,7 @@ function foliageInput(archetype) {
     kind: family.kind,
     structure: { mode: archetype.shape, density: archetype.shape === "forked-ghostwood" ? 0.62 : 1 },
     card: { mode: "alpha-cutout", familyId: family.id, crossedPlanes: /palm|fern|cycad/.test(archetype.shape) ? 1 : 2, doubleSided: true, alphaCutoff: family.alphaCutoff },
-    cardFamilies: [cardFamilyInput(family, archetype.foliageColor, archetype.accentColor, { speciesId: archetype.id })],
+    cardFamilies,
     clusters,
     density: archetype.shape === "forked-ghostwood" ? 0.64 : 1,
     translucency: family.translucency,
@@ -349,7 +369,7 @@ export function registerPrehistoricVegetationCatalog(NexusEngine, engine) {
   PREHISTORIC_TREE_ARCHETYPES.forEach((archetype, typeIndex) => {
     const speciesDescriptor = vegetation.registerSpecies(vegetationSpeciesInput(archetype, typeIndex));
     const treeDescriptor = tree.register(treeInput(archetype));
-    const foliageDescriptor = foliage.register(foliageInput(archetype));
+    const foliageDescriptor = foliage.register(createPrehistoricTreeFoliageInput(archetype));
     const objectDescriptor = objectBridge.registerSpeciesObject(speciesDescriptor.id, {
       id: `prehistoric-tree-object:${archetype.id}`,
       objectType: "vegetation:tree",
