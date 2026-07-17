@@ -1,71 +1,69 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T14-39-29-04-00`  
-**Authority:** `prehistoric-rush-tree-impostor-elevation-row-continuity-authority-domain`
+**Audit:** `2026-07-16T20-01-41-04-00`  
+**Authority:** `prehistoric-rush-runtime-module-generation-identity-authority-domain`
 
-## Summary
+## Goal
 
-Keep the implemented ten-species tree pipeline, exact frame addressing, adjacent-azimuth blending, shared atlas, and exact-frame receipts. Add stateful continuity between captured elevation rows and prove it through rendered sweeps.
+Replace route-specific Nexus Engine pins with one generated runtime manifest, reject mixed module generations before composition, and prove that the creator and game present frames from the same accepted runtime identity.
 
-## Intent
+## Plan ledger
 
-Prevent abrupt or alternating capture-row selection when the follow camera moves through an elevation midpoint.
+### Phase 1: Canonical manifest
 
-## What needs to happen
+- [ ] Add one checked-in manifest containing Nexus Engine, NexusEngine-Kits, ProtoKits, Three.js, and Rapier identities.
+- [ ] Generate `RUNTIME_URLS` and every document import map from that manifest.
+- [ ] Remove hand-maintained route-specific Nexus Engine commit strings.
+- [ ] Compute a stable `RuntimeModuleGeneration` and digest.
 
-### Phase 1: Frame-set admission
+### Phase 2: Admission
 
-- [ ] Sort and validate unique captured elevation rows per form.
-- [ ] Validate consistent azimuth coverage, frame IDs, UV rectangles, and generation identity.
-- [ ] Define explicit edge behavior when only one row or incomplete coverage exists.
+- [ ] Parse and normalize every requested module URL before import.
+- [ ] Require the bare `nexusengine` target to equal the canonical Nexus Engine URL.
+- [ ] Import a provenance sentinel from each official kit module.
+- [ ] Reject descriptor factories, object primitives, or kit definitions from another runtime generation.
+- [ ] Publish `RuntimeModuleAdmissionResult` before `createRealtimeGame()`.
 
-### Phase 2: Elevation continuity
+### Phase 3: Composition binding
 
-- [ ] Resolve lower and upper rows around the current view elevation.
-- [ ] Choose and version the deadband/interpolation policy.
-- [ ] Retain continuity state by tree, form, package generation, and camera generation.
-- [ ] Reject stale row transitions after patch, form, package, or camera retirement.
+- [ ] Bind asset preparation, creator preview, game engine, patch Worker, physics provider, and renderer to the accepted generation.
+- [ ] Include the generation digest in startup receipts and diagnostic snapshots.
+- [ ] Reject stale route imports after navigation, reload, or cache replacement.
+- [ ] Retire duplicate runtime generations rather than allowing mixed composition.
 
-### Phase 3: Combined frame weighting
+### Phase 4: Frame acknowledgement
 
-- [ ] Resolve circular azimuth neighbors inside each admitted row.
-- [ ] Combine elevation and azimuth weights into up to four exact frame bindings.
-- [ ] Normalize weights and enforce a predictable per-form instance budget.
-- [ ] Compose continuity weights with existing form-transition fade.
-
-### Phase 4: Results and diagnostics
-
-- [ ] Publish `TreeImpostorViewContinuityResult`.
-- [ ] Expose admitted rows, exact frame IDs, normalized weights, policy revision, and transition state.
-- [ ] Extend binding digests to prove continuity state.
-- [ ] Publish `FirstContinuousImpostorFrameAck` after the matching frame renders.
+- [ ] Publish `FirstSingleRuntimeCreatorFrameAck` after the first creator frame using the accepted generation.
+- [ ] Publish `FirstSingleRuntimeGameFrameAck` after the first game frame using the accepted generation.
+- [ ] Include engine, kit, descriptor, asset, physics, and render namespace identities in each acknowledgement.
 
 ### Phase 5: Proof
 
-- [ ] Add below/at/above midpoint source fixtures.
-- [ ] Add slow elevation sweep and midpoint camera-bob fixtures.
-- [ ] Add jump, terrain-height, camera-reset, and stale-generation fixtures.
-- [ ] Add far/horizon and LOD-crossfade composition fixtures.
+- [ ] Add a source fixture that compares all route import maps with `runtime-versions.js`.
+- [ ] Add a browser fixture that records loaded Nexus Engine URLs and module namespace identities.
+- [ ] Add stale-cache and duplicate-generation rejection fixtures.
+- [ ] Add creator-to-game navigation and hard-reload parity fixtures.
 - [ ] Run `npm test`.
-- [ ] Run browser pixel, built-output, and Pages parity fixtures.
+- [ ] Run built-output and GitHub Pages module-graph parity fixtures.
 
 ## Recommended file cut
 
 ```txt
-src/render/tree-impostor-elevation-continuity-domain.js
-src/render/tree-impostor-elevation-bracket-kit.js
-src/render/tree-impostor-bilinear-frame-weight-kit.js
-src/render/tree-impostor-continuity-state-kit.js
-src/render/tree-impostor-view-continuity-result-kit.js
+runtime/runtime-manifest.json
+scripts/generate-runtime-bindings.mjs
+src/shared/runtime-manifest.js
+src/shared/runtime-module-admission.js
+src/shared/runtime-module-provenance.js
+src/shared/runtime-module-generation-result.js
 
-tests/tree-fidelity-elevation-continuity.mjs
-tests/tree-fidelity-elevation-render-fixture.mjs
+tests/runtime-module-manifest-parity.mjs
+tests/runtime-module-browser-identity.mjs
 ```
 
 ## Compatibility constraints
 
-Do not change tree generation seeds, species selection, stable tree/collider identity, package generations, atlas content, fidelity thresholds, LOD hysteresis, dither duration, player physics, terrain, camera behavior, or scoring while introducing this presentation authority.
+Do not change gameplay seeds, creature profiles, route generation, physics, terrain LOD, patch identity, tree packages, camera behavior, scoring, or render fidelity while unifying module identity.
 
-## Do not claim
+## Claim boundary
 
-Do not claim elevation-row continuity, browser visual correctness, artifact parity, Pages parity, or production readiness until the full fixture matrix passes.
+Do not claim single-generation composition, browser cache coherence, cross-route parity, built-output parity, Pages parity, or production readiness until the complete fixture matrix passes.
