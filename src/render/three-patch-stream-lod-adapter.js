@@ -1,4 +1,8 @@
 import { createThreePatchStreamAdapter as createBasePatchStreamAdapter } from "./three-patch-stream-adapter.js";
+import { applyLushJungleAtmosphere } from "./lush-jungle-atmosphere.js";
+import { createPrehistoricFoliageAtlas } from "./prehistoric-foliage-atlas.js";
+import { createThreeGroundCoverLayer } from "./three-ground-cover-layer.js";
+import { createThreeLushFoliageLayer } from "./three-lush-foliage-layer.js";
 import { createThreeTerrainLodLayer } from "./three-terrain-lod-layer.js";
 import { createThreeTreeFidelityLayer } from "./three-tree-fidelity-layer.js";
 
@@ -27,10 +31,14 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     config,
     treeTypes = [],
     treeFidelityPackages = [],
-    treeBatchCapacity = 256
+    treeBatchCapacity = 256,
+    foliageCardCapacity = 8192,
+    groundCoverCapacity = 2400
   } = options;
   if (!terrainLodPolicy) throw new TypeError("Three patch stream LOD adapter requires terrainLodPolicy.");
   const base = createBasePatchStreamAdapter(THREE, options);
+  const atmosphere = applyLushJungleAtmosphere(THREE, base.scene, base.renderer, options.atmosphere ?? {});
+  const foliageAtlas = createPrehistoricFoliageAtlas(THREE, { tileSize: options.foliageTileSize ?? 256 });
   const expectedLegacyVertices = (Number(config.segments) + 1) ** 2;
   const terrain = createThreeTerrainLodLayer(THREE, {
     scene: base.scene,
@@ -50,8 +58,33 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
         capacity: treeBatchCapacity
       })
     : null;
+  const lushFoliage = treeFidelityPackages.length > 0
+    ? createThreeLushFoliageLayer(THREE, {
+        scene: base.scene,
+        camera: base.camera,
+        renderer: base.renderer,
+        packages: treeFidelityPackages,
+        atlas: foliageAtlas,
+        capacityPerFamily: foliageCardCapacity
+      })
+    : null;
+  const groundCover = createThreeGroundCoverLayer(THREE, {
+    scene: base.scene,
+    atlas: foliageAtlas,
+    capacityPerSpecies: groundCoverCapacity
+  });
+
   base.view.terrainLod = terrain.view;
-  base.view.treeFidelity = treeFidelity?.view ?? { enabled: false, packageCount: 0, counts: { near: 0, medium: 0, far: 0 } };
+  base.view.treeFidelity = treeFidelity?.view ?? { enabled: false, packageCount: 0, counts: { near: 0, medium: 0, far: 0, horizon: 0 } };
+  base.view.lushFoliage = lushFoliage?.view ?? { enabled: false, nearCards: 0, mediumCards: 0, treeCount: 0 };
+  base.view.groundCover = groundCover.view;
+  base.view.jungleAtmosphere = Object.freeze({
+    background: `#${atmosphere.background.getHexString()}`,
+    fogColor: `#${atmosphere.fogColor.getHexString()}`,
+    fogDensity: base.scene.fog?.density ?? null,
+    exposure: base.renderer.toneMappingExposure,
+    foliageAtlasRevision: foliageAtlas.revision
+  });
   base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
 
   const baseActivatePatch = base.activatePatch;
@@ -64,6 +97,8 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     if (!patch?.terrain) throw new TypeError("Terrain patch activation requires terrain fields.");
     const admission = terrain.activatePatch(patch, state);
     treeFidelity?.activatePatch(patch, state);
+    lushFoliage?.activatePatch(patch, state);
+    groundCover.activatePatch(patch, state);
     try {
       baseActivatePatch(entry, state);
       base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
@@ -71,6 +106,8 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     } catch (error) {
       terrain.releasePatches([patch.id]);
       treeFidelity?.releasePatches([patch.id]);
+      lushFoliage?.releasePatches([patch.id]);
+      groundCover.releasePatches([patch.id]);
       throw error;
     }
   }
@@ -78,12 +115,16 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
   function releasePatches(ids) {
     terrain.releasePatches(ids);
     treeFidelity?.releasePatches(ids);
+    lushFoliage?.releasePatches(ids);
+    groundCover.releasePatches(ids);
     return baseReleasePatches(ids);
   }
 
   function render(state, deltaTime) {
     terrain.update(state, deltaTime);
     treeFidelity?.update(state, deltaTime);
+    lushFoliage?.update(state, deltaTime);
+    groundCover.update(state, deltaTime);
     const result = baseRender(state, deltaTime);
     renderedFrame += 1;
     terrain.view.lastVisibleFrameAck = Object.freeze({
@@ -92,6 +133,13 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       activePatches: terrain.view.active,
       morphing: terrain.view.morphing
     });
+    base.view.lushVegetationFrameAck = Object.freeze({
+      frame: renderedFrame,
+      foliageAtlasRevision: foliageAtlas.revision,
+      treeCards: (lushFoliage?.view.nearCards ?? 0) + (lushFoliage?.view.mediumCards ?? 0),
+      groundCover: groundCover.view.count,
+      treeGenerationDigest: treeFidelity?.view.generationDigest ?? null
+    });
     return result;
   }
 
@@ -99,12 +147,19 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     ...base,
     terrainLod: terrain,
     treeFidelity,
+    lushFoliage,
+    groundCover,
+    foliageAtlas,
+    atmosphere,
     activatePatch,
     releasePatches,
     render,
     dispose() {
+      lushFoliage?.dispose();
+      groundCover.dispose();
       treeFidelity?.dispose();
       terrain.dispose();
+      foliageAtlas.dispose();
     }
   });
 }
