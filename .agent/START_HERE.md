@@ -1,51 +1,50 @@
-# START HERE: PrehistoricRush Jungle Presentation Adoption
+# START HERE: PrehistoricRush Jungle Runtime and Render-Host Retirement
 
 **Last aligned:** `2026-07-17T05-58-55-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed runtime head:** `9eea125435e51ab0c492a071e5a9f70301f52cd6`  
+**Reviewed runtime head:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
 **Previous documentation head:** `e7c5d238d7ba406ecf02b8d91416161f03201147`  
-**Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
+**Status:** `jungle-runtime-integrated-render-host-retirement-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected because three runtime commits were ahead of its documented head. The delta adds foliage-card/ground-cover recipes, a jungle-atmosphere helper, and semantic registration of card-backed foliage for ten trees plus six ground-cover species.
+PrehistoricRush was selected through runtime-ahead priority. During this run the jungle work progressed from source catalogs to full runtime composition: semantic tree and ground-cover registration, Worker-backed ecological patch output, foliage-card tree packages, procedural atlas generation, lush foliage and ground-cover render layers, atmosphere composition, diagnostics, and a generation-bound startup frame acknowledgement.
 
-The semantic catalog is now adopted by the product vegetation domain, but the patch generator still emits legacy trunks/crowns and grass without consuming ground-cover options or producing card/ground-cover payloads. The atmosphere helper remains outside production composition. No atlas-material, GPU-batch, lifecycle, or matching-frame result exists.
+The focused remaining gap is complete render-host retirement. The LOD adapter disposes its added layers, but the base adapter exposes no disposal service, atmosphere mutations are not restored, and base renderer/canvas/scene resources are not settled.
 
 ## Intent
 
-Carry the registered semantic catalogs through deterministic patch/Worker projection, bounded quality budgets, GPU material/batch ownership, idempotent atmosphere lifecycle, retirement, and the exact presented frame.
+Make one render-host generation own and retire every base and jungle-specific browser, scene, GPU, patch, atmosphere, and frame resource exactly once.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Review three commits and three changed files.
-- [x] Document the interaction loop, domains, 93 active surfaces, and services.
-- [x] Reconcile the late semantic catalog integration.
-- [ ] Project foliage cards and ground cover through production patch/Worker paths.
-- [ ] Adopt and retire atmosphere through one scene/renderer generation.
-- [ ] Execute source, browser, artifact, and Pages frame fixtures.
+- [x] Work only on PrehistoricRush.
+- [x] Reconcile runtime changes through head `4b2e184…`.
+- [x] Identify the complete interaction loop and active domains.
+- [x] Document all 96 active kits/adapters/fixtures and their services.
+- [x] Add the timestamped tracker and focused audit family.
+- [x] Confirm the jungle presentation is now integrated source-to-frame.
+- [ ] Add complete render-host generation retirement.
+- [ ] Execute repeated-mount, restart, WebGL recovery, artifact, and Pages fixtures.
 
 ## Read this pass first
 
 ```txt
 .agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md
-.agent/trackers/2026-07-17T05-58-55-04-00/late-runtime-integration.md
-.agent/architecture-audit/2026-07-17T05-58-55-04-00-partial-foliage-catalog-adoption-update.md
-.agent/render-audit/2026-07-17T05-58-55-04-00-semantic-foliage-without-patch-frame-update.md
-.agent/vegetation-system-audit/2026-07-17T05-58-55-04-00-foliage-card-ground-cover-atmosphere-contract.md
-.agent/deploy-audit/2026-07-17T05-58-55-04-00-jungle-presentation-source-build-pages-fixture-gate.md
-.agent/central-sync-audit/2026-07-17T05-58-55-04-00-runtime-ahead-jungle-presentation-reconciliation.md
+.agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md
+.agent/architecture-audit/2026-07-17T05-58-55-04-00-render-host-retirement-dsk-update.md
+.agent/render-audit/2026-07-17T05-58-55-04-00-jungle-render-host-retirement-gap.md
+.agent/validation.md
 ```
 
-The late-runtime addendum supersedes earlier statements that the foliage recipes had no production import.
+The final runtime reconciliation supersedes the earlier intermediate adoption findings from this run.
 
 ## Required parent domain
 
-`prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain`
+`prehistoric-rush-render-host-generation-retirement-authority-domain`
 
 ## Census
 
@@ -53,12 +52,12 @@ The late-runtime addendum supersedes earlier statements that the foliage recipes
 Nexus Engine root/subdomain kits: 29
 official NexusEngine-Kits: 5
 product/page/asset/Worker kits: 28
-external/host/capture/render adapters: 18
+external/host/capture/render adapters: 21
 proof kits and fixtures: 13
-active named surfaces: 93
-planned jungle-adoption surfaces: 20
+active named surfaces: 96
+planned render-host-retirement surfaces: 19
 ```
 
 ## Claim boundary
 
-Semantic catalog registration is present. Patch/Worker projection, visible card and ground-cover rendering, atmosphere adoption, GPU lifecycle correctness, browser integrity, artifact parity, Pages parity, and production readiness are not claimed.
+Jungle runtime integration is confirmed by source inspection. Complete host retirement, repeated-mount safety, WebGL recovery, executable browser behavior, artifact parity, Pages parity, and production readiness are not claimed.
