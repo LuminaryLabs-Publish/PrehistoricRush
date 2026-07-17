@@ -1,15 +1,15 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-17T02-50-44-04-00`  
-**Scope:** organization selection, five-commit Vegetation test delta, product module imports, deterministic patch fixtures, actual runtime construction gap, Worker parity, browser/module delivery, rendered-frame proof, and deployment parity
+**Audit timestamp:** `2026-07-17T05-58-55-04-00`  
+**Scope:** organization selection, two-commit jungle source delta, foliage-card and ground-cover catalogs, atmosphere mutation, production adoption, Worker parity, GPU lifecycle, rendered-frame proof and deployment parity
 
 ## Summary
 
-Source inspection confirms that `npm test` now imports the checked-in product Vegetation modules, checks catalog cardinality and cloneability, and validates that dense deterministic patch output carries the complete Vegetation instance contract. It also confirms that the import fixture does not execute the exported constructors and that the dense spawn fixture uses a test-owned placement API instead of the actual product Core Vegetation runtime.
+Source inspection confirms that the delta adds exactly two files and no changed consumer. It also confirms that `package.json` does not syntax-check or execute either new module. The source defines substantial presentation capabilities, but production adoption and visible-frame proof remain unexecuted.
 
 ## Intent
 
-Separate completed local source coverage from unproven product-runtime, Worker, browser, package, frame, artifact, and Pages conformance.
+Separate completed source inspection from unproven catalog registration, patch/Worker adoption, GPU ownership, atmosphere lifecycle, browser delivery and rendered-frame convergence.
 
 ## Checklist
 
@@ -17,34 +17,36 @@ Separate completed local source coverage from unproven product-runtime, Worker, 
 - [x] Confirm ten eligible central ledgers and root `.agent` states.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
 - [x] Compare prior documentation head with runtime head.
-- [x] Inspect five commits and four changed files.
-- [x] Inspect `package.json`, product import fixture, placement fixture, spawn fixture, and product Vegetation source.
+- [x] Inspect two commits and two added files.
+- [x] Inspect `package.json` test coverage.
 - [x] Add and route the timestamped audit family on `main`.
-- [ ] Execute actual runtime, Worker, browser, build, and Pages fixtures.
+- [ ] Execute source, runtime, Worker, browser, build and Pages fixtures.
 
 ## Confirmed by inspection
 
 ```txt
-reviewed runtime head: b87cdad1f1666b089935bb221f7daf9bc4f6a779
-previous documentation head: 5f5f93c5c8519dd5bf952b160875b8e28f85ed18
-runtime delta: 5 commits / 4 files / +43 / -3
+reviewed runtime head: 248586fb4774c9219fb2ce0aaeec2b46bf3b69de
+previous documentation head: e7c5d238d7ba406ecf02b8d91416161f03201147
+runtime delta: 2 commits / 2 added files / +352 / -0
 
-product module import fixture present: yes
-product module import fixture in npm test: yes
-exported function type checks: yes
-catalog cardinality checks: yes
-catalog structured-clone check: yes
-full test Vegetation instance envelope: yes
-spawn output schema assertion: yes
-dense deterministic forest coverage: yes
+foliage atlas revision and 4x2 dimensions: present
+eight foliage-card families: present
+family lookup and archetype mapping: present
+deterministic tree-card recipe functions: present
+six ground-cover archetypes: present
+Three.js atmosphere helper: present
+background/fog/exposure mutation: present
+hemisphere/sun/shadow retuning: present
+fill and canopy-bounce creation: present
 
-actual pinned Nexus Engine runtime imported by fixture: no
-createPrehistoricVegetationRuntime executed by fixture: no
-actual semantic catalog registered by fixture: no
-actual placement API used by dense spawn fixture: no
-production Worker initialized by fixture: no
-browser or Pages origin exercised: no
-rendered-frame acknowledgement: no
+changed production consumer in delta: no
+new module syntax coverage in package scripts: no
+new module execution coverage in npm test: no
+catalog registration result: no
+Worker integration result: no
+atlas/material binding result: no
+atmosphere lifecycle result: no
+matching rendered-frame acknowledgement: no
 ```
 
 ## Source inspection performed
@@ -52,31 +54,33 @@ rendered-frame acknowledgement: no
 ```txt
 LuminaryLabs-Publish organization inventory
 LuminaryLabs-Dev/LuminaryLabs PrehistoricRush ledger
-PrehistoricRush compare from 5f5f93c to b87cdad
+PrehistoricRush compare from e7c5d23 to 248586f
+commit cb02895c8e1b3085a4758e0acdb79da8067dd2e1
+commit 248586fb4774c9219fb2ce0aaeec2b46bf3b69de
+src/shared/prehistoric-foliage-card-recipes.js
+src/render/lush-jungle-atmosphere.js
 package.json
-tests/vegetation-module-imports.mjs
-tests/helpers/vegetation-placement-fixture.mjs
-tests/tree-spawn-variation.mjs
-src/shared/prehistoric-vegetation-domain.js
 prior complete tracker and kit registry
 ```
 
 ## Required fixtures
 
 ```txt
-actual product runtime construction
-actual ten-species/tree/foliage/object registration
-actual product placement API patch generation
-production Worker initialization
-main-thread/Worker semantic instance parity
-main-thread/Worker collider parity
-browser import-map and CDN module loading
-built-output module and Worker loading
-Pages-subpath module and Worker loading
-species/package/exact-frame binding
-FirstProductVegetationPatchAck
-FirstProductVegetationFrameAck
-source/artifact/Pages revision parity
+new module syntax and import coverage
+catalog schema, atlas-cell and immutability validation
+instance-specific card-placement determinism
+near/medium/far/culled budget bounds
+ground-cover ecology, terrain and route exclusion
+production Worker catalog handshake
+main-thread/Worker foliage payload parity
+atlas decode and material binding
+atmosphere apply-twice idempotency
+scene replacement and renderer disposal
+quality-tier fog and shadow budgets
+source browser first accepted patch/frame
+built artifact first accepted patch/frame
+Pages subpath first accepted patch/frame
+catalog/patch/GPU/atmosphere/frame digest convergence
 ```
 
 ## Change scope
@@ -85,18 +89,19 @@ source/artifact/Pages revision parity
 documentation changed: yes
 runtime JavaScript changed by audit: no
 tests or package scripts changed by audit: no
-gameplay, rendering, physics, or camera changed by audit: no
+gameplay, rendering, physics or camera changed by audit: no
 Worker protocol changed by audit: no
 workflow or deployment changed by audit: no
 branch created: no
 pull request created: no
 
 npm test: not run
-actual runtime fixture: unavailable
+new module syntax checks: not run
+runtime adoption fixture: unavailable
 Worker parity fixture: unavailable
-browser module fixture: unavailable
+browser frame fixture: unavailable
 built-output smoke: not run
 Pages smoke: not run
 ```
 
-No current gameplay defect, actual product-runtime conformance, Worker parity, browser/CDN integrity, artifact parity, Pages parity, or production readiness is claimed.
+No visible jungle upgrade, runtime adoption, deterministic Worker parity, GPU lifecycle correctness, browser/CDN integrity, artifact parity, Pages parity or production readiness is claimed.
