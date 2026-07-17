@@ -1,88 +1,76 @@
 # PrehistoricRush Known Gaps
 
 **Audit:** `2026-07-17T05-58-55-04-00`  
-**Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
+**Status:** `jungle-runtime-integrated-render-host-retirement-authority-audited`
 
 ## Summary
 
-Card-backed tree foliage and six ground-cover species are now registered through the product Core Vegetation composition. Generator options publish those catalogs and the atlas revision. The production patch generator still does not consume or emit foliage-card or ground-cover instances, and the atmosphere helper remains unadopted.
+The foliage-card, ground-cover, Worker, fidelity, atlas, render-layer, atmosphere, diagnostics, and startup-frame paths are now integrated. The current focused gap is complete retirement of the parent Three.js host generation.
 
 ## Intent
 
-Keep visible jungle-presentation conformance unsupported until semantic registration reaches deterministic patch/Worker payloads, atlas materials, GPU batches, atmosphere lifecycle, and the exact presented frame.
+Keep restart, remount, and WebGL-recovery safety unsupported until all base and jungle-specific resources settle through one idempotent retirement result.
 
 ## Checklist
 
-- [x] Confirm the three-commit delta and late semantic integration.
-- [x] Confirm ten tree and six ground-cover registrations.
-- [x] Confirm generator-option publication.
-- [x] Preserve the complete 93-surface census.
-- [ ] Implement and prove patch, Worker, render, atmosphere, and frame adoption.
+- [x] Confirm end-to-end jungle runtime composition.
+- [x] Confirm child foliage/ground-cover/terrain/fidelity/atlas disposal services.
+- [x] Confirm the base adapter exposes no disposal service.
+- [x] Confirm atmosphere exposes no restoration/removal service.
+- [x] Preserve the complete 96-surface census.
+- [ ] Implement and prove parent render-host retirement.
 
-## Completed source adoption
-
-```txt
-foliage recipe import: present
-card-backed tree foliage descriptors: present
-six ground-cover species/foliage/object bridges: present
-atlas metadata and UV rectangles: present
-ground-cover selector: present
-generator-option publication: present
-```
-
-## Patch and Worker gaps
+## Completed jungle integration
 
 ```txt
-patch generator consumes groundCoverSpecies: no
-patch generator consumes groundCoverArchetypes: no
-patch output includes foliage-card instances: no
-patch output includes ground-cover instances: no
-tree-instance identity bound into card placement: no
-near/medium/far/culled budget result: absent
-production Worker foliage payload parity: absent
-FirstJunglePatchAck: absent
+semantic card-backed tree and ground-cover registration: present
+main-thread and Worker ecological ground-cover generation: present
+foliage-card tree packages and captures: present
+procedural atlas generation: present
+lush tree-card layer: present
+ground-cover layer: present
+atmosphere composition: present
+patch ownership and child release: present
+lush frame acknowledgement and startup revision check: present
 ```
 
-## Render and lifecycle gaps
+## Parent retirement gaps
 
 ```txt
-atlas asset decode/material generation: absent
-card instance-batch ownership: absent
-patch-owned card/ground-cover release: absent
-atmosphere production consumer: absent
-atmosphere apply-once generation: absent
-duplicate fill/bounce prevention: absent
-predecessor scene-state snapshot: absent
-quality-aware shadow budget: absent
-scene replacement/disposal result: absent
-JunglePresentationProjectionResult: absent
-FirstJunglePresentationFrameAck: absent
+base adapter dispose(): absent
+render admission latch: absent
+active patch settlement before disposal: absent
+base renderer/context disposal: absent
+canvas host detachment: absent
+base terrain geometry/material disposal: absent
+legacy tree geometry/material disposal: absent
+grass/shard resource disposal: absent
+player render-resource disposal: absent
+base light/target removal: absent
+atmosphere fill/bounce removal: absent
+background/fog/exposure/shadow restoration: absent
+stale RAF/render callback rejection: absent
+RenderHostRetirementResult: absent
+FirstRetiredRenderHostAck: absent
 ```
 
-## Test and deployment gaps
+## Validation gaps
 
 ```txt
-actual runtime-construction fixture: absent
-expanded 16-species registration assertion: absent
-new module syntax checks: absent
-main-thread/Worker projection fixture: absent
-browser source-frame fixture: absent
-built-output frame fixture: absent
-Pages-subpath frame fixture: absent
+new render-module syntax/import fixture: absent
+actual product runtime fixture: absent
+main-thread/Worker lush parity fixture: absent
+construct-render-retire-reconstruct fixture: absent
+run-restart cleanup fixture: absent
+route-remount cleanup fixture: absent
+WebGL recovery fixture: absent
+source/artifact/Pages cleanup parity: absent
 ```
-
-## Source observations
-
-- Local tree-card recipes use archetype, quality, and index; global patch publication still needs patch/tree-instance identity.
-- Only the exact `medium` token reduces card counts; an outer policy must explicitly handle far and culled tiers.
-- `PREHISTORIC_GROUND_COVER_BY_ID` remains an exported mutable `Map`.
-- The atmosphere helper adds fill and ambient lights on every call and provides no restore/dispose command.
-- Existing scene and renderer state is overwritten without a predecessor receipt.
 
 ## Current risk boundary
 
-No current crash or visible regression was reproduced. Semantic catalogs can exist successfully while the shipped patch and frame remain visually unchanged or later adopt the capabilities without bounded lifecycle ownership.
+No leak, duplicate canvas, duplicate light, stale frame, or recovery incident was reproduced. The source-backed risk is that child layers retire while base renderer and atmosphere ownership remain indeterminate.
 
 ## Claim boundary
 
-Do not claim visible foliage cards, ground cover, atmosphere adoption, Worker parity, GPU lifecycle correctness, artifact parity, Pages parity, or production readiness until executable fixtures pass.
+Do not claim complete cleanup, restart/remount safety, WebGL recovery, artifact parity, Pages parity, or production readiness until parent-generation retirement fixtures pass.
