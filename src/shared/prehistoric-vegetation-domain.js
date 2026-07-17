@@ -2,12 +2,64 @@ import {
   PREHISTORIC_TREE_ARCHETYPES,
   PREHISTORIC_TREE_TYPES
 } from "./tree-archetype-catalog.js";
+import {
+  FOLIAGE_ATLAS_COLUMNS,
+  FOLIAGE_ATLAS_ROWS,
+  FOLIAGE_ATLAS_REVISION,
+  PREHISTORIC_FOLIAGE_CARD_FAMILIES,
+  PREHISTORIC_GROUND_COVER_ARCHETYPES,
+  createTreeFoliageCardPlacements,
+  foliageFamilyIdForArchetype,
+  getPrehistoricFoliageCardFamily
+} from "./prehistoric-foliage-card-recipes.js";
 
 function speciesBounds(archetype) {
   const halfWidth = Math.max(archetype.crownRadius, archetype.trunkRadius) * 1.08;
   return {
     min: [-halfWidth, 0, -halfWidth],
     max: [halfWidth, archetype.averageHeight + archetype.crownHeight * 0.45, halfWidth]
+  };
+}
+
+function groundCoverBounds(archetype) {
+  const halfWidth = archetype.averageWidth * 0.5;
+  return {
+    min: [-halfWidth, 0, -halfWidth],
+    max: [halfWidth, archetype.averageHeight, halfWidth]
+  };
+}
+
+function atlasUvRect(family) {
+  const [column, row] = family.atlasCell;
+  return [
+    column / FOLIAGE_ATLAS_COLUMNS,
+    (FOLIAGE_ATLAS_ROWS - 1 - row) / FOLIAGE_ATLAS_ROWS,
+    1 / FOLIAGE_ATLAS_COLUMNS,
+    1 / FOLIAGE_ATLAS_ROWS
+  ];
+}
+
+function cardFamilyInput(family, color, accentColor, metadata = {}) {
+  return {
+    id: family.id,
+    kind: family.kind,
+    atlas: {
+      assetId: FOLIAGE_ATLAS_REVISION,
+      frameId: family.id,
+      uvRect: atlasUvRect(family),
+      resolution: [1024, 512],
+      alphaChannel: "a",
+      metadata: { product: "prehistoric-rush", atlasRevision: FOLIAGE_ATLAS_REVISION }
+    },
+    size: family.size,
+    alphaCutoff: family.alphaCutoff,
+    doubleSided: true,
+    translucency: family.translucency,
+    roughness: family.roughness,
+    normalStrength: 0.48,
+    color: { base: color, accent: accentColor, dry: 0xb9a66a, shade: 0x476c43 },
+    wind: family.wind,
+    metadata: { ...metadata, product: "prehistoric-rush" }
   };
 }
 
@@ -32,12 +84,20 @@ function vegetationSpeciesInput(archetype, typeIndex) {
         collision: { provider: "core-physics", descriptorId: `${archetype.id}:trunk-collision` }
       },
       {
-        id: "canopy",
+        id: "branches",
         parentId: "trunk",
+        kind: "branch-structure",
+        regions: ["bark"],
+        geometry: { provider: "core-object-shape", descriptorId: `${archetype.id}:branch-shape` },
+        material: { provider: "core-graphics", descriptorId: `${archetype.id}:bark-material` }
+      },
+      {
+        id: "canopy",
+        parentId: "branches",
         kind: "canopy",
         regions: ["foliage"],
-        geometry: { provider: "core-object-shape", descriptorId: `${archetype.id}:canopy-shape` },
-        material: { provider: "core-graphics", descriptorId: `${archetype.id}:foliage-material` }
+        geometry: { provider: "core-object-vegetation", descriptorId: `${archetype.id}:foliage-placement` },
+        material: { provider: "core-graphics", descriptorId: `${archetype.id}:foliage-card-material` }
       }
     ],
     ecology: {
@@ -66,7 +126,7 @@ function vegetationSpeciesInput(archetype, typeIndex) {
       valueShift: [-0.08, 0.08]
     },
     environmentResponse: {
-      wind: { mode: "rooted-tree", trunkStiffness: 0.92, canopyAmplitude: 0.08 },
+      wind: { mode: "rooted-tree", trunkStiffness: 0.92, canopyAmplitude: 0.12 },
       moisture: "ecology-driven"
     },
     references: {
@@ -92,13 +152,21 @@ function vegetationSpeciesInput(archetype, typeIndex) {
       accentColor: archetype.accentColor,
       barkTexture: archetype.barkTexture,
       foliageTexture: archetype.foliageTexture,
+      foliageCardFamily: archetype.foliageCardFamily,
+      heroCardCount: archetype.heroCardCount,
+      mediumCardCount: archetype.mediumCardCount,
+      canopyLayers: archetype.canopyLayers,
+      hangingFoliage: archetype.hangingFoliage,
       textureScale: archetype.textureScale,
-      textureStrength: archetype.textureStrength
+      textureStrength: archetype.textureStrength,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
 }
 
 function treeInput(archetype) {
+  const foliageId = `${archetype.id}:foliage`;
+  const nearCards = createTreeFoliageCardPlacements(archetype, "near");
   return {
     id: `${archetype.id}:tree-structure`,
     speciesId: archetype.id,
@@ -106,31 +174,162 @@ function treeInput(archetype) {
     averageHeight: archetype.averageHeight,
     averageWidth: archetype.crownRadius * 2,
     roots: { kind: "root-flare", depth: archetype.averageHeight * 0.06, spread: archetype.trunkRadius * 2.4 },
-    trunk: { radius: archetype.trunkRadius, taper: 0.68, radialSegments: 10, heightSegments: 3 },
-    branches: { kind: archetype.shape, levels: archetype.shape === "horsetail" ? 0 : 3, forkProbability: archetype.shape.includes("fork") ? 0.8 : 0.34 },
-    canopy: { kind: archetype.foliageTexture, height: archetype.crownHeight, radius: archetype.crownRadius, anchors: [] },
+    trunk: { radius: archetype.trunkRadius, taper: 0.68, radialSegments: 10, heightSegments: 4 },
+    branches: {
+      kind: archetype.shape,
+      levels: /horsetail|cycad|palm/.test(archetype.shape) ? 0 : 3,
+      primaryCount: /umbrella|ginkgo|ghostwood/.test(archetype.shape) ? 3 : 5,
+      secondaryCount: /spire|araucaria/.test(archetype.shape) ? 14 : 8,
+      forkProbability: archetype.shape.includes("fork") ? 0.8 : 0.34
+    },
+    canopy: {
+      id: `${archetype.id}:canopy-composition`,
+      kind: /palm|cycad|fern/.test(archetype.shape) ? "radial-frond-burst" : /spire|araucaria/.test(archetype.shape) ? "tiered-canopy" : "layered-card-canopy",
+      height: archetype.crownHeight,
+      radius: archetype.crownRadius,
+      foliageIds: [foliageId],
+      clusterCount: nearCards.length,
+      layerCount: archetype.canopyLayers,
+      edgeIrregularity: /palm|cycad|fern/.test(archetype.shape) ? 0.22 : 0.48,
+      hangingFoliage: archetype.hangingFoliage,
+      deadwood: archetype.shape === "forked-ghostwood" ? 0.42 : 0.04,
+      anchors: []
+    },
+    foliage: {
+      ids: [foliageId],
+      compositionId: `${archetype.id}:canopy-composition`,
+      nearDensity: 1,
+      mediumDensity: Math.max(0.28, archetype.mediumCardCount / Math.max(1, archetype.heroCardCount)),
+      windScale: /palm|fern|cycad/.test(archetype.shape) ? 1.25 : 1
+    },
     collision: { kind: "trunk", radius: archetype.trunkRadius, height: archetype.averageHeight },
-    fidelity: { quality: "high", far: "multi-angle-impostor", horizon: "single-impostor" },
-    metadata: { product: "prehistoric-rush", archetypeId: archetype.id }
+    fidelity: { quality: "high", near: "wood-plus-alpha-cards", medium: "wood-plus-reduced-cards", far: "multi-angle-impostor", horizon: "single-impostor" },
+    metadata: { product: "prehistoric-rush", archetypeId: archetype.id, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
   };
 }
 
 function foliageInput(archetype) {
-  const frond = /fern|cycad|frond/.test(`${archetype.shape}:${archetype.foliageTexture}`);
-  const needle = /spire|araucaria|needle/.test(`${archetype.shape}:${archetype.foliageTexture}`);
+  const family = getPrehistoricFoliageCardFamily(foliageFamilyIdForArchetype(archetype));
+  const nearPlacements = createTreeFoliageCardPlacements(archetype, "near");
+  const clusters = nearPlacements.map((placement, index) => ({
+    id: `${archetype.id}:foliage-cluster:${index}`,
+    familyId: placement.familyId,
+    mode: placement.mode,
+    count: 1,
+    position: placement.position,
+    rotation: placement.rotation,
+    scale: [0.92, 1.08],
+    extent: [placement.scale[0], placement.scale[1], Math.max(0.1, placement.scale[0] * 0.08)],
+    density: 1,
+    randomness: 0.22,
+    windScale: 1,
+    fidelity: { nearMultiplier: 1, mediumMultiplier: archetype.mediumCardCount / Math.max(1, archetype.heroCardCount), farMultiplier: 0 },
+    metadata: { product: "prehistoric-rush", placementId: placement.id }
+  }));
   return {
     id: `${archetype.id}:foliage`,
     speciesId: archetype.id,
-    kind: frond ? "frond-cluster" : needle ? "needle-cluster" : "leaf-cluster",
+    kind: family.kind,
     structure: { mode: archetype.shape, density: archetype.shape === "forked-ghostwood" ? 0.62 : 1 },
-    card: { mode: "alpha-cutout", crossedPlanes: frond ? 3 : 2, doubleSided: true, alphaCutoff: 0.38 },
+    card: { mode: "alpha-cutout", familyId: family.id, crossedPlanes: /palm|fern|cycad/.test(archetype.shape) ? 1 : 2, doubleSided: true, alphaCutoff: family.alphaCutoff },
+    cardFamilies: [cardFamilyInput(family, archetype.foliageColor, archetype.accentColor, { speciesId: archetype.id })],
+    clusters,
     density: archetype.shape === "forked-ghostwood" ? 0.64 : 1,
-    translucency: frond ? 0.16 : 0.1,
-    wind: { mode: "branch-relative", amplitude: frond ? 0.13 : 0.08, frequency: frond ? 0.85 : 0.66, stiffness: needle ? 0.84 : 0.7 },
-    seasonalColors: { default: archetype.foliageColor, accent: archetype.accentColor },
+    translucency: family.translucency,
+    wind: family.wind,
+    seasonalColors: { default: archetype.foliageColor, accent: archetype.accentColor, dry: 0xb2a45d },
     materialRegions: ["foliage"],
-    texture: { pattern: archetype.foliageTexture, scale: archetype.textureScale, strength: archetype.textureStrength },
-    metadata: { product: "prehistoric-rush", archetypeId: archetype.id }
+    texture: { pattern: archetype.foliageTexture, scale: archetype.textureScale, strength: archetype.textureStrength, atlasRevision: FOLIAGE_ATLAS_REVISION },
+    fidelity: {
+      near: { mode: "alpha-cutout-cards", density: 1 },
+      medium: { mode: "alpha-cutout-cards", density: archetype.mediumCardCount / Math.max(1, archetype.heroCardCount) },
+      far: { mode: "captured-impostor" },
+      horizon: { mode: "captured-impostor" }
+    },
+    metadata: { product: "prehistoric-rush", archetypeId: archetype.id, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
+  };
+}
+
+function groundCoverSpeciesInput(archetype, groundCoverIndex) {
+  const family = getPrehistoricFoliageCardFamily(archetype.familyId);
+  return {
+    id: archetype.id,
+    family: archetype.family,
+    kind: "ground-cover",
+    rooted: true,
+    bounds: groundCoverBounds(archetype),
+    pivot: [0, 0, 0],
+    groundAnchor: [0, 0, 0],
+    growthStages: ["growing", "mature", "damaged", "dead"],
+    defaultLifecycleState: "mature",
+    parts: [{
+      id: "foliage",
+      kind: family.kind,
+      regions: ["foliage"],
+      geometry: { provider: "core-object-vegetation", descriptorId: `${archetype.id}:placement` },
+      material: { provider: "core-graphics", descriptorId: `${archetype.id}:foliage-card-material` }
+    }],
+    ecology: {
+      ...archetype.ecology,
+      moistureTolerance: 0.48,
+      elevationTolerance: 0.52,
+      slopeTolerance: archetype.id.includes("vine") ? 0.82 : 0.55,
+      temperature: 0.62,
+      temperatureTolerance: 0.7,
+      distributionWeight: archetype.distributionWeight
+    },
+    variation: archetype.variation,
+    environmentResponse: { wind: { mode: "rooted-ground-cover", amplitude: family.wind.amplitude }, moisture: "ecology-driven" },
+    references: {
+      material: { provider: "core-graphics", descriptorId: `${archetype.id}:foliage-card-material` },
+      fidelity: { provider: "core-object-fidelity", descriptorId: `${archetype.id}:ground-cover-fidelity` }
+    },
+    metadata: {
+      product: "prehistoric-rush",
+      groundCoverIndex,
+      label: archetype.label,
+      familyId: archetype.familyId,
+      averageHeight: archetype.averageHeight,
+      averageWidth: archetype.averageWidth,
+      crossedPlanes: archetype.crossedPlanes,
+      color: archetype.color,
+      accentColor: archetype.accentColor,
+      wind: family.wind,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+    }
+  };
+}
+
+function groundCoverFoliageInput(archetype) {
+  const family = getPrehistoricFoliageCardFamily(archetype.familyId);
+  return {
+    id: `${archetype.id}:foliage`,
+    speciesId: archetype.id,
+    kind: family.kind,
+    structure: { mode: "understory-clump", density: 1 },
+    card: { mode: "alpha-cutout", familyId: family.id, crossedPlanes: archetype.crossedPlanes, doubleSided: true, alphaCutoff: family.alphaCutoff },
+    cardFamilies: [cardFamilyInput(family, archetype.color, archetype.accentColor, { speciesId: archetype.id, groundCover: true })],
+    clusters: [{
+      id: `${archetype.id}:cluster`,
+      familyId: family.id,
+      mode: "understory-clump",
+      count: archetype.crossedPlanes,
+      position: [0, 0, 0],
+      extent: [archetype.averageWidth, archetype.averageHeight, archetype.averageWidth],
+      scale: [0.8, 1.2],
+      density: 1,
+      randomness: 0.46,
+      windScale: 1,
+      fidelity: { nearMultiplier: 1, mediumMultiplier: 0.55, farMultiplier: 0 }
+    }],
+    density: 1,
+    translucency: family.translucency,
+    wind: family.wind,
+    seasonalColors: { default: archetype.color, accent: archetype.accentColor },
+    materialRegions: ["foliage"],
+    texture: { pattern: family.id, atlasRevision: FOLIAGE_ATLAS_REVISION },
+    fidelity: { near: { mode: "crossed-cards", density: 1 }, medium: { mode: "crossed-cards", density: 0.55 }, far: { mode: "absent" }, horizon: { mode: "absent" } },
+    metadata: { product: "prehistoric-rush", groundCover: true, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
   };
 }
 
@@ -153,11 +352,12 @@ export function registerPrehistoricVegetationCatalog(NexusEngine, engine) {
     const foliageDescriptor = foliage.register(foliageInput(archetype));
     const objectDescriptor = objectBridge.registerSpeciesObject(speciesDescriptor.id, {
       id: `prehistoric-tree-object:${archetype.id}`,
-      objectType: "tree-archetype",
+      objectType: "vegetation:tree",
       metadata: {
         treeStructureId: treeDescriptor.id,
         foliageDescriptorId: foliageDescriptor.id,
-        typeIndex
+        typeIndex,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
       }
     });
     species.push(speciesDescriptor);
@@ -166,12 +366,39 @@ export function registerPrehistoricVegetationCatalog(NexusEngine, engine) {
     objects.push(objectDescriptor);
   });
 
+  const groundCoverSpecies = [];
+  const groundCoverFoliageDescriptors = [];
+  const groundCoverObjects = [];
+  PREHISTORIC_GROUND_COVER_ARCHETYPES.forEach((archetype, groundCoverIndex) => {
+    const speciesDescriptor = vegetation.registerSpecies(groundCoverSpeciesInput(archetype, groundCoverIndex));
+    const foliageDescriptor = foliage.register(groundCoverFoliageInput(archetype));
+    const objectDescriptor = objectBridge.registerSpeciesObject(speciesDescriptor.id, {
+      id: `prehistoric-ground-cover-object:${archetype.id}`,
+      objectType: "vegetation:ground-cover",
+      collision: { provider: "none", descriptorId: `${archetype.id}:no-collision` },
+      metadata: {
+        foliageDescriptorId: foliageDescriptor.id,
+        groundCoverIndex,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+      }
+    });
+    groundCoverSpecies.push(speciesDescriptor);
+    groundCoverFoliageDescriptors.push(foliageDescriptor);
+    groundCoverObjects.push(objectDescriptor);
+  });
+
   return Object.freeze({
     species: Object.freeze(species),
     treeStructures: Object.freeze(treeStructures),
     foliageDescriptors: Object.freeze(foliageDescriptors),
     objects: Object.freeze(objects),
-    treeTypes: PREHISTORIC_TREE_TYPES
+    groundCoverSpecies: Object.freeze(groundCoverSpecies),
+    groundCoverFoliageDescriptors: Object.freeze(groundCoverFoliageDescriptors),
+    groundCoverObjects: Object.freeze(groundCoverObjects),
+    cardFamilies: PREHISTORIC_FOLIAGE_CARD_FAMILIES,
+    groundCoverArchetypes: PREHISTORIC_GROUND_COVER_ARCHETYPES,
+    treeTypes: PREHISTORIC_TREE_TYPES,
+    foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
   });
 }
 
@@ -197,6 +424,9 @@ export function createPrehistoricVegetationRuntime(NexusEngine) {
       selectSpecies(environment, seed) {
         return vegetation.selectSpecies(environment, seed, (species) => species.kind === "tree");
       },
+      selectGroundCoverSpecies(environment, seed) {
+        return vegetation.selectSpecies(environment, seed, (species) => species.kind === "ground-cover");
+      },
       createInstanceDescriptor(input) {
         return vegetation.createInstanceDescriptor(input);
       }
@@ -208,6 +438,9 @@ export function createPrehistoricVegetationGeneratorOptions(runtime) {
   return Object.freeze({
     treeTypes: PREHISTORIC_TREE_TYPES,
     vegetation: runtime.placement,
-    vegetationSpecies: runtime.catalog.species
+    vegetationSpecies: runtime.catalog.species,
+    groundCoverSpecies: runtime.catalog.groundCoverSpecies,
+    groundCoverArchetypes: PREHISTORIC_GROUND_COVER_ARCHETYPES,
+    foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
   });
 }
