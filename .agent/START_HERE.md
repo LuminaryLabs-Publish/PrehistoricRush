@@ -3,44 +3,45 @@
 **Last aligned:** `2026-07-17T05-58-55-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed runtime head:** `248586fb4774c9219fb2ce0aaeec2b46bf3b69de`  
+**Reviewed runtime head:** `9eea125435e51ab0c492a071e5a9f70301f52cd6`  
 **Previous documentation head:** `e7c5d238d7ba406ecf02b8d91416161f03201147`  
 **Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected because two runtime commits were ahead of its documented head. They add deterministic foliage-card and ground-cover recipes plus a Three.js jungle-atmosphere helper.
+PrehistoricRush was selected because three runtime commits were ahead of its documented head. The delta adds foliage-card/ground-cover recipes, a jungle-atmosphere helper, and semantic registration of card-backed foliage for ten trees plus six ground-cover species.
 
-The commits add only the two modules. No game, Worker, patch, renderer, test, package or deployment consumer changed, so the new capability is not yet bound to an accepted runtime generation or matching visible frame.
+The semantic catalog is now adopted by the product vegetation domain, but the patch generator still emits legacy trunks/crowns and grass without consuming ground-cover options or producing card/ground-cover payloads. The atmosphere helper remains outside production composition. No atlas-material, GPU-batch, lifecycle, or matching-frame result exists.
 
 ## Intent
 
-Adopt the foliage catalog, ground cover and atmosphere through one revision-bound composition with deterministic patch identity, bounded quality budgets, apply-once scene mutation, resource retirement and first-frame proof.
+Carry the registered semantic catalogs through deterministic patch/Worker projection, bounded quality budgets, GPU material/batch ownership, idempotent atmosphere lifecycle, retirement, and the exact presented frame.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Review two commits and two added files.
-- [x] Document the interaction loop, domains, 93 active surfaces and services.
-- [x] Add the timestamped tracker and focused audit family.
-- [ ] Import and compose the modules in production and Worker paths.
-- [ ] Execute source, browser, artifact and Pages fixtures.
+- [x] Review three commits and three changed files.
+- [x] Document the interaction loop, domains, 93 active surfaces, and services.
+- [x] Reconcile the late semantic catalog integration.
+- [ ] Project foliage cards and ground cover through production patch/Worker paths.
+- [ ] Adopt and retire atmosphere through one scene/renderer generation.
+- [ ] Execute source, browser, artifact, and Pages frame fixtures.
 
 ## Read this pass first
 
 ```txt
 .agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-17T05-58-55-04-00.md
-.agent/architecture-audit/2026-07-17T05-58-55-04-00-jungle-foliage-atmosphere-adoption-dsk-map.md
-.agent/render-audit/2026-07-17T05-58-55-04-00-unadopted-jungle-visible-frame-gap.md
-.agent/gameplay-audit/2026-07-17T05-58-55-04-00-jungle-presentation-adoption-loop.md
-.agent/interaction-audit/2026-07-17T05-58-55-04-00-jungle-presentation-command-result-map.md
+.agent/trackers/2026-07-17T05-58-55-04-00/late-runtime-integration.md
+.agent/architecture-audit/2026-07-17T05-58-55-04-00-partial-foliage-catalog-adoption-update.md
+.agent/render-audit/2026-07-17T05-58-55-04-00-semantic-foliage-without-patch-frame-update.md
 .agent/vegetation-system-audit/2026-07-17T05-58-55-04-00-foliage-card-ground-cover-atmosphere-contract.md
 .agent/deploy-audit/2026-07-17T05-58-55-04-00-jungle-presentation-source-build-pages-fixture-gate.md
 .agent/central-sync-audit/2026-07-17T05-58-55-04-00-runtime-ahead-jungle-presentation-reconciliation.md
 ```
+
+The late-runtime addendum supersedes earlier statements that the foliage recipes had no production import.
 
 ## Required parent domain
 
@@ -60,4 +61,4 @@ planned jungle-adoption surfaces: 20
 
 ## Claim boundary
 
-Documentation only. No visible jungle upgrade, production adoption, Worker parity, GPU lifecycle correctness, browser integrity, artifact parity, Pages parity or production readiness is claimed.
+Semantic catalog registration is present. Patch/Worker projection, visible card and ground-cover rendering, atmosphere adoption, GPU lifecycle correctness, browser integrity, artifact parity, Pages parity, and production readiness are not claimed.
