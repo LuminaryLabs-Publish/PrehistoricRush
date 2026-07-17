@@ -16,19 +16,30 @@ function hash(x, z, seed = 1) {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
 }
 
-function fieldNoise(x, z, seed, scale) {
-  const first = Math.sin((x + seed * 11.7) * scale + Math.cos(z * scale * 0.63));
-  const second = Math.cos((z - seed * 7.3) * scale * 1.37 - Math.sin(x * scale * 0.52));
-  return clamp(0.5 + first * 0.27 + second * 0.23, 0, 1);
+function matrixFromYRotationScaleTranslation(rotation, scaleX, scaleY, scaleZ, x, y, z) {
+  return matrixFromEulerScaleTranslation(0, rotation, 0, scaleX, scaleY, scaleZ, x, y, z);
 }
 
-function matrixFromYRotationScaleTranslation(rotation, scaleX, scaleY, scaleZ, x, y, z) {
-  const cosine = Math.cos(rotation);
-  const sine = Math.sin(rotation);
+function matrixFromEulerScaleTranslation(rotationX, rotationY, rotationZ, scaleX, scaleY, scaleZ, x, y, z) {
+  const a = Math.cos(rotationX);
+  const b = Math.sin(rotationX);
+  const c = Math.cos(rotationY);
+  const d = Math.sin(rotationY);
+  const e = Math.cos(rotationZ);
+  const f = Math.sin(rotationZ);
+  const m11 = c * e;
+  const m12 = -c * f;
+  const m13 = d;
+  const m21 = b * d * e + a * f;
+  const m22 = -b * d * f + a * e;
+  const m23 = -b * c;
+  const m31 = -a * d * e + b * f;
+  const m32 = a * d * f + b * e;
+  const m33 = a * c;
   return [
-    cosine * scaleX, 0, -sine * scaleX, 0,
-    0, scaleY, 0, 0,
-    sine * scaleZ, 0, cosine * scaleZ, 0,
+    m11 * scaleX, m21 * scaleX, m31 * scaleX, 0,
+    m12 * scaleY, m22 * scaleY, m32 * scaleY, 0,
+    m13 * scaleZ, m23 * scaleZ, m33 * scaleZ, 0,
     x, y, z, 1
   ];
 }
@@ -61,13 +72,7 @@ function createRouteSampler(samples) {
       }
     }
     const point = samples[bestIndex];
-    return {
-      index: bestIndex,
-      x: point.x,
-      z: point.z,
-      width: point.width,
-      distance: Math.sqrt(bestDistanceSq)
-    };
+    return { index: bestIndex, x: point.x, z: point.z, width: point.width, distance: Math.sqrt(bestDistanceSq) };
   }
 
   function classify(distance, width) {
@@ -90,74 +95,20 @@ function surfaceColor(worldX, worldZ, distance, width) {
   const vergeWeight = 1 - smoothstep(width + 2.1, width + 6.2, distance);
   const broad = Math.sin(worldX * 0.021 + worldZ * 0.012) * 0.5 + Math.cos(worldZ * 0.017 - worldX * 0.009) * 0.5;
   const stylizedVariation = broad * 0.035;
-
   let color = mixColor(forest, verge, vergeWeight);
   color = mixColor(color, edge, edgeWeight);
   color = mixColor(color, path, pathWeight);
   return color.map((channel, index) => clamp(channel + stylizedVariation * (index === 1 ? 0.72 : 1), 0, 1));
 }
 
-function treeMetadata(type, typeIndex) {
-  return type?.[6] ?? { id: `tree-type-${typeIndex}`, typeIndex, distributionWeight: 1, ecology: {} };
-}
-
-function chooseTreeType(treeTypes, x, z, terrainY, chunkX, chunkZ, index, seed) {
-  if (!treeTypes.length) return 0;
-  const moisture = fieldNoise(x, z, seed + 113, 0.017);
-  const elevation = clamp((terrainY + 10) / 28, 0, 1);
-  const scores = treeTypes.map((type, typeIndex) => {
-    const metadata = treeMetadata(type, typeIndex);
-    const ecology = metadata.ecology ?? {};
-    const moisturePreference = Number(ecology.moisture ?? 0.5);
-    const elevationPreference = Number(ecology.elevation ?? 0.5);
-    const clusterScale = Number(ecology.clusterScale ?? 0.018);
-    const clusterStrength = clamp(Number(ecology.clusterStrength ?? 0.7), 0, 1);
-    const moistureFit = 0.22 + (1 - Math.abs(moisture - moisturePreference)) * 0.78;
-    const elevationFit = 0.3 + (1 - Math.abs(elevation - elevationPreference)) * 0.7;
-    const cluster = fieldNoise(x + typeIndex * 137, z - typeIndex * 89, seed + typeIndex * 41, clusterScale);
-    const clusterFit = 1 - clusterStrength * 0.58 + cluster * clusterStrength * 1.15;
-    return Math.max(0.0001, Number(metadata.distributionWeight ?? 1) * moistureFit * elevationFit * clusterFit);
-  });
-  const total = scores.reduce((sum, value) => sum + value, 0);
-  let cursor = hash(chunkX * 101 + index, chunkZ * 79 - index, seed + 509) * total;
-  for (let typeIndex = 0; typeIndex < scores.length; typeIndex += 1) {
-    cursor -= scores[typeIndex];
-    if (cursor <= 0) return typeIndex;
-  }
-  return scores.length - 1;
-}
-
-function treeVariation(chunkX, chunkZ, index, typeIndex, x, z, seed) {
-  const yawRadians = hash(chunkX * 37 + index, chunkZ * 53 - typeIndex, seed + 601) * Math.PI * 2;
-  const leanXDegrees = hash(index * 71 + typeIndex, chunkX * 17, seed + 607) * 10 - 5;
-  const leanZDegrees = hash(index * 43 - typeIndex, chunkZ * 29, seed + 613) * 10 - 5;
-  const uniformScale = 0.84 + hash(chunkX * 19 + index, chunkZ * 23 + typeIndex, seed + 617) * 0.34;
-  const heightScale = 0.92 + hash(index * 31, chunkX - chunkZ, seed + 619) * 0.2;
-  const crownScale = 0.9 + hash(index * 47, chunkZ + typeIndex, seed + 631) * 0.2;
-  const groundSink = 0.1 + hash(Math.floor(x * 10), Math.floor(z * 10), seed + 641) * 0.4;
-  const hueShift = hash(index * 59, typeIndex * 67, seed + 643) * 0.1 - 0.05;
-  const roughnessAdd = hash(index * 73, chunkX + chunkZ, seed + 647) * 0.12 - 0.06;
-  const valueShift = hash(index * 83, typeIndex * 89, seed + 653) * 0.16 - 0.08;
-  const tint = [
-    clamp(1 + valueShift + hueShift * 0.7, 0.78, 1.18),
-    clamp(1 + valueShift * 0.75, 0.78, 1.18),
-    clamp(1 + valueShift - hueShift * 0.7, 0.78, 1.18)
-  ];
+function vegetationEnvironment(x, z, y, nearest, normalY) {
   return {
-    yawRadians,
-    yawDegrees: yawRadians * 180 / Math.PI,
-    leanXRadians: leanXDegrees * Math.PI / 180,
-    leanZRadians: leanZDegrees * Math.PI / 180,
-    leanXDegrees,
-    leanZDegrees,
-    uniformScale,
-    heightScale,
-    crownScale,
-    groundSink,
-    hueShift,
-    roughnessAdd,
-    valueShift,
-    tint
+    moisture: clamp(0.5 + Math.sin(x * 0.011 + z * 0.007) * 0.27 + Math.cos(z * 0.019) * 0.18, 0, 1),
+    elevation: clamp((y + 10) / 28, 0, 1),
+    slope: clamp(1 - normalY, 0, 1),
+    temperature: clamp(0.66 - y / 90 + Math.sin(z * 0.004) * 0.08, 0, 1),
+    cluster: clamp(0.5 + Math.sin(x * 0.017 + z * 0.013) * 0.28 + Math.cos(x * 0.009 - z * 0.014) * 0.22, 0, 1),
+    biome: nearest.distance < nearest.width + 12 ? "route-forest" : "deep-forest"
   };
 }
 
@@ -171,6 +122,10 @@ export function createPrehistoricPatchGenerator(options = {}) {
     shardsPerPatch: Number(options.config?.shardsPerPatch ?? 2)
   };
   const treeTypes = options.treeTypes ?? [];
+  const vegetation = options.vegetation;
+  if (!vegetation || typeof vegetation.selectSpecies !== "function" || typeof vegetation.createInstanceDescriptor !== "function") {
+    throw new TypeError("Patch generator requires the Object Vegetation placement API.");
+  }
   const route = createRouteSampler(options.routeSamples ?? []);
   const spacing = config.chunk / config.segments;
 
@@ -183,10 +138,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
 
   function sampleHeight(x, z, hintIndex) {
     const nearest = route.nearest(x, z, hintIndex, 120);
-    return {
-      y: noise(x, z) - Math.max(0, 1 - nearest.distance / (nearest.width + 2.4)) * 0.34,
-      nearest
-    };
+    return { y: noise(x, z) - Math.max(0, 1 - nearest.distance / (nearest.width + 2.4)) * 0.34, nearest };
   }
 
   return function generatePatch(request = {}) {
@@ -252,10 +204,27 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const z = chunkZ * config.chunk + (hash(chunkX * 19, chunkZ * 23 + index, 13) - 0.5) * config.chunk;
       const sample = sampleHeight(x, z, centerNearest.index);
       if (sample.nearest.distance < sample.nearest.width + 5.5 || treeTypes.length === 0) continue;
-      const typeIndex = chooseTreeType(treeTypes, x, z, sample.y, chunkX, chunkZ, index, config.seed);
+      const normalY = clamp(0.72 + Math.cos(x * 0.031 - z * 0.027) * 0.24, 0, 1);
+      const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalY);
+      const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
+      const instanceSeed = `${config.seed}:${patchId}:${index}`;
+      const species = vegetation.selectSpecies(environment, instanceSeed);
+      if (!species) continue;
+      const typeIndex = Number(species.metadata?.typeIndex);
       const type = treeTypes[typeIndex];
-      const metadata = treeMetadata(type, typeIndex);
-      const variation = treeVariation(chunkX, chunkZ, index, typeIndex, x, z, config.seed);
+      if (!type || !trees[typeIndex]) throw new RangeError(`Vegetation species ${species.id} has invalid typeIndex ${typeIndex}.`);
+      const instance = vegetation.createInstanceDescriptor({
+        id: treeId,
+        speciesId: species.id,
+        seed: instanceSeed,
+        position: [x, sample.y, z],
+        environment,
+        metadata: { patchId, typeIndex }
+      });
+      const variation = instance.variation;
+      const yawRadians = Number(variation.yawDegrees ?? 0) * Math.PI / 180;
+      const leanXRadians = Number(variation.leanXDegrees ?? 0) * Math.PI / 180;
+      const leanZRadians = Number(variation.leanZDegrees ?? 0) * Math.PI / 180;
       const baseHeight = type[0] + hash(chunkX, chunkZ, index + 47) * (type[1] - type[0]);
       const height = baseHeight * variation.uniformScale * variation.heightScale;
       const radius = type[2] * variation.uniformScale * (0.9 + hash(index, chunkX, 61) * 0.2);
@@ -263,33 +232,28 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const crownRadius = type[4] * variation.uniformScale * variation.crownScale;
       const visualGroundY = sample.y - variation.groundSink;
       const crownY = visualGroundY + height * 0.78;
-      const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
       const leanMargin = Math.sin(5 * Math.PI / 180) * height;
-      variation.groundPosition = [x, visualGroundY, z];
-      variation.speciesId = metadata.id;
-      variation.averageHeight = metadata.averageHeight;
-      variation.barkColor = metadata.barkColor;
-      variation.foliageColor = metadata.foliageColor;
-      variation.barkTexture = metadata.barkTexture;
-      variation.foliageTexture = metadata.foliageTexture;
-
-      const sharedMetadata = { treeId, cellId: patchId, typeIndex, speciesId: metadata.id, variation };
+      const enrichedVariation = {
+        ...variation,
+        groundPosition: [x, visualGroundY, z],
+        speciesId: species.id,
+        averageHeight: species.metadata?.averageHeight,
+        barkColor: species.metadata?.barkColor,
+        foliageColor: species.metadata?.foliageColor,
+        barkTexture: species.metadata?.barkTexture,
+        foliageTexture: species.metadata?.foliageTexture
+      };
+      const sharedMetadata = { treeId, cellId: patchId, typeIndex, speciesId: species.id, vegetationInstance: instance, variation: enrichedVariation };
       trees[typeIndex].trunks.push({
         id: `${treeId}:trunk`,
-        matrix: matrixFromYRotationScaleTranslation(variation.yawRadians, radius, height, radius, x, visualGroundY + height * 0.5, z),
-        bounds: {
-          min: [x - radius - leanMargin, visualGroundY, z - radius - leanMargin],
-          max: [x + radius + leanMargin, visualGroundY + height, z + radius + leanMargin]
-        },
+        matrix: matrixFromEulerScaleTranslation(leanXRadians, yawRadians, leanZRadians, radius, height, radius, x, visualGroundY + height * 0.5, z),
+        bounds: { min: [x - radius - leanMargin, visualGroundY, z - radius - leanMargin], max: [x + radius + leanMargin, visualGroundY + height, z + radius + leanMargin] },
         metadata: sharedMetadata
       });
       trees[typeIndex].crowns.push({
         id: `${treeId}:crown`,
-        matrix: matrixFromYRotationScaleTranslation(variation.yawRadians, crownRadius, crownHeight, crownRadius, x, crownY, z),
-        bounds: {
-          min: [x - crownRadius - leanMargin * 0.35, crownY - crownHeight * 0.5, z - crownRadius - leanMargin * 0.35],
-          max: [x + crownRadius + leanMargin * 0.35, crownY + crownHeight * 0.5, z + crownRadius + leanMargin * 0.35]
-        },
+        matrix: matrixFromEulerScaleTranslation(leanXRadians * 0.35, yawRadians, leanZRadians * 0.35, crownRadius, crownHeight, crownRadius, x, crownY, z),
+        bounds: { min: [x - crownRadius - leanMargin * 0.35, crownY - crownHeight * 0.5, z - crownRadius - leanMargin * 0.35], max: [x + crownRadius + leanMargin * 0.35, crownY + crownHeight * 0.5, z + crownRadius + leanMargin * 0.35] },
         metadata: sharedMetadata
       });
       colliders.push({
@@ -297,10 +261,10 @@ export function createPrehistoricPatchGenerator(options = {}) {
         x,
         y: sample.y,
         z,
-        radius: radius * 1.3,
+        radius: type[2] * 1.3,
         shape: "ball",
         tags: ["hazard", "tree"],
-        metadata: { speciesId: metadata.id, visualGroundSink: variation.groundSink }
+        metadata: { speciesId: species.id, vegetationInstanceId: instance.id, visualGroundSink: variation.groundSink }
       });
     }
 
@@ -310,22 +274,11 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const sample = sampleHeight(x, z, centerNearest.index);
       const region = route.classify(sample.nearest.distance, sample.nearest.width);
       if (region === "path") continue;
-      const layerIndex = region === "edge"
-        ? 0
-        : region === "verge"
-          ? (hash(index, chunkX, 89) > 0.48 ? 1 : 2)
-          : (hash(index, chunkZ, 97) > 0.28 ? 1 : 0);
-      const layer = [
-        { h: 0.26, w: 0.46 },
-        { h: 0.78, w: 0.72 },
-        { h: 1.28, w: 0.9 }
-      ][layerIndex];
+      const layerIndex = region === "edge" ? 0 : region === "verge" ? (hash(index, chunkX, 89) > 0.48 ? 1 : 2) : (hash(index, chunkZ, 97) > 0.28 ? 1 : 0);
+      const layer = [{ h: 0.26, w: 0.46 }, { h: 0.78, w: 0.72 }, { h: 1.28, w: 0.9 }][layerIndex];
       const routeScale = region === "edge" ? 0.22 : region === "verge" ? 0.72 : 1;
       const rotation = hash(index, chunkZ, 109) * Math.PI;
-      grass[layerIndex].push({
-        id: `grass-${chunkX}-${chunkZ}-${index}`,
-        matrix: matrixFromYRotationScaleTranslation(rotation, layer.w, layer.h * routeScale, layer.w, x, sample.y, z)
-      });
+      grass[layerIndex].push({ id: `grass-${chunkX}-${chunkZ}-${index}`, matrix: matrixFromYRotationScaleTranslation(rotation, layer.w, layer.h * routeScale, layer.w, x, sample.y, z) });
     }
 
     for (let index = 0; index < config.shardsPerPatch; index += 1) {
@@ -345,14 +298,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
       x: chunkX,
       z: chunkZ,
       seed: `${request.worldSeed}:${patchId}`,
-      terrain: {
-        heights,
-        colors,
-        normals,
-        segments: config.segments,
-        mapping: "world-space",
-        materialRevision: "stylized-high-fidelity-v2"
-      },
+      terrain: { heights, colors, normals, segments: config.segments, mapping: "world-space", materialRevision: "stylized-high-fidelity-v2" },
       trees,
       grass,
       pickups,
@@ -363,9 +309,5 @@ export function createPrehistoricPatchGenerator(options = {}) {
 }
 
 export function collectPatchTransferables(patch) {
-  return [
-    patch?.terrain?.heights?.buffer,
-    patch?.terrain?.colors?.buffer,
-    patch?.terrain?.normals?.buffer
-  ].filter(Boolean);
+  return [patch?.terrain?.heights?.buffer, patch?.terrain?.colors?.buffer, patch?.terrain?.normals?.buffer].filter(Boolean);
 }
