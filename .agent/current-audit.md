@@ -1,96 +1,96 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-16T20-01-41-04-00`  
+**Timestamp:** `2026-07-17T02-02-06-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Status:** `runtime-module-generation-identity-authority-audited`
+**Reviewed runtime head:** `55118e0c874697b767db69575687dfa1390958f9`  
+**Status:** `semantic-vegetation-fidelity-generation-authority-audited`
 
 ## Summary
 
-PrehistoricRush currently declares three Nexus Engine generations:
+PrehistoricRush now composes the Nexus Engine Object Vegetation domain in tree asset preparation, the game host, and the patch Worker. Patch generation delegates ecological species selection and deterministic variation to the domain.
 
-```txt
-shared dynamic runtime: 80146b8947e0877e26b851563bd17f5cdfcbf38a
-game import map:        06375f213b9fcd96257c0cf6980d65ec7ca2f3d3
-creator import map:     cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1
-```
+The semantic catalog is not yet one authoritative generation. The three runtime contexts register independent catalogs. The asset wrapper derives semantic fidelity profiles after the base asset runtime is created, but the provider still registers and builds from the older local fidelity profile. Package generation omits semantic descriptor hashes, Worker readiness omits its catalog digest, and the renderer proves only the package generation.
 
-The game and character creator dynamically import the shared `80146b8…` runtime. Their official NexusEngine-Kits modules import the bare `nexusengine` specifier, which resolves through each route's older import map. The resulting kit descriptors and object factories can therefore originate from a different engine generation than the engine being composed.
+## Intent
 
-## Goal
+Bind species, tree, foliage, object, fidelity profile, package, cache, Worker, patch, and frame identities into one admitted `VegetationGeneration`.
 
-Admit one immutable runtime manifest and one `RuntimeModuleGeneration` per document before any engine, kit, descriptor, provider, asset runtime, simulation, or frame exists.
+## Checklist
 
-## Plan ledger
-
-- [x] Verify the full Publish inventory, eligible ledgers, root `.agent` state, and synchronized heads.
-- [x] Select only PrehistoricRush through the oldest synchronized timestamp rule.
-- [x] Inspect `game.html`, `charactercreator.html`, `runtime-versions.js`, game entry, creator entry, kit graph, and pinned official kit sources.
-- [x] Confirm the game route mixes `80146b8…` with `06375f2…`.
-- [x] Confirm the creator route mixes `80146b8…` with `cf2fe3d…`.
-- [x] Confirm official kits import `nexusengine` and some use imported descriptor/factory primitives directly.
-- [x] Preserve all 81 implemented kit, adapter, and proof surfaces.
-- [x] Define a 20-surface runtime-module identity authority.
-- [ ] Generate route import maps and runtime URLs from one checked-in manifest.
-- [ ] Reject mismatched module namespaces before engine composition.
-- [ ] Prove source, browser, build, and Pages parity.
+- [x] Inspect the full Publish inventory and central ledger state.
+- [x] Select only the newest runtime-ahead repository.
+- [x] Review ten commits and ten changed files.
+- [x] Inspect vegetation catalog registration and services.
+- [x] Inspect main-thread and Worker patch generation.
+- [x] Inspect asset preparation and portable package generation.
+- [x] Inspect patch cache identity and startup frame receipt.
+- [x] Preserve the complete 90-surface inventory.
+- [ ] Register and use semantic fidelity profiles for package builds.
+- [ ] Admit one composite generation in host and Worker.
+- [ ] Prove species/package/cache/patch/frame convergence.
 
 ## Complete interaction loop
 
 ```txt
-menu
-  -> load saved raptor profile
-  -> dynamically import shared Nexus Engine and Three.js URLs
-  -> prepare and cache tree-fidelity assets
-  -> navigate to creator or game
+menu/game preparation
+  -> create base Assets/Object/Shape/Capture/Fidelity runtime
+  -> install Core Vegetation domain
+  -> register semantic species/tree/foliage/object catalog
+  -> derive semantic fidelity profiles
+  -> build or load packages through the local profile provider
 
-character creator
-  -> document import map resolves bare nexusengine to cf2fe3d…
-  -> page dynamically imports Nexus Engine 80146b8… and official kits
-  -> official kits resolve their bare nexusengine imports through cf2fe3d…
-  -> host engine is created from 80146b8…
-  -> kit descriptors and creature object descriptors can originate from cf2fe3d…
-  -> preview simulates and renders the procedural raptor
+host
+  -> create independent vegetation runtime and catalog
+  -> compute species-only digest
+  -> bind digest and package digest into patch-cache settings
 
-game
-  -> document import map resolves bare nexusengine to 06375f2…
-  -> entry dynamically imports Nexus Engine 80146b8… and five official kits
-  -> official kits resolve their bare nexusengine imports through 06375f2…
-  -> host engine is created from 80146b8…
-  -> kit graph, physics, streaming, terrain, trees, grass, pickups, player and camera run
-  -> Three.js presents the accepted frame
+Worker
+  -> import Nexus Engine
+  -> create independent vegetation runtime and catalog
+  -> return domain path only
+  -> generate patches with domain selection and variation
+
+frame
+  -> activate patch
+  -> map species typeIndex to package
+  -> render exact package generation
+  -> record catalog digest separately
 ```
 
 ## Domains in use
 
 ```txt
-browser documents, routes, import maps, module cache, DOM, input, lifecycle, RAF and storage
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition and presentation
+browser routes, module cache, DOM, input, lifecycle, RAF, storage and IndexedDB
+Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI and presentation
 Core Assets, Startup, Object, Shape, Capture and Fidelity
-NexusEngine-Kits seed, procedural creature, instance batch, seeded patch and camera follow
-PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, pickup and outcome
-IndexedDB, Worker execution, Rapier, Three.js and GitHub Pages
-runtime manifest, module generation, namespace provenance, route parity and visible-frame acknowledgement
+Core Vegetation, Vegetation Ecology, Vegetation Tree, Vegetation Foliage and Vegetation Object Bridge
+NexusEngine-Kits seed, creature, instance batch, patch streaming and camera follow
+PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause and outcome
+semantic catalog registration, ecological placement, deterministic variation, fidelity packages and generation evidence
+Three.js, Rapier, Worker execution, tests, Pages and audit governance
 ```
 
 ## Current gap
 
 ```txt
-one checked-in runtime manifest: absent
-route import-map generation from manifest: absent
-shared URL/import-map revision equality: absent
-kit-linked Nexus Engine namespace proof: absent
-descriptor factory provenance: absent
-mixed-generation rejection: absent
-cross-route runtime parity result: absent
-FirstSingleRuntimeGameFrameAck: absent
-FirstSingleRuntimeCreatorFrameAck: absent
-source/build/Pages module graph fixture: absent
+one immutable VegetationGeneration: absent
+semantic profile registration into Object Fidelity: absent
+semantic descriptor hashes in package generation: absent
+Worker catalog digest handshake: absent
+patch result generation digest: absent
+speciesId-to-package generation table: absent
+typeIndex mismatch rejection: absent
+stale semantic cache retirement: absent
+VegetationGenerationAdmissionResult: absent
+FirstDomainBoundAssetAck: absent
+FirstDomainBoundPatchAck: absent
+FirstDomainBoundTreeFrameAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-runtime-module-generation-identity-authority-domain`
+`prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain`
 
 ## Boundary
 
-Documentation only. Runtime JavaScript, HTML import maps, dependencies, gameplay, rendering, tests, workflows, and deployment were not changed or executed by this audit.
+Documentation only. Runtime, packages, caches, Worker protocol, gameplay, rendering, tests, workflows, and deployment were not changed or executed by this audit.
