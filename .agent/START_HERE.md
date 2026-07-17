@@ -1,65 +1,53 @@
-# START HERE: PrehistoricRush Tree Impostor Elevation Continuity
+# START HERE: PrehistoricRush Runtime Module Identity
 
-**Last aligned:** `2026-07-16T14-39-29-04-00`  
+**Last aligned:** `2026-07-16T20-01-41-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Previous repo-local documentation head:** `36bd09e2f6abc0862dc94955bef55268d0ebf7b6`  
-**Reviewed pre-audit repository head:** `d427de443aea28b256c92a760a8d1c6f6a396efb`  
-**Status:** `tree-impostor-elevation-row-continuity-authority-audited`
+**Reviewed repository head:** `94fec638a76d6c39034fe993396edf12e95638fb`  
+**Status:** `runtime-module-generation-identity-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected as the older of two runtime-ahead eligible Publish repositories. Fourteen new commits complete exact impostor frame addressing and add ten deterministic prehistoric tree archetypes with ecological placement and per-tree variation.
+PrehistoricRush was selected through the oldest synchronized eligible-repository rule. The complete Publish comparison found 11 repositories, ten eligible after excluding `LuminaryLabs-Publish/TheCavalryOfRome`, ten central ledgers, ten root `.agent` states, and no runtime-ahead repository.
 
-The remaining focused gap is elevation continuity. The renderer selects the nearest captured elevation row and blends adjacent azimuth frames only inside that row. Crossing a row midpoint can replace the selected row without interpolation, deadband, retained transition state, or a continuity result.
+The focused gap is runtime module identity. `runtime-versions.js` dynamically loads Nexus Engine commit `80146b8…`, while `game.html` maps the bare `nexusengine` specifier to `06375f2…` and `charactercreator.html` maps it to `cf2fe3d…`. Official NexusEngine-Kits import that bare specifier, so the game and creator can compose kit descriptors and object primitives from a different Nexus Engine generation than the host engine.
 
-## Intent
+## Goal
 
-Preserve exact generations, exact UV addressing, adjacent-azimuth blending, four fidelity forms, tree diversity, and collision identity while making capture-row transitions continuous and provable.
+Make every route admit one exact Nexus Engine generation before any external kit, descriptor factory, engine composition, asset runtime, simulation, or rendered frame is created.
 
-## What needs to happen
+## Plan ledger
 
-```txt
-camera + tree + accepted frame set
-  -> elevation bracket
-  -> deadband or row interpolation
-  -> azimuth neighbors per admitted row
-  -> normalized exact-frame weights
-  -> UV and generation binding
-  -> TreeImpostorViewContinuityResult
-  -> rendered frame
-  -> FirstContinuousImpostorFrameAck
-```
-
-## Checklist
-
-- [x] Compare all 11 Publish repositories.
+- [x] Compare the full 11-repository Publish inventory.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Confirm ten eligible central ledgers and root `.agent` states.
-- [x] Identify PrehistoricRush and TheOpenAbove as runtime-ahead.
-- [x] Select only PrehistoricRush by the older unmatched timestamp.
-- [x] Reconcile 14 commits and 12 changed files.
-- [x] Document the interaction loop, domains, 81 active surfaces, and services.
-- [x] Add the `2026-07-16T14-39-29-04-00` audit family on `main`.
-- [ ] Implement elevation-row continuity and execute browser, artifact, and Pages fixtures.
+- [x] Verify all ten eligible ledger records and current repository heads.
+- [x] Select only PrehistoricRush as the oldest synchronized repository.
+- [x] Identify the full menu, creator, game, asset, simulation, streaming, render, and deployment loops.
+- [x] Preserve the complete 81-surface kit and service census.
+- [x] Confirm three distinct Nexus Engine commit declarations across shared runtime URLs and route import maps.
+- [x] Confirm official kit modules import the bare `nexusengine` specifier.
+- [x] Define one runtime-module generation authority and 20 coordinating surfaces.
+- [x] Add the timestamped tracker and focused audit family.
+- [ ] Unify route import maps and dynamic imports under one generated runtime manifest.
+- [ ] Execute source, browser, built-output, and Pages module-identity fixtures.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-16T14-39-29-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-16T14-39-29-04-00.md
-.agent/architecture-audit/2026-07-16T14-39-29-04-00-tree-impostor-elevation-continuity-dsk-map.md
-.agent/render-audit/2026-07-16T14-39-29-04-00-elevation-row-visible-transition-gap.md
-.agent/gameplay-audit/2026-07-16T14-39-29-04-00-camera-height-impostor-row-switch-loop.md
-.agent/interaction-audit/2026-07-16T14-39-29-04-00-impostor-view-continuity-command-result-map.md
-.agent/tree-system-audit/2026-07-16T14-39-29-04-00-elevation-row-blend-contract.md
-.agent/deploy-audit/2026-07-16T14-39-29-04-00-impostor-elevation-sweep-fixture-gate.md
-.agent/central-sync-audit/2026-07-16T14-39-29-04-00-runtime-ahead-elevation-continuity-reconciliation.md
+.agent/trackers/2026-07-16T20-01-41-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-16T20-01-41-04-00.md
+.agent/architecture-audit/2026-07-16T20-01-41-04-00-runtime-module-generation-dsk-map.md
+.agent/render-audit/2026-07-16T20-01-41-04-00-mixed-runtime-visible-frame-gap.md
+.agent/gameplay-audit/2026-07-16T20-01-41-04-00-mixed-runtime-composition-loop.md
+.agent/interaction-audit/2026-07-16T20-01-41-04-00-runtime-admission-command-result-map.md
+.agent/runtime-module-audit/2026-07-16T20-01-41-04-00-route-import-map-runtime-identity-contract.md
+.agent/deploy-audit/2026-07-16T20-01-41-04-00-runtime-module-source-build-pages-fixture-gate.md
+.agent/central-sync-audit/2026-07-16T20-01-41-04-00-oldest-selection-runtime-module-reconciliation.md
 ```
 
 ## Required parent domain
 
-`prehistoric-rush-tree-impostor-elevation-row-continuity-authority-domain`
+`prehistoric-rush-runtime-module-generation-identity-authority-domain`
 
 ## Census
 
@@ -70,9 +58,9 @@ product/page/asset/Worker kits: 24
 external/host/capture/render adapters: 17
 proof kits: 11
 active named surfaces: 81
-planned continuity surfaces: 18
+planned module-identity surfaces: 20
 ```
 
 ## Claim boundary
 
-Documentation only. No elevation-row continuity, rendered transition correctness, artifact parity, Pages parity, or production readiness is claimed.
+Documentation only. No single-runtime-generation guarantee, module-cache coherence, cross-route parity, browser proof, built-output parity, Pages parity, or production readiness is claimed.
