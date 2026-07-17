@@ -2,32 +2,33 @@
 
 **Timestamp:** `2026-07-17T02-02-06-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed runtime head:** `55118e0c874697b767db69575687dfa1390958f9`  
+**Reviewed runtime head:** `25691598bd4ff5fd38bfdd25c46edb8a9e2cfece`  
 **Status:** `semantic-vegetation-fidelity-generation-authority-audited`
 
 ## Summary
 
-PrehistoricRush now composes the Nexus Engine Object Vegetation domain in tree asset preparation, the game host, and the patch Worker. Patch generation delegates ecological species selection and deterministic variation to the domain.
+PrehistoricRush now composes the Nexus Engine Object Vegetation domain in tree asset preparation, the game host, and the patch Worker. Patch generation delegates ecological species selection and deterministic variation to the domain. The latest reviewed runtime also preserves instance scale in tree collider radius.
 
 The semantic catalog is not yet one authoritative generation. The three runtime contexts register independent catalogs. The asset wrapper derives semantic fidelity profiles after the base asset runtime is created, but the provider still registers and builds from the older local fidelity profile. Package generation omits semantic descriptor hashes, Worker readiness omits its catalog digest, and the renderer proves only the package generation.
 
 ## Intent
 
-Bind species, tree, foliage, object, fidelity profile, package, cache, Worker, patch, and frame identities into one admitted `VegetationGeneration`.
+Bind species, tree, foliage, object, fidelity profile, package, cache, Worker, patch, collision, and frame identities into one admitted `VegetationGeneration`.
 
 ## Checklist
 
 - [x] Inspect the full Publish inventory and central ledger state.
 - [x] Select only the newest runtime-ahead repository.
-- [x] Review ten commits and ten changed files.
+- [x] Review eleven runtime commits and ten changed files.
 - [x] Inspect vegetation catalog registration and services.
 - [x] Inspect main-thread and Worker patch generation.
 - [x] Inspect asset preparation and portable package generation.
 - [x] Inspect patch cache identity and startup frame receipt.
+- [x] Inspect instance-scaled collision-radius settlement.
 - [x] Preserve the complete 90-surface inventory.
 - [ ] Register and use semantic fidelity profiles for package builds.
 - [ ] Admit one composite generation in host and Worker.
-- [ ] Prove species/package/cache/patch/frame convergence.
+- [ ] Prove species/package/cache/patch/collision/frame convergence.
 
 ## Complete interaction loop
 
@@ -50,7 +51,8 @@ Worker
   -> return domain path only
   -> generate patches with domain selection and variation
 
-frame
+patch/frame
+  -> create varied tree geometry and matching scaled collider radius
   -> activate patch
   -> map species typeIndex to package
   -> render exact package generation
@@ -60,14 +62,14 @@ frame
 ## Domains in use
 
 ```txt
-browser routes, module cache, DOM, input, lifecycle, RAF, storage and IndexedDB
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI and presentation
-Core Assets, Startup, Object, Shape, Capture and Fidelity
-Core Vegetation, Vegetation Ecology, Vegetation Tree, Vegetation Foliage and Vegetation Object Bridge
-NexusEngine-Kits seed, creature, instance batch, patch streaming and camera follow
-PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause and outcome
-semantic catalog registration, ecological placement, deterministic variation, fidelity packages and generation evidence
-Three.js, Rapier, Worker execution, tests, Pages and audit governance
+browser routes, module cache, DOM, input, lifecycle, RAF, storage, and IndexedDB
+Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, and presentation
+Core Assets, Startup, Object, Shape, Capture, and Fidelity
+Core Vegetation, Vegetation Ecology, Vegetation Tree, Vegetation Foliage, and Vegetation Object Bridge
+NexusEngine-Kits seed, creature, instance batch, patch streaming, and camera follow
+PrehistoricRush run, route, terrain, patch, tree, grass, pickup, player, pose, pause, and outcome
+semantic catalog registration, ecological placement, deterministic variation, collision projection, fidelity packages, and generation evidence
+Three.js, Rapier, Worker execution, tests, Pages, and audit governance
 ```
 
 ## Current gap
