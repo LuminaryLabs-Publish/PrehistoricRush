@@ -7,6 +7,7 @@ import {
   TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime as createBaseTreeFidelityRuntime
 } from "./tree-fidelity-assets.js";
+import { FOLIAGE_ATLAS_REVISION } from "./prehistoric-foliage-card-recipes.js";
 import { registerPrehistoricVegetationCatalog } from "./prehistoric-vegetation-domain.js";
 import { replaceTreeFidelityProviderWithVegetation } from "./vegetation-tree-fidelity-provider.js";
 
@@ -19,7 +20,7 @@ export {
   TREE_FIDELITY_PROVIDER_ID
 };
 
-const VEGETATION_PROVIDER_REVISION = "object-vegetation-v1";
+const VEGETATION_PROVIDER_REVISION = "object-vegetation-foliage-cards-v2";
 const packageAssetId = (archetype) => `prehistoric-tree-fidelity:${archetype.id}`;
 
 function rebindVegetationAssetDescriptors(runtime) {
@@ -35,8 +36,10 @@ function rebindVegetationAssetDescriptors(runtime) {
         archetypeId: archetype.id,
         speciesId: archetype.id,
         shape: archetype.shape,
+        foliageCardFamily: archetype.foliageCardFamily,
         packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
         providerRevision: VEGETATION_PROVIDER_REVISION,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
         vegetationDomain: "n:object:vegetation"
       }
     });
@@ -51,6 +54,7 @@ function rebindVegetationAssetDescriptors(runtime) {
       kind: "manifest",
       packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
       providerRevision: VEGETATION_PROVIDER_REVISION,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       vegetationDomain: "n:object:vegetation"
     }
   });
@@ -59,9 +63,10 @@ function rebindVegetationAssetDescriptors(runtime) {
     version: `${TREE_FIDELITY_PACKAGE_VERSION}-${VEGETATION_PROVIDER_REVISION}`,
     assets: [TREE_FIDELITY_MANIFEST_ASSET_ID],
     metadata: {
-      purpose: "PrehistoricRush Object Vegetation, Shape, Capture, and Fidelity tree package.",
+      purpose: "PrehistoricRush Object Vegetation, alpha-cutout foliage cards, Shape, Capture, and Fidelity tree package.",
       packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
       providerRevision: VEGETATION_PROVIDER_REVISION,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       vegetationDomain: "n:object:vegetation",
       speciesCount: PREHISTORIC_TREE_ARCHETYPES.length
     }
@@ -92,7 +97,7 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
       hysteresis: 0.16,
       stableFrames: 2,
       capturePadding: 0.05,
-      metadata: { product: "prehistoric-rush" }
+      metadata: { product: "prehistoric-rush", foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
     })
   );
   const composed = {
@@ -104,7 +109,8 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
     vegetationObjectBridge: runtime.engine.n.vegetationObjectBridge,
     vegetationCatalog,
     semanticFidelityProfiles,
-    vegetationProviderRevision: VEGETATION_PROVIDER_REVISION
+    vegetationProviderRevision: VEGETATION_PROVIDER_REVISION,
+    foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
   };
   replaceTreeFidelityProviderWithVegetation(NexusEngine, THREE, composed, options);
   composed.packageIds = rebindVegetationAssetDescriptors(composed);
