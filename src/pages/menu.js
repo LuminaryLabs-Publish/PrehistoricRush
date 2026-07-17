@@ -7,7 +7,7 @@ import {
   TREE_FIDELITY_BUNDLE_ID,
   TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime
-} from "../shared/tree-fidelity-assets.js";
+} from "../shared/prehistoric-tree-fidelity-runtime.js";
 
 const root = document.querySelector("#app") ?? document.body;
 
