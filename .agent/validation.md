@@ -1,44 +1,45 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-17T14-40-21-04-00`  
-**Scope:** organization selection, runtime pin reconciliation, complete kit/service inventory, Nexus Foliage binding repair, main/Worker provider consumption and release-proof boundaries
+**Audit timestamp:** `2026-07-17T16-40-37-04-00`  
+**Scope:** organization selection, three-commit runtime reconciliation, descriptor family closure, atlas revision propagation, complete kit/service inventory and executable-proof boundaries
 
 ## Summary
 
-Source inspection confirms that PrehistoricRush moved its Nexus Engine pin to `d41992636de2752f1ad9047b80701e6313f19b87`. That Nexus revision repairs the public Foliage service binding to `createFoliagePlacementRecipe`. Both the browser main realm and patch Worker import the shared pinned provider and construct the product Vegetation runtime.
+Source inspection confirms that PrehistoricRush now closes each tree foliage descriptor over its primary and placement-referenced families, rejects unresolved secondary family IDs, uses foliage atlas revision `prehistoric-foliage-cards-v2`, and asserts family closure across all 12 tree archetypes.
 
 ## Confirmed by inspection
 
 ```txt
-Publish repositories: 11
+Publish repositories observed: 11
 eligible after Cavalry exclusion: 10
-central ledgers: 10
-root .agent states: 10
-runtime-ahead eligible repositories: 1
 selected: PrehistoricRush
+previous documented head: f5a4748b1b6f897c92930094737565528839fb41
+reviewed runtime head: 06e2bc0439643e46153b8c7f7f42a4e91a2db5e1
+comparison: ahead by 3 commits
+changed files: 3
 
-previous documented head: 8cd649cb87fd98442116b2f3eff7496ea4c74e9c
-reviewed runtime-ahead head: 47788818edec7d49753f942a69ef392a8b092037
-old Nexus pin: c82782d00c135de0418bee777d30b463de6ff4ca
-new Nexus pin: d41992636de2752f1ad9047b80701e6313f19b87
-Foliage binding repair: present in Nexus commit
-main realm consumes RUNTIME_URLS.nexus: present
-Worker consumes RUNTIME_URLS.nexus: present
-both realms construct product Vegetation runtime: present
-local product-module test imports live provider: no
-provider parity settlement: absent
+primary + secondary descriptor family closure: present
+unknown family rejection: present
+atlas revision v2: present
+all-archetype closure assertions: present
+broad-canopy broadleaf + hanging-vine assertions: present
+Worker atlas revision ready evidence: present in source
+render-frame atlas revision evidence: present in source
+canonical cross-realm digest settlement: absent
 ```
 
 ## Source inspected
 
 ```txt
-src/shared/runtime-versions.js
+src/shared/prehistoric-foliage-card-recipes.js
 src/shared/prehistoric-vegetation-domain.js
-src/game-runtime-lod.js
 src/workers/prehistoric-patch-worker.js
-tests/vegetation-module-imports.mjs
+src/world/prehistoric-patch-generator.js
+src/render/prehistoric-foliage-atlas.js
+src/render/three-lush-foliage-layer.js
+src/render/three-patch-stream-lod-adapter.js
+tests/foliage-card-system.mjs
 package.json
-Nexus Engine commit d41992636de2752f1ad9047b80701e6313f19b87
 current .agent tracker and kit registry
 central PrehistoricRush ledger
 ```
@@ -47,17 +48,16 @@ central PrehistoricRush ledger
 
 ```txt
 npm test
-exact pinned-provider source import
-Core Object Vegetation construction
-Foliage createPlacementRecipe callable assertion
-full catalog registration and digest
-browser main provider probe
-browser Worker provider probe
-main/Worker catalog and patch digest parity
-stale Worker message rejection
+near and medium family-closure comparison
+browser main catalog construction
+production Worker catalog construction
+main/Worker family and descriptor digest parity
+revision-bound patch generation
+stale-generation rejection
+descriptor-driven family rendering
 built-output smoke
 Pages-origin smoke
-FirstProviderBoundVegetationFrameAck
+FirstFamilyCompleteFoliageFrameAck
 ```
 
 ## Change scope
@@ -65,22 +65,25 @@ FirstProviderBoundVegetationFrameAck
 ```txt
 documentation changed: yes
 runtime JavaScript changed by audit: no
-provider pin changed by audit: no
+tests and package scripts changed by audit: no
 Worker behavior changed by audit: no
 gameplay, rendering and physics changed by audit: no
-tests and package scripts changed by audit: no
 workflows and deployment changed by audit: no
 branch created: no
 pull request created: no
 
-npm test: not run
-live provider fixture: unavailable
-browser main fixture: not run
-browser Worker fixture: not run
-artifact smoke: not run
-Pages smoke: not run
+source inspection performed: yes
+npm test run by audit: no
+browser fixture run: no
+Worker fixture run: no
+artifact smoke run: no
+Pages smoke run: no
 ```
+
+## Execution limitation
+
+The available execution environment could not resolve `github.com` during a checkout attempt. The GitHub connector remained available for source inspection and direct `main` documentation updates, but no local package command could run.
 
 ## Claim boundary
 
-The pin repair and production dependency are documented. Live CDN resolution, browser construction, Worker parity, patch parity, visible-frame convergence, artifact parity, Pages parity and production readiness are not claimed.
+Descriptor closure, atlas `v2` and source assertions are documented as implemented. Browser/Worker convergence, patch binding, visible-frame convergence, artifact parity, Pages parity and production readiness are not claimed.
