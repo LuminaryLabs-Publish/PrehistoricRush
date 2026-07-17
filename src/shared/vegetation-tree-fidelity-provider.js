@@ -3,9 +3,8 @@ import {
   TREE_FIDELITY_PACKAGE_VERSION,
   createPrehistoricTreeObject
 } from "./tree-archetype-catalog.js";
-import {
-  TREE_FIDELITY_PROVIDER_ID
-} from "./tree-fidelity-assets.js";
+import { FOLIAGE_ATLAS_REVISION } from "./prehistoric-foliage-card-recipes.js";
+import { TREE_FIDELITY_PROVIDER_ID } from "./tree-fidelity-assets.js";
 
 const TREE_SHAPE_PROVIDER_ID = "prehistoric-tree-shape-provider";
 const TREE_CAPTURE_PROVIDER_ID = "prehistoric-tree-capture-provider";
@@ -100,9 +99,10 @@ function objectShapeProfileFromTreeRecipe(recipe) {
       preserve: { borders: true, vertexColors: true }
     })),
     metadata: {
-      purpose: "Tree-domain Shape recipe adapted for PrehistoricRush.",
+      purpose: "Tree-domain Shape recipe adapted for PrehistoricRush wood structure.",
       speciesId: recipe.speciesId,
-      sourceRecipeId: recipe.id
+      sourceRecipeId: recipe.id,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
 }
@@ -130,7 +130,7 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
     azimuthCount: 8,
     elevations: [0, 12],
     observations: ["color", "opacity"],
-    metadata: { product: "prehistoric-rush", archetypeId: archetype.id }
+    metadata: { product: "prehistoric-rush", archetypeId: archetype.id, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
   });
   return {
     ...profile,
@@ -141,13 +141,16 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
           qualities: ["high"],
           requiredTraits: ["geometry", "vertex-color"],
           metadata: {
+            ...(form.metadata ?? {}),
             shape: {
               sourceShapeId,
               profileId: TREE_SHAPE_PROFILE_ID,
               targetId: form.id,
               providerId: TREE_SHAPE_PROVIDER_ID
             },
-            treeStructureId: tree.id
+            treeStructureId: tree.id,
+            foliageDescriptorId: `${archetype.id}:foliage`,
+            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
           }
         };
       }
@@ -160,7 +163,8 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
           metadata: {
             ...(form.capture?.metadata ?? {}),
             archetypeId: archetype.id,
-            packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+            packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
           }
         }
       };
@@ -169,7 +173,8 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
       ...(profile.metadata ?? {}),
       stableSelectionFrames: 2,
       treeStructureId: tree.id,
-      foliageDescriptorId: `${archetype.id}:foliage`
+      foliageDescriptorId: `${archetype.id}:foliage`,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
 }
@@ -183,7 +188,8 @@ function enrichedAtlas(result) {
       ...(color.metadata ?? {}),
       ...(result.metadata?.atlas ?? {}),
       captureBounds: result.metadata?.bounds ?? null,
-      padding: 0.05
+      padding: 0.05,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
 }
@@ -219,7 +225,10 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
     objectContentHash: object.contentHash,
     vegetationSpeciesHash: species?.contentHash ?? null,
     treeStructureId: tree?.id ?? null,
+    treeStructureHash: tree ? NexusEngine.hashFidelityValue(tree) : null,
     foliageDescriptorId: foliage?.id ?? null,
+    foliageDescriptorHash: foliage ? NexusEngine.hashFidelityValue(foliage) : null,
+    foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
     shapeProfileId: TREE_SHAPE_PROFILE_ID,
     fidelityProfileId: packageValue.profileId,
     fidelityPackageId: packageValue.id,
@@ -239,7 +248,7 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   const sharedAtlas = enrichedAtlas(farCapture);
   const farFrames = farCapture.frames.map((frame) => ({ ...frame }));
   return {
-    schema: "prehistoric-rush.tree-fidelity-package/4",
+    schema: "prehistoric-rush.tree-fidelity-package/5",
     version: TREE_FIDELITY_PACKAGE_VERSION,
     archetypeId: archetype.id,
     generation: { id: generationId, ...generationInput },
@@ -259,16 +268,18 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
     },
     forms: {
       near: {
-        kind: "mesh",
+        kind: "wood-mesh-plus-foliage-cards",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "near").minimumProjectedSize,
+        foliageDensity: profile.forms.find((entry) => entry.id === "near").metadata?.foliageDensity ?? 1,
         geometry: meshGeometryForForm(engine, nearForm),
         formId: nearForm.id,
         contentHash: nearForm.contentHash
       },
       medium: {
-        kind: "mesh",
+        kind: "reduced-wood-mesh-plus-foliage-cards",
         minimumProjectedSize: profile.forms.find((entry) => entry.id === "medium").minimumProjectedSize,
         maximumProjectedSize: profile.forms.find((entry) => entry.id === "medium").maximumProjectedSize,
+        foliageDensity: profile.forms.find((entry) => entry.id === "medium").metadata?.foliageDensity ?? 0.46,
         geometry: meshGeometryForForm(engine, mediumForm),
         formId: mediumForm.id,
         contentHash: mediumForm.contentHash
@@ -301,12 +312,18 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
       foliageColor: archetype.foliageColor,
       accentColor: archetype.accentColor,
       barkTexture: archetype.barkTexture,
-      foliageTexture: archetype.foliageTexture
+      foliageTexture: archetype.foliageTexture,
+      foliageCardFamily: archetype.foliageCardFamily,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+      alphaCutout: true,
+      doubleSidedFoliage: true
     },
     ecology: species?.ecology ?? archetype.ecology,
     spawn: {
       averageHeight: archetype.averageHeight,
-      distributionWeight: species?.ecology?.distributionWeight ?? archetype.distributionWeight
+      distributionWeight: species?.ecology?.distributionWeight ?? archetype.distributionWeight,
+      heroCardCount: archetype.heroCardCount,
+      mediumCardCount: archetype.mediumCardCount
     }
   };
 }
@@ -326,7 +343,7 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
     const shapeRecipe = engine.n.vegetationTree.createShapeRecipe(treeStructure, {
       id: TREE_SHAPE_PROFILE_ID,
       mediumRatio: 0.32,
-      metadata: { product: "prehistoric-rush" }
+      metadata: { product: "prehistoric-rush", foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
     });
     engine.n.objectShape.registerProfile(objectShapeProfileFromTreeRecipe(shapeRecipe));
     const object = engine.n.coreObject.register({
@@ -345,6 +362,8 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
         speciesId: archetype.id,
         treeStructureId: treeStructure.id,
         foliageDescriptorId: `${archetype.id}:foliage`,
+        foliageCardFamily: archetype.foliageCardFamily,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
         archetypeId: archetype.id,
         label: archetype.label,
         shape: archetype.shape,
@@ -357,17 +376,17 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
       objectContentHash: object.contentHash,
       kind: "triangle-mesh",
       geometry: portableGeometry,
-      metadata: { speciesId: archetype.id, archetypeId: archetype.id, shape: archetype.shape }
+      metadata: { speciesId: archetype.id, archetypeId: archetype.id, shape: archetype.shape, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
     });
     engine.n.objectFidelity.registerProfile(objectFidelityProfileFromTree(engine, archetype, sourceShapeId));
-    context.updateProgress(0.16, 1, `Deriving ${archetype.label} mesh LODs`);
+    context.updateProgress(0.16, 1, `Deriving ${archetype.label} wood LODs and foliage captures`);
     const build = await engine.n.objectFidelity.requestBuild({
       objectId: object.id,
       profileId: fidelityProfileIdFor(archetype),
       quality: "high"
     });
     if (build.state !== "ready") throw new Error(`Object Fidelity build ${build.id} finished in state ${build.state}.`);
-    context.updateProgress(0.96, 1, `Committing ${archetype.label} fidelity package`);
+    context.updateProgress(0.96, 1, `Committing ${archetype.label} foliage-card fidelity package`);
     const packageValue = engine.n.objectFidelity.getActivePackage(object.id);
     if (!packageValue?.readiness?.complete) throw new Error(`Object Fidelity package for ${archetype.id} is incomplete.`);
     return portablePackageFromFidelity(NexusEngine, engine, archetype, object, build, packageValue);
@@ -397,9 +416,10 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
 
   return {
     id: TREE_FIDELITY_PROVIDER_ID,
-    version: "4.0.0",
+    version: "5.0.0",
     metadata: {
-      purpose: "Build PrehistoricRush tree assets through Object Vegetation, Tree, Foliage, Object Shape, Capture, and Object Fidelity.",
+      purpose: "Build PrehistoricRush wood, alpha-cutout foliage cards, and impostors through Object Vegetation, Tree, Foliage, Object Shape, Capture, and Object Fidelity.",
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       domains: [
         "n:object",
         "n:object:vegetation",
@@ -414,21 +434,26 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
       if (asset.metadata.kind === "manifest") {
         return {
           portable: {
-            schema: "prehistoric-rush.tree-fidelity-manifest/4",
+            schema: "prehistoric-rush.tree-fidelity-manifest/5",
             revision: asset.version,
             bundleId: runtime.bundleId,
             vegetationDomain: "n:object:vegetation",
+            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
             archetypes: PREHISTORIC_TREE_ARCHETYPES.map((tree) => ({
               id: tree.id,
               label: tree.label,
               averageHeight: tree.averageHeight,
-              shape: tree.shape
+              shape: tree.shape,
+              foliageCardFamily: tree.foliageCardFamily,
+              heroCardCount: tree.heroCardCount,
+              mediumCardCount: tree.mediumCardCount
             }))
           },
           metadata: {
             kind: "manifest",
             packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
-            speciesCount: runtime.vegetationCatalog.species.length
+            speciesCount: runtime.vegetationCatalog.species.length,
+            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
           }
         };
       }
@@ -443,7 +468,8 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
           speciesId: archetype.id,
           generationId: portable.generation.id,
           fidelityPackageId: portable.generation.fidelityPackageId,
-          packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+          packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+          foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
         }
       };
     },
