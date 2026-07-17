@@ -4,12 +4,13 @@
   "generatedAt": "2026-07-17T05-58-55-04-00",
   "status": "jungle-runtime-integrated-render-host-retirement-authority-audited",
   "technicalStatus": "jungle-runtime-integrated-render-host-retirement-authority-audited",
-  "repositoryRevisionReviewed": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
-  "runtimeSourceRevisionReviewed": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
+  "repositoryRevisionReviewed": "3b26af5116d4735564a2da109b36d32ed7b95a0b",
+  "runtimeSourceRevisionReviewed": "3b26af5116d4735564a2da109b36d32ed7b95a0b",
   "priorDocumentationHead": "e7c5d238d7ba406ecf02b8d91416161f03201147",
-  "currentAuditedSlice": "Integrated Foliage Cards / Ecological Ground Cover / Jungle Atmosphere / Render Host Generation Retirement",
+  "currentAuditedSlice": "Integrated Foliage Cards / Ecological Ground Cover / Jungle Atmosphere / Source Test Gates / Render Host Retirement",
   "latestTracker": ".agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md",
-  "latestTrackerCorrection": ".agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md",
+  "latestRuntimeReconciliation": ".agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md",
+  "latestTestReconciliation": ".agent/trackers/2026-07-17T05-58-55-04-00/final-test-reconciliation.md",
   "latestTurnLedger": ".agent/turn-ledger/2026-07-17T05-58-55-04-00.md",
   "audits": {
     "architecture": ".agent/architecture-audit/2026-07-17T05-58-55-04-00-render-host-retirement-dsk-update.md",
@@ -29,23 +30,24 @@
     "rootAgentMissingCount": 0,
     "undocumentedCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRuntimeHead": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
+    "selectedRuntimeHead": "3b26af5116d4735564a2da109b36d32ed7b95a0b",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush was runtime-ahead and continued integrating the audited foliage-card and ground-cover system during this run."
+    "reason": "PrehistoricRush was runtime-ahead and completed jungle runtime plus source test integration during this run."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 29,
     "officialNexusEngineKitCount": 5,
     "productPageAssetWorkerKitCount": 28,
     "externalHostCaptureRenderAdapterCount": 21,
-    "proofKitAndFixtureCount": 13,
-    "totalSurfaceCount": 96,
+    "proofKitAndFixtureCount": 14,
+    "totalSurfaceCount": 97,
     "plannedRenderHostRetirementSurfaceCount": 19
   },
   "jungleRuntimeState": {
     "foliageCardFamilyCount": 8,
     "groundCoverArchetypeCount": 6,
-    "treeFoliageDescriptorsRegistered": 10,
+    "treeArchetypeCount": 12,
+    "treeFoliageDescriptorsRegistered": 12,
     "groundCoverSpeciesRegistered": 6,
     "mainThreadGroundCoverGenerationPresent": true,
     "workerCatalogInitializationPresent": true,
@@ -56,6 +58,8 @@
     "jungleAtmosphereComposed": true,
     "lushFrameAckPresent": true,
     "startupAtlasRevisionAdmissionPresent": true,
+    "newModuleSyntaxCoveragePresent": true,
+    "foliageCardSystemFixturePresent": true,
     "childLayerDisposalPresent": true,
     "baseAdapterDisposePresent": false,
     "atmosphereRetirementPresent": false,
@@ -63,12 +67,13 @@
     "firstRetiredRenderHostAckPresent": false
   },
   "interactionLoop": [
-    "Core Vegetation registers ten card-backed tree species and six ground-cover species",
+    "Core Vegetation registers card-backed tree and ground-cover species",
     "main-thread and Worker paths generate streamed terrain, trees, ecological ground cover, grass, pickups, and colliders",
     "tree fidelity builds card-backed packages and captures",
     "Three.js creates a procedural foliage atlas, projected-size lush foliage, ground cover, and jungle atmosphere",
     "the host publishes foliage and ground-cover diagnostics plus a foliage-revision-bound frame acknowledgement",
-    "child jungle layers dispose, but the base renderer, canvas, base scene resources, atmosphere mutations, and stale callbacks lack one parent retirement result"
+    "syntax and foliage contract fixtures gate the source graph",
+    "child jungle layers dispose, but the base renderer, canvas, scene resources, atmosphere mutations, and stale callbacks lack one parent retirement result"
   ],
   "domainsInUse": [
     "browser routes module cache DOM input lifecycle RAF storage IndexedDB Worker and CDN delivery",
@@ -82,77 +87,19 @@
   "serviceInventory": {
     "completeInventory": ".agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
     "finalRuntimeReconciliation": ".agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md",
-    "newSurfaces": {
-      "prehistoric-foliage-card-recipe-kit": [
-        "atlas revision and dimensions",
-        "eight family descriptors",
-        "archetype mapping",
-        "deterministic near and medium placements",
-        "six ground-cover archetypes"
-      ],
-      "prehistoric-foliage-atlas-render-kit": [
-        "procedural 4x2 atlas generation",
-        "per-family texture views",
-        "atlas revision identity",
-        "texture disposal"
-      ],
-      "three-lush-foliage-layer": [
-        "projected-size near and medium selection",
-        "hysteresis and stable-frame admission",
-        "crossfade",
-        "wind and tint attributes",
-        "family instance batches",
-        "patch ownership and disposal"
-      ],
-      "three-ground-cover-layer": [
-        "patch-owned ecological instances",
-        "family and species batches",
-        "wind and tint projection",
-        "capacity diagnostics",
-        "release and disposal"
-      ],
-      "lush-jungle-atmosphere-render-adapter": [
-        "background and fog",
-        "tone-map exposure",
-        "hemisphere and sun tuning",
-        "shadow tuning",
-        "fill and canopy-bounce lights"
-      ]
-    },
-    "expandedExistingSurfaces": {
-      "prehistoric-vegetation-catalog-registration-kit": [
-        "card-backed tree foliage registration",
-        "six ground-cover registrations",
-        "atlas identity publication"
-      ],
-      "prehistoric-patch-generator": [
-        "ecological ground-cover selection",
-        "deterministic ground-cover instances",
-        "route exclusion",
-        "patch-owned payloads"
-      ],
-      "prehistoric-patch-worker": [
-        "foliage-card Vegetation catalog initialization",
-        "lush patch generation"
-      ],
-      "three-patch-stream-lod-adapter": [
-        "foliage atlas composition",
-        "lush foliage and ground-cover layers",
-        "jungle atmosphere",
-        "lush frame acknowledgement",
-        "child-layer disposal"
-      ],
-      "game-runtime-lod-host-adapter": [
-        "lush capacities",
-        "vegetation generation hashes",
-        "startup foliage admission",
-        "lush diagnostics"
-      ]
+    "finalTestReconciliation": ".agent/trackers/2026-07-17T05-58-55-04-00/final-test-reconciliation.md",
+    "implementedJungleSurfaces": {
+      "prehistoric-foliage-card-recipe-kit": ["eight families", "atlas identity", "tree placements", "six ground-cover archetypes"],
+      "prehistoric-foliage-atlas-render-kit": ["procedural atlas", "family textures", "revision identity", "disposal"],
+      "three-lush-foliage-layer": ["projected-size selection", "hysteresis", "crossfade", "wind", "tint", "family batches", "disposal"],
+      "three-ground-cover-layer": ["ecological patch instances", "family batches", "wind", "tint", "release", "disposal"],
+      "lush-jungle-atmosphere-render-adapter": ["background", "fog", "exposure", "lights", "shadows"],
+      "foliage-card-system-test-kit": ["catalog bounds", "tree and ground-cover coverage", "source contract gates"]
     }
   },
   "authority": {
     "parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain",
-    "mainFinding": "The jungle presentation is integrated source-to-frame, but the parent Three.js host has no complete generation retirement: child layers dispose while base renderer, canvas, base scene resources, atmosphere mutations, and stale callbacks remain unsettled.",
+    "mainFinding": "The jungle presentation and source test gates are integrated, but the parent Three.js host has no complete generation retirement: child layers dispose while base renderer, canvas, base scene resources, atmosphere mutations, and stale callbacks remain unsettled.",
     "plannedSurfaces": [
       "render-host-generation-kit",
       "render-frame-admission-latch-kit",
@@ -175,38 +122,6 @@
       "first-retired-render-host-ack-kit"
     ]
   },
-  "retainedStatuses": [
-    "product-vegetation-runtime-fixture-authority-central-reconciled",
-    "semantic-vegetation-fidelity-generation-authority-central-reconciled",
-    "runtime-module-generation-identity-authority-central-reconciled",
-    "tree-impostor-elevation-row-continuity-authority-central-reconciled",
-    "tree-impostor-view-frame-addressing-authority-central-reconciled",
-    "tree-fidelity-generation-form-transition-authority-central-reconciled",
-    "webgl-context-gpu-resource-recovery-authority-central-reconciled",
-    "patch-worker-request-liveness-recovery-authority-central-reconciled",
-    "game-audio-event-projection-authority-central-reconciled",
-    "accessible-gameplay-projection-focus-authority-central-reconciled",
-    "host-clock-fixed-step-frame-authority-central-reconciled",
-    "terrain-single-owner-render-retirement-authority-central-reconciled",
-    "terrain-lod-patch-render-admission-authority-central-reconciled",
-    "creator-profile-navigation-commit-authority-central-reconciled",
-    "game-feedback-control-surface-admission-authority-central-reconciled",
-    "route-progress-goal-eligibility-authority-central-reconciled",
-    "runtime-provider-revision-convergence-authority-central-reconciled",
-    "run-outcome-score-settlement-authority-central-reconciled",
-    "player-character-profile-revision-admission-authority-central-reconciled",
-    "patch-owned-streaming-adoption-authority-central-reconciled",
-    "non-blocking-pause-menu-command-lifecycle-authority-central-reconciled",
-    "player-character-composition-transition-authority-central-reconciled",
-    "terrain-aware-hind-leg-ik-central-reconciled",
-    "authoritative-player-pose-publication-central-reconciled",
-    "collision-source-convergence-publication-central-reconciled",
-    "browser-input-core-input-adoption-central-reconciled",
-    "game-viewport-render-surface-central-reconciled",
-    "articulated-pose-presentation-authority-audited",
-    "run-start-restart-central-reconciled",
-    "browser-runtime-lifecycle-authority-audited"
-  ],
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
