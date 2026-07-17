@@ -1,73 +1,77 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-17T10-59-32-04-00`  
+**Timestamp:** `2026-07-17T14-40-21-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed repository head:** `0194fc7b3962528cb5233d0180f7b33a30eb5050`  
-**Reviewed runtime source revision:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
-**Status:** `pause-overlay-input-context-simulation-arbitration-authority-audited`
+**Reviewed pre-audit head:** `47788818edec7d49753f942a69ef392a8b092037`  
+**Reviewed Nexus Engine revision:** `d41992636de2752f1ad9047b80701e6313f19b87`  
+**Status:** `pinned-vegetation-provider-admission-browser-worker-parity-authority-audited`
 
 ## Summary
 
-The active Pause surface is not an admitted simulation pause. The DSK and overlay descriptors explicitly set `blocksSimulation: false`; the menu is non-modal; the full-screen DOM overlay captures pointer interaction; global gameplay keyboard listeners stay active; and the RAF continues to call `engine.tick(dt)` and world streaming unconditionally.
+The current runtime pin adopts a Nexus Engine fix required to construct the Foliage subdomain. The prior provider exposed `createPlacementRecipe` through an invalid identifier; the pinned replacement binds the public service to `createFoliagePlacementRecipe`.
+
+PrehistoricRush imports the provider in both `src/game-runtime-lod.js` and `src/workers/prehistoric-patch-worker.js`, and both paths call `createPrehistoricVegetationRuntime()`. The existing Node import test checks only local product exports and does not execute the pinned provider graph.
 
 ## Intent
 
-Bind pause semantics, gameplay input suppression, simulation participation, focus ownership and paused/resumed visible frames to one apply-once pause generation.
+Bind provider revision, service-construction proof, catalog digest, browser realm, Worker realm, patch generation and first visible vegetation frame to one startup generation.
 
 ## Checklist
 
 - [x] Inspect organization and ledger selection state.
-- [x] Select only PrehistoricRush through oldest synchronized priority.
-- [x] Inspect the pause DSK, overlay host, active runtime loop and pause fixture.
+- [x] Select only PrehistoricRush as the sole runtime-ahead repository.
+- [x] Inspect the product pin and Nexus Engine repair.
+- [x] Trace main and Worker Vegetation construction.
 - [x] Preserve all 97 implemented surfaces and offered services.
-- [x] Define 19 pause-arbitration surfaces.
-- [ ] Implement and prove the accepted pause policy.
-- [ ] Complete retained render-host retirement.
+- [x] Define 20 provider-admission surfaces.
+- [ ] Implement provider identity and Foliage service probes.
+- [ ] Implement Worker parity and stale-result settlement.
+- [ ] Execute source, browser, artifact and Pages fixtures.
 
 ## Interaction loop
 
 ```txt
-running
-  -> Escape toggles menu state
-  -> full-screen Pause overlay mounts
-  -> pointer routes to overlay
-  -> keyboard gameplay routes remain active
-  -> engine tick, physics, streaming and rendering continue
-  -> Settings/Exit UI observes a run that can still change
+browser and Worker import the same pinned Nexus provider
+  -> construct Core Object Vegetation
+  -> register product tree and ground-cover catalogs
+  -> create deterministic patch generators
+  -> generate and activate streamed patches
+  -> render trees, foliage cards and ground cover
 ```
 
 ## Domains in use
 
 ```txt
-browser route, DOM, keyboard, focus, lifecycle, RAF, Worker and delivery
-Nexus Engine UI, presentation, input, simulation, physics, scene and graphics
-PrehistoricRush pause, run, route, player, terrain, streaming, pickup and outcome
-Three.js presentation and Rapier physics
-source fixtures, Pages, audit governance and central tracking
+browser module delivery, Worker, lifecycle and startup
+Nexus Engine Object Vegetation, Ecology, Tree, Foliage and Object Bridge
+PrehistoricRush catalog, generator, patch streaming and gameplay
+Three.js vegetation presentation and Rapier collision
+source fixtures, artifact, Pages, audit governance and central tracking
 ```
 
 ## Current gap
 
 ```txt
-explicit pause semantic admission: absent
-input-context generation: absent
-held-input retirement on open: absent
-gameplay-key rejection while open: absent
-simulation/physics/streaming suspension: absent
-focus lease and restoration result: absent
-resume clock rebase: absent
-FirstPausedFrameAck: absent
-FirstResumedGameplayFrameAck: absent
+exact provider identity admission: absent
+Foliage createPlacementRecipe construction probe: absent
+main provider-ready result: absent
+Worker provider revision echo: absent
+main/Worker catalog parity result: absent
+provider generation on patch results: absent
+stale Worker provider rejection: absent
+FirstVegetationRuntimeReadyAck: absent
+FirstProviderBoundVegetationFrameAck: absent
+live provider source/browser fixture: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain`
+`prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain`
 
-## Retained gap
+## Retained gaps
 
-Complete parent render-host generation retirement remains proposed and unimplemented.
+Pause arbitration and parent render-host generation retirement remain proposed and unimplemented.
 
 ## Boundary
 
-Documentation only. Runtime, tests and deployment were not changed or executed.
+Documentation only. The implemented pin was not changed. Tests, browser fixtures and deployment validation were not executed.
