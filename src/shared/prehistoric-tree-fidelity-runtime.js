@@ -8,6 +8,7 @@ import {
   createPrehistoricTreeFidelityAssetRuntime as createBaseTreeFidelityRuntime
 } from "./tree-fidelity-assets.js";
 import { registerPrehistoricVegetationCatalog } from "./prehistoric-vegetation-domain.js";
+import { replaceTreeFidelityProviderWithVegetation } from "./vegetation-tree-fidelity-provider.js";
 
 export {
   PREHISTORIC_TREE_ARCHETYPES,
@@ -44,7 +45,7 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
       metadata: { product: "prehistoric-rush" }
     })
   );
-  return Object.freeze({
+  const composed = {
     ...runtime,
     vegetation: runtime.engine.n.vegetation,
     vegetationTree: runtime.engine.n.vegetationTree,
@@ -53,7 +54,9 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
     vegetationObjectBridge: runtime.engine.n.vegetationObjectBridge,
     vegetationCatalog,
     semanticFidelityProfiles
-  });
+  };
+  replaceTreeFidelityProviderWithVegetation(NexusEngine, THREE, composed, options);
+  return Object.freeze(composed);
 }
 
 export default createPrehistoricTreeFidelityAssetRuntime;
