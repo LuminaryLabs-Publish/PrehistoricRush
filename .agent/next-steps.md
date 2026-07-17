@@ -5,7 +5,7 @@
 
 ## Intent
 
-Complete ownership settlement for the now-integrated jungle renderer without restructuring Vegetation, patch generation, fidelity, or gameplay.
+Complete ownership settlement for the integrated and source-gated jungle renderer without restructuring Vegetation, patch generation, fidelity, or gameplay.
 
 ## Checklist
 
@@ -14,10 +14,7 @@ Complete ownership settlement for the now-integrated jungle renderer without res
 - [ ] Add `dispose()` to `createThreePatchStreamAdapter()`.
 - [ ] Stop new render and patch admissions before disposal.
 - [ ] Release active patch memberships and instance-batch cells.
-- [ ] Dispose base terrain geometries/materials.
-- [ ] Dispose legacy trunk/crown geometries and materials.
-- [ ] Dispose grass geometries/materials and shard resources.
-- [ ] Dispose player render resources.
+- [ ] Dispose base terrain, legacy tree, grass, shard, and player render resources.
 - [ ] Remove base scene lights and targets.
 - [ ] Dispose the WebGL renderer and detach its canvas.
 
@@ -36,20 +33,16 @@ Complete ownership settlement for the now-integrated jungle renderer without res
 - [ ] Reject stale RAF, render, patch-activation, and Worker results after retirement.
 - [ ] Publish `RenderHostRetirementResult` and `FirstRetiredRenderHostAck`.
 
-### Phase 4: Fixtures
+### Phase 4: Executable fixtures
 
+- [x] Add syntax checks for all jungle modules.
+- [x] Add foliage-card and ground-cover contract tests.
+- [x] Expand tree fidelity, spawn variation, and LOD source gates.
+- [ ] Run `npm test` on the reviewed revision.
 - [ ] Construct, render, dispose, and reconstruct in one browser session.
 - [ ] Assert one canvas, renderer generation, and atmosphere light pair.
-- [ ] Assert old GPU resources and patch memberships are retired.
 - [ ] Exercise run restart, route remount, and WebGL recovery.
-- [ ] Run source, built artifact, and Pages-subpath parity checks.
-
-### Retained validation work
-
-- [ ] Add syntax/import coverage for all new foliage render modules.
-- [ ] Execute the actual product Vegetation runtime fixture.
-- [ ] Add main-thread/Worker lush patch parity assertions.
-- [ ] Validate the generation-bound lush first-frame acknowledgement in browser.
+- [ ] Run built artifact and GitHub Pages origin checks.
 
 ## Recommended file cut
 
@@ -64,8 +57,8 @@ tests/browser/render-host-restart.html
 
 ## Compatibility constraints
 
-Preserve current catalogs, seeds, ecological placement, card LOD/hysteresis, atlas revision, tree fidelity, collision, route, player, camera, score, pause, outcomes, and startup frame admission.
+Preserve current catalogs, seeds, ecological placement, card LOD/hysteresis, atlas revision, tree fidelity, collision, route, player, camera, score, pause, outcomes, startup frame admission, and existing source tests.
 
 ## Claim boundary
 
-Do not claim restart/remount/recovery safety until complete parent disposal and repeated-generation fixtures pass.
+Do not claim restart/remount/recovery safety until complete parent disposal and repeated-generation browser fixtures pass.
