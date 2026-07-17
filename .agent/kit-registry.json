@@ -2,17 +2,18 @@
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
   "generatedAt": "2026-07-17T05-58-55-04-00",
-  "status": "jungle-foliage-atmosphere-runtime-adoption-authority-audited",
-  "technicalStatus": "jungle-foliage-atmosphere-runtime-adoption-authority-audited",
-  "repositoryRevisionReviewed": "248586fb4774c9219fb2ce0aaeec2b46bf3b69de",
-  "runtimeSourceRevisionReviewed": "248586fb4774c9219fb2ce0aaeec2b46bf3b69de",
+  "status": "jungle-runtime-integrated-render-host-retirement-authority-audited",
+  "technicalStatus": "jungle-runtime-integrated-render-host-retirement-authority-audited",
+  "repositoryRevisionReviewed": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
+  "runtimeSourceRevisionReviewed": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
   "priorDocumentationHead": "e7c5d238d7ba406ecf02b8d91416161f03201147",
-  "currentAuditedSlice": "Foliage Card Families / Ground Cover Catalog / Jungle Atmosphere / Production Adoption and Lifecycle Boundary",
+  "currentAuditedSlice": "Integrated Foliage Cards / Ecological Ground Cover / Jungle Atmosphere / Render Host Generation Retirement",
   "latestTracker": ".agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md",
+  "latestTrackerCorrection": ".agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md",
   "latestTurnLedger": ".agent/turn-ledger/2026-07-17T05-58-55-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-17T05-58-55-04-00-jungle-foliage-atmosphere-adoption-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-17T05-58-55-04-00-unadopted-jungle-visible-frame-gap.md",
+    "architecture": ".agent/architecture-audit/2026-07-17T05-58-55-04-00-render-host-retirement-dsk-update.md",
+    "render": ".agent/render-audit/2026-07-17T05-58-55-04-00-jungle-render-host-retirement-gap.md",
     "gameplay": ".agent/gameplay-audit/2026-07-17T05-58-55-04-00-jungle-presentation-adoption-loop.md",
     "interaction": ".agent/interaction-audit/2026-07-17T05-58-55-04-00-jungle-presentation-command-result-map.md",
     "vegetationSystem": ".agent/vegetation-system-audit/2026-07-17T05-58-55-04-00-foliage-card-ground-cover-atmosphere-contract.md",
@@ -28,40 +29,46 @@
     "rootAgentMissingCount": 0,
     "undocumentedCount": 0,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRuntimeHead": "248586fb4774c9219fb2ce0aaeec2b46bf3b69de",
+    "selectedRuntimeHead": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "PrehistoricRush had two runtime commits and two added source files ahead of its documented head."
+    "reason": "PrehistoricRush was runtime-ahead and continued integrating the audited foliage-card and ground-cover system during this run."
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 29,
     "officialNexusEngineKitCount": 5,
     "productPageAssetWorkerKitCount": 28,
-    "externalHostCaptureRenderAdapterCount": 18,
+    "externalHostCaptureRenderAdapterCount": 21,
     "proofKitAndFixtureCount": 13,
-    "totalSurfaceCount": 93,
-    "plannedJungleAdoptionSurfaceCount": 20
+    "totalSurfaceCount": 96,
+    "plannedRenderHostRetirementSurfaceCount": 19
   },
-  "jungleAdoptionState": {
-    "foliageAtlasRevisionPresent": true,
+  "jungleRuntimeState": {
     "foliageCardFamilyCount": 8,
     "groundCoverArchetypeCount": 6,
-    "treeCardPlacementRecipesPresent": true,
-    "jungleAtmosphereHelperPresent": true,
-    "productionConsumerChangedInDelta": false,
-    "packageSyntaxCoveragePresent": false,
-    "packageExecutionCoveragePresent": false,
-    "catalogGenerationResultPresent": false,
-    "productionWorkerIntegrationPresent": false,
-    "atlasMaterialBindingPresent": false,
-    "atmosphereLifecycleResultPresent": false,
-    "junglePresentationFrameAckPresent": false
+    "treeFoliageDescriptorsRegistered": 10,
+    "groundCoverSpeciesRegistered": 6,
+    "mainThreadGroundCoverGenerationPresent": true,
+    "workerCatalogInitializationPresent": true,
+    "treeFoliagePackagesPresent": true,
+    "proceduralFoliageAtlasPresent": true,
+    "lushFoliageLayerPresent": true,
+    "groundCoverLayerPresent": true,
+    "jungleAtmosphereComposed": true,
+    "lushFrameAckPresent": true,
+    "startupAtlasRevisionAdmissionPresent": true,
+    "childLayerDisposalPresent": true,
+    "baseAdapterDisposePresent": false,
+    "atmosphereRetirementPresent": false,
+    "renderHostRetirementResultPresent": false,
+    "firstRetiredRenderHostAckPresent": false
   },
   "interactionLoop": [
-    "the existing host composes Core Vegetation, streamed patches, tree fidelity, physics, camera and Three.js rendering",
-    "the new foliage module defines card families, deterministic local tree-card recipes and ground-cover archetypes",
-    "the new atmosphere module defines scene, fog, exposure, light and shadow mutation",
-    "the two-commit delta changes no production consumer, Worker, renderer, test or deployment path",
-    "the required path admits catalogs, projects bounded patch data, owns GPU and scene generations, retires predecessors and acknowledges the exact rendered frame"
+    "Core Vegetation registers ten card-backed tree species and six ground-cover species",
+    "main-thread and Worker paths generate streamed terrain, trees, ecological ground cover, grass, pickups, and colliders",
+    "tree fidelity builds card-backed packages and captures",
+    "Three.js creates a procedural foliage atlas, projected-size lush foliage, ground cover, and jungle atmosphere",
+    "the host publishes foliage and ground-cover diagnostics plus a foliage-revision-bound frame acknowledgement",
+    "child jungle layers dispose, but the base renderer, canvas, base scene resources, atmosphere mutations, and stale callbacks lack one parent retirement result"
   ],
   "domainsInUse": [
     "browser routes module cache DOM input lifecycle RAF storage IndexedDB Worker and CDN delivery",
@@ -69,62 +76,103 @@
     "Core Assets Startup Object Shape Capture Fidelity Vegetation Ecology Tree Foliage and Object Bridge",
     "NexusEngine-Kits seed creature instance patch and camera services",
     "PrehistoricRush run route player pose pause terrain patch tree grass foliage cards ground cover pickup and outcome",
-    "Three.js scene fog lighting shadows materials instancing GPU resources and render submission",
+    "Three.js renderer canvas scene fog lighting shadows materials atlas instancing GPU resources and render submission",
     "Rapier source fixtures static delivery Pages audit governance and central tracking"
   ],
   "serviceInventory": {
     "completeInventory": ".agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "finalRuntimeReconciliation": ".agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md",
     "newSurfaces": {
       "prehistoric-foliage-card-recipe-kit": [
         "atlas revision and dimensions",
-        "eight foliage-card family descriptors",
-        "family lookup and archetype mapping",
-        "deterministic tree-card placement recipes",
+        "eight family descriptors",
+        "archetype mapping",
+        "deterministic near and medium placements",
         "six ground-cover archetypes"
       ],
+      "prehistoric-foliage-atlas-render-kit": [
+        "procedural 4x2 atlas generation",
+        "per-family texture views",
+        "atlas revision identity",
+        "texture disposal"
+      ],
+      "three-lush-foliage-layer": [
+        "projected-size near and medium selection",
+        "hysteresis and stable-frame admission",
+        "crossfade",
+        "wind and tint attributes",
+        "family instance batches",
+        "patch ownership and disposal"
+      ],
+      "three-ground-cover-layer": [
+        "patch-owned ecological instances",
+        "family and species batches",
+        "wind and tint projection",
+        "capacity diagnostics",
+        "release and disposal"
+      ],
       "lush-jungle-atmosphere-render-adapter": [
-        "scene background and exponential fog",
+        "background and fog",
         "tone-map exposure",
-        "hemisphere and sun retuning",
-        "shadow-map and shadow-camera tuning",
-        "fill and canopy-bounce lights",
-        "owned-reference return value"
+        "hemisphere and sun tuning",
+        "shadow tuning",
+        "fill and canopy-bounce lights"
       ]
     },
-    "adoptionRelevant": {
-      "core-vegetation-kit": ["species and instance registries", "deterministic variation", "ecology selection", "lifecycle"],
-      "vegetation-foliage-domain-kit": ["foliage descriptors", "card policy", "wind response", "validation"],
-      "prehistoric-patch-generator": ["terrain and route masks", "semantic vegetation", "matrices", "colliders", "grass and pickups"],
-      "prehistoric-patch-worker": ["runtime import", "catalog initialization", "patch generation", "transferable results"],
-      "instanced-render-batch-kit": ["stable ranges", "cell ownership", "flush", "visibility", "release", "diagnostics"],
-      "three-patch-stream-lod-adapter": ["patch activation", "tree fidelity", "release", "disposal"],
-      "three-runtime-module": ["scene mutation", "materials", "textures", "GPU resources", "render submission"]
+    "expandedExistingSurfaces": {
+      "prehistoric-vegetation-catalog-registration-kit": [
+        "card-backed tree foliage registration",
+        "six ground-cover registrations",
+        "atlas identity publication"
+      ],
+      "prehistoric-patch-generator": [
+        "ecological ground-cover selection",
+        "deterministic ground-cover instances",
+        "route exclusion",
+        "patch-owned payloads"
+      ],
+      "prehistoric-patch-worker": [
+        "foliage-card Vegetation catalog initialization",
+        "lush patch generation"
+      ],
+      "three-patch-stream-lod-adapter": [
+        "foliage atlas composition",
+        "lush foliage and ground-cover layers",
+        "jungle atmosphere",
+        "lush frame acknowledgement",
+        "child-layer disposal"
+      ],
+      "game-runtime-lod-host-adapter": [
+        "lush capacities",
+        "vegetation generation hashes",
+        "startup foliage admission",
+        "lush diagnostics"
+      ]
     }
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain",
-    "mainFinding": "The two runtime commits add foliage-card, ground-cover and atmosphere source capabilities, but change no production consumer and provide no accepted catalog, patch, Worker, GPU, scene-lifecycle or matching-frame result.",
+    "parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain",
+    "mainFinding": "The jungle presentation is integrated source-to-frame, but the parent Three.js host has no complete generation retirement: child layers dispose while base renderer, canvas, base scene resources, atmosphere mutations, and stale callbacks remain unsettled.",
     "plannedSurfaces": [
-      "jungle-presentation-generation-kit",
-      "foliage-atlas-revision-admission-kit",
-      "foliage-card-family-catalog-kit",
-      "ground-cover-catalog-kit",
-      "foliage-catalog-immutability-validation-kit",
-      "tree-card-instance-seed-kit",
-      "tree-card-placement-budget-kit",
-      "ground-cover-ecology-selection-kit",
-      "foliage-main-thread-projection-kit",
-      "foliage-worker-projection-kit",
-      "foliage-main-worker-parity-kit",
-      "foliage-card-instance-batch-kit",
-      "foliage-atlas-material-binding-kit",
-      "jungle-atmosphere-scene-admission-kit",
-      "jungle-atmosphere-idempotent-apply-kit",
-      "jungle-atmosphere-quality-budget-kit",
-      "jungle-presentation-resource-retirement-kit",
-      "jungle-presentation-projection-result-kit",
-      "first-jungle-patch-ack-kit",
-      "first-jungle-presentation-frame-ack-kit"
+      "render-host-generation-kit",
+      "render-frame-admission-latch-kit",
+      "patch-membership-retirement-kit",
+      "base-terrain-resource-retirement-kit",
+      "legacy-tree-resource-retirement-kit",
+      "grass-resource-retirement-kit",
+      "pickup-shard-resource-retirement-kit",
+      "player-render-resource-retirement-kit",
+      "terrain-lod-retirement-kit",
+      "tree-fidelity-retirement-kit",
+      "lush-foliage-retirement-kit",
+      "ground-cover-retirement-kit",
+      "foliage-atlas-retirement-kit",
+      "jungle-atmosphere-state-restoration-kit",
+      "renderer-context-retirement-kit",
+      "canvas-host-detachment-kit",
+      "stale-render-callback-rejection-kit",
+      "render-host-retirement-result-kit",
+      "first-retired-render-host-ack-kit"
     ]
   },
   "retainedStatuses": [
@@ -170,9 +218,9 @@
     "pullRequestCreated": false,
     "sourceInspectionPerformed": true,
     "npmTestRunByAudit": false,
-    "runtimeAdoptionFixtureRun": false,
-    "workerParityFixtureRun": false,
-    "browserFrameFixtureRun": false,
+    "browserRuntimeFixtureRun": false,
+    "renderHostRetirementFixtureRun": false,
+    "webglRecoveryFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
