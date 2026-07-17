@@ -1,77 +1,65 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-17T02-02-06-04-00`  
-**Authority:** `prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain`
+**Audit:** `2026-07-17T02-50-44-04-00`  
+**Authority:** `prehistoric-rush-product-vegetation-runtime-fixture-authority-domain`
 
 ## Intent
 
-Convert the new Object Vegetation integration from three independently reconstructed catalogs into one accepted generation shared by asset preparation, Worker patches, caches, rendering, and first-frame proof.
+Extend the new source fixtures across the actual product runtime, production Worker, browser module graph, package binding, and first rendered frame without replacing the fast deterministic unit fixture.
 
 ## Checklist
 
-### Phase 1: Canonical semantic generation
+### Phase 1: Actual runtime fixture
 
-- [ ] Create one semantic generation manifest from archetype source, species, tree, foliage, object, and fidelity descriptors.
-- [ ] Compute stable descriptor hashes and one composite digest.
-- [ ] Publish a complete species-to-tree-to-foliage-to-object-to-package binding table.
-- [ ] Treat `typeIndex` as derived optimization metadata only.
+- [ ] Load the exact pinned Nexus Engine revision used by the game.
+- [ ] Call `createPrehistoricVegetationRuntime()`.
+- [ ] Verify ten species, tree structures, foliage descriptors, and object bridges.
+- [ ] Call `createPrehistoricVegetationGeneratorOptions()` with the actual runtime.
+- [ ] Generate a deterministic patch through the actual placement API.
 
-### Phase 2: Fidelity adoption
+### Phase 2: Worker parity
 
-- [ ] Register `vegetationTree.createFidelityProfile()` outputs into Object Fidelity.
-- [ ] Remove or mechanically derive the duplicated local `treeFidelityProfile()` path.
-- [ ] Add semantic descriptor hashes to portable package generation identity.
-- [ ] Add the composite digest to bundle, asset, and IndexedDB cache identity.
-- [ ] Retire stale cached generations before package adoption.
+- [ ] Initialize `prehistoric-patch-worker.js` with the same source and engine revisions.
+- [ ] Generate the same patch on main thread and Worker.
+- [ ] Compare species IDs, instance envelopes, matrices, bounds, ground authority, and colliders.
+- [ ] Publish a typed `MainWorkerPatchParityResult`.
 
-### Phase 3: Host and Worker admission
+### Phase 3: Browser and frame proof
 
-- [ ] Send the expected generation digest in `init-patch-worker`.
-- [ ] Return Worker species/tree/foliage/object/catalog digests in `patch-worker-ready`.
-- [ ] Reject initialization on any mismatch.
-- [ ] Include the generation digest in every patch request and result.
-- [ ] Reject stale or mixed patches before activation.
+- [ ] Load the product import graph through the browser import map.
+- [ ] Exercise menu/game tree asset preparation.
+- [ ] Activate one semantic tree patch.
+- [ ] Resolve one species to a fidelity package and exact captured frame.
+- [ ] Publish `FirstProductVegetationPatchAck` and `FirstProductVegetationFrameAck`.
 
-### Phase 4: Runtime and frame binding
+### Phase 4: Release parity
 
-- [ ] Resolve each rendered tree through `speciesId -> packageGenerationId`.
-- [ ] Validate collider, ground sink, bounds, and visual package against the same generation.
-- [ ] Publish `VegetationGenerationAdmissionResult`.
-- [ ] Publish `FirstDomainBoundAssetAck` after menu/game asset preparation.
-- [ ] Publish `FirstDomainBoundPatchAck` after first accepted patch activation.
-- [ ] Publish `FirstDomainBoundTreeFrameAck` after the matching rendered frame.
+- [ ] Run the fixture against source hosting.
+- [ ] Run the fixture against built/static output.
+- [ ] Run the fixture from the GitHub Pages subpath.
+- [ ] Fail closed on revision, Worker, package, or frame mismatch.
 
-### Phase 5: Proof
+### Phase 5: Retained generation authority
 
-- [ ] Add source descriptor/package binding fixtures.
-- [ ] Add main-thread versus Worker deterministic parity fixtures.
-- [ ] Add mismatched Worker generation rejection fixtures.
-- [ ] Add semantic descriptor change/cache invalidation fixtures.
-- [ ] Add browser reload and IndexedDB stale-generation fixtures.
-- [ ] Run `npm test`.
-- [ ] Run static artifact and GitHub Pages parity smokes.
+- [ ] Keep the prior semantic vegetation/fidelity generation work active.
+- [ ] Register semantic fidelity profiles for package builds.
+- [ ] Add Worker catalog generation handshake.
+- [ ] Bind species, package, cache, patch, collision, and frame generations.
 
 ## Recommended file cut
 
 ```txt
-src/shared/prehistoric-vegetation-generation.js
-src/shared/prehistoric-vegetation-manifest.js
-src/shared/prehistoric-vegetation-admission.js
-src/shared/species-fidelity-package-bindings.js
-src/workers/prehistoric-patch-worker.js
-src/shared/prehistoric-tree-fidelity-runtime.js
-src/shared/tree-fidelity-assets.js
-src/game-runtime-lod.js
-
-tests/vegetation-generation-identity.mjs
-tests/vegetation-worker-parity.mjs
-tests/vegetation-cache-invalidation.mjs
+tests/vegetation-product-runtime.mjs
+tests/vegetation-main-worker-parity.mjs
+tests/browser/vegetation-product-frame.html
+tests/browser/vegetation-product-frame.mjs
+src/shared/prehistoric-vegetation-fixture-manifest.js
 ```
 
 ## Compatibility constraints
 
-Preserve current seeds, ecological distribution, route exclusion, tree counts, variation ranges, collider behavior, terrain topology, package forms, transition settings, camera behavior, scoring, and renderer performance while adding generation authority.
+Preserve current seeds, ecology, tree counts, variation ranges, colliders, route exclusion, terrain topology, package forms, transition settings, camera, gameplay, and renderer performance. Keep the current test-owned fixture as fast patch-algorithm coverage.
 
 ## Claim boundary
 
-Do not claim semantic profile adoption, Worker parity, cache correctness, species-package convergence, build parity, Pages parity, or production readiness until the full fixture matrix passes on the final runtime commit.
+Do not claim product-runtime, Worker, browser, artifact, Pages, or frame conformance until the final fixture matrix passes on the exact tested revision.
