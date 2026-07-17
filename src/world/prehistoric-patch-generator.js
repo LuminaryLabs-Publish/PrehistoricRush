@@ -1,3 +1,4 @@
+import { PREHISTORIC_GROUND_COVER_ARCHETYPES } from "../shared/prehistoric-foliage-card-recipes.js";
 import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./prehistoric-terrain-lod-policy.js";
 
 function clamp(value, min, max) {
@@ -112,19 +113,29 @@ function vegetationEnvironment(x, z, y, nearest, normalY) {
   };
 }
 
+function normalYAt(x, z) {
+  return clamp(0.72 + Math.cos(x * 0.031 - z * 0.027) * 0.24, 0, 1);
+}
+
 export function createPrehistoricPatchGenerator(options = {}) {
   const config = {
     seed: Number(options.config?.seed ?? 238991),
     chunk: Number(options.config?.chunk ?? 56),
     segments: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.sourceResolution,
     trees: Number(options.config?.trees ?? 7),
-    grass: Number(options.config?.grass ?? 70),
+    grass: Number(options.config?.grass ?? 96),
+    groundCover: Number(options.config?.groundCover ?? 36),
     shardsPerPatch: Number(options.config?.shardsPerPatch ?? 2)
   };
   const treeTypes = options.treeTypes ?? [];
+  const groundCoverArchetypes = options.groundCoverArchetypes ?? PREHISTORIC_GROUND_COVER_ARCHETYPES;
+  const groundCoverById = new Map(groundCoverArchetypes.map((entry) => [entry.id, entry]));
   const vegetation = options.vegetation;
   if (!vegetation || typeof vegetation.selectSpecies !== "function" || typeof vegetation.createInstanceDescriptor !== "function") {
     throw new TypeError("Patch generator requires the Object Vegetation placement API.");
+  }
+  if (config.groundCover > 0 && typeof vegetation.selectGroundCoverSpecies !== "function") {
+    throw new TypeError("Patch generator ground cover requires selectGroundCoverSpecies().");
   }
   const route = createRouteSampler(options.routeSamples ?? []);
   const spacing = config.chunk / config.segments;
@@ -196,6 +207,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
 
     const trees = treeTypes.map(() => ({ trunks: [], crowns: [] }));
     const grass = [[], [], []];
+    const groundCover = [];
     const colliders = [];
     const pickups = [];
 
@@ -204,10 +216,9 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const z = chunkZ * config.chunk + (hash(chunkX * 19, chunkZ * 23 + index, 13) - 0.5) * config.chunk;
       const sample = sampleHeight(x, z, centerNearest.index);
       if (sample.nearest.distance < sample.nearest.width + 5.5 || treeTypes.length === 0) continue;
-      const normalY = clamp(0.72 + Math.cos(x * 0.031 - z * 0.027) * 0.24, 0, 1);
-      const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalY);
+      const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalYAt(x, z));
       const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
-      const instanceSeed = `${config.seed}:${patchId}:${index}`;
+      const instanceSeed = `${config.seed}:${patchId}:tree:${index}`;
       const species = vegetation.selectSpecies(environment, instanceSeed);
       if (!species) continue;
       const typeIndex = Number(species.metadata?.typeIndex);
@@ -219,7 +230,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
         seed: instanceSeed,
         position: [x, sample.y, z],
         environment,
-        metadata: { patchId, typeIndex }
+        metadata: { patchId, typeIndex, kind: "tree" }
       });
       const variation = instance.variation;
       const yawRadians = Number(variation.yawDegrees ?? 0) * Math.PI / 180;
@@ -235,13 +246,17 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const leanMargin = Math.sin(5 * Math.PI / 180) * height;
       const enrichedVariation = {
         ...variation,
+        yawRadians,
+        leanXRadians,
+        leanZRadians,
         groundPosition: [x, visualGroundY, z],
         speciesId: species.id,
         averageHeight: species.metadata?.averageHeight,
         barkColor: species.metadata?.barkColor,
         foliageColor: species.metadata?.foliageColor,
         barkTexture: species.metadata?.barkTexture,
-        foliageTexture: species.metadata?.foliageTexture
+        foliageTexture: species.metadata?.foliageTexture,
+        foliageCardFamily: species.metadata?.foliageCardFamily
       };
       const sharedMetadata = { treeId, cellId: patchId, typeIndex, speciesId: species.id, vegetationInstance: instance, variation: enrichedVariation };
       trees[typeIndex].trunks.push({
@@ -265,6 +280,56 @@ export function createPrehistoricPatchGenerator(options = {}) {
         shape: "ball",
         tags: ["hazard", "tree"],
         metadata: { speciesId: species.id, vegetationInstanceId: instance.id, visualGroundSink: variation.groundSink }
+      });
+    }
+
+    for (let index = 0; index < config.groundCover; index += 1) {
+      const x = chunkX * config.chunk + (hash(chunkX * 83 + index, chunkZ * 47, 167) - 0.5) * config.chunk;
+      const z = chunkZ * config.chunk + (hash(chunkX * 53, chunkZ * 89 + index, 173) - 0.5) * config.chunk;
+      const sample = sampleHeight(x, z, centerNearest.index);
+      const region = route.classify(sample.nearest.distance, sample.nearest.width);
+      if (region === "path") continue;
+      const admission = hash(index, chunkX * 17 + chunkZ, 179);
+      if (region === "edge" && admission < 0.8) continue;
+      if (region === "verge" && admission < 0.28) continue;
+      const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalYAt(x, z));
+      const id = `ground-cover-${chunkX}-${chunkZ}-${index}`;
+      const seed = `${config.seed}:${patchId}:ground-cover:${index}`;
+      const species = vegetation.selectGroundCoverSpecies(environment, seed);
+      if (!species) continue;
+      const archetype = groundCoverById.get(species.id);
+      if (!archetype) throw new RangeError(`Unknown ground-cover archetype: ${species.id}.`);
+      const instance = vegetation.createInstanceDescriptor({
+        id,
+        speciesId: species.id,
+        seed,
+        position: [x, sample.y, z],
+        environment,
+        metadata: { patchId, kind: "ground-cover" }
+      });
+      const variation = instance.variation;
+      const yaw = Number(variation.yawDegrees ?? 0) * Math.PI / 180;
+      const leanX = Number(variation.leanXDegrees ?? 0) * Math.PI / 180;
+      const leanZ = Number(variation.leanZDegrees ?? 0) * Math.PI / 180;
+      const height = archetype.averageHeight * variation.uniformScale * variation.heightScale;
+      const width = archetype.averageWidth * variation.uniformScale * variation.crownScale;
+      const visualGroundY = sample.y - variation.groundSink;
+      const family = archetype.familyId;
+      groundCover.push({
+        id,
+        speciesId: species.id,
+        familyId: family,
+        matrix: matrixFromEulerScaleTranslation(leanX, yaw, leanZ, width, height, width, x, visualGroundY, z),
+        bounds: { min: [x - width * 0.5, visualGroundY, z - width * 0.5], max: [x + width * 0.5, visualGroundY + height, z + width * 0.5] },
+        tint: variation.tint,
+        wind: {
+          amplitude: Number(species.metadata?.wind?.amplitude ?? 0.1),
+          frequency: Number(species.metadata?.wind?.frequency ?? 0.72),
+          stiffness: Number(species.metadata?.wind?.stiffness ?? 0.68),
+          phase: hash(chunkX * 97 + index, chunkZ * 101, 181) * Math.PI * 2
+        },
+        vegetationInstance: instance,
+        metadata: { patchId, region, environment, visualGroundSink: variation.groundSink }
       });
     }
 
@@ -298,11 +363,13 @@ export function createPrehistoricPatchGenerator(options = {}) {
       x: chunkX,
       z: chunkZ,
       seed: `${request.worldSeed}:${patchId}`,
-      terrain: { heights, colors, normals, segments: config.segments, mapping: "world-space", materialRevision: "stylized-high-fidelity-v2" },
+      terrain: { heights, colors, normals, segments: config.segments, mapping: "world-space", materialRevision: "stylized-high-fidelity-v3-lush-jungle" },
       trees,
+      groundCover,
       grass,
       pickups,
       colliders,
+      vegetationRevision: options.foliageAtlasRevision ?? "prehistoric-foliage-cards-v1",
       bounds: { min: [minX, -16, minZ], max: [maxX, 80, maxZ] }
     };
   };
