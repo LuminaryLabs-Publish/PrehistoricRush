@@ -9,16 +9,21 @@ import {
   createTerrainPatchVertexData
 } from "../src/render/terrain-lod-geometry.js";
 import { createPrehistoricPatchGenerator } from "../src/world/prehistoric-patch-generator.js";
+import {
+  PREHISTORIC_TREE_ARCHETYPES,
+  PREHISTORIC_TREE_TYPES
+} from "../src/shared/tree-archetype-catalog.js";
+import { createVegetationPlacementFixture } from "./helpers/vegetation-placement-fixture.mjs";
 
 const routeSamples = Array.from({ length: 240 }, (_, index) => ({
   x: Math.sin(index * 0.03) * 4,
   z: index * 2 - 240,
   width: 3.1
 }));
-const treeTypes = [[34, 58, 2.5, 10.5, 18, 0x214f28]];
 const generator = createPrehistoricPatchGenerator({
   config: { seed: 238991, chunk: 56, segments: 30, trees: 1, grass: 2, shardsPerPatch: 1 },
-  treeTypes,
+  treeTypes: PREHISTORIC_TREE_TYPES,
+  vegetation: createVegetationPlacementFixture(PREHISTORIC_TREE_ARCHETYPES),
   routeSamples
 });
 const patch = generator({ x: 0, z: 0, patchId: "0:0", worldSeed: "terrain-lod-test" });
@@ -45,14 +50,8 @@ assert.equal(data.morphOffsetsByLevel.far.length, topology.vertexCount * 3);
 assert.ok(data.morphOffsetsByLevel.medium.some((value) => Math.abs(value) > 1e-6), "medium geomorph has non-zero offsets");
 assert.ok(data.morphOffsetsByLevel.far.some((value) => Math.abs(value) > 1e-6), "far geomorph has non-zero offsets");
 
-const near = selectPrehistoricTerrainLodLevel(policy, {
-  focus: { x: 0, z: 0 },
-  bounds: patch.bounds
-});
-const far = selectPrehistoricTerrainLodLevel(policy, {
-  focus: { x: 200, z: 200 },
-  bounds: patch.bounds
-});
+const near = selectPrehistoricTerrainLodLevel(policy, { focus: { x: 0, z: 0 }, bounds: patch.bounds });
+const far = selectPrehistoricTerrainLodLevel(policy, { focus: { x: 200, z: 200 }, bounds: patch.bounds });
 assert.equal(near.levelId, "near");
 assert.equal(far.levelId, "far");
 assert.deepEqual(policy.levels.map((level) => level.resolution), [64, 32, 16]);
@@ -66,6 +65,7 @@ const textureSource = await readFile(new URL("../src/render/three-clay-surface-t
 const runtimeSource = await readFile(new URL("../src/game-runtime-lod.js", import.meta.url), "utf8");
 const gameSource = await readFile(new URL("../src/game.js", import.meta.url), "utf8");
 const generatorSource = await readFile(new URL("../src/world/prehistoric-patch-generator.js", import.meta.url), "utf8");
+const workerSource = await readFile(new URL("../src/workers/prehistoric-patch-worker.js", import.meta.url), "utf8");
 
 assert.match(layerSource, /new THREE\.MeshPhysicalMaterial\(/, "terrain uses a physical clay material");
 assert.match(layerSource, /roughnessMap: textures\.roughnessMap/, "terrain consumes the roughness texture");
@@ -79,6 +79,9 @@ assert.match(wrapperSource, /lastVisibleFrameAck/, "the first matching terrain f
 assert.match(textureSource, /options\.resolution \?\? 2048/, "renderer generates 2K texture outputs");
 assert.match(textureSource, /workingResolution \?\? 1024/, "texture generation uses bounded working detail");
 assert.match(runtimeSource, /createThreePatchStreamLodAdapter/, "the active runtime selects the LOD adapter");
+assert.match(runtimeSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/, "main-thread generation installs Object Vegetation");
+assert.match(workerSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/, "worker generation installs Object Vegetation");
+assert.doesNotMatch(generatorSource, /function chooseTreeType|function treeVariation/, "the product patch generator no longer owns generic vegetation selection or variation");
 const generatorVersion = runtimeSource.match(/generatorVersion:\s*"([^"]+)"/)?.[1];
 assert.match(generatorVersion ?? "", /^prehistoric-patch-v\d+-[a-z0-9-]+$/, "stream cache identity declares a versioned patch schema");
 assert.match(
@@ -88,8 +91,8 @@ assert.match(
 );
 assert.match(
   runtimeSource,
-  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
-  "stream cache identity includes the exact tree-fidelity generation"
+  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-catalog-\$\{vegetationCatalogDigest\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
+  "stream cache identity includes the exact vegetation catalog and tree-fidelity generation"
 );
 assert.match(runtimeSource, /selectTerrainLodLevel: NexusEngine\.selectTerrainLodLevel/, "Core Graphics selects LOD levels");
 assert.match(gameSource, /game-runtime-lod\.js/, "the page boots the LOD runtime");
