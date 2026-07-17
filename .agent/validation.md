@@ -1,49 +1,41 @@
 # PrehistoricRush Validation
 
 **Audit timestamp:** `2026-07-17T05-58-55-04-00`  
-**Scope:** organization selection, jungle runtime integration through `4b2e184…`, complete kit/service inventory, render-host retirement, and release-proof boundaries
+**Scope:** organization selection, jungle runtime and test integration through `3b26af5…`, complete kit/service inventory, render-host retirement, and release-proof boundaries
 
 ## Summary
 
-Source inspection confirms end-to-end jungle integration: semantic catalogs, Worker/main-thread ecological patch generation, foliage-card packages, procedural atlas, lush tree cards, ground cover, atmosphere, runtime diagnostics, and a generation-bound lush first-frame acknowledgement.
+Source inspection confirms end-to-end jungle integration plus source test wiring. The current package syntax-checks all new jungle modules and runs a dedicated foliage-card system fixture alongside expanded Vegetation, fidelity, spawn, and LOD fixtures.
 
 Inspection also confirms incomplete host retirement. Child LOD and jungle layers expose disposal, but the base adapter has no disposal service. The parent LOD adapter does not retire base renderer/canvas/scene resources, and atmosphere state has no removal/restoration command.
 
 ## Intent
 
-Separate implemented jungle presentation from unproven complete cleanup, repeated-generation safety, browser execution, and deployment parity.
+Separate implemented and source-gated jungle presentation from unproven complete cleanup, repeated-generation browser safety, and deployment parity.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories and exclude Cavalry.
 - [x] Confirm ten eligible central ledgers and root `.agent` states.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Inspect runtime changes through head `4b2e184…`.
-- [x] Reconcile 96 implemented kits/adapters/fixtures and services.
+- [x] Inspect runtime and test changes through head `3b26af5…`.
+- [x] Reconcile 97 implemented kits/adapters/fixtures and services.
 - [x] Inspect base and LOD adapter retirement surfaces.
-- [x] Add and route the final timestamped reconciliation.
+- [x] Add and route the final timestamped reconciliations.
 - [ ] Execute tests, browser fixtures, build smoke, and Pages smoke.
 
 ## Confirmed by inspection
 
 ```txt
-reviewed runtime head: 4b2e1842dc6f8e47fe537260e4282518e09537e2
+reviewed repository head: 3b26af5116d4735564a2da109b36d32ed7b95a0b
 previous documentation head: e7c5d238d7ba406ecf02b8d91416161f03201147
 
-foliage-card recipes and eight families: present
-six ground-cover archetypes: present
-semantic tree/ground-cover registration: present
-main-thread ground-cover patch generation: present
-Worker vegetation catalog initialization: present
-card-backed tree packages/captures: present
-procedural foliage atlas: present
-lush foliage layer: present
-ground-cover render layer: present
-jungle atmosphere composition: present
-lush frame acknowledgement: present
-startup atlas-revision admission: present
-
+jungle source-to-frame runtime integration: present
+new jungle modules in test:syntax: present
+foliage-card-system fixture: present
+expanded module, fidelity, variation, and LOD fixtures: present
 child jungle-layer disposal: present
+
 base patch-stream adapter dispose service: absent
 base renderer/canvas/resource retirement: absent
 atmosphere restoration/removal service: absent
@@ -51,41 +43,33 @@ parent RenderHostRetirementResult: absent
 FirstRetiredRenderHostAck: absent
 ```
 
-## Source inspection performed
+## Test evidence inspected
 
 ```txt
-LuminaryLabs-Publish organization inventory
-LuminaryLabs-Dev/LuminaryLabs PrehistoricRush ledger
-runtime commits and compare history through 4b2e184
-src/shared/prehistoric-foliage-card-recipes.js
-src/shared/prehistoric-vegetation-domain.js
-src/world/prehistoric-patch-generator.js
-src/workers/prehistoric-patch-worker.js
-src/shared/prehistoric-tree-fidelity-runtime.js
-src/shared/vegetation-tree-fidelity-provider.js
-src/render/prehistoric-foliage-atlas.js
-src/render/three-lush-foliage-layer.js
-src/render/three-ground-cover-layer.js
-src/render/lush-jungle-atmosphere.js
-src/render/three-patch-stream-adapter.js
-src/render/three-patch-stream-lod-adapter.js
-src/game-runtime-lod.js
-src/shared/runtime-versions.js
-package.json
+package.json test:syntax includes recipes, atlas, tree catalog, Vegetation,
+fidelity provider/runtime, lush foliage, ground cover, atmosphere, LOD adapter,
+Worker, patch generator, game runtime, and game entry
+
+tests/foliage-card-system.mjs checks:
+  atlas revision and unique family/cell counts
+  alpha and wind bounds
+  twelve tree archetypes and near/medium card forms
+  six ground-cover archetypes
+  atlas/tree/lush/ground-cover/adapter/atmosphere source contracts
 ```
 
-## Required fixtures
+## Required executable fixtures
 
 ```txt
-new render-module syntax/import coverage
-actual product Vegetation runtime construction
-main-thread/Worker lush patch parity
+npm test on reviewed head
 browser lush first-frame admission
 construct-render-retire-reconstruct
 run restart and route remount cleanup
 WebGL context loss/recovery
-canvas, light, resource, and callback retirement
-source, built artifact, and Pages cleanup parity
+canvas, light, GPU resource, and callback retirement
+pixel-level source frame
+built artifact runtime frame
+Pages-origin runtime frame
 ```
 
 ## Change scope
@@ -100,7 +84,7 @@ workflow or deployment changed by this audit: no
 branch created: no
 pull request created: no
 
-npm test: not run
+npm test: not run by this audit
 browser runtime fixture: not run
 retirement fixture: unavailable
 WebGL recovery fixture: unavailable
@@ -108,4 +92,4 @@ built-output smoke: not run
 Pages smoke: not run
 ```
 
-Jungle runtime integration is source-confirmed. Complete cleanup, restart/remount safety, WebGL recovery, artifact parity, Pages parity, and production readiness are not claimed.
+Jungle runtime integration and source test wiring are confirmed. Complete cleanup, restart/remount safety, WebGL recovery, pixel parity, artifact parity, Pages parity, and production readiness are not claimed.
