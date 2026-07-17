@@ -1,47 +1,50 @@
-# START HERE: PrehistoricRush Jungle Runtime and Render-Host Retirement
+# START HERE: PrehistoricRush Render Host Generation Retirement
 
-**Last aligned:** `2026-07-17T05-58-55-04-00`  
+**Last aligned:** `2026-07-17T06-23-59-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
 **Reviewed repository head:** `3b26af5116d4735564a2da109b36d32ed7b95a0b`  
-**Previous documentation head:** `e7c5d238d7ba406ecf02b8d91416161f03201147`  
-**Status:** `jungle-runtime-integrated-render-host-retirement-authority-audited`
+**Reviewed runtime source head:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
+**Previous central repo-local documentation head:** `dafa3f08261ffac5767c4d75f404a7d477db2466`  
+**Status:** `render-host-generation-retirement-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected through runtime-ahead priority. The jungle work is now integrated and source-gated: semantic catalogs, Worker-backed ecological patch output, card-backed tree packages, procedural atlas, lush foliage and ground-cover render layers, atmosphere composition, frame acknowledgement, syntax coverage, and a dedicated foliage contract test.
+PrehistoricRush was selected through runtime-ahead priority. The jungle foliage and ground-cover pipeline is integrated and source-gated from semantic catalogs through main-thread/Worker patches, tree fidelity, procedural atlas, card layers, atmosphere, diagnostics, syntax checks, deterministic fixtures and a generation-bound visible-frame acknowledgement.
 
-The focused remaining gap is complete render-host retirement. Child layers dispose, but the base adapter exposes no disposal service; base renderer/canvas/scene resources, atmosphere mutations, and stale callbacks are not settled through one parent generation result.
+The focused remaining gap is parent render-host retirement. Child LOD and jungle layers dispose, but the base Three.js adapter, renderer/canvas, base scene resources, atmosphere state, RAF, Worker, browser listeners and stale results are not settled through one apply-once generation result.
 
 ## Intent
 
-Make one render-host generation own and retire every base and jungle-specific browser, scene, GPU, patch, atmosphere, and frame resource exactly once.
+Make one render-host generation own and retire every base and jungle-specific browser, patch, scene, GPU, atmosphere, callback and visible-frame resource exactly once.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
 - [x] Work only on PrehistoricRush.
-- [x] Reconcile runtime and test changes through `3b26af5…`.
+- [x] Reconcile the 32-commit delta through reviewed head `3b26af5…`.
+- [x] Review runtime integration through source head `4b2e184…`.
 - [x] Identify the complete interaction loop and active domains.
-- [x] Document all 97 active kits/adapters/fixtures and their services.
+- [x] Document all 97 active kits, adapters and fixtures with their services.
 - [x] Add the timestamped tracker and focused audit family.
-- [x] Confirm jungle source-to-frame integration and source test gates.
-- [ ] Add complete render-host generation retirement.
-- [ ] Execute browser repeated-mount, restart, WebGL recovery, artifact, and Pages fixtures.
+- [ ] Implement complete parent render-host generation retirement.
+- [ ] Execute repeated-construction, restart, remount, WebGL recovery, artifact and Pages fixtures.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-17T05-58-55-04-00/project-breakdown.md
-.agent/trackers/2026-07-17T05-58-55-04-00/final-runtime-reconciliation.md
-.agent/trackers/2026-07-17T05-58-55-04-00/final-test-reconciliation.md
-.agent/architecture-audit/2026-07-17T05-58-55-04-00-render-host-retirement-dsk-update.md
-.agent/render-audit/2026-07-17T05-58-55-04-00-jungle-render-host-retirement-gap.md
+.agent/trackers/2026-07-17T06-23-59-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-17T06-23-59-04-00.md
+.agent/architecture-audit/2026-07-17T06-23-59-04-00-render-host-generation-retirement-dsk-map.md
+.agent/render-audit/2026-07-17T06-23-59-04-00-parent-render-host-retirement-gap.md
+.agent/gameplay-audit/2026-07-17T06-23-59-04-00-run-restart-render-generation-loop.md
+.agent/interaction-audit/2026-07-17T06-23-59-04-00-render-host-command-result-map.md
+.agent/render-host-audit/2026-07-17T06-23-59-04-00-generation-ownership-retirement-contract.md
+.agent/deploy-audit/2026-07-17T06-23-59-04-00-render-host-retirement-browser-fixture-gate.md
+.agent/central-sync-audit/2026-07-17T06-23-59-04-00-runtime-ahead-render-host-retirement-reconciliation.md
 .agent/validation.md
 ```
-
-The final runtime and test reconciliation files supersede intermediate adoption findings from this run.
 
 ## Required parent domain
 
@@ -61,4 +64,4 @@ planned render-host-retirement surfaces: 19
 
 ## Claim boundary
 
-Jungle runtime integration and source fixture wiring are confirmed by inspection. Complete host retirement, repeated-mount safety, WebGL recovery, executable browser behavior, artifact parity, Pages parity, and production readiness are not claimed.
+Jungle runtime integration and source fixture wiring are confirmed by inspection. Complete host retirement, repeated-generation safety, WebGL recovery, executable browser behavior, artifact parity, Pages parity and production readiness are not claimed.
