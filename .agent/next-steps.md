@@ -1,65 +1,78 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-17T02-50-44-04-00`  
-**Authority:** `prehistoric-rush-product-vegetation-runtime-fixture-authority-domain`
+**Audit:** `2026-07-17T05-58-55-04-00`  
+**Authority:** `prehistoric-rush-jungle-foliage-atmosphere-runtime-adoption-authority-domain`
 
 ## Intent
 
-Extend the new source fixtures across the actual product runtime, production Worker, browser module graph, package binding, and first rendered frame without replacing the fast deterministic unit fixture.
+Adopt the new foliage-card, ground-cover and atmosphere modules through the existing Vegetation, patch, Worker, Graphics and Three.js ownership boundaries.
 
 ## Checklist
 
-### Phase 1: Actual runtime fixture
+### Phase 1: Source and catalog admission
 
-- [ ] Load the exact pinned Nexus Engine revision used by the game.
-- [ ] Call `createPrehistoricVegetationRuntime()`.
-- [ ] Verify ten species, tree structures, foliage descriptors, and object bridges.
-- [ ] Call `createPrehistoricVegetationGeneratorOptions()` with the actual runtime.
-- [ ] Generate a deterministic patch through the actual placement API.
+- [ ] Add both new modules to syntax/import fixtures.
+- [ ] Validate atlas revision, dimensions, unique family IDs and unique in-range atlas cells.
+- [ ] Validate scalar ranges, cloneability and catalog immutability.
+- [ ] Register foliage-card and ground-cover descriptors through existing Core Vegetation composition.
+- [ ] Publish one catalog generation and digest.
 
-### Phase 2: Worker parity
+### Phase 2: Patch and Worker adoption
 
-- [ ] Initialize `prehistoric-patch-worker.js` with the same source and engine revisions.
-- [ ] Generate the same patch on main thread and Worker.
-- [ ] Compare species IDs, instance envelopes, matrices, bounds, ground authority, and colliders.
-- [ ] Publish a typed `MainWorkerPatchParityResult`.
+- [ ] Include patch, species and tree-instance identity in tree-card placement seeds.
+- [ ] Add explicit near, medium, far and culled budgets.
+- [ ] Apply moisture, elevation, slope, clustering and route-clearance rules to ground cover.
+- [ ] Add the accepted catalogs to the production Worker handshake.
+- [ ] Compare main-thread and Worker card/ground-cover payloads.
+- [ ] Publish `FoliagePatchProjectionResult` and `FirstJunglePatchAck`.
 
-### Phase 3: Browser and frame proof
+### Phase 3: GPU and atmosphere ownership
 
-- [ ] Load the product import graph through the browser import map.
-- [ ] Exercise menu/game tree asset preparation.
-- [ ] Activate one semantic tree patch.
-- [ ] Resolve one species to a fidelity package and exact captured frame.
-- [ ] Publish `FirstProductVegetationPatchAck` and `FirstProductVegetationFrameAck`.
+- [ ] Bind the 4×2 atlas revision to decoded texture and material generations.
+- [ ] Project foliage cards through stable instance batches with patch-owned release.
+- [ ] Apply atmosphere once per scene/renderer generation.
+- [ ] Reuse or replace owned fill/bounce lights by stable IDs.
+- [ ] Snapshot predecessor background, fog, exposure, light and shadow state.
+- [ ] Add quality-aware fog and shadow-map budgets.
+- [ ] Retire predecessor GPU and scene resources exactly once.
 
-### Phase 4: Release parity
+### Phase 4: Frame proof
 
-- [ ] Run the fixture against source hosting.
-- [ ] Run the fixture against built/static output.
-- [ ] Run the fixture from the GitHub Pages subpath.
-- [ ] Fail closed on revision, Worker, package, or frame mismatch.
+- [ ] Bind catalog, patch, card batch, atlas material, atmosphere, renderer and viewport revisions.
+- [ ] Publish `JunglePresentationProjectionResult`.
+- [ ] Publish `FirstJunglePresentationFrameAck` from the exact rendered frame.
+- [ ] Prove scene replacement and run restart do not accumulate lights or stale resources.
 
-### Phase 5: Retained generation authority
+### Phase 5: Release parity
 
-- [ ] Keep the prior semantic vegetation/fidelity generation work active.
-- [ ] Register semantic fidelity profiles for package builds.
-- [ ] Add Worker catalog generation handshake.
-- [ ] Bind species, package, cache, patch, collision, and frame generations.
+- [ ] Run source-origin browser fixtures.
+- [ ] Run built/static artifact fixtures.
+- [ ] Run GitHub Pages subpath fixtures.
+- [ ] Fail closed on revision, Worker, atlas, resource or frame mismatch.
+
+### Retained prior fixture work
+
+- [ ] Execute the actual pinned Core Vegetation runtime fixture.
+- [ ] Keep the fast test-owned deterministic placement fixture.
+- [ ] Prove actual product runtime, Worker, package and frame convergence.
 
 ## Recommended file cut
 
 ```txt
-tests/vegetation-product-runtime.mjs
-tests/vegetation-main-worker-parity.mjs
-tests/browser/vegetation-product-frame.html
-tests/browser/vegetation-product-frame.mjs
-src/shared/prehistoric-vegetation-fixture-manifest.js
+src/shared/prehistoric-jungle-presentation-domain.js
+src/render/three-foliage-card-layer.js
+src/render/jungle-atmosphere-controller.js
+src/workers/prehistoric-patch-worker.js
+tests/foliage-card-catalog.mjs
+tests/foliage-main-worker-parity.mjs
+tests/jungle-atmosphere-lifecycle.mjs
+tests/browser/jungle-presentation-frame.html
 ```
 
 ## Compatibility constraints
 
-Preserve current seeds, ecology, tree counts, variation ranges, colliders, route exclusion, terrain topology, package forms, transition settings, camera, gameplay, and renderer performance. Keep the current test-owned fixture as fast patch-algorithm coverage.
+Preserve existing seeds, route clearance, terrain topology, tree collisions, grass ownership, package forms, transition policy, player motion, camera, score, pause and outcome behavior. Keep foliage cards and ground cover presentation-only unless a separate collision command explicitly admits them.
 
 ## Claim boundary
 
-Do not claim product-runtime, Worker, browser, artifact, Pages, or frame conformance until the final fixture matrix passes on the exact tested revision.
+Do not claim the jungle upgrade is shipped until the production composition, Worker, GPU lifecycle and exact-frame fixture matrix passes on the same revision.
