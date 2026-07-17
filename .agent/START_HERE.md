@@ -35,6 +35,7 @@ Make one render-host generation own and retire every base and jungle-specific br
 
 ```txt
 .agent/trackers/2026-07-17T06-23-59-04-00/project-breakdown.md
+.agent/trackers/2026-07-17T06-23-59-04-00/final-reconciliation.md
 .agent/turn-ledger/2026-07-17T06-23-59-04-00.md
 .agent/architecture-audit/2026-07-17T06-23-59-04-00-render-host-generation-retirement-dsk-map.md
 .agent/render-audit/2026-07-17T06-23-59-04-00-parent-render-host-retirement-gap.md
