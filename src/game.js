@@ -3,7 +3,7 @@ import {
   TREE_FIDELITY_BUNDLE_ID,
   TREE_FIDELITY_PROVIDER_ID,
   createPrehistoricTreeFidelityAssetRuntime
-} from "./shared/tree-fidelity-assets.js";
+} from "./shared/prehistoric-tree-fidelity-runtime.js";
 import { hydrateTreeFidelityRuntimeImages } from "./shared/tree-fidelity-runtime-images.js";
 
 const appRoot = document.querySelector("#app") ?? document.body;
