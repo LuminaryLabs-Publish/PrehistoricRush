@@ -261,7 +261,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
         x,
         y: sample.y,
         z,
-        radius: type[2] * 1.3,
+        radius: radius * 1.3,
         shape: "ball",
         tags: ["hazard", "tree"],
         metadata: { speciesId: species.id, vegetationInstanceId: instance.id, visualGroundSink: variation.groundSink }
