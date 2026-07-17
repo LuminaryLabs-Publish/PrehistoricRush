@@ -1,65 +1,67 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-17T14-40-21-04-00`  
-**Authority:** `prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain`
+**Audit:** `2026-07-17T16-40-37-04-00`  
+**Authority:** `prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain`
 
 ## Intent
 
-Turn the repaired provider pin into an executable startup contract shared by the browser main realm and patch Worker.
+Turn the implemented descriptor closure and atlas `v2` identity into one executable browser, Worker, patch and frame contract.
 
 ## Checklist
 
-### Phase 1: Provider manifest and source probe
+### Phase 1: Canonical closure manifest
 
-- [ ] Publish the expected Nexus commit, URL and product startup generation as a provider manifest.
-- [ ] Import the exact provider revision in an executable source fixture.
-- [ ] Construct Core Object Vegetation.
-- [ ] Assert `engine.n.vegetationFoliage.createPlacementRecipe` is callable.
-- [ ] Register the complete product catalog and record its digest.
+- [ ] Enumerate referenced family IDs for every tree archetype and every supported LOD form.
+- [ ] Canonically sort and digest the eight-family catalog.
+- [ ] Digest each descriptor’s family closure and cluster references.
+- [ ] Keep registration rejection for every unresolved family.
 
-### Phase 2: Main-realm admission
+### Phase 2: Runtime admission
 
-- [ ] Replace partial export checks with `ProviderRevisionAdmissionResult` and `VegetationProviderProbeResult`.
-- [ ] Classify import, revision, construction, binding and catalog failures.
-- [ ] Publish `FirstVegetationRuntimeReadyAck` before streaming admission.
+- [ ] Publish `FoliageFamilyClosureResult` during main-realm catalog construction.
+- [ ] Publish `AtlasRevisionAdmissionResult` for atlas `prehistoric-foliage-cards-v2`.
+- [ ] Bind both results to the current runtime generation.
 
-### Phase 3: Worker parity
+### Phase 3: Worker and patch parity
 
-- [ ] Include provider revision, module identity, catalog digest and binding digest in Worker-ready evidence.
-- [ ] Add a startup deadline and explicit synchronous-fallback settlement.
-- [ ] Reject stale ready and patch messages by worker and provider generation.
-- [ ] Publish `ProviderRealmParityResult` before using Worker output.
+- [ ] Include family catalog digest, descriptor digest and atlas revision in Worker-ready evidence.
+- [ ] Publish `FoliageRealmParityResult` before Worker patches are admitted.
+- [ ] Include atlas/runtime generation on patch requests and results.
+- [ ] Reject stale or mismatched Worker and patch results.
 
-### Phase 4: Patch and frame proof
+### Phase 4: Render proof
 
-- [ ] Bind provider generation to patch requests and results.
-- [ ] Generate one matching main-thread and Worker patch and compare deterministic digests.
-- [ ] Publish `FirstWorkerPatchAck` and `FirstProviderBoundVegetationFrameAck`.
+- [ ] Admit the renderer atlas against the accepted catalog digest.
+- [ ] Extend frame evidence with active family IDs and per-family counts.
+- [ ] Publish `FirstFamilyCompleteFoliageFrameAck` after the matching frame submits.
 
 ### Phase 5: Release fixtures
 
 - [ ] Run `npm test`.
-- [ ] Add browser main-realm and Worker fixtures.
-- [ ] Run built-artifact and GitHub Pages fixtures.
-- [ ] Record the resolved provider URL and observed commit to catch CDN cache drift.
+- [ ] Add near and medium family-closure assertions.
+- [ ] Add browser and production Worker fixtures.
+- [ ] Add built-artifact and GitHub Pages fixtures.
+- [ ] Record resolved revisions, digests, URLs and frame evidence.
 
 ### Retained work
 
+- [ ] Complete pinned-provider admission proof.
 - [ ] Resolve pause/menu input and simulation semantics.
 - [ ] Implement parent render-host generation retirement.
 
 ## Recommended file cut
 
 ```txt
-src/shared/runtime-versions.js
+src/shared/prehistoric-foliage-card-recipes.js
 src/shared/prehistoric-vegetation-domain.js
-src/game-runtime-lod.js
 src/workers/prehistoric-patch-worker.js
-tests/vegetation-module-imports.mjs
-tests/pinned-vegetation-provider.mjs
-tests/browser/vegetation-provider-parity.html
+src/world/prehistoric-patch-generator.js
+src/render/three-lush-foliage-layer.js
+src/render/three-patch-stream-lod-adapter.js
+tests/foliage-card-system.mjs
+tests/browser/foliage-family-parity.html
 ```
 
 ## Compatibility constraints
 
-Preserve the current provider pin, product catalog, deterministic patch schema, world seed behavior, rendering, collision, pickups, score and gameplay tuning.
+Preserve the eight-family catalog, atlas `v2`, deterministic placement and patch schemas, tree/ground-cover density, route readability, collision, pickups, score and gameplay tuning.
