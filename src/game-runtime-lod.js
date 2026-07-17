@@ -1,7 +1,11 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
 import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
 import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./world/prehistoric-terrain-lod-policy.js";
-import { createPrehistoricVegetationRuntime } from "./shared/prehistoric-vegetation-domain.js";
+import {
+  createPrehistoricVegetationGeneratorOptions,
+  createPrehistoricVegetationRuntime
+} from "./shared/prehistoric-vegetation-domain.js";
+import { FOLIAGE_ATLAS_REVISION } from "./shared/prehistoric-foliage-card-recipes.js";
 import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
 import { PREHISTORIC_TREE_TYPES } from "./shared/tree-fidelity-assets.js";
 import {
@@ -18,7 +22,8 @@ const cfg = {
   chunk: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.patchSize,
   segments: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.sourceResolution,
   trees: 7,
-  grass: 70,
+  grass: 96,
+  groundCover: 36,
   goal: 3600
 };
 const STREAM = {
@@ -131,7 +136,8 @@ async function main() {
   }
 
   const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
-  const vegetationCatalogDigest = vegetationRuntime.catalog.species.map((species) => species.contentHash).join("|");
+  const allVegetationSpecies = vegetationRuntime.vegetation.listSpecies();
+  const vegetationCatalogDigest = allVegetationSpecies.map((species) => species.contentHash).join("|");
   const NexusEngineKits = { ...SeedModule, ...CreatureModule, ...BatchModule, ...PatchModule, ...CameraModule };
   const engine = NexusEngine.createRealtimeGame({
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, {
@@ -179,15 +185,14 @@ async function main() {
   };
   const generatorOptions = {
     ...serializableGeneratorOptions,
-    treeTypes: vegetationRuntime.catalog.treeTypes,
-    vegetation: vegetationRuntime.placement
+    ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
   };
   const generator = createPrehistoricPatchGenerator(generatorOptions);
   const workerState = createWorkerExecutor(PatchModule, serializableGeneratorOptions);
   const controller = patchControllers.create({
     id: "prehistoric-rush-world",
     worldSeed: String(cfg.seed),
-    generatorVersion: "prehistoric-patch-v5-vegetation-domain",
+    generatorVersion: "prehistoric-patch-v6-lush-foliage-cards",
     patchSize: cfg.chunk,
     activeRadius: STREAM.activeRadius,
     retainRadius: STREAM.retainRadius,
@@ -196,7 +201,7 @@ async function main() {
     activationBudget: STREAM.activationBudget,
     generationBudget: STREAM.generationBudget,
     terrainSettingsHash: `segments-${terrainLodPolicy.sourceResolution}-lod-${terrainLodPolicy.revision}`,
-    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-catalog-${vegetationCatalogDigest}-fidelity-${treeFidelityGenerationDigest}`,
+    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-ground-${cfg.groundCover}-catalog-${vegetationCatalogDigest}-foliage-${FOLIAGE_ATLAS_REVISION}-fidelity-${treeFidelityGenerationDigest}`,
     generator,
     executor: workerState.executor
   });
@@ -221,6 +226,8 @@ async function main() {
     treeTypes: vegetationRuntime.catalog.treeTypes,
     treeFidelityPackages,
     treeBatchCapacity: TREE_BATCH_CAPACITY,
+    foliageCardCapacity: 8192,
+    groundCoverCapacity: 2400,
     terrainLodPolicy,
     selectTerrainLodLevel: NexusEngine.selectTerrainLodLevel
   });
@@ -309,11 +316,15 @@ async function main() {
     if (!startupFrameAcknowledged && treeAssetRuntime?.startup) {
       const treeFidelityView = adapter.view.treeFidelity;
       const exactFrameAck = treeFidelityView?.exactFrameAck;
+      const lushFrameAck = adapter.view.lushVegetationFrameAck;
       if (treeFidelityView?.generationDigest !== treeFidelityGenerationDigest) {
         throw new Error("Presented tree fidelity generation does not match the startup asset generation.");
       }
       if (!exactFrameAck || exactFrameAck.generationDigest !== treeFidelityGenerationDigest) {
         throw new Error("Presented tree impostors do not have an exact generation-bound frame acknowledgement.");
+      }
+      if (!lushFrameAck || lushFrameAck.foliageAtlasRevision !== FOLIAGE_ATLAS_REVISION) {
+        throw new Error("Presented foliage cards do not match the admitted foliage atlas revision.");
       }
       treeAssetRuntime.startup.presentFirstFrame({
         frameId: `prehistoric-rush:frame:${engine.clock?.frame ?? 1}`,
@@ -323,12 +334,18 @@ async function main() {
           treeFidelityGenerationDigest,
           treeFidelityGenerationIds,
           vegetationCatalogDigest,
-          vegetationSpeciesCount: vegetationRuntime.catalog.species.length,
+          vegetationSpeciesCount: allVegetationSpecies.length,
+          treeSpeciesCount: vegetationRuntime.catalog.species.length,
+          groundCoverSpeciesCount: vegetationRuntime.catalog.groundCoverSpecies.length,
+          foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
           treeFidelityPackageCount: treeFidelityPackages.length,
           treeCount: treeFidelityView.treeCount,
           formCounts: structuredClone(treeFidelityView.counts),
+          foliageCards: (adapter.view.lushFoliage?.nearCards ?? 0) + (adapter.view.lushFoliage?.mediumCards ?? 0),
+          groundCoverCount: adapter.view.groundCover?.count ?? 0,
           transitioning: treeFidelityView.transitioning,
-          exactImpostorFrameAck: structuredClone(exactFrameAck)
+          exactImpostorFrameAck: structuredClone(exactFrameAck),
+          lushVegetationFrameAck: structuredClone(lushFrameAck)
         }
       });
       treeAssetRuntime.startup.enter({ inputReady: true });
@@ -338,7 +355,9 @@ async function main() {
     const patchStats = adapter.view.patchStats;
     const lod = adapter.view.terrainLod;
     const treeLod = adapter.view.treeFidelity?.counts ?? { near: 0, medium: 0, far: 0, horizon: 0 };
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · species ${vegetationRuntime.catalog.species.length} · frames ${adapter.view.treeFidelity?.frameBindingCount ?? 0} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    const foliageCards = (adapter.view.lushFoliage?.nearCards ?? 0) + (adapter.view.lushFoliage?.mediumCards ?? 0);
+    const groundCover = adapter.view.groundCover?.count ?? 0;
+    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · leaf cards ${foliageCards} · floor ${groundCover} · species ${allVegetationSpecies.length} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -369,15 +388,19 @@ async function main() {
         view: structuredClone(adapter.view.terrainLod)
       },
       vegetation: {
-        species: vegetationRuntime.vegetation.listSpecies(),
+        species: allVegetationSpecies,
         trees: vegetationRuntime.tree.list(),
         foliage: vegetationRuntime.foliage.list(),
-        catalogDigest: vegetationCatalogDigest
+        catalogDigest: vegetationCatalogDigest,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
       },
       treeFidelity: structuredClone(adapter.view.treeFidelity),
+      lushFoliage: structuredClone(adapter.view.lushFoliage),
+      groundCover: structuredClone(adapter.view.groundCover),
+      jungleAtmosphere: structuredClone(adapter.view.jungleAtmosphere),
       treeFidelityGenerationDigest,
       assetStartup: treeAssetRuntime?.startup?.getDescriptor?.() ?? null,
-      renderer: "three-patch-quadtree-object-vegetation-fidelity-v14"
+      renderer: "three-patch-quadtree-lush-foliage-cards-v15"
     })
   };
   requestAnimationFrame(loop);
