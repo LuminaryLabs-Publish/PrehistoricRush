@@ -1,23 +1,23 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-17T10-59-32-04-00",
-  "status": "pause-overlay-input-context-simulation-arbitration-authority-audited",
-  "technicalStatus": "pause-overlay-input-context-simulation-arbitration-authority-audited",
-  "repositoryRevisionReviewed": "0194fc7b3962528cb5233d0180f7b33a30eb5050",
-  "runtimeSourceRevisionReviewed": "4b2e1842dc6f8e47fe537260e4282518e09537e2",
-  "priorCentralRepoLocalHead": "0194fc7b3962528cb5233d0180f7b33a30eb5050",
-  "currentAuditedSlice": "Pause Overlay / Gameplay Input Context / Simulation Arbitration",
-  "latestTracker": ".agent/trackers/2026-07-17T10-59-32-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-17T10-59-32-04-00.md",
+  "generatedAt": "2026-07-17T14-40-21-04-00",
+  "status": "pinned-vegetation-provider-admission-browser-worker-parity-authority-audited",
+  "technicalStatus": "pinned-vegetation-provider-admission-browser-worker-parity-authority-audited",
+  "repositoryRevisionReviewed": "47788818edec7d49753f942a69ef392a8b092037",
+  "nexusEngineRevisionReviewed": "d41992636de2752f1ad9047b80701e6313f19b87",
+  "priorRepoLocalDocumentationHead": "8cd649cb87fd98442116b2f3eff7496ea4c74e9c",
+  "currentAuditedSlice": "Pinned Vegetation Provider Admission / Foliage Placement Binding / Browser Worker Parity",
+  "latestTracker": ".agent/trackers/2026-07-17T14-40-21-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-17T14-40-21-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-17T10-59-32-04-00-pause-input-simulation-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-17T10-59-32-04-00-pause-overlay-moving-world-frame-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-17T10-59-32-04-00-menu-open-active-run-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-17T10-59-32-04-00-pause-context-command-result-map.md",
-    "pauseSystem": ".agent/pause-system-audit/2026-07-17T10-59-32-04-00-input-simulation-focus-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-17T10-59-32-04-00-pause-browser-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-17T10-59-32-04-00-oldest-selection-pause-arbitration-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-17T14-40-21-04-00-pinned-vegetation-provider-admission-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-17T14-40-21-04-00-provider-ready-first-vegetation-frame-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-17T14-40-21-04-00-vegetation-runtime-startup-patch-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-17T14-40-21-04-00-provider-admission-command-result-map.md",
+    "vegetationSystem": ".agent/vegetation-system-audit/2026-07-17T14-40-21-04-00-foliage-placement-binding-browser-worker-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-17T14-40-21-04-00-pinned-provider-source-browser-pages-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-17T14-40-21-04-00-runtime-ahead-provider-pin-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -27,13 +27,13 @@
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "undocumentedCount": 0,
-    "runtimeAheadCount": 0,
+    "runtimeAheadCount": 1,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRepositoryHead": "0194fc7b3962528cb5233d0180f7b33a30eb5050",
+    "selectedRepositoryHead": "47788818edec7d49753f942a69ef392a8b092037",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "oldest synchronized central timestamp",
-    "selectedPriorTimestamp": "2026-07-17T06-23-59-04-00",
-    "nextOldest": "LuminaryLabs-Publish/PhantomCommand at 2026-07-17T06-38-14-04-00"
+    "reason": "sole runtime-ahead eligible repository",
+    "runtimeDelta": "src/shared/runtime-versions.js",
+    "previousDocumentedHead": "8cd649cb87fd98442116b2f3eff7496ea4c74e9c"
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 29,
@@ -42,105 +42,126 @@
     "externalHostCaptureRenderAdapterCount": 21,
     "proofKitAndFixtureCount": 14,
     "totalSurfaceCount": 97,
-    "plannedPauseArbitrationSurfaceCount": 19,
+    "plannedProviderAdmissionSurfaceCount": 20,
+    "retainedPlannedPauseArbitrationSurfaceCount": 19,
     "retainedPlannedRenderHostRetirementSurfaceCount": 19
   },
-  "pauseRuntimeState": {
-    "menuLabel": "Pause",
-    "menuModal": false,
-    "menuBlocksSimulation": false,
-    "overlayCapturesPointer": true,
-    "overlayBlocksSimulation": false,
-    "globalGameplayKeyboardListenersPresent": true,
-    "unconditionalEngineTickPresent": true,
-    "heldInputRetirementOnOpenPresent": false,
-    "inputContextGenerationPresent": false,
-    "simulationSuspensionPresent": false,
-    "focusLeasePresent": false,
-    "resumeClockRebasePresent": false,
-    "firstPausedFrameAckPresent": false,
-    "firstResumedGameplayFrameAckPresent": false,
-    "sourceFixtureAssertsNonBlockingBehavior": true
+  "providerPin": {
+    "oldNexusCommit": "c82782d00c135de0418bee777d30b463de6ff4ca",
+    "newNexusCommit": "d41992636de2752f1ad9047b80701e6313f19b87",
+    "productPinCommit": "47788818edec7d49753f942a69ef392a8b092037",
+    "changedFile": "src/shared/runtime-versions.js",
+    "nexusChangedFile": "src/core-domains/core-object-vegetation-domain/subdomains/foliage-domain/index.js",
+    "oldBinding": "createPlacementRecipe",
+    "newBinding": "createPlacementRecipe: createFoliagePlacementRecipe",
+    "mainRealmImportsSharedPin": true,
+    "workerRealmImportsSharedPin": true,
+    "mainRealmConstructsVegetationRuntime": true,
+    "workerRealmConstructsVegetationRuntime": true,
+    "exactProviderIdentityAdmissionPresent": false,
+    "foliageServiceConstructionProbePresent": false,
+    "workerProviderRevisionEchoPresent": false,
+    "realmParitySettlementPresent": false,
+    "livePinnedProviderTestPresent": false,
+    "firstProviderBoundVegetationFrameAckPresent": false
   },
   "interactionLoop": [
-    "start the deterministic run and global gameplay input listeners",
-    "press Escape to toggle the pause-menu DSK",
-    "mount a full-screen pointer-capturing overlay",
-    "continue admitting keyboard gameplay input",
-    "continue engine tick, physics, streaming and rendering",
-    "close the overlay into an already-advanced run"
+    "import the shared pinned Nexus provider in the browser main realm",
+    "construct Core Object Vegetation and register the product catalog",
+    "create the deterministic main-thread patch generator",
+    "initialize the patch Worker with the same provider URL",
+    "construct the same Vegetation runtime and catalog in the Worker",
+    "generate and activate streamed patches",
+    "render trees, foliage cards and ground cover",
+    "run collision, pickup, score and outcome gameplay through those patches"
   ],
   "domainsInUse": [
-    "browser route DOM keyboard focus lifecycle RAF storage IndexedDB Worker and CDN delivery",
-    "Nexus Engine runtime scene input physics simulation camera graphics UI presentation diagnostics and composition",
+    "browser route module delivery DOM keyboard focus lifecycle RAF storage IndexedDB Worker and CDN",
+    "Nexus Engine runtime scene input physics simulation motion camera graphics UI diagnostics composition and presentation",
     "Core Assets Startup Object Shape Capture Fidelity Vegetation Ecology Tree Foliage and Object Bridge",
     "NexusEngine-Kits seed creature instance patch and camera services",
-    "PrehistoricRush run route player pause terrain streaming pickup score and outcome",
-    "Three.js presentation Rapier physics source tests Pages audit governance and central tracking"
+    "PrehistoricRush run route player pause terrain streaming vegetation pickup score and outcome",
+    "Three.js presentation Rapier physics source fixtures Pages audit governance and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-17T10-59-32-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "pauseSurfaces": {
-      "prehistoric-rush-pause-menu-domain-kit": [
-        "state",
-        "commands",
-        "snapshot",
-        "menu descriptor",
-        "overlay descriptor"
+    "completeInventory": ".agent/trackers/2026-07-17T14-40-21-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "providerCriticalSurfaces": {
+      "runtime-versions-manifest": [
+        "Nexus commit",
+        "Kits commit",
+        "ProtoKits commit",
+        "Three version",
+        "runtime URLs"
       ],
-      "pause-menu-dom-host": [
-        "overlay rendering",
-        "settings action",
-        "exit action",
-        "Escape toggle"
+      "vegetation-foliage-domain-kit": [
+        "foliage descriptor registry",
+        "card family factory",
+        "cluster factory",
+        "placement recipe factory",
+        "validation",
+        "snapshots"
       ],
-      "browser-input-adapter": [
-        "global steer",
-        "boost",
-        "jump",
-        "blur neutralization"
+      "prehistoric-vegetation-runtime-composition-kit": [
+        "isolated engine",
+        "catalog registration",
+        "Vegetation API",
+        "Ecology API",
+        "Tree API",
+        "Foliage API",
+        "Object Bridge API",
+        "placement API"
       ],
-      "game-runtime-lod-host-adapter": [
-        "unconditional engine tick",
-        "stream update",
-        "render",
-        "status"
+      "prehistoric-patch-worker": [
+        "provider import",
+        "catalog initialization",
+        "worker-ready evidence",
+        "patch generation",
+        "transferable results",
+        "error projection"
       ]
     }
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain",
-    "mainFinding": "The UI named Pause is explicitly non-modal and non-blocking. It captures pointer input while global gameplay keyboard routing and unconditional simulation continue behind the overlay.",
+    "parentDomain": "prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain",
+    "mainFinding": "The repaired Nexus pin is consumed by both production realms, but the product has no exact provider construction probe, revision echo, catalog parity settlement or provider-bound frame proof.",
     "plannedSurfaces": [
-      "pause-policy-admission-kit",
-      "pause-generation-kit",
-      "menu-input-context-kit",
-      "held-gameplay-input-retirement-kit",
-      "pause-focus-lease-kit",
-      "pause-focus-restoration-kit",
-      "pause-keyboard-routing-kit",
-      "pause-pointer-routing-kit",
-      "simulation-suspension-kit",
-      "physics-suspension-kit",
-      "world-streaming-suspension-kit",
-      "camera-animation-suspension-kit",
-      "frame-clock-rebase-kit",
-      "pause-open-result-kit",
-      "pause-input-result-kit",
-      "pause-close-result-kit",
-      "first-paused-frame-ack-kit",
-      "first-resumed-gameplay-frame-ack-kit",
-      "pause-browser-fixture-kit"
+      "provider-revision-manifest-kit",
+      "provider-url-admission-kit",
+      "provider-module-identity-kit",
+      "core-object-domain-construction-probe-kit",
+      "foliage-service-binding-probe-kit",
+      "vegetation-catalog-registration-probe-kit",
+      "catalog-digest-kit",
+      "main-realm-provider-ready-result-kit",
+      "worker-realm-provider-ready-result-kit",
+      "worker-provider-revision-echo-kit",
+      "provider-realm-parity-settlement-kit",
+      "stale-provider-result-rejection-kit",
+      "startup-failure-classification-kit",
+      "provider-fallback-policy-kit",
+      "source-provider-import-fixture-kit",
+      "browser-main-provider-fixture-kit",
+      "browser-worker-provider-fixture-kit",
+      "artifact-pages-provider-fixture-kit",
+      "first-vegetation-runtime-ready-ack-kit",
+      "first-provider-bound-vegetation-frame-ack-kit"
     ]
   },
-  "retainedAuthority": {
-    "parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain",
-    "status": "proposed-unimplemented"
-  },
+  "retainedAuthorities": [
+    {
+      "parentDomain": "prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain",
+      "status": "proposed-unimplemented"
+    },
+    {
+      "parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain",
+      "status": "proposed-unimplemented"
+    }
+  ],
   "validation": {
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
-    "pauseBehaviorChangedByAudit": false,
+    "providerPinChangedByAudit": false,
+    "workerBehaviorChangedByAudit": false,
     "testsPackageScriptsChangedByAudit": false,
     "gameplayRenderingPhysicsChangedByAudit": false,
     "workflowsDeploymentChangedByAudit": false,
@@ -148,7 +169,9 @@
     "pullRequestCreated": false,
     "sourceInspectionPerformed": true,
     "npmTestRunByAudit": false,
-    "browserPauseFixtureRun": false,
+    "liveProviderFixtureRun": false,
+    "browserMainFixtureRun": false,
+    "browserWorkerFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
