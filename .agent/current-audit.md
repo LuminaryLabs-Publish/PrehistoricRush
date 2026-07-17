@@ -2,81 +2,78 @@
 
 **Timestamp:** `2026-07-17T05-58-55-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed runtime head:** `248586fb4774c9219fb2ce0aaeec2b46bf3b69de`  
+**Reviewed runtime head:** `9eea125435e51ab0c492a071e5a9f70301f52cd6`  
 **Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
 
 ## Summary
 
-Two runtime commits add `prehistoric-foliage-card-recipes.js` and `lush-jungle-atmosphere.js`. The first defines an atlas revision, eight card families, deterministic tree-card recipes and six ground-cover archetypes. The second mutates Three.js background, fog, exposure, existing lights, sun shadows and adds fill/bounce lights.
+The three-commit delta adds foliage-card and ground-cover recipes, a jungle-atmosphere helper, and product vegetation-domain registration. Ten tree species now expose card families and clusters; six ground-cover species receive foliage descriptors and object bridges; generator options publish the ground-cover catalogs and atlas revision.
 
-The delta contains no changed consumer. No patch, Worker, renderer, test, package or deployment path is revised to admit, execute, retire or visibly acknowledge these capabilities.
+Adoption stops before patch and frame projection. `prehistoric-patch-generator.js` still selects only trees and returns trunks/crowns, legacy grass, pickups, and colliders. It does not consume the published ground-cover arrays or emit card/ground-cover instances. The atmosphere helper remains outside production composition.
 
 ## Intent
 
-Bind source, catalog, patch, Worker, atlas material, atmosphere, renderer, quality, lifecycle and frame evidence into one `JunglePresentationProjectionResult`.
+Bind semantic catalogs, patch/Worker data, atlas materials, GPU batches, atmosphere state, lifecycle, and frame evidence into one `JunglePresentationProjectionResult`.
 
 ## Checklist
 
 - [x] Inspect the full Publish inventory and central ledger state.
 - [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Review two commits and two added files.
-- [x] Inspect the new catalog, placement and atmosphere services.
+- [x] Review three commits and three files.
+- [x] Confirm semantic tree and ground-cover registration.
+- [x] Confirm generator-option publication.
 - [x] Reconcile the complete 93-surface inventory.
-- [ ] Install the new modules in actual product composition.
-- [ ] Prove main-thread/Worker, GPU, browser, artifact, Pages and frame convergence.
+- [ ] Consume card and ground-cover catalogs in the production patch/Worker path.
+- [ ] Prove atlas/material, GPU, atmosphere, browser, artifact, Pages, and frame convergence.
 
 ## Interaction loop
 
 ```txt
-current production
-  -> Core Vegetation semantic species
-  -> Worker-backed patch generation
-  -> tree-fidelity package/form selection
-  -> Three.js scene submission
-  -> gameplay and frame settlement
+foliage recipes
+  -> product vegetation-domain import
+  -> ten card-backed tree descriptors
+  -> six ground-cover species/foliage/object descriptors
+  -> runtime selectors and generator options
 
-new source
-  -> foliage-card and ground-cover catalogs
-  -> jungle-atmosphere scene mutation
-  -> no changed consumer in the two-commit delta
-  -> no accepted runtime generation
-  -> no matching visible frame
+patch runtime
+  -> tree species selection only
+  -> trunk/crown matrix output
+  -> legacy grass output
+  -> no card/ground-cover patch payload
 
-required
-  -> JunglePresentationAdmissionCommand
-  -> catalog registration
-  -> bounded patch/Worker projection
-  -> atlas/material and card-batch binding
-  -> idempotent atmosphere projection
-  -> resource retirement
-  -> FirstJunglePresentationFrameAck
+render runtime
+  -> existing tree-fidelity and patch rendering
+  -> no proved atlas material or card batch
+  -> atmosphere helper not adopted
+  -> no matching jungle frame acknowledgement
 ```
 
 ## Domains in use
 
 ```txt
-browser routes, module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker and CDN
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition and presentation
-Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage and Object Bridge
-NexusEngine-Kits seed, creature, instance batch, patch streaming and camera follow
-PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, foliage cards, ground cover, pickup and outcome
-Three.js scene, fog, lighting, shadows, materials, instancing and GPU lifecycle
-Rapier, source tests, static delivery, Pages and audit governance
+browser routes, module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker, CDN
+Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition, presentation
+Core Assets, Startup, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage, Object Bridge
+NexusEngine-Kits seed, creature, instance batch, patch streaming, camera follow
+PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, foliage cards, ground cover, pickup, outcome
+Three.js scene, fog, lighting, shadows, materials, instancing, GPU lifecycle
+Rapier, source tests, static delivery, Pages, audit governance
 ```
 
 ## Current gap
 
 ```txt
-production imports for new modules: not established by delta
-foliage catalog generation/result: absent
-ground-cover patch adoption: absent
+semantic tree foliage registration: present
+semantic ground-cover registration: present
+generator-option publication: present
+patch consumption of ground cover: absent
+patch emission of foliage-card instances: absent
+patch emission of ground-cover instances: absent
 main-thread/Worker foliage parity: absent
 atlas texture/material binding: absent
-far-quality card budget: absent
-atmosphere apply-once generation: absent
-duplicate-light prevention: absent
-predecessor scene-state snapshot: absent
-resource retirement result: absent
+card instance-batch projection: absent
+atmosphere consumer and lifecycle: absent
+actual runtime-construction fixture: absent
 JunglePresentationProjectionResult: absent
 FirstJunglePatchAck: absent
 FirstJunglePresentationFrameAck: absent
@@ -88,4 +85,4 @@ FirstJunglePresentationFrameAck: absent
 
 ## Boundary
 
-Documentation only. Runtime, tests, gameplay, rendering, Worker behavior, workflows and deployment were not changed or executed by this audit.
+Semantic registration is source-backed. Runtime patch projection, visible rendering, Worker parity, atmosphere adoption, lifecycle correctness, and release parity remain unproven.
