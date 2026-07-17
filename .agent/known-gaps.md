@@ -5,85 +5,84 @@
 
 ## Summary
 
-The repository now contains source definitions for foliage-card families, deterministic tree-card recipes, ground-cover archetypes and a lush Three.js atmosphere. The two commits add no production consumer, test wiring, lifecycle authority or matching-frame proof.
+Card-backed tree foliage and six ground-cover species are now registered through the product Core Vegetation composition. Generator options publish those catalogs and the atlas revision. The production patch generator still does not consume or emit foliage-card or ground-cover instances, and the atmosphere helper remains unadopted.
 
 ## Intent
 
-Keep jungle-presentation adoption explicitly unsupported until the modules enter the actual catalog, patch, Worker, GPU, scene-lifecycle and frame paths.
+Keep visible jungle-presentation conformance unsupported until semantic registration reaches deterministic patch/Worker payloads, atlas materials, GPU batches, atmosphere lifecycle, and the exact presented frame.
 
 ## Checklist
 
-- [x] Confirm the two-commit delta adds only two source files.
-- [x] Confirm `package.json` does not syntax-check or execute them.
-- [x] Inventory the new services and their intended ownership boundaries.
-- [x] Preserve the complete 93-surface repository census.
-- [ ] Implement and prove actual product adoption.
+- [x] Confirm the three-commit delta and late semantic integration.
+- [x] Confirm ten tree and six ground-cover registrations.
+- [x] Confirm generator-option publication.
+- [x] Preserve the complete 93-surface census.
+- [ ] Implement and prove patch, Worker, render, atmosphere, and frame adoption.
 
-## Source and catalog gaps
+## Completed source adoption
 
 ```txt
-production import/adoption evidence in delta: absent
-syntax/import fixture coverage: absent
-foliage catalog schema result: absent
-atlas texture identity and decode result: absent
-catalog immutability result: absent
-catalog generation and digest: absent
+foliage recipe import: present
+card-backed tree foliage descriptors: present
+six ground-cover species/foliage/object bridges: present
+atlas metadata and UV rectangles: present
+ground-cover selector: present
+generator-option publication: present
 ```
 
-## Placement and Worker gaps
+## Patch and Worker gaps
 
 ```txt
-tree-instance identity in local card recipe: external/unbound
-near/medium/far/culled budget authority: absent
-ground-cover route-clearance settlement: absent
-ground-cover terrain-height settlement: absent
-production Worker catalog handshake: absent
-main-thread/Worker card parity: absent
-main-thread/Worker ground-cover parity: absent
+patch generator consumes groundCoverSpecies: no
+patch generator consumes groundCoverArchetypes: no
+patch output includes foliage-card instances: no
+patch output includes ground-cover instances: no
+tree-instance identity bound into card placement: no
+near/medium/far/culled budget result: absent
+production Worker foliage payload parity: absent
 FirstJunglePatchAck: absent
 ```
 
 ## Render and lifecycle gaps
 
 ```txt
-foliage atlas material binding: absent
+atlas asset decode/material generation: absent
 card instance-batch ownership: absent
-patch-owned card release: absent
+patch-owned card/ground-cover release: absent
+atmosphere production consumer: absent
 atmosphere apply-once generation: absent
 duplicate fill/bounce prevention: absent
-predecessor background/fog/exposure/light snapshot: absent
-quality-aware 3072 shadow budget: absent
-scene replacement and disposal result: absent
+predecessor scene-state snapshot: absent
+quality-aware shadow budget: absent
+scene replacement/disposal result: absent
 JunglePresentationProjectionResult: absent
 FirstJunglePresentationFrameAck: absent
 ```
 
-## Source-specific observations
-
-- `createTreeFoliageCardPlacements()` uses medium counts only for the exact `medium` token; every other quality token receives near counts unless an outer policy intervenes.
-- Local placement seeds use archetype, quality and index. Global patch publication needs an additional patch/tree-instance identity.
-- `PREHISTORIC_GROUND_COVER_BY_ID` is an exported mutable `Map`, even though descriptor objects are frozen.
-- `applyLushJungleAtmosphere()` adds new fill and ambient lights on each call and does not expose an idempotent replace or disposal operation.
-- Existing scene and renderer values are mutated without a predecessor snapshot or restoration result.
-
-## Deployment gaps
+## Test and deployment gaps
 
 ```txt
-browser import-map fixture: absent
-Worker module fixture: absent
-built-output module fixture: absent
-Pages-subpath module fixture: absent
-source/artifact/Pages presentation parity: absent
+actual runtime-construction fixture: absent
+expanded 16-species registration assertion: absent
+new module syntax checks: absent
+main-thread/Worker projection fixture: absent
+browser source-frame fixture: absent
+built-output frame fixture: absent
+Pages-subpath frame fixture: absent
 ```
+
+## Source observations
+
+- Local tree-card recipes use archetype, quality, and index; global patch publication still needs patch/tree-instance identity.
+- Only the exact `medium` token reduces card counts; an outer policy must explicitly handle far and culled tiers.
+- `PREHISTORIC_GROUND_COVER_BY_ID` remains an exported mutable `Map`.
+- The atmosphere helper adds fill and ambient lights on every call and provides no restore/dispose command.
+- Existing scene and renderer state is overwritten without a predecessor receipt.
 
 ## Current risk boundary
 
-No current crash or visual regression was reproduced. The risk is that the new modules may remain dead source, or later be adopted without deterministic instance identity, bounded quality policy, idempotent atmosphere application and exact resource retirement.
-
-## Retained gaps
-
-The prior product Vegetation runtime fixture, semantic generation, runtime-module identity, tree elevation/frame addressing, fidelity transitions, WebGL recovery, Worker liveness, audio, accessibility, fixed-step pacing, terrain ownership/LOD, creator settlement, feedback, route progress, provider convergence, outcomes, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, restart and browser lifecycle audits remain active.
+No current crash or visible regression was reproduced. Semantic catalogs can exist successfully while the shipped patch and frame remain visually unchanged or later adopt the capabilities without bounded lifecycle ownership.
 
 ## Claim boundary
 
-Do not claim runtime adoption, visible jungle fidelity, GPU lifecycle correctness, browser integrity, artifact parity, Pages parity or production readiness until executable fixtures pass.
+Do not claim visible foliage cards, ground cover, atmosphere adoption, Worker parity, GPU lifecycle correctness, artifact parity, Pages parity, or production readiness until executable fixtures pass.
