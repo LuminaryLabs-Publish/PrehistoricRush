@@ -1,69 +1,77 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-16T20-01-41-04-00`  
-**Authority:** `prehistoric-rush-runtime-module-generation-identity-authority-domain`
+**Audit:** `2026-07-17T02-02-06-04-00`  
+**Authority:** `prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain`
 
-## Goal
+## Intent
 
-Replace route-specific Nexus Engine pins with one generated runtime manifest, reject mixed module generations before composition, and prove that the creator and game present frames from the same accepted runtime identity.
+Convert the new Object Vegetation integration from three independently reconstructed catalogs into one accepted generation shared by asset preparation, Worker patches, caches, rendering, and first-frame proof.
 
-## Plan ledger
+## Checklist
 
-### Phase 1: Canonical manifest
+### Phase 1: Canonical semantic generation
 
-- [ ] Add one checked-in manifest containing Nexus Engine, NexusEngine-Kits, ProtoKits, Three.js, and Rapier identities.
-- [ ] Generate `RUNTIME_URLS` and every document import map from that manifest.
-- [ ] Remove hand-maintained route-specific Nexus Engine commit strings.
-- [ ] Compute a stable `RuntimeModuleGeneration` and digest.
+- [ ] Create one semantic generation manifest from archetype source, species, tree, foliage, object, and fidelity descriptors.
+- [ ] Compute stable descriptor hashes and one composite digest.
+- [ ] Publish a complete species-to-tree-to-foliage-to-object-to-package binding table.
+- [ ] Treat `typeIndex` as derived optimization metadata only.
 
-### Phase 2: Admission
+### Phase 2: Fidelity adoption
 
-- [ ] Parse and normalize every requested module URL before import.
-- [ ] Require the bare `nexusengine` target to equal the canonical Nexus Engine URL.
-- [ ] Import a provenance sentinel from each official kit module.
-- [ ] Reject descriptor factories, object primitives, or kit definitions from another runtime generation.
-- [ ] Publish `RuntimeModuleAdmissionResult` before `createRealtimeGame()`.
+- [ ] Register `vegetationTree.createFidelityProfile()` outputs into Object Fidelity.
+- [ ] Remove or mechanically derive the duplicated local `treeFidelityProfile()` path.
+- [ ] Add semantic descriptor hashes to portable package generation identity.
+- [ ] Add the composite digest to bundle, asset, and IndexedDB cache identity.
+- [ ] Retire stale cached generations before package adoption.
 
-### Phase 3: Composition binding
+### Phase 3: Host and Worker admission
 
-- [ ] Bind asset preparation, creator preview, game engine, patch Worker, physics provider, and renderer to the accepted generation.
-- [ ] Include the generation digest in startup receipts and diagnostic snapshots.
-- [ ] Reject stale route imports after navigation, reload, or cache replacement.
-- [ ] Retire duplicate runtime generations rather than allowing mixed composition.
+- [ ] Send the expected generation digest in `init-patch-worker`.
+- [ ] Return Worker species/tree/foliage/object/catalog digests in `patch-worker-ready`.
+- [ ] Reject initialization on any mismatch.
+- [ ] Include the generation digest in every patch request and result.
+- [ ] Reject stale or mixed patches before activation.
 
-### Phase 4: Frame acknowledgement
+### Phase 4: Runtime and frame binding
 
-- [ ] Publish `FirstSingleRuntimeCreatorFrameAck` after the first creator frame using the accepted generation.
-- [ ] Publish `FirstSingleRuntimeGameFrameAck` after the first game frame using the accepted generation.
-- [ ] Include engine, kit, descriptor, asset, physics, and render namespace identities in each acknowledgement.
+- [ ] Resolve each rendered tree through `speciesId -> packageGenerationId`.
+- [ ] Validate collider, ground sink, bounds, and visual package against the same generation.
+- [ ] Publish `VegetationGenerationAdmissionResult`.
+- [ ] Publish `FirstDomainBoundAssetAck` after menu/game asset preparation.
+- [ ] Publish `FirstDomainBoundPatchAck` after first accepted patch activation.
+- [ ] Publish `FirstDomainBoundTreeFrameAck` after the matching rendered frame.
 
 ### Phase 5: Proof
 
-- [ ] Add a source fixture that compares all route import maps with `runtime-versions.js`.
-- [ ] Add a browser fixture that records loaded Nexus Engine URLs and module namespace identities.
-- [ ] Add stale-cache and duplicate-generation rejection fixtures.
-- [ ] Add creator-to-game navigation and hard-reload parity fixtures.
+- [ ] Add source descriptor/package binding fixtures.
+- [ ] Add main-thread versus Worker deterministic parity fixtures.
+- [ ] Add mismatched Worker generation rejection fixtures.
+- [ ] Add semantic descriptor change/cache invalidation fixtures.
+- [ ] Add browser reload and IndexedDB stale-generation fixtures.
 - [ ] Run `npm test`.
-- [ ] Run built-output and GitHub Pages module-graph parity fixtures.
+- [ ] Run static artifact and GitHub Pages parity smokes.
 
 ## Recommended file cut
 
 ```txt
-runtime/runtime-manifest.json
-scripts/generate-runtime-bindings.mjs
-src/shared/runtime-manifest.js
-src/shared/runtime-module-admission.js
-src/shared/runtime-module-provenance.js
-src/shared/runtime-module-generation-result.js
+src/shared/prehistoric-vegetation-generation.js
+src/shared/prehistoric-vegetation-manifest.js
+src/shared/prehistoric-vegetation-admission.js
+src/shared/species-fidelity-package-bindings.js
+src/workers/prehistoric-patch-worker.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+src/shared/tree-fidelity-assets.js
+src/game-runtime-lod.js
 
-tests/runtime-module-manifest-parity.mjs
-tests/runtime-module-browser-identity.mjs
+tests/vegetation-generation-identity.mjs
+tests/vegetation-worker-parity.mjs
+tests/vegetation-cache-invalidation.mjs
 ```
 
 ## Compatibility constraints
 
-Do not change gameplay seeds, creature profiles, route generation, physics, terrain LOD, patch identity, tree packages, camera behavior, scoring, or render fidelity while unifying module identity.
+Preserve current seeds, ecological distribution, route exclusion, tree counts, variation ranges, collider behavior, terrain topology, package forms, transition settings, camera behavior, scoring, and renderer performance while adding generation authority.
 
 ## Claim boundary
 
-Do not claim single-generation composition, browser cache coherence, cross-route parity, built-output parity, Pages parity, or production readiness until the complete fixture matrix passes.
+Do not claim semantic profile adoption, Worker parity, cache correctness, species-package convergence, build parity, Pages parity, or production readiness until the full fixture matrix passes on the final runtime commit.
