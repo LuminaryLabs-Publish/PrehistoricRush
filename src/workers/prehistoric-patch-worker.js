@@ -1,5 +1,8 @@
 import { RUNTIME_URLS } from "../shared/runtime-versions.js";
-import { createPrehistoricVegetationRuntime } from "../shared/prehistoric-vegetation-domain.js";
+import {
+  createPrehistoricVegetationGeneratorOptions,
+  createPrehistoricVegetationRuntime
+} from "../shared/prehistoric-vegetation-domain.js";
 import {
   collectPatchTransferables,
   createPrehistoricPatchGenerator
@@ -13,8 +16,7 @@ async function initialize(payload = {}) {
   const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
   generatePatch = createPrehistoricPatchGenerator({
     ...payload,
-    treeTypes: vegetationRuntime.catalog.treeTypes,
-    vegetation: vegetationRuntime.placement
+    ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
   });
   return vegetationRuntime;
 }
@@ -24,8 +26,14 @@ self.addEventListener("message", async (event) => {
   if (message.type === "init-patch-worker") {
     try {
       initialization = initialize(message.payload ?? {});
-      await initialization;
-      self.postMessage({ type: "patch-worker-ready", vegetationDomain: "n:object:vegetation" });
+      const vegetationRuntime = await initialization;
+      self.postMessage({
+        type: "patch-worker-ready",
+        vegetationDomain: "n:object:vegetation",
+        treeSpeciesCount: vegetationRuntime.catalog.species.length,
+        groundCoverSpeciesCount: vegetationRuntime.catalog.groundCoverSpecies.length,
+        foliageAtlasRevision: vegetationRuntime.catalog.foliageAtlasRevision
+      });
     } catch (error) {
       self.postMessage({ type: "patch-worker-error", error: String(error?.message ?? error) });
     }
