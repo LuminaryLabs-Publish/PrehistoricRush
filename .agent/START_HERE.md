@@ -1,59 +1,62 @@
-# START HERE: PrehistoricRush Pause Input and Simulation Arbitration
+# START HERE: PrehistoricRush Pinned Vegetation Provider Admission
 
-**Last aligned:** `2026-07-17T10-59-32-04-00`  
+**Last aligned:** `2026-07-17T14-40-21-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed repository head:** `0194fc7b3962528cb5233d0180f7b33a30eb5050`  
-**Reviewed runtime source revision:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
-**Status:** `pause-overlay-input-context-simulation-arbitration-authority-audited`
+**Reviewed pre-audit head:** `47788818edec7d49753f942a69ef392a8b092037`  
+**Reviewed Nexus Engine revision:** `d41992636de2752f1ad9047b80701e6313f19b87`  
+**Status:** `pinned-vegetation-provider-admission-browser-worker-parity-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected as the oldest synchronized eligible Publish repository. The current Pause interface is explicitly non-modal and non-blocking: its full-screen overlay captures pointer input, but gameplay keyboard listeners and `engine.tick(dt)` remain active.
+PrehistoricRush was selected as the sole runtime-ahead eligible Publish repository. Its new runtime pin adopts the Nexus Engine repair that binds the Foliage API’s `createPlacementRecipe` service to `createFoliagePlacementRecipe`.
+
+The product imports this provider in both the browser main realm and the patch Worker. Current product tests do not load the pinned provider, and startup does not publish an exact main/Worker provider-parity result.
 
 ## Intent
 
-Make the menu’s semantic promise, input ownership, simulation participation, focus behavior and visible frame agree through one pause generation.
+Prove the exact pinned provider can construct Object Vegetation, expose the repaired Foliage service, register the full product catalog, initialize both realms, generate a patch and reach the matching visible vegetation frame.
 
 ## Checklist
 
 - [x] Compare all 11 Publish repositories.
 - [x] Exclude `LuminaryLabs-Publish/TheCavalryOfRome`.
-- [x] Work only on PrehistoricRush.
+- [x] Select and modify only PrehistoricRush.
+- [x] Reconcile the one-commit runtime pin delta.
 - [x] Preserve the complete 97-surface kit/service inventory.
-- [x] Document the active pause interaction loop and source fixture.
-- [x] Add the `2026-07-17T10-59-32-04-00` tracker and focused audit family.
-- [ ] Implement accepted pause or explicit non-pausing-menu semantics.
-- [ ] Execute browser, artifact and Pages fixtures.
-- [ ] Complete the retained render-host retirement work.
+- [x] Add the `2026-07-17T14-40-21-04-00` tracker and focused audit family.
+- [ ] Add exact pinned-provider source and browser probes.
+- [ ] Settle main/Worker provider revision and catalog parity.
+- [ ] Prove artifact and Pages behavior.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-17T10-59-32-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-17T10-59-32-04-00.md
-.agent/architecture-audit/2026-07-17T10-59-32-04-00-pause-input-simulation-dsk-map.md
-.agent/render-audit/2026-07-17T10-59-32-04-00-pause-overlay-moving-world-frame-gap.md
-.agent/gameplay-audit/2026-07-17T10-59-32-04-00-menu-open-active-run-loop.md
-.agent/interaction-audit/2026-07-17T10-59-32-04-00-pause-context-command-result-map.md
-.agent/pause-system-audit/2026-07-17T10-59-32-04-00-input-simulation-focus-contract.md
-.agent/deploy-audit/2026-07-17T10-59-32-04-00-pause-browser-fixture-gate.md
-.agent/central-sync-audit/2026-07-17T10-59-32-04-00-oldest-selection-pause-arbitration-reconciliation.md
+.agent/trackers/2026-07-17T14-40-21-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-17T14-40-21-04-00.md
+.agent/architecture-audit/2026-07-17T14-40-21-04-00-pinned-vegetation-provider-admission-dsk-map.md
+.agent/render-audit/2026-07-17T14-40-21-04-00-provider-ready-first-vegetation-frame-gap.md
+.agent/gameplay-audit/2026-07-17T14-40-21-04-00-vegetation-runtime-startup-patch-loop.md
+.agent/interaction-audit/2026-07-17T14-40-21-04-00-provider-admission-command-result-map.md
+.agent/vegetation-system-audit/2026-07-17T14-40-21-04-00-foliage-placement-binding-browser-worker-contract.md
+.agent/deploy-audit/2026-07-17T14-40-21-04-00-pinned-provider-source-browser-pages-fixture-gate.md
+.agent/central-sync-audit/2026-07-17T14-40-21-04-00-runtime-ahead-provider-pin-reconciliation.md
 .agent/validation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain`
+`prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain`
 
 ## Census
 
 ```txt
 implemented named surfaces: 97
-planned pause-arbitration surfaces: 19
+planned provider-admission surfaces: 20
+retained planned pause-arbitration surfaces: 19
 retained planned render-host-retirement surfaces: 19
 ```
 
 ## Claim boundary
 
-The pause policy mismatch is confirmed by source inspection. No runtime behavior changed, no incident was reproduced, and true-pause correctness, focus behavior, artifact parity, Pages parity and production readiness are not claimed.
+The pin repair and its production dependency are confirmed by source inspection. No runtime behavior was changed by this audit, and live provider import, Worker parity, artifact parity, Pages parity and production readiness are not claimed.
