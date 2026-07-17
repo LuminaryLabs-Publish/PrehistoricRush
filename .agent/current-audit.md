@@ -1,90 +1,73 @@
 # PrehistoricRush Current Audit
 
-**Timestamp:** `2026-07-17T06-23-59-04-00`  
+**Timestamp:** `2026-07-17T10-59-32-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
-**Reviewed repository head:** `3b26af5116d4735564a2da109b36d32ed7b95a0b`  
-**Reviewed runtime source head:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
-**Status:** `render-host-generation-retirement-authority-audited`
+**Reviewed repository head:** `0194fc7b3962528cb5233d0180f7b33a30eb5050`  
+**Reviewed runtime source revision:** `4b2e1842dc6f8e47fe537260e4282518e09537e2`  
+**Status:** `pause-overlay-input-context-simulation-arbitration-authority-audited`
 
 ## Summary
 
-The jungle presentation is integrated and source-gated. Core Vegetation registers card-backed tree and ground-cover species; main-thread and Worker patch generation carry ecological ground cover; tree fidelity builds card-backed packages; Three.js creates a procedural atlas, lush foliage and ground-cover layers, atmosphere state, diagnostics and a foliage-revision-bound frame acknowledgement. Syntax and deterministic foliage fixtures are wired into `npm test`.
-
-The current gap is parent retirement. `createThreePatchStreamLodAdapter().dispose()` releases terrain LOD, tree fidelity, lush foliage, ground cover and the foliage atlas, but the base adapter has no disposal service. Base renderer, canvas, scene resources, active patch ownership, Worker/listener state, atmosphere mutations and stale callbacks are not settled through one generation result.
+The active Pause surface is not an admitted simulation pause. The DSK and overlay descriptors explicitly set `blocksSimulation: false`; the menu is non-modal; the full-screen DOM overlay captures pointer interaction; global gameplay keyboard listeners stay active; and the RAF continues to call `engine.tick(dt)` and world streaming unconditionally.
 
 ## Intent
 
-Bind every render resource, browser participant and callback to one host generation and retire it exactly once before route replacement, remount or WebGL recovery.
+Bind pause semantics, gameplay input suppression, simulation participation, focus ownership and paused/resumed visible frames to one apply-once pause generation.
 
 ## Checklist
 
-- [x] Inspect the full Publish inventory and central ledger state.
-- [x] Select only PrehistoricRush through runtime-ahead priority.
-- [x] Reconcile semantic, patch, Worker, fidelity, GPU, atmosphere, frame and test integration.
-- [x] Preserve the complete 97-surface inventory and offered services.
-- [x] Identify the parent render-host retirement boundary.
-- [x] Add the `2026-07-17T06-23-59-04-00` tracker and focused audits.
-- [ ] Implement parent host disposal, atmosphere restoration and stale-result rejection.
-- [ ] Prove repeated construction, restart, recovery, browser, artifact and Pages behavior.
+- [x] Inspect organization and ledger selection state.
+- [x] Select only PrehistoricRush through oldest synchronized priority.
+- [x] Inspect the pause DSK, overlay host, active runtime loop and pause fixture.
+- [x] Preserve all 97 implemented surfaces and offered services.
+- [x] Define 19 pause-arbitration surfaces.
+- [ ] Implement and prove the accepted pause policy.
+- [ ] Complete retained render-host retirement.
 
 ## Interaction loop
 
 ```txt
-catalog and asset admission
-  -> main-thread/Worker deterministic patch generation
-  -> ecological tree and ground-cover instances
-  -> tree-fidelity packages and captures
-  -> foliage atlas, lush card layer, ground-cover layer and atmosphere
-  -> projected-size LOD, hysteresis, crossfade, wind and tint
-  -> engine tick, stream update and Three.js render
-  -> lushVegetationFrameAck and startup generation admission
-  -> source syntax and deterministic foliage contract gates
-
-retirement today
-  -> child jungle/LOD layers dispose
-  -> base host, browser participants and atmosphere ownership remain unsettled
+running
+  -> Escape toggles menu state
+  -> full-screen Pause overlay mounts
+  -> pointer routes to overlay
+  -> keyboard gameplay routes remain active
+  -> engine tick, physics, streaming and rendering continue
+  -> Settings/Exit UI observes a run that can still change
 ```
 
 ## Domains in use
 
 ```txt
-browser route, import/module cache, DOM, input, lifecycle, RAF, storage, IndexedDB, Worker and CDN
-Nexus Engine runtime, scene, spatial, creature, character, player, physics, simulation, motion, camera, animation, graphics, UI, diagnostics, composition and presentation
-Core Assets, Startup, Input, Object, Shape, Capture, Fidelity, Vegetation, Ecology, Tree, Foliage and Object Bridge
-NexusEngine-Kits seed, procedural creature, instance batch, patch control and camera smoothing
-PrehistoricRush run, route, player, pose, pause, terrain, patch, tree, grass, foliage cards, ground cover, pickup and outcome
-Three.js renderer, canvas, context, scene, camera, fog, lights, shadows, materials, atlas, instancing and GPU lifecycle
-Rapier, source tests, static delivery, Pages and audit governance
+browser route, DOM, keyboard, focus, lifecycle, RAF, Worker and delivery
+Nexus Engine UI, presentation, input, simulation, physics, scene and graphics
+PrehistoricRush pause, run, route, player, terrain, streaming, pickup and outcome
+Three.js presentation and Rapier physics
+source fixtures, Pages, audit governance and central tracking
 ```
 
 ## Current gap
 
 ```txt
-jungle semantic/runtime integration: present
-main-thread and Worker ground-cover generation: present
-foliage atlas and card layers: present
-atmosphere composition: present
-lush frame acknowledgement: present
-new module syntax coverage: present
-foliage contract fixture: present
-
-base adapter dispose service: absent
-frame-admission retirement latch: absent
-active patch and Worker settlement: absent
-browser listener retirement: absent
-base renderer/context retirement: absent
-canvas host detachment: absent
-base geometry/material/player retirement: absent
-atmosphere light removal and state restoration: absent
-stale frame/result rejection after retirement: absent
-RenderHostRetirementResult: absent
-FirstRetiredRenderHostAck: absent
+explicit pause semantic admission: absent
+input-context generation: absent
+held-input retirement on open: absent
+gameplay-key rejection while open: absent
+simulation/physics/streaming suspension: absent
+focus lease and restoration result: absent
+resume clock rebase: absent
+FirstPausedFrameAck: absent
+FirstResumedGameplayFrameAck: absent
 ```
 
 ## Required authority
 
-`prehistoric-rush-render-host-generation-retirement-authority-domain`
+`prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain`
+
+## Retained gap
+
+Complete parent render-host generation retirement remains proposed and unimplemented.
 
 ## Boundary
 
-Source inspection confirms integration and test wiring. Runtime cleanup and executable browser/deployment fixtures were not changed or run by this audit.
+Documentation only. Runtime, tests and deployment were not changed or executed.
