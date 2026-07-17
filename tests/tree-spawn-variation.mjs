@@ -38,7 +38,7 @@ for (let chunkX = -5; chunkX <= 5; chunkX += 1) {
         const collider = colliderById.get(trunk.metadata.treeId);
         species.add(trunk.metadata.speciesId);
         assert.ok(collider, "every visible tree retains one stable collision proxy");
-        assert.equal(instance.schema ?? "fixture", "fixture", "offline test fixture marks domain-shaped instances explicitly");
+        assert.equal(instance.schema, "nexus-vegetation-instance/1", "spawn output carries the Vegetation instance contract");
         assert.equal(instance.speciesId, trunk.metadata.speciesId);
         assert.ok(variation.yawDegrees >= 0 && variation.yawDegrees < 360);
         assert.ok(variation.leanXDegrees >= -5 && variation.leanXDegrees <= 5);
@@ -63,4 +63,4 @@ assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.shape)).size
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.foliageColor)).size, 10, "each archetype has a distinct foliage palette");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.averageHeight)).size, 10, "each archetype owns a distinct average height");
 
-console.log("tree archetype diversity and domain-shaped spawn variation passed");
+console.log("tree archetype diversity and Vegetation instance spawn variation passed");
