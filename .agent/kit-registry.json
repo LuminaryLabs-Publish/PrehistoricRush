@@ -4,10 +4,10 @@
   "generatedAt": "2026-07-17T02-02-06-04-00",
   "status": "semantic-vegetation-fidelity-generation-authority-audited",
   "technicalStatus": "semantic-vegetation-fidelity-generation-authority-audited",
-  "repositoryRevisionReviewed": "55118e0c874697b767db69575687dfa1390958f9",
-  "runtimeSourceRevisionReviewed": "55118e0c874697b767db69575687dfa1390958f9",
+  "repositoryRevisionReviewed": "25691598bd4ff5fd38bfdd25c46edb8a9e2cfece",
+  "runtimeSourceRevisionReviewed": "25691598bd4ff5fd38bfdd25c46edb8a9e2cfece",
   "priorDocumentationHead": "946290c5af573ee14026cbde80f37c7591d8ed52",
-  "currentAuditedSlice": "Object Vegetation / Semantic Catalog / Fidelity Packages / Worker Patch Generation / Cache and Frame Binding",
+  "currentAuditedSlice": "Object Vegetation / Semantic Catalog / Fidelity Packages / Worker Patch Generation / Scaled Collision / Cache and Frame Binding",
   "latestTracker": ".agent/trackers/2026-07-17T02-02-06-04-00/project-breakdown.md",
   "latestTurnLedger": ".agent/turn-ledger/2026-07-17T02-02-06-04-00.md",
   "audits": {
@@ -16,6 +16,7 @@
     "gameplay": ".agent/gameplay-audit/2026-07-17T02-02-06-04-00-domain-selected-tree-fidelity-binding-loop.md",
     "interaction": ".agent/interaction-audit/2026-07-17T02-02-06-04-00-vegetation-generation-command-result-map.md",
     "vegetationSystem": ".agent/vegetation-system-audit/2026-07-17T02-02-06-04-00-catalog-worker-fidelity-generation-contract.md",
+    "collisionRuntimeTail": ".agent/vegetation-system-audit/2026-07-17T02-02-06-04-00-instance-scaled-collision-runtime-tail.md",
     "deploy": ".agent/deploy-audit/2026-07-17T02-02-06-04-00-vegetation-generation-source-browser-pages-fixture-gate.md",
     "centralSync": ".agent/central-sync-audit/2026-07-17T02-02-06-04-00-runtime-ahead-vegetation-domain-reconciliation.md"
   },
@@ -27,9 +28,9 @@
     "newOrLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "undocumentedCount": 0,
-    "runtimeAheadCount": 2,
+    "runtimeAheadCountAtSelection": 2,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRuntimeHead": "55118e0c874697b767db69575687dfa1390958f9",
+    "selectedRuntimeHead": "25691598bd4ff5fd38bfdd25c46edb8a9e2cfece",
     "otherRuntimeAheadRepo": "LuminaryLabs-Publish/TheOpenAbove",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
     "reason": "PrehistoricRush had the newest undocumented runtime activity among the runtime-ahead eligible repositories."
@@ -49,6 +50,7 @@
     "workerCatalogPresent": true,
     "domainBackedSpeciesSelectionPresent": true,
     "domainBackedVariationPresent": true,
+    "instanceScaledCollisionRadiusPresent": true,
     "semanticFidelityProfilesDerived": true,
     "semanticFidelityProfilesRegisteredForPackageBuild": false,
     "semanticHashesInPackageGeneration": false,
@@ -62,6 +64,7 @@
     "the game host creates another vegetation runtime and computes a species-only catalog digest",
     "the patch Worker creates another vegetation runtime and reports only the domain path as ready",
     "patch generation selects species and creates variation through Core Vegetation",
+    "patch output preserves varied tree scale in visual matrices and collider radius",
     "patch output maps species typeIndex to tree render buckets",
     "the renderer presents exact fidelity package generations while catalog identity remains a separate receipt"
   ],
@@ -72,7 +75,7 @@
     "Core Vegetation Ecology Tree Foliage and Vegetation Object Bridge",
     "NexusEngine-Kits seed creature instance patch and camera services",
     "PrehistoricRush run route player pose pause terrain patch tree grass pickup and outcome",
-    "semantic archetype species tree foliage object ecology placement variation package cache Worker and frame generation",
+    "semantic archetype species tree foliage object ecology placement variation collision package cache Worker and frame generation",
     "Three.js Rapier source tests static delivery Pages audit governance and central tracking"
   ],
   "serviceInventory": {
@@ -85,14 +88,14 @@
       "vegetation-object-bridge-kit": ["species object conversion", "instance object conversion", "Core Object registration"],
       "prehistoric-vegetation-catalog-registration-kit": ["archetype conversion", "species registration", "tree registration", "foliage registration", "object bridge registration"],
       "prehistoric-vegetation-runtime-composition-kit": ["isolated domain engine", "catalog APIs", "placement API", "domain snapshots"],
-      "prehistoric-patch-generator": ["terrain and route sampling", "domain species selection", "domain instance variation", "render matrices", "colliders", "grass", "pickups"],
+      "prehistoric-patch-generator": ["terrain and route sampling", "domain species selection", "domain instance variation", "render matrices", "instance-scaled colliders", "grass", "pickups"],
       "prehistoric-patch-worker": ["runtime import", "vegetation initialization", "patch requests", "transferable patch results"],
       "tree-fidelity-runtime-composition-kit": ["asset runtime", "vegetation domain installation", "semantic profile derivation", "portable package preparation"]
     }
   },
   "authority": {
     "parentDomain": "prehistoric-rush-semantic-vegetation-fidelity-generation-authority-domain",
-    "mainFinding": "Asset preparation, the game host, and the patch Worker reconstruct independent semantic vegetation catalogs; semantic fidelity profiles are derived but not used by package construction, package generations omit semantic descriptor hashes, and no composite result binds catalog, cache, Worker patch, package, and visible frame generations.",
+    "mainFinding": "Asset preparation, the game host, and the patch Worker reconstruct independent semantic vegetation catalogs; semantic fidelity profiles are derived but not used by package construction, package generations omit semantic descriptor hashes, and no composite result binds catalog, cache, Worker patch, package, collision, and visible frame generations.",
     "plannedSurfaces": [
       "semantic-vegetation-generation-manifest-kit",
       "archetype-source-revision-kit",
@@ -158,6 +161,7 @@
     "pullRequestCreated": false,
     "sourceInspectionPerformed": true,
     "npmTestRunByAudit": false,
+    "collisionFixtureRun": false,
     "workerParityFixtureRun": false,
     "browserCacheFixtureRun": false,
     "builtOutputSmokeRun": false,
