@@ -1,47 +1,51 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-16T20-01-41-04-00`  
-**Scope:** organization selection, route import maps, shared runtime URLs, official-kit linkage, runtime generation admission, and deployment proof
+**Audit timestamp:** `2026-07-17T02-02-06-04-00`  
+**Scope:** organization selection, Object Vegetation composition, semantic catalog generation, fidelity package binding, Worker parity, cache identity, patch activation, visible-frame proof, and deployment parity
 
 ## Summary
 
-Source inspection confirms three Nexus Engine commit declarations across the creator, game, and shared dynamic runtime. It also confirms that official NexusEngine-Kits import the bare `nexusengine` specifier while the host pages dynamically import another Nexus Engine URL.
+Source inspection confirms that PrehistoricRush now uses Core Vegetation for species selection and deterministic instance variation on both main-thread and Worker patch paths. It also confirms that asset preparation, the game host, and the Worker create separate catalogs; semantic fidelity profiles are derived but not registered by the package provider; package generations omit semantic descriptor hashes; and Worker readiness publishes no catalog digest.
 
-## Goal
+## Intent
 
-Separate the source-proven mixed-generation contract from unproven browser failure and define the exact fixture boundary required for a single-runtime-generation claim.
+Separate the completed vegetation-domain adoption from the unproven semantic generation, cache, Worker, patch, and frame convergence claims.
 
-## Plan ledger
+## Checklist
 
 - [x] Compare all 11 Publish repositories and exclude Cavalry.
-- [x] Verify ten central ledgers and ten synchronized current heads.
-- [x] Select PrehistoricRush through the oldest documented timestamp rule.
-- [x] Inspect route import maps and shared runtime version declarations.
-- [x] Inspect game and creator dynamic import paths.
-- [x] Inspect official seed and creature kit imports.
-- [x] Inspect product kit composition.
+- [x] Confirm ten eligible central ledgers and root `.agent` states.
+- [x] Identify two runtime-ahead repositories and select only PrehistoricRush.
+- [x] Compare prior documentation head with runtime head.
+- [x] Inspect all ten commits and ten changed files.
+- [x] Inspect catalog registration, services, package creation, game host, Worker, patch generator, tests, cache identity, and startup receipt.
 - [x] Add and route the timestamped audit family on `main`.
-- [ ] Execute source, browser, built-output, and Pages module-identity fixtures.
+- [ ] Execute source, deterministic, Worker, browser/cache, build, and Pages fixtures.
 
 ## Confirmed by inspection
 
 ```txt
-reviewed repository head: 94fec638a76d6c39034fe993396edf12e95638fb
-shared Nexus Engine commit: 80146b8947e0877e26b851563bd17f5cdfcbf38a
-game import-map commit: 06375f213b9fcd96257c0cf6980d65ec7ca2f3d3
-creator import-map commit: cf2fe3d77ffa1562fdf0ff7f6dfefc6464cfceb1
+reviewed runtime head: 55118e0c874697b767db69575687dfa1390958f9
+previous documentation head: 946290c5af573ee14026cbde80f37c7591d8ed52
+runtime delta: 10 commits / 10 files / +490 / -165
 
-shared runtime dynamically imported by game: yes
-shared runtime dynamically imported by creator: yes
-official seed kit imports bare nexusengine: yes
-official creature kit imports bare nexusengine: yes
-product engine created from shared runtime namespace: yes
-official kit factories composed into product engine: yes
+Core Vegetation composition present: yes
+Vegetation Ecology present: yes
+Vegetation Tree present: yes
+Vegetation Foliage present: yes
+Vegetation Object Bridge present: yes
+main-thread placement uses domain API: yes
+Worker placement uses domain API: yes
+domain-backed test fixture present: yes
 
-single canonical manifest: absent
-runtime generation admission result: absent
-mixed generation rejection: absent
-creator/game matching frame acknowledgements: absent
+independent asset/host/Worker catalogs: yes
+semantic fidelity profiles derived: yes
+semantic profiles registered for package build: no
+semantic hashes in package generation: no
+Worker catalog digest handshake: no
+patch generation digest: no
+species/package binding table: no
+composite frame acknowledgement: no
 ```
 
 ## Source inspection performed
@@ -49,48 +53,39 @@ creator/game matching frame acknowledgements: absent
 ```txt
 LuminaryLabs-Publish organization inventory
 LuminaryLabs-Dev/LuminaryLabs Publish ledgers
-current main heads for all ten eligible repositories
-game.html
-charactercreator.html
-src/shared/runtime-versions.js
-src/pages/game.js
+PrehistoricRush ten-commit compare
+src/shared/prehistoric-vegetation-domain.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+src/shared/tree-fidelity-assets.js
 src/game.js
+src/pages/menu.js
 src/game-runtime-lod.js
-src/pages/character-creator.js
-src/domains/prehistoric-rush/prehistoric-rush-domain-kit.js
-src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js
-NexusEngine-Kits seed-kit at 9fd5b100…
-NexusEngine-Kits procedural-creature-body-kit at 9fd5b100…
+src/workers/prehistoric-patch-worker.js
+src/world/prehistoric-patch-generator.js
+tests/helpers/vegetation-placement-fixture.mjs
+tests/terrain-lod-renderer-authority.mjs
+tests/tree-spawn-variation.mjs
+Nexus Engine Core Vegetation, Ecology, Tree, Foliage and Object Bridge source
 package.json
-```
-
-## What is not proven
-
-```txt
-that the current browser route throws or visibly malfunctions
-that descriptor objects are incompatible between the declared commits
-that a CDN or service worker currently serves stale modules
-npm test success at the final documentation head
-browser module graph identity
-built artifact parity
-GitHub Pages parity
-production readiness
 ```
 
 ## Required fixtures
 
 ```txt
-source import-map/runtime-manifest equality
-all official kit bare-import resolution identities
-creator hard reload and menu-to-creator navigation
-game hard reload and menu-to-game navigation
-creator-to-game navigation with cache retained
-duplicate runtime namespace rejection
-stale CDN/module-cache generation rejection
-startup receipt generation digest
-FirstSingleRuntimeCreatorFrameAck
-FirstSingleRuntimeGameFrameAck
-source/build/Pages module graph parity
+semantic descriptor and package generation identity
+semantic fidelity profile package adoption
+speciesId/package binding completeness
+main-thread/Worker deterministic parity
+Worker generation mismatch rejection
+patch request/result generation binding
+semantic descriptor change cache invalidation
+stale IndexedDB generation retirement
+menu preload and game startup generation equality
+FirstDomainBoundMenuAssetAck
+FirstDomainBoundGameAssetAck
+FirstDomainBoundPatchAck
+FirstDomainBoundTreeFrameAck
+source/build/Pages generation parity
 ```
 
 ## Change scope
@@ -98,17 +93,19 @@ source/build/Pages module graph parity
 ```txt
 documentation changed: yes
 runtime JavaScript changed by audit: no
-HTML import maps changed by audit: no
-gameplay, rendering, physics, assets, and camera changed by audit: no
+tree packages or cache keys changed by audit: no
+Worker protocol changed by audit: no
+gameplay, rendering, physics or camera changed by audit: no
 tests or package scripts changed by audit: no
 workflow or deployment changed by audit: no
 branch created: no
 pull request created: no
 
 npm test: not run
-browser fixtures: not run
+browser and cache fixtures: not run
+Worker mismatch fixtures: not run
 built-output smoke: not run
 Pages smoke: not run
 ```
 
-No current runtime failure, single-generation guarantee, browser cache coherence, cross-route parity, artifact parity, Pages parity, or production readiness is claimed.
+No current visual defect, semantic profile adoption, composite generation guarantee, Worker catalog equality, cache invalidation correctness, species-package convergence, artifact parity, Pages parity, or production readiness is claimed.
