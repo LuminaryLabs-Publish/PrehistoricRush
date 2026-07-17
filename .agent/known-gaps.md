@@ -1,72 +1,89 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-17T02-50-44-04-00`  
-**Status:** `product-vegetation-runtime-fixture-authority-audited`
+**Audit:** `2026-07-17T05-58-55-04-00`  
+**Status:** `jungle-foliage-atmosphere-runtime-adoption-authority-audited`
 
 ## Summary
 
-The new tests prove local module resolution, catalog cardinality, cloneability, deterministic patch output, Vegetation instance envelopes, variation ranges, collider presence, and species diversity. They do not execute the actual product Vegetation runtime or production browser/Worker path.
+The repository now contains source definitions for foliage-card families, deterministic tree-card recipes, ground-cover archetypes and a lush Three.js atmosphere. The two commits add no production consumer, test wiring, lifecycle authority or matching-frame proof.
 
 ## Intent
 
-Keep product-runtime conformance explicitly unsupported until one executable fixture reaches actual domain construction, main-thread and Worker generation, browser loading, package binding, and the first rendered frame.
+Keep jungle-presentation adoption explicitly unsupported until the modules enter the actual catalog, patch, Worker, GPU, scene-lifecycle and frame paths.
 
 ## Checklist
 
-- [x] Confirm the product import fixture is included in `npm test`.
-- [x] Confirm the import fixture checks function types rather than executing constructors.
-- [x] Confirm the dense spawn fixture uses a test-owned placement API.
-- [x] Confirm generated trees carry the Vegetation instance schema.
-- [ ] Execute and prove the actual product runtime path.
+- [x] Confirm the two-commit delta adds only two source files.
+- [x] Confirm `package.json` does not syntax-check or execute them.
+- [x] Inventory the new services and their intended ownership boundaries.
+- [x] Preserve the complete 93-surface repository census.
+- [ ] Implement and prove actual product adoption.
 
-## Runtime fixture gaps
-
-```txt
-pinned Nexus Engine import fixture: absent
-actual createPrehistoricVegetationRuntime execution: absent
-actual catalog registration fixture: absent
-actual placement API in dense patch test: absent
-actual tree-fidelity provider replacement fixture: absent
-```
-
-## Worker and patch gaps
+## Source and catalog gaps
 
 ```txt
-production Worker initialization fixture: absent
-main-thread/Worker instance parity: absent
-main-thread/Worker collider parity: absent
-Worker module URL and revision proof: absent
-FirstProductVegetationPatchAck: absent
+production import/adoption evidence in delta: absent
+syntax/import fixture coverage: absent
+foliage catalog schema result: absent
+atlas texture identity and decode result: absent
+catalog immutability result: absent
+catalog generation and digest: absent
 ```
 
-## Browser and render gaps
+## Placement and Worker gaps
+
+```txt
+tree-instance identity in local card recipe: external/unbound
+near/medium/far/culled budget authority: absent
+ground-cover route-clearance settlement: absent
+ground-cover terrain-height settlement: absent
+production Worker catalog handshake: absent
+main-thread/Worker card parity: absent
+main-thread/Worker ground-cover parity: absent
+FirstJunglePatchAck: absent
+```
+
+## Render and lifecycle gaps
+
+```txt
+foliage atlas material binding: absent
+card instance-batch ownership: absent
+patch-owned card release: absent
+atmosphere apply-once generation: absent
+duplicate fill/bounce prevention: absent
+predecessor background/fog/exposure/light snapshot: absent
+quality-aware 3072 shadow budget: absent
+scene replacement and disposal result: absent
+JunglePresentationProjectionResult: absent
+FirstJunglePresentationFrameAck: absent
+```
+
+## Source-specific observations
+
+- `createTreeFoliageCardPlacements()` uses medium counts only for the exact `medium` token; every other quality token receives near counts unless an outer policy intervenes.
+- Local placement seeds use archetype, quality and index. Global patch publication needs an additional patch/tree-instance identity.
+- `PREHISTORIC_GROUND_COVER_BY_ID` is an exported mutable `Map`, even though descriptor objects are frozen.
+- `applyLushJungleAtmosphere()` adds new fill and ambient lights on each call and does not expose an idempotent replace or disposal operation.
+- Existing scene and renderer values are mutated without a predecessor snapshot or restoration result.
+
+## Deployment gaps
 
 ```txt
 browser import-map fixture: absent
-CDN module graph fixture: absent
-built-output module graph fixture: absent
-Pages-subpath module graph fixture: absent
-species/package/frame binding fixture: absent
-FirstProductVegetationFrameAck: absent
-```
-
-## Evidence classification gap
-
-```txt
-test-double evidence classification: implicit
-product-runtime conformance result: absent
-fixture revision manifest: absent
-source/artifact/Pages parity result: absent
+Worker module fixture: absent
+built-output module fixture: absent
+Pages-subpath module fixture: absent
+source/artifact/Pages presentation parity: absent
 ```
 
 ## Current risk boundary
 
-No current product failure was reproduced. The risk is that source tests may remain green when actual Nexus Engine exports, domain installation, Worker imports, browser URL resolution, package hydration, or rendered-frame binding fail.
+No current crash or visual regression was reproduced. The risk is that the new modules may remain dead source, or later be adopted without deterministic instance identity, bounded quality policy, idempotent atmosphere application and exact resource retirement.
 
 ## Retained gaps
 
-Semantic vegetation generation identity, tree elevation continuity, form transitions, WebGL recovery, Worker liveness, audio, accessibility, fixed-step pacing, terrain ownership and LOD, creator settlement, feedback, route progress, provider convergence, outcomes, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, run restart, and browser lifecycle remain separate audit families.
+The prior product Vegetation runtime fixture, semantic generation, runtime-module identity, tree elevation/frame addressing, fidelity transitions, WebGL recovery, Worker liveness, audio, accessibility, fixed-step pacing, terrain ownership/LOD, creator settlement, feedback, route progress, provider convergence, outcomes, profile revision, patch ownership, pause lifecycle, character composition, terrain IK, PlayerPose, collision convergence, Core Input, viewport, articulation, restart and browser lifecycle audits remain active.
 
 ## Claim boundary
 
-Do not claim product-runtime, Worker, browser, artifact, Pages, or rendered-frame conformance until executable fixtures pass.
+Do not claim runtime adoption, visible jungle fidelity, GPU lifecycle correctness, browser integrity, artifact parity, Pages parity or production readiness until executable fixtures pass.
