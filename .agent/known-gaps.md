@@ -1,54 +1,50 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-17T10-59-32-04-00`  
-**Status:** `pause-overlay-input-context-simulation-arbitration-authority-audited`
+**Audit:** `2026-07-17T14-40-21-04-00`  
+**Status:** `pinned-vegetation-provider-admission-browser-worker-parity-authority-audited`
 
 ## Summary
 
-The current Pause overlay does not own gameplay input or simulation participation. It captures pointer interaction while keyboard commands, physics, world streaming and the frame tick continue.
+The provider pin now includes the Nexus Engine Foliage binding repair, but the product does not yet prove the exact provider identity, service construction and catalog parity across its main browser and Worker realms.
 
-## Pause arbitration gaps
+## Provider admission gaps
 
 ```txt
-accepted pause semantic mode: absent
-PauseGeneration: absent
-input-context arbitration: absent
-held gameplay input retirement: absent
-gameplay command rejection while open: absent
-simulation participant suspension: absent
-physics suspension: absent
-world-streaming suspension: absent
-focus capture/restoration receipt: absent
-resume clock rebase: absent
-PauseOpenResult: absent
-PauseCloseResult: absent
-FirstPausedFrameAck: absent
-FirstResumedGameplayFrameAck: absent
-browser fixture: absent
+provider revision manifest result: absent
+resolved module identity digest: absent
+Core Object Vegetation construction probe: absent
+Foliage createPlacementRecipe callable probe: absent
+main-realm provider-ready result: absent
+Worker provider revision echo: absent
+Worker binding digest: absent
+main/Worker catalog parity result: absent
+provider generation on patch requests/results: absent
+stale Worker-ready rejection: absent
+stale patch-result rejection: absent
+explicit Worker fallback settlement: absent
+FirstVegetationRuntimeReadyAck: absent
+FirstWorkerPatchAck bound to provider generation: absent
+FirstProviderBoundVegetationFrameAck: absent
 ```
 
-## Retained render-host gaps
+## Fixture gaps
 
 ```txt
-parent RenderHostGeneration retirement: absent
-base adapter dispose(): absent
-RAF, Worker and listener retirement: absent
-base renderer/context/canvas retirement: absent
-atmosphere restoration: absent
-stale callback/result rejection: absent
+exact pinned-provider source fixture: absent
+browser main provider fixture: absent
+browser Worker provider fixture: absent
+main/Worker patch digest fixture: absent
+built artifact provider fixture: absent
+Pages provider fixture: absent
 ```
 
-## Validation gaps
+## Retained gaps
 
 ```txt
-npm test execution by this audit: not run
-pause browser fixture: absent
-focus restoration fixture: absent
-rapid open/close fixture: absent
-built artifact smoke: not run
-Pages smoke: not run
+pause input/simulation arbitration: unresolved
+parent RenderHostGeneration retirement: unresolved
 ```
 
 ## Risk boundary
 
-No collision, lost run, inaccessible focus or deployment incident was reproduced. The source-backed risk is that a UI labeled Pause can cover the world while the authoritative run continues.
+The repaired pin is implemented and source-backed. No current browser failure, Worker divergence, missing foliage, artifact failure or Pages failure was reproduced by this audit.
