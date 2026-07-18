@@ -94,4 +94,90 @@ export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, opti
   return cards;
 }
 
+function applyBarkVertexColors(THREE, geometry, archetype, segment) {
+  const base = new THREE.Color(archetype.barkColor);
+  const accent = new THREE.Color(archetype.accentColor ?? archetype.barkColor);
+  const position = geometry.getAttribute("position");
+  const colors = new Float32Array(position.count * 3);
+  const roleFactor = segment.role === "root" ? 0.22 : segment.role === "trunk" ? 0.08 : 0.14;
+  const seed = segment.id.split("").reduce((sum, character) => sum + character.charCodeAt(0), 0) * 0.021;
+  for (let index = 0; index < position.count; index += 1) {
+    const x = position.getX(index);
+    const y = position.getY(index);
+    const z = position.getZ(index);
+    const grain = Math.sin(y * 3.8 + seed) * 0.5 + Math.sin((x + z) * 8.2 - seed) * 0.22;
+    const amount = Math.max(0, Math.min(1, 0.42 + grain * 0.2 + roleFactor));
+    const color = base.clone().lerp(accent, amount * 0.22).multiplyScalar(0.78 + amount * 0.34);
+    if (segment.role === "root") color.lerp(new THREE.Color(0x48613b), 0.18);
+    colors[index * 3] = color.r;
+    colors[index * 3 + 1] = color.g;
+    colors[index * 3 + 2] = color.b;
+  }
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+}
+
+function barkMaterial(THREE, archetype) {
+  const parameters = {
+    name: `natural-tree-bark:${archetype.id}`,
+    vertexColors: true,
+    roughness: 0.84,
+    metalness: 0,
+    fog: true
+  };
+  return THREE.MeshPhysicalMaterial
+    ? new THREE.MeshPhysicalMaterial({ ...parameters, clearcoat: 0.035, clearcoatRoughness: 0.88 })
+    : new THREE.MeshStandardMaterial(parameters);
+}
+
+function addGrowthSegment(THREE, group, archetype, segment, material) {
+  const start = new THREE.Vector3(...segment.start);
+  const end = new THREE.Vector3(...segment.end);
+  const direction = end.clone().sub(start);
+  const length = Math.max(0.001, direction.length());
+  const radialSegments = segment.role === "trunk" ? 10 : segment.role === "root" ? 8 : segment.order === 1 ? 8 : 6;
+  const geometry = new THREE.CylinderGeometry(segment.radiusEnd, segment.radiusStart, length, radialSegments, 2, false);
+  applyBarkVertexColors(THREE, geometry, archetype, segment);
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.name = `${archetype.id}:natural-wood:${segment.id}`;
+  mesh.position.copy(start).add(end).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.userData.vegetationRole = segment.role;
+  mesh.userData.naturalGrowth = true;
+  mesh.userData.segmentId = segment.id;
+  mesh.userData.branchOrder = segment.order;
+  group.add(mesh);
+  return mesh;
+}
+
+export function createPrehistoricNaturalTreeObject(THREE, archetype, growthPlan, options = {}) {
+  if (!growthPlan?.woodSegments?.length) throw new TypeError(`Natural tree object requires a growth plan for ${archetype.id}.`);
+  const group = new THREE.Group();
+  group.name = archetype.id;
+  group.userData.naturalGrowth = true;
+  group.userData.growthPlanId = growthPlan.id;
+  const material = barkMaterial(THREE, archetype);
+  for (const segment of [...growthPlan.roots, ...growthPlan.woodSegments]) addGrowthSegment(THREE, group, archetype, segment, material);
+  attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, { ...options, growthPlan });
+  const bounds = growthPlan.bounds;
+  const width = Math.max(0.1, bounds.max[0] - bounds.min[0]);
+  const height = Math.max(0.1, bounds.max[1] - bounds.min[1]);
+  const depth = Math.max(0.1, bounds.max[2] - bounds.min[2]);
+  const proxyGeometry = new THREE.BoxGeometry(width, height, depth);
+  proxyGeometry.setIndex([]);
+  const proxy = new THREE.Mesh(proxyGeometry, new THREE.MeshBasicMaterial({ visible: false }));
+  proxy.name = `${archetype.id}:natural-bounds-proxy`;
+  proxy.position.set(
+    (bounds.min[0] + bounds.max[0]) * 0.5,
+    (bounds.min[1] + bounds.max[1]) * 0.5,
+    (bounds.min[2] + bounds.max[2]) * 0.5
+  );
+  proxy.visible = false;
+  proxy.userData.vegetationRole = "bounds-proxy";
+  group.add(proxy);
+  group.updateMatrixWorld(true);
+  return group;
+}
+
 export default attachPrehistoricTreeFoliageMeshes;
