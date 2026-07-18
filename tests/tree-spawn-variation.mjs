@@ -4,7 +4,10 @@ import {
   PREHISTORIC_TREE_ARCHETYPES,
   PREHISTORIC_TREE_TYPES
 } from "../src/shared/tree-archetype-catalog.js";
-import { PREHISTORIC_GROUND_COVER_ARCHETYPES } from "../src/shared/prehistoric-foliage-card-recipes.js";
+import {
+  FOLIAGE_ATLAS_REVISION,
+  PREHISTORIC_GROUND_COVER_ARCHETYPES
+} from "../src/shared/prehistoric-foliage-card-recipes.js";
 import { createVegetationPlacementFixture } from "./helpers/vegetation-placement-fixture.mjs";
 
 const routeSamples = Array.from({ length: 600 }, (_, index) => ({
@@ -18,7 +21,7 @@ const options = {
   groundCoverArchetypes: PREHISTORIC_GROUND_COVER_ARCHETYPES,
   vegetation: createVegetationPlacementFixture(PREHISTORIC_TREE_ARCHETYPES, PREHISTORIC_GROUND_COVER_ARCHETYPES),
   routeSamples,
-  foliageAtlasRevision: "prehistoric-foliage-cards-v1"
+  foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
 };
 const generator = createPrehistoricPatchGenerator(options);
 const repeatGenerator = createPrehistoricPatchGenerator(options);
@@ -27,6 +30,8 @@ const repeated = repeatGenerator({ x: 3, z: -2, patchId: "3:-2", worldSeed: "fix
 assert.deepEqual(first.trees, repeated.trees, "tree spawning is deterministic");
 assert.deepEqual(first.groundCover, repeated.groundCover, "ground-cover spawning is deterministic");
 assert.deepEqual(first.colliders, repeated.colliders, "tree collision spawning is deterministic");
+assert.equal(first.vegetationDensityPolicy, "production-patches-v1");
+assert.equal(first.vegetationRevision, FOLIAGE_ATLAS_REVISION);
 
 const species = new Set();
 const groundSpecies = new Set();
@@ -66,6 +71,7 @@ for (let chunkX = -5; chunkX <= 5; chunkX += 1) {
       assert.equal(cover.matrix.length, 16);
       assert.equal(cover.tint.length, 3);
       assert.ok(cover.wind.amplitude >= 0);
+      assert.equal(cover.metadata.densityPolicy, "production-patches-v1");
       assert.equal(colliderById.has(cover.id), false, "decorative ground cover does not create collision proxies");
     }
   }
@@ -74,12 +80,12 @@ for (let chunkX = -5; chunkX <= 5; chunkX += 1) {
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
 assert.equal(PREHISTORIC_TREE_TYPES.length, 12);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
-assert.ok(treeCount > 500, "fixture exercises a dense deterministic forest");
-assert.ok(groundCoverCount > 500, "fixture exercises dense domain-backed ground cover");
+assert.ok(treeCount > 300, "fixture exercises a clustered deterministic forest");
+assert.ok(groundCoverCount > 300, "fixture exercises clustered domain-backed ground cover");
 assert.equal(species.size, 12, "vegetation placement admits all tree species");
 assert.equal(groundSpecies.size, 6, "vegetation placement admits all ground-cover species");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.shape)).size, 12, "each archetype has a distinct silhouette recipe");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.foliageColor)).size, 12, "each archetype has a distinct foliage palette");
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.averageHeight)).size, 12, "each archetype owns a distinct average height");
 
-console.log("tree and ground-cover diversity with domain-shaped spawn variation passed");
+console.log("tree and ground-cover diversity with production density variation passed");
