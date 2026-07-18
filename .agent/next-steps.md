@@ -1,50 +1,51 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-17T16-40-37-04-00`  
-**Authority:** `prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain`
+**Audit:** `2026-07-18T02-39-16-04-00`  
+**Authority:** `prehistoric-rush-required-startup-asset-failure-recovery-authority-domain`
 
 ## Intent
 
-Turn the implemented descriptor closure and atlas `v2` identity into one executable browser, Worker, patch and frame contract.
+Turn observable startup exceptions into one bounded, generation-owned recovery capability without changing gameplay or asset fidelity.
 
 ## Checklist
 
-### Phase 1: Canonical closure manifest
+### Phase 1: Unified startup generation
 
-- [ ] Enumerate referenced family IDs for every tree archetype and every supported LOD form.
-- [ ] Canonically sort and digest the eight-family catalog.
-- [ ] Digest each descriptor’s family closure and cluster references.
-- [ ] Keep registration rejection for every unresolved family.
+- [ ] Create one startup generation before module preflight.
+- [ ] Bind module URLs, Nexus revision, bundle version, provider revision and foliage atlas revision.
+- [ ] Publish `StartupGenerationResult`.
 
-### Phase 2: Runtime admission
+### Phase 2: Required preparation settlement
 
-- [ ] Publish `FoliageFamilyClosureResult` during main-realm catalog construction.
-- [ ] Publish `AtlasRevisionAdmissionResult` for atlas `prehistoric-foliage-cards-v2`.
-- [ ] Bind both results to the current runtime generation.
+- [ ] Normalize module preflight, bundle request and image hydration into `RequiredStartupPreparationResult`.
+- [ ] Classify failure stage, code, retryability and partial ownership.
+- [ ] Separate concise public text from detailed diagnostics.
 
-### Phase 3: Worker and patch parity
+### Phase 3: Cleanup and retry
 
-- [ ] Include family catalog digest, descriptor digest and atlas revision in Worker-ready evidence.
-- [ ] Publish `FoliageRealmParityResult` before Worker patches are admitted.
-- [ ] Include atlas/runtime generation on patch requests and results.
-- [ ] Reject stale or mismatched Worker and patch results.
+- [ ] Retire the temporary provider on every terminal path.
+- [ ] Retire partial runtime and decoded images when ownership is not transferred.
+- [ ] Add bounded retry attempts and backoff.
+- [ ] Reject stale progress and completion from earlier generations.
+- [ ] Prevent duplicate game-host construction.
 
-### Phase 4: Render proof
+### Phase 4: User recovery
 
-- [ ] Admit the renderer atlas against the accepted catalog digest.
-- [ ] Extend frame evidence with active family IDs and per-family counts.
-- [ ] Publish `FirstFamilyCompleteFoliageFrameAck` after the matching frame submits.
+- [ ] Project accessible Retry and Return to Menu actions.
+- [ ] Disable duplicate actions while retry is active.
+- [ ] Publish `StartupRecoveryResult` and `StartupNavigationResult`.
+- [ ] Publish `FirstRecoveredGameFrameAck` after successful recovery.
 
-### Phase 5: Release fixtures
+### Phase 5: Executable proof
 
 - [ ] Run `npm test`.
-- [ ] Add near and medium family-closure assertions.
-- [ ] Add browser and production Worker fixtures.
-- [ ] Add built-artifact and GitHub Pages fixtures.
-- [ ] Record resolved revisions, digests, URLs and frame evidence.
+- [ ] Add module, bundle, fetch, decode, dimension, canvas and readback failure fixtures.
+- [ ] Add retry success, retry exhaustion and stale-generation fixtures.
+- [ ] Add built-artifact and GitHub Pages failure/recovery fixtures.
 
 ### Retained work
 
+- [ ] Complete foliage family/atlas convergence proof.
 - [ ] Complete pinned-provider admission proof.
 - [ ] Resolve pause/menu input and simulation semantics.
 - [ ] Implement parent render-host generation retirement.
@@ -52,16 +53,14 @@ Turn the implemented descriptor closure and atlas `v2` identity into one executa
 ## Recommended file cut
 
 ```txt
-src/shared/prehistoric-foliage-card-recipes.js
-src/shared/prehistoric-vegetation-domain.js
-src/workers/prehistoric-patch-worker.js
-src/world/prehistoric-patch-generator.js
-src/render/three-lush-foliage-layer.js
-src/render/three-patch-stream-lod-adapter.js
-tests/foliage-card-system.mjs
-tests/browser/foliage-family-parity.html
+src/pages/game.js
+src/game.js
+src/shared/tree-fidelity-runtime-images.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+tests/startup-failure-recovery.mjs
+tests/browser/startup-failure-recovery.html
 ```
 
 ## Compatibility constraints
 
-Preserve the eight-family catalog, atlas `v2`, deterministic placement and patch schemas, tree/ground-cover density, route readability, collision, pickups, score and gameplay tuning.
+Preserve required tree fidelity, existing progress behavior, runtime versions, deterministic generation, tree/ground-cover density, route readability, collision, pickups, score, pause and outcome tuning.
