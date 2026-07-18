@@ -1,11 +1,11 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-17T16-40-37-04-00`  
-**Scope:** organization selection, three-commit runtime reconciliation, descriptor family closure, atlas revision propagation, complete kit/service inventory and executable-proof boundaries
+**Audit timestamp:** `2026-07-18T02-39-16-04-00`  
+**Scope:** organization selection, required startup module/asset/image preparation, failure projection, cleanup/retry ownership, complete kit/service inventory and executable-proof boundaries
 
 ## Summary
 
-Source inspection confirms that PrehistoricRush now closes each tree foliage descriptor over its primary and placement-referenced families, rejects unresolved secondary family IDs, uses foliage atlas revision `prehistoric-foliage-cards-v2`, and asserts family closure across all 12 tree archetypes.
+Source inspection confirms that the route preflights nine required modules, reports a failed module import through document text and a thrown error, tracks the required tree-fidelity bundle, reports runtime-image preparation progress, marks image hydration failure in Core Startup, unregisters the temporary provider on success, and publishes the prepared runtime before importing gameplay.
 
 ## Confirmed by inspection
 
@@ -13,32 +13,29 @@ Source inspection confirms that PrehistoricRush now closes each tree foliage des
 Publish repositories observed: 11
 eligible after Cavalry exclusion: 10
 selected: PrehistoricRush
-previous documented head: f5a4748b1b6f897c92930094737565528839fb41
-reviewed runtime head: 06e2bc0439643e46153b8c7f7f42a4e91a2db5e1
-comparison: ahead by 3 commits
-changed files: 3
+selection reason: oldest synchronized documented timestamp
+reviewed repository head: 791f273d96a136e15fc15c077913ca377a017b2a
+reviewed runtime source revision: 06e2bc0439643e46153b8c7f7f42a4e91a2db5e1
+runtime delta during audit: none
 
-primary + secondary descriptor family closure: present
-unknown family rejection: present
-atlas revision v2: present
-all-archetype closure assertions: present
-broad-canopy broadleaf + hanging-vine assertions: present
-Worker atlas revision ready evidence: present in source
-render-frame atlas revision evidence: present in source
-canonical cross-realm digest settlement: absent
+required module Promise.allSettled preflight: present
+module failure text projection and throw: present
+required tree bundle preparation: present
+runtime-image preparation tracking: present
+image hydration failure report and throw: present
+successful temporary-provider unregister: present
+successful prepared-runtime publication: present
+unified failure/recovery settlement: absent
 ```
 
 ## Source inspected
 
 ```txt
-src/shared/prehistoric-foliage-card-recipes.js
-src/shared/prehistoric-vegetation-domain.js
-src/workers/prehistoric-patch-worker.js
-src/world/prehistoric-patch-generator.js
-src/render/prehistoric-foliage-atlas.js
-src/render/three-lush-foliage-layer.js
-src/render/three-patch-stream-lod-adapter.js
-tests/foliage-card-system.mjs
+game.html
+src/pages/game.js
+src/game.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+src/shared/tree-fidelity-runtime-images.js
 package.json
 current .agent tracker and kit registry
 central PrehistoricRush ledger
@@ -48,16 +45,17 @@ central PrehistoricRush ledger
 
 ```txt
 npm test
-near and medium family-closure comparison
-browser main catalog construction
-production Worker catalog construction
-main/Worker family and descriptor digest parity
-revision-bound patch generation
-stale-generation rejection
-descriptor-driven family rendering
+forced module rejection
+forced bundle preparation failure
+atlas fetch/decode/dimension failure
+Canvas2D context/readback failure
+bounded retry success
+retry exhaustion and menu return
+stale generation rejection
+provider/runtime/image cleanup
 built-output smoke
 Pages-origin smoke
-FirstFamilyCompleteFoliageFrameAck
+FirstRecoveredGameFrameAck
 ```
 
 ## Change scope
@@ -75,15 +73,14 @@ pull request created: no
 source inspection performed: yes
 npm test run by audit: no
 browser fixture run: no
-Worker fixture run: no
 artifact smoke run: no
 Pages smoke run: no
 ```
 
 ## Execution limitation
 
-The available execution environment could not resolve `github.com` during a checkout attempt. The GitHub connector remained available for source inspection and direct `main` documentation updates, but no local package command could run.
+The execution environment could not resolve `github.com` during a checkout attempt. The GitHub connector remained available for source inspection and direct `main` documentation updates, but no local package or browser command could run.
 
 ## Claim boundary
 
-Descriptor closure, atlas `v2` and source assertions are documented as implemented. Browser/Worker convergence, patch binding, visible-frame convergence, artifact parity, Pages parity and production readiness are not claimed.
+Required preparation and failure reporting are documented as implemented. Cleanup correctness, retry behavior, fallback navigation, resource retirement, recovered-frame convergence, artifact parity, Pages parity and production readiness are not claimed.
