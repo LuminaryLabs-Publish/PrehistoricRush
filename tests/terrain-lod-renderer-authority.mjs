@@ -39,7 +39,9 @@ assert.equal(patch.terrain.segments, 64, "patch production uses the LOD source r
 assert.equal(patch.terrain.heights.length, 65 * 65, "64-segment patches have 65x65 vertices");
 assert.equal(patch.terrain.colors.length, 65 * 65 * 3, "color capacity matches the high-resolution patch");
 assert.equal(patch.terrain.mapping, "world-space");
+assert.equal(patch.terrain.materialRevision, "stylized-high-fidelity-v4-production-jungle");
 assert.equal(patch.vegetationRevision, FOLIAGE_ATLAS_REVISION);
+assert.equal(patch.vegetationDensityPolicy, "production-patches-v1");
 assert.ok(Array.isArray(patch.groundCover), "patches carry domain-backed ground cover");
 
 const topology = createTerrainLodTopology(policy);
@@ -91,11 +93,12 @@ assert.match(wrapperSource, /terrain\.releasePatches\(\[patch\.id\]\)/, "failed 
 assert.match(wrapperSource, /lastVisibleFrameAck/, "the first matching terrain frame is acknowledged");
 assert.match(wrapperSource, /createThreeLushFoliageLayer/, "the LOD wrapper owns near and medium foliage cards");
 assert.match(wrapperSource, /createThreeGroundCoverLayer/, "the LOD wrapper owns streamed ground cover");
+assert.match(wrapperSource, /createThreeProductionForestLayer/, "the LOD wrapper owns production branches, canopy groups, grass, and ground detail");
 assert.match(textureSource, /options\.resolution \?\? 2048/, "renderer generates 2K texture outputs");
 assert.match(textureSource, /workingResolution \?\? 1024/, "texture generation uses bounded working detail");
 assert.match(runtimeSource, /createThreePatchStreamLodAdapter/, "the active runtime selects the LOD adapter");
 const generatorVersion = runtimeSource.match(/generatorVersion:\s*"([^"]+)"/)?.[1];
-assert.equal(generatorVersion, "prehistoric-patch-v6-lush-foliage-cards", "stream cache identity declares the lush foliage schema");
+assert.equal(generatorVersion, "prehistoric-patch-v7-production-forest", "stream cache identity declares the production forest schema");
 assert.match(
   runtimeSource,
   /terrainSettingsHash:\s*`segments-\$\{terrainLodPolicy\.sourceResolution\}-lod-\$\{terrainLodPolicy\.revision\}`/,
@@ -103,13 +106,17 @@ assert.match(
 );
 assert.match(
   runtimeSource,
-  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-ground-\$\{cfg\.groundCover\}-catalog-\$\{vegetationCatalogDigest\}-foliage-\$\{FOLIAGE_ATLAS_REVISION\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
-  "stream cache identity includes ground cover, foliage atlas, catalog, and tree fidelity generations"
+  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-ground-\$\{cfg\.groundCover\}-catalog-\$\{vegetationCatalogDigest\}-foliage-\$\{FOLIAGE_ATLAS_REVISION\}-density-\$\{VEGETATION_DENSITY_POLICY\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
+  "stream cache identity includes ground cover, foliage atlas, density policy, catalog, and tree fidelity generations"
 );
 assert.match(runtimeSource, /selectTerrainLodLevel: NexusEngine\.selectTerrainLodLevel/, "Core Graphics selects LOD levels");
 assert.match(gameSource, /game-runtime-lod\.js/, "the page boots the LOD runtime");
 assert.match(generatorSource, /function surfaceColor\(/, "terrain color uses continuous world-space blending");
 assert.match(generatorSource, /smoothstep\(/, "route materials blend instead of hard switching");
 assert.match(generatorSource, /selectGroundCoverSpecies/, "ground-cover placement is domain-selected");
+assert.match(generatorSource, /treeDensity/, "tree placement uses deterministic grove density");
+assert.match(generatorSource, /groundCoverDensity/, "ground cover uses patch density");
+assert.match(generatorSource, /grassDensity/, "grass uses patch density");
+assert.match(generatorSource, /leafLitter/, "terrain surface includes leaf-litter breakup");
 
-console.log("terrain LOD and lush vegetation renderer authority test ok");
+console.log("terrain LOD and production vegetation renderer authority test ok");
