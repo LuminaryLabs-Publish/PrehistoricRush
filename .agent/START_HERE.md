@@ -1,67 +1,66 @@
-# START HERE: PrehistoricRush Streamed Collision Convergence
+# START HERE: PrehistoricRush Natural Tree Growth Convergence
 
-**Last aligned:** `2026-07-18T13-39-48-04-00`  
+**Last aligned:** `2026-07-18T14-40-12-04-00`  
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Reviewed prior documentation head:** `8ebddd3d89e02227898fbcd7ce75d7fb56efeaa4`  
-**Reviewed runtime source revision:** `9462a74d747286d937d5dbfb2b245a2e7ae8371b`  
-**Status:** `streamed-collider-membership-physics-fallback-convergence-authority-audited`
+**Prior repo-local documentation head:** `b734e087e4d70315285fc3ef29b1788c487945b6`  
+**Reviewed runtime head:** `3c8175991939632cc9e4029f4554fbebf360f9f5`  
+**Status:** `natural-tree-growth-compute-capture-fidelity-convergence-authority-audited`
 
 ## Summary
 
-PrehistoricRush was selected by the oldest synchronized documented-selection rule. All ten eligible Publish repositories are tracked, have root `.agent` state and match their documented repo-local heads.
+PrehistoricRush was selected as the only runtime-ahead eligible Publish repository. Four new runtime commits install Core Compute, prepare validated near/medium natural-growth plans for all 12 tree archetypes, publish packed branch/foliage/shading buffers and add a growth-plan-driven Three.js source builder.
 
-The current product rebuilds and sorts the complete streamed collider view after patch membership changes, submits that complete view to Core Physics, and also scans the same product view through an independent fallback collision observation every accepted game tick. The resolution policy correctly defines physics-first precedence, but no common membership generation or parity result binds provider synchronization, fallback indexing and the settled run outcome.
+The active fidelity provider still creates its source subject with `createPrehistoricTreeObject(THREE, archetype)`. It does not consume `runtime.growthPlans` or call `createPrehistoricNaturalTreeObject()`. Growth revision metadata therefore exists without generation-bound proof that Object Shape, Core Capture, Object Fidelity and the presented tree use that growth plan.
 
 ## Intent
 
-Make patch collider membership, Core Physics synchronization, fallback collision evidence, stale-work rejection, retirement and visible/gameplay proof settle under one accepted generation.
+Make compute-prepared growth plans the explicit source authority for natural tree geometry, captures and fidelity packages.
 
 ## Checklist
 
-- [x] Compare all 11 Publish repositories with the central ledger.
+- [x] Compare all 11 Publish repositories with central tracking.
 - [x] Exclude Cavalry of Rome.
 - [x] Select and modify only PrehistoricRush.
-- [x] Confirm all eligible heads are synchronized.
-- [x] Document the complete interaction loop, domains, kits and offered services.
-- [x] Preserve the 99-surface implemented census.
-- [x] Add the `2026-07-18T13-39-48-04-00` tracker and focused audit family.
-- [ ] Add versioned collider membership and delta settlement.
-- [ ] Bind physics and fallback evidence to the same generation.
-- [ ] Execute deterministic, browser, artifact and Pages collision fixtures.
+- [x] Reconcile four runtime commits.
+- [x] Identify the complete interaction loop, domains, kits and offered services.
+- [x] Expand the implemented census from 99 to 103 surfaces.
+- [x] Add the `2026-07-18T14-40-12-04-00` tracker and audit family.
+- [x] Document the prepared-but-unconsumed natural growth source.
+- [ ] Bind accepted growth-plan identity to source geometry and captures.
+- [ ] Add deterministic, browser, artifact and Pages growth fixtures.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-18T13-39-48-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-18T13-39-48-04-00.md
-.agent/architecture-audit/2026-07-18T13-39-48-04-00-streamed-collider-convergence-dsk-map.md
-.agent/render-audit/2026-07-18T13-39-48-04-00-collision-membership-visible-state-convergence.md
-.agent/gameplay-audit/2026-07-18T13-39-48-04-00-streamed-collision-gameplay-loop.md
-.agent/interaction-audit/2026-07-18T13-39-48-04-00-collision-command-result-map.md
-.agent/collision-system-audit/2026-07-18T13-39-48-04-00-full-membership-sync-and-fallback-parity.md
-.agent/deploy-audit/2026-07-18T13-39-48-04-00-collision-browser-pages-gate.md
-.agent/central-sync-audit/2026-07-18T13-39-48-04-00-oldest-selection-streamed-collision-reconciliation.md
+.agent/trackers/2026-07-18T14-40-12-04-00/project-breakdown.md
+.agent/turn-ledger/2026-07-18T14-40-12-04-00.md
+.agent/architecture-audit/2026-07-18T14-40-12-04-00-natural-tree-growth-compute-capture-dsk-map.md
+.agent/render-audit/2026-07-18T14-40-12-04-00-natural-growth-capture-fidelity-convergence.md
+.agent/gameplay-audit/2026-07-18T14-40-12-04-00-natural-growth-startup-gameplay-loop.md
+.agent/interaction-audit/2026-07-18T14-40-12-04-00-tree-growth-command-result-map.md
+.agent/tree-growth-system-audit/2026-07-18T14-40-12-04-00-compute-prepared-source-unconsumed.md
+.agent/deploy-audit/2026-07-18T14-40-12-04-00-natural-growth-browser-pages-gate.md
+.agent/central-sync-audit/2026-07-18T14-40-12-04-00-runtime-ahead-natural-growth-reconciliation.md
 .agent/validation.md
 ```
 
 ## Required authority
 
-`prehistoric-rush-streamed-collider-membership-physics-fallback-convergence-authority-domain`
+`prehistoric-rush-natural-tree-growth-compute-capture-fidelity-convergence-authority-domain`
 
 ## Census
 
 ```txt
-implemented named surfaces: 99
-proposed collision-convergence surfaces: 20
+implemented named surfaces: 103
+new implemented surfaces: 4
+proposed growth-convergence surfaces: 20
+retained proposed collision-convergence surfaces: 20
 retained proposed production-forest retirement surfaces: 20
 retained proposed startup recovery surfaces: 20
 retained proposed foliage convergence surfaces: 20
-retained proposed provider-admission surfaces: 20
-retained proposed pause-arbitration surfaces: 19
-retained proposed render-host-retirement surfaces: 19
 ```
 
 ## Claim boundary
 
-Collider generation, full-view synchronization, Core Physics observation, fallback observation and physics-first resolution are implemented. A confirmed collision defect, provider-side rebuild behavior, measured performance impact, generation-bound parity, browser parity and deployed-origin proof are not claimed.
+Core Compute registration/execution, growth-plan validation, buffer packing, growth revision metadata and the natural geometry builder are implemented. Active provider consumption, growth-bound captures, visible parity, performance, browser parity and deployed-origin proof are not claimed.
