@@ -1,51 +1,54 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-18T05-40-17-04-00`  
-**Status:** `production-forest-legacy-vegetation-work-retirement-authority-audited`
+**Audit:** `2026-07-18T13-39-48-04-00`  
+**Status:** `streamed-collider-membership-physics-fallback-convergence-authority-audited`
 
 ## Summary
 
-The production forest visibly replaces legacy vegetation, but the hidden legacy grass path still owns batch construction, patch membership, buffer flushes and per-frame uniform updates. Capacity and visible-frame evidence also lack one generation-bound settlement.
+The streamed world has implemented tree collider generation, patch membership, Core Physics synchronization, fallback collision observation and physics-first outcome resolution. Those paths are not bound to one versioned collider-membership generation or parity result.
 
-## Production forest retirement gaps
+## Collision convergence gaps
 
 ```txt
-presentation-authority admission result: absent
-legacy grass host construction retirement: absent
-legacy grass batch-controller retirement: absent
-legacy grass patch replace/release retirement: absent
-legacy grass buffer-flush retirement: absent
-legacy grass per-frame uniform retirement: absent
-legacy resource retirement receipt: absent
-production capacity policy revision: absent
-overflow classification by family/patch: absent
-accepted overflow degradation result: absent
-patch generation/cache identity in production records: absent
-stale production patch rejection: absent
-production resource ownership manifest: absent
-generation-bound production frame digest: absent
-FirstProductionForestBoundFrameAck: absent
+collider membership generation manifest: absent
+collider content digest: absent
+added/retained/removed delta result: absent
+unchanged membership classification: absent
+provider synchronization mode declaration: absent
+provider synchronization receipt: absent
+provider partial rejection classification: absent
+fallback collision index revision: absent
+physics observation membership generation: absent
+fallback observation membership generation: absent
+physics/fallback agreement result: absent
+physics/fallback divergence result: absent
+stale patch/run observation rejection: absent
+collider retirement receipt: absent
+collision frame digest: absent
+FirstCollisionBoundFrameAck: absent
 ```
 
 ## Fixture gaps
 
 ```txt
-npm test execution for current runtime head: not recorded
-real production-layer construction fixture: absent
-patch activate/update/release fixture: absent
-legacy work retirement fixture: absent
-capacity and overflow fixture: absent
-stale patch-generation fixture: absent
-resource disposal fixture: absent
-browser frame-convergence fixture: absent
+npm test execution for current documentation head: not recorded
+real patch collider membership fixture: absent
+full-versus-delta provider synchronization fixture: absent
+unchanged membership fixture: absent
+physics/fallback parity fixture: absent
+stale patch and stale run fixture: absent
+restart collision isolation fixture: absent
+jump-threshold boundary fixture: absent
+browser Rapier fixture: absent
 built artifact fixture: absent
 Pages fixture: absent
-measured CPU/GPU/frame-cost evidence: absent
+measured CPU/physics/frame-cost evidence: absent
 ```
 
 ## Retained gaps
 
 ```txt
+production forest legacy-work retirement: unresolved
 required startup failure recovery: unresolved
 foliage family and atlas convergence: unresolved
 pinned provider identity and browser/Worker admission: unresolved
@@ -55,4 +58,4 @@ parent RenderHostGeneration retirement: unresolved
 
 ## Risk boundary
 
-No production performance regression, resource leak, visual defect, capacity failure, browser incompatibility or deployed-origin failure was reproduced. The audit documents source-backed duplicate work and missing ownership/proof, not a confirmed production incident.
+No duplicate collision, missed collision, collider leak, provider rebuild, performance regression, performance improvement, browser incompatibility or deployed-origin failure was reproduced. The audit documents source-backed full-view submission, dual observations and missing generation/parity proof.
