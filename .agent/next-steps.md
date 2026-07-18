@@ -1,51 +1,54 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-18T05-40-17-04-00`  
-**Authority:** `prehistoric-rush-production-forest-legacy-vegetation-work-retirement-authority-domain`
+**Audit:** `2026-07-18T13-39-48-04-00`  
+**Authority:** `prehistoric-rush-streamed-collider-membership-physics-fallback-convergence-authority-domain`
 
 ## Intent
 
-Keep the new production forest presentation while retiring superseded legacy vegetation work and proving generation, capacity, patch and frame convergence.
+Keep current collision behavior while making streamed membership, provider synchronization, fallback queries and resolution evidence deterministic, versioned and provable.
 
 ## Checklist
 
-### Phase 1: Presentation authority
+### Phase 1: Membership generation
 
-- [ ] Create `ProductionForestGenerationResult` with renderer, density, atlas, material and patch-generator revisions.
-- [ ] Select one authoritative grass/forest presentation path before host construction.
-- [ ] Expose the selected authority through the runtime snapshot.
+- [ ] Create `ColliderMembershipGenerationResult` with world, patch-controller, generator, run and provider revisions.
+- [ ] Build a deterministic collider content digest from active patch records.
+- [ ] Publish explicit added, retained and removed collider IDs.
+- [ ] Reject stale patch or run generations.
 
-### Phase 2: Retire legacy work
+### Phase 2: Provider synchronization
 
-- [ ] Prevent legacy grass meshes and batch controllers from being created when production forest is authoritative.
-- [ ] Stop legacy grass `replaceCell`, `releaseCell`, `flush` and per-frame uniform work.
-- [ ] Publish `LegacyVegetationRetirementResult` with retired hosts, batches and resources.
-- [ ] Preserve gameplay colliders, pickups, terrain and non-superseded patch data.
+- [ ] Define whether Core Physics receives full or delta synchronization.
+- [ ] Skip synchronization when the membership digest is unchanged.
+- [ ] Publish `PhysicsColliderSynchronizationResult` with applied, retained, rejected and retired records.
+- [ ] Bind provider errors and retries to the same generation.
 
-### Phase 3: Capacity and patch convergence
+### Phase 3: Fallback parity
 
-- [ ] Version bark, canopy, grass and ground-detail capacity policy.
-- [ ] Classify overflow by family, patch, reason and accepted degradation.
-- [ ] Bind patch cache identity and density policy to production records.
-- [ ] Reject stale patch records from earlier production generations.
-- [ ] Make disposal settle all atlas clones, materials, geometries, batches and patch records.
+- [ ] Build the fallback collision index from the accepted membership generation.
+- [ ] Attach membership generation to physics and fallback observations.
+- [ ] Classify agree, physics-only, fallback-only, divergent and stale evidence.
+- [ ] Preserve physics-first outcome precedence until parity fixtures justify a change.
 
-### Phase 4: Visible-frame proof
+### Phase 4: Lifecycle and proof
 
-- [ ] Publish `ProductionForestFrameDigest` with generation, active patches, capacities, overflow and retirement state.
-- [ ] Publish `FirstProductionForestBoundFrameAck` only after the accepted generation is visible.
-- [ ] Include the digest in startup and public host snapshots.
+- [ ] Publish collider retirement receipts on patch release and run reset.
+- [ ] Publish `CollisionFrameDigest` with membership, provider and fallback revisions.
+- [ ] Publish `FirstCollisionBoundFrameAck` only when visible and physical patch state share one generation.
+- [ ] Include stable collision diagnostics in the public host snapshot.
 
 ### Phase 5: Executable proof
 
 - [ ] Run `npm test`.
-- [ ] Add a layer-construction and patch activate/update/release fixture.
-- [ ] Assert zero legacy grass batch work under production authority.
-- [ ] Add capacity overflow, stale patch and disposal fixtures.
-- [ ] Add browser, built-artifact and GitHub Pages frame-convergence fixtures.
+- [ ] Add membership ordering and delta fixtures.
+- [ ] Add a deterministic fake-provider integration fixture.
+- [ ] Add real Rapier physics/fallback parity fixtures.
+- [ ] Add stale patch, restart and jump-threshold fixtures.
+- [ ] Add browser, built-artifact and GitHub Pages collision fixtures.
 
 ### Retained work
 
+- [ ] Retire superseded legacy vegetation work.
 - [ ] Complete startup failure recovery.
 - [ ] Complete foliage family/atlas convergence.
 - [ ] Complete pinned-provider admission.
@@ -55,14 +58,16 @@ Keep the new production forest presentation while retiring superseded legacy veg
 ## Recommended file cut
 
 ```txt
+src/world/prehistoric-patch-generator.js
 src/render/three-patch-stream-adapter.js
-src/render/three-patch-stream-lod-adapter.js
-src/render/three-production-forest-layer.js
 src/game-runtime-lod.js
-tests/production-forest-retirement.mjs
-tests/browser/production-forest-retirement.html
+src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js
+src/domains/prehistoric-rush/prehistoric-rush-resolution-policy.js
+tests/collider-membership-convergence.mjs
+tests/collision-observation-parity.mjs
+tests/browser/collision-convergence.html
 ```
 
 ## Compatibility constraints
 
-Preserve route readability, deterministic patch generation, tree and ground-cover selection, player collision, pickups, score, pause, outcome tuning, startup receipts, current production forest appearance and fallback compatibility.
+Preserve current tree placement, collider radii, player collision size, jump threshold, physics-first precedence, fallback availability, deterministic seed behavior, pickup/goal settlement, run-over payloads and current rendering.
