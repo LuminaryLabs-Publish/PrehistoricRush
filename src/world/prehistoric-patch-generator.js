@@ -17,6 +17,13 @@ function hash(x, z, seed = 1) {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967295;
 }
 
+function macroField(x, z, scale = 0.01) {
+  const broad = Math.sin(x * scale + z * scale * 0.63) * 0.5 + 0.5;
+  const cross = Math.cos(z * scale * 0.77 - x * scale * 0.41) * 0.5 + 0.5;
+  const detail = Math.sin((x - z) * scale * 1.91) * 0.5 + 0.5;
+  return clamp(broad * 0.48 + cross * 0.34 + detail * 0.18, 0, 1);
+}
+
 function matrixFromYRotationScaleTranslation(rotation, scaleX, scaleY, scaleZ, x, y, z) {
   return matrixFromEulerScaleTranslation(0, rotation, 0, scaleX, scaleY, scaleZ, x, y, z);
 }
@@ -91,14 +98,24 @@ function surfaceColor(worldX, worldZ, distance, width) {
   const edge = [0.43, 0.50, 0.22];
   const verge = [0.28, 0.49, 0.22];
   const forest = [0.18, 0.39, 0.18];
+  const moistSoil = [0.16, 0.27, 0.14];
+  const leafLitter = [0.34, 0.29, 0.16];
+  const moss = [0.16, 0.42, 0.20];
   const pathWeight = 1 - smoothstep(width - 0.35, width + 1.45, distance);
   const edgeWeight = 1 - smoothstep(width + 0.5, width + 3.0, distance);
   const vergeWeight = 1 - smoothstep(width + 2.1, width + 6.2, distance);
   const broad = Math.sin(worldX * 0.021 + worldZ * 0.012) * 0.5 + Math.cos(worldZ * 0.017 - worldX * 0.009) * 0.5;
   const stylizedVariation = broad * 0.035;
+  const forestMask = 1 - pathWeight;
+  const litterWeight = smoothstep(0.56, 0.82, macroField(worldX + 47, worldZ - 31, 0.017)) * forestMask * 0.22;
+  const moistureWeight = smoothstep(0.6, 0.88, macroField(worldX - 73, worldZ + 59, 0.012)) * forestMask * 0.18;
+  const mossWeight = smoothstep(0.68, 0.92, macroField(worldX + 11, worldZ + 97, 0.025)) * forestMask * 0.12;
   let color = mixColor(forest, verge, vergeWeight);
   color = mixColor(color, edge, edgeWeight);
   color = mixColor(color, path, pathWeight);
+  color = mixColor(color, leafLitter, litterWeight);
+  color = mixColor(color, moistSoil, moistureWeight);
+  color = mixColor(color, moss, mossWeight);
   return color.map((channel, index) => clamp(channel + stylizedVariation * (index === 1 ? 0.72 : 1), 0, 1));
 }
 
@@ -111,6 +128,18 @@ function vegetationEnvironment(x, z, y, nearest, normalY) {
     cluster: clamp(0.5 + Math.sin(x * 0.017 + z * 0.013) * 0.28 + Math.cos(x * 0.009 - z * 0.014) * 0.22, 0, 1),
     biome: nearest.distance < nearest.width + 12 ? "route-forest" : "deep-forest"
   };
+}
+
+function treeDensity(environment, x, z) {
+  return clamp(0.5 + environment.cluster * 0.32 + macroField(x, z, 0.008) * 0.22, 0.42, 0.98);
+}
+
+function groundCoverDensity(environment, x, z) {
+  return clamp(0.18 + environment.cluster * 0.42 + environment.moisture * 0.24 + macroField(x, z, 0.021) * 0.2, 0.12, 0.98);
+}
+
+function grassDensity(environment, x, z) {
+  return clamp(0.15 + environment.cluster * 0.38 + environment.moisture * 0.24 + macroField(x, z, 0.03) * 0.24, 0.1, 0.96);
 }
 
 function normalYAt(x, z) {
@@ -217,10 +246,16 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const sample = sampleHeight(x, z, centerNearest.index);
       if (sample.nearest.distance < sample.nearest.width + 5.5 || treeTypes.length === 0) continue;
       const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalYAt(x, z));
+      if (hash(chunkX * 113 + index, chunkZ * 127, 191) > treeDensity(environment, x, z)) continue;
       const treeId = `tree-${chunkX}-${chunkZ}-${index}`;
       const instanceSeed = `${config.seed}:${patchId}:tree:${index}`;
       const species = vegetation.selectSpecies(environment, instanceSeed);
       if (!species) continue;
+      const routeClearance = sample.nearest.distance - sample.nearest.width;
+      const averageHeight = Number(species.metadata?.averageHeight ?? 0);
+      const shape = String(species.metadata?.shape ?? "");
+      const routeFriendly = /cycad|fern|short-palm|horsetail/.test(shape);
+      if (routeClearance < 9 && averageHeight > 32 && !routeFriendly) continue;
       const typeIndex = Number(species.metadata?.typeIndex);
       const type = treeTypes[typeIndex];
       if (!type || !trees[typeIndex]) throw new RangeError(`Vegetation species ${species.id} has invalid typeIndex ${typeIndex}.`);
@@ -289,10 +324,11 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const sample = sampleHeight(x, z, centerNearest.index);
       const region = route.classify(sample.nearest.distance, sample.nearest.width);
       if (region === "path") continue;
-      const admission = hash(index, chunkX * 17 + chunkZ, 179);
-      if (region === "edge" && admission < 0.8) continue;
-      if (region === "verge" && admission < 0.28) continue;
       const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalYAt(x, z));
+      const admission = hash(index, chunkX * 17 + chunkZ, 179);
+      if (hash(chunkX * 137 + index, chunkZ * 139, 193) > groundCoverDensity(environment, x, z)) continue;
+      if (region === "edge" && admission < 0.55) continue;
+      if (region === "verge" && admission < 0.18) continue;
       const id = `ground-cover-${chunkX}-${chunkZ}-${index}`;
       const seed = `${config.seed}:${patchId}:ground-cover:${index}`;
       const species = vegetation.selectGroundCoverSpecies(environment, seed);
@@ -329,7 +365,7 @@ export function createPrehistoricPatchGenerator(options = {}) {
           phase: hash(chunkX * 97 + index, chunkZ * 101, 181) * Math.PI * 2
         },
         vegetationInstance: instance,
-        metadata: { patchId, region, environment, visualGroundSink: variation.groundSink }
+        metadata: { patchId, region, environment, visualGroundSink: variation.groundSink, densityPolicy: "production-patches-v1" }
       });
     }
 
@@ -339,11 +375,17 @@ export function createPrehistoricPatchGenerator(options = {}) {
       const sample = sampleHeight(x, z, centerNearest.index);
       const region = route.classify(sample.nearest.distance, sample.nearest.width);
       if (region === "path") continue;
+      const environment = vegetationEnvironment(x, z, sample.y, sample.nearest, normalYAt(x, z));
+      if (hash(chunkX * 149 + index, chunkZ * 151, 197) > grassDensity(environment, x, z)) continue;
       const layerIndex = region === "edge" ? 0 : region === "verge" ? (hash(index, chunkX, 89) > 0.48 ? 1 : 2) : (hash(index, chunkZ, 97) > 0.28 ? 1 : 0);
       const layer = [{ h: 0.26, w: 0.46 }, { h: 0.78, w: 0.72 }, { h: 1.28, w: 0.9 }][layerIndex];
       const routeScale = region === "edge" ? 0.22 : region === "verge" ? 0.72 : 1;
       const rotation = hash(index, chunkZ, 109) * Math.PI;
-      grass[layerIndex].push({ id: `grass-${chunkX}-${chunkZ}-${index}`, matrix: matrixFromYRotationScaleTranslation(rotation, layer.w, layer.h * routeScale, layer.w, x, sample.y, z) });
+      grass[layerIndex].push({
+        id: `grass-${chunkX}-${chunkZ}-${index}`,
+        matrix: matrixFromYRotationScaleTranslation(rotation, layer.w, layer.h * routeScale, layer.w, x, sample.y, z),
+        metadata: { region, environment, densityPolicy: "production-patches-v1" }
+      });
     }
 
     for (let index = 0; index < config.shardsPerPatch; index += 1) {
@@ -363,13 +405,14 @@ export function createPrehistoricPatchGenerator(options = {}) {
       x: chunkX,
       z: chunkZ,
       seed: `${request.worldSeed}:${patchId}`,
-      terrain: { heights, colors, normals, segments: config.segments, mapping: "world-space", materialRevision: "stylized-high-fidelity-v3-lush-jungle" },
+      terrain: { heights, colors, normals, segments: config.segments, mapping: "world-space", materialRevision: "stylized-high-fidelity-v4-production-jungle" },
       trees,
       groundCover,
       grass,
       pickups,
       colliders,
-      vegetationRevision: options.foliageAtlasRevision ?? "prehistoric-foliage-cards-v1",
+      vegetationRevision: options.foliageAtlasRevision ?? "prehistoric-foliage-cards-v2",
+      vegetationDensityPolicy: "production-patches-v1",
       bounds: { min: [minX, -16, minZ], max: [maxX, 80, maxZ] }
     };
   };
