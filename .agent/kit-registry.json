@@ -1,24 +1,24 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-18T02-39-16-04-00",
-  "status": "required-startup-asset-failure-recovery-authority-audited",
-  "technicalStatus": "required-startup-asset-failure-recovery-authority-audited",
-  "repositoryRevisionReviewed": "791f273d96a136e15fc15c077913ca377a017b2a",
-  "runtimeSourceRevisionReviewed": "06e2bc0439643e46153b8c7f7f42a4e91a2db5e1",
+  "generatedAt": "2026-07-18T05-40-17-04-00",
+  "status": "production-forest-legacy-vegetation-work-retirement-authority-audited",
+  "technicalStatus": "production-forest-legacy-vegetation-work-retirement-authority-audited",
+  "repositoryRevisionReviewed": "9462a74d747286d937d5dbfb2b245a2e7ae8371b",
+  "runtimeSourceRevisionReviewed": "9462a74d747286d937d5dbfb2b245a2e7ae8371b",
   "nexusEngineRevisionReviewed": "d41992636de2752f1ad9047b80701e6313f19b87",
-  "priorRepoLocalDocumentationHead": "791f273d96a136e15fc15c077913ca377a017b2a",
-  "currentAuditedSlice": "Required Startup Module Asset Image Failure Settlement Cleanup Retry and Recovery",
-  "latestTracker": ".agent/trackers/2026-07-18T02-39-16-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-18T02-39-16-04-00.md",
+  "priorRepoLocalDocumentationHead": "a4238e98222f3a3b5f4aaeb52e7f2e747ec1cdab",
+  "currentAuditedSlice": "Production Forest Admission Legacy Vegetation Work Retirement Capacity Overflow Patch and Frame Convergence",
+  "latestTracker": ".agent/trackers/2026-07-18T05-40-17-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-18T05-40-17-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-18T02-39-16-04-00-startup-failure-recovery-asset-preparation-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-18T02-39-16-04-00-loading-failure-surface-recovery-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-18T02-39-16-04-00-required-tree-assets-startup-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-18T02-39-16-04-00-startup-failure-command-result-map.md",
-    "startupSystem": ".agent/startup-system-audit/2026-07-18T02-39-16-04-00-required-asset-preparation-failure-retry-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-18T02-39-16-04-00-startup-failure-browser-pages-fixture-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-18T02-39-16-04-00-oldest-selection-startup-recovery-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-18T05-40-17-04-00-production-forest-retirement-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-18T05-40-17-04-00-hidden-legacy-grass-work-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-18T05-40-17-04-00-streamed-production-forest-gameplay-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-18T05-40-17-04-00-production-forest-command-result-map.md",
+    "productionForestSystem": ".agent/production-forest-system-audit/2026-07-18T05-40-17-04-00-legacy-work-retirement-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-18T05-40-17-04-00-production-forest-browser-pages-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-18T05-40-17-04-00-runtime-ahead-production-forest-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
@@ -26,151 +26,122 @@
     "centralLedgerMissingCount": 0,
     "rootAgentMissingCount": 0,
     "newOrUndocumentedCount": 0,
-    "runtimeAheadCount": 0,
-    "allEligibleHeadsMatched": true,
+    "runtimeAheadCount": 1,
+    "allOtherEligibleHeadsMatched": true,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRepositoryHead": "791f273d96a136e15fc15c077913ca377a017b2a",
+    "selectedPriorDocumentationHead": "a4238e98222f3a3b5f4aaeb52e7f2e747ec1cdab",
+    "selectedRepositoryHead": "9462a74d747286d937d5dbfb2b245a2e7ae8371b",
+    "selectedAheadBy": 11,
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "oldest synchronized documented timestamp",
-    "selectedPriorTimestamp": "2026-07-17T16-40-37-04-00"
+    "reason": "only runtime-ahead eligible repository"
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 29,
     "officialNexusEngineKitCount": 5,
     "productPageAssetWorkerKitCount": 28,
-    "externalHostCaptureRenderAdapterCount": 21,
-    "proofKitAndFixtureCount": 14,
-    "totalSurfaceCount": 97,
-    "plannedStartupRecoverySurfaceCount": 20,
+    "externalHostCaptureRenderAdapterCount": 22,
+    "proofKitAndFixtureCount": 15,
+    "totalSurfaceCount": 99,
+    "newImplementedSurfaceCount": 2,
+    "plannedProductionForestRetirementSurfaceCount": 20,
+    "retainedPlannedStartupRecoverySurfaceCount": 20,
     "retainedPlannedFoliageConvergenceSurfaceCount": 20,
     "retainedPlannedProviderAdmissionSurfaceCount": 20,
     "retainedPlannedPauseArbitrationSurfaceCount": 19,
     "retainedPlannedRenderHostRetirementSurfaceCount": 19
   },
-  "startupFailureRecovery": {
-    "requiredModuleCount": 9,
-    "modulePreflightSettlementPresent": true,
-    "moduleFailureTextProjectionPresent": true,
-    "requiredTreeBundlePreparationPresent": true,
-    "runtimeImagePreparationTrackingPresent": true,
-    "runtimeImageFailureReportPresent": true,
-    "successfulProviderUnregisterPresent": true,
-    "successfulRuntimePublicationPresent": true,
-    "unifiedFailureResultPresent": false,
-    "failedPathProviderRuntimeRetirementResultPresent": false,
-    "boundedRetryPolicyPresent": false,
-    "retryCommandResultPresent": false,
-    "staleGenerationRejectionPresent": false,
-    "navigationFallbackResultPresent": false,
-    "browserFailureRecoveryFixturePresent": false,
-    "firstRecoveredGameFrameAckPresent": false,
+  "productionForest": {
+    "layerPresent": true,
+    "clusteredPlacementPresent": true,
+    "barkRootPrimarySecondaryBranchRecordsPresent": true,
+    "canopyFamilyBatchesPresent": true,
+    "grassVariantCount": 6,
+    "groundDetailVariantCount": 4,
+    "defaultBarkCapacity": 9000,
+    "defaultCanopyCapacityPerFamily": 2600,
+    "defaultGrassCapacityPerVariant": 2800,
+    "defaultGroundDetailCapacityPerVariant": 900,
+    "legacyGrassVisibilitySuppressionPresent": true,
+    "legacyGrassBatchConstructionRetired": false,
+    "legacyGrassPatchMembershipWorkRetired": false,
+    "legacyGrassFrameUniformWorkRetired": false,
+    "overflowCounterPresent": true,
+    "overflowSettlementPresent": false,
+    "generationBoundFrameDigestPresent": false,
+    "firstProductionForestBoundFrameAckPresent": false,
     "sourceFiles": [
-      "game.html",
-      "src/pages/game.js",
-      "src/game.js",
-      "src/shared/prehistoric-tree-fidelity-runtime.js",
-      "src/shared/tree-fidelity-runtime-images.js",
+      "src/game-runtime-lod.js",
+      "src/world/prehistoric-patch-generator.js",
+      "src/render/three-patch-stream-adapter.js",
+      "src/render/three-patch-stream-lod-adapter.js",
+      "src/render/three-production-forest-layer.js",
+      "tests/production-forest-visuals.mjs",
       "package.json"
     ]
   },
   "interactionLoop": [
-    "preflight required runtime modules",
-    "prepare the required tree fidelity bundle",
-    "decode and enrich runtime tree atlas images",
-    "publish the prepared runtime and import the LOD host",
-    "stream terrain and vegetation",
-    "run collision pickup score pause and outcome gameplay",
-    "on startup failure require cleanup retry fallback and recovered frame settlement"
+    "preflight modules and prepare tree fidelity assets",
+    "create engine physics player and streamed patch controller",
+    "generate terrain trees ground cover grass pickups and colliders",
+    "activate terrain tree foliage ground cover production forest and base hosts",
+    "convert patch records to production bark branch canopy grass and detail batches",
+    "hide legacy grass while the base adapter continues legacy batch work",
+    "render and publish startup and visible-frame receipts",
+    "accept input tick stream and release patch membership"
   ],
   "domainsInUse": [
-    "browser module delivery DOM image decode Canvas2D lifecycle RAF storage Worker CDN and Pages",
-    "Nexus Engine Assets Startup Object Shape Capture Fidelity Vegetation and gameplay core domains",
+    "browser ESM DOM RAF Worker Canvas2D image decode storage lifecycle CDN and Pages",
+    "Nexus Engine Assets Startup Input Object Shape Capture Fidelity Vegetation Ecology Tree Foliage Scene Spatial Creature Character Player Physics Simulation Motion Camera Animation Graphics UI Diagnostics Composition and Presentation",
     "NexusEngine Kits seed creature instance patch and camera services",
-    "PrehistoricRush entry tree fidelity streaming run route player pause score and outcome",
+    "PrehistoricRush run route player pause terrain vegetation tree fidelity foliage ground cover production forest density streaming pickup score and outcome",
     "Three.js Rapier source fixtures deployment audit governance and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-18T02-39-16-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
-    "criticalSurfaces": {
-      "game-page-entry-kit": [
-        "required module manifest",
-        "module preflight settlement",
-        "failure text projection",
-        "game runtime import"
+    "completeInventory": ".agent/trackers/2026-07-18T05-40-17-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "newSurfaces": {
+      "three-production-forest-layer": [
+        "production bark roots branches and canopy records",
+        "six grass variants and four ground-detail variants",
+        "patch activation release distance culling buffer writes overflow counters and disposal",
+        "legacy grass visibility suppression"
       ],
-      "core-startup-kit": [
-        "launch generation",
-        "required preparations",
-        "progress",
-        "ready and failed reports",
-        "first frame presentation"
-      ],
-      "core-assets-kit": [
-        "provider registration",
-        "asset and bundle registration",
-        "required requests",
-        "progress and receipts",
-        "values and release"
-      ],
-      "tree-fidelity-route-preparation-kit": [
-        "required bundle preparation",
-        "progress projection",
-        "successful provider retirement",
-        "runtime publication"
-      ],
-      "tree-fidelity-runtime-image-hydration-kit": [
-        "source discovery",
-        "fetch and image decode",
-        "Canvas2D alpha readback",
-        "frame crop metadata",
-        "runtime image binding",
-        "thrown failures"
+      "production-forest-visuals-test-kit": [
+        "static source markers for recipes branches bark canopy grass suppression ground details composition and frame counters"
       ]
     }
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-required-startup-asset-failure-recovery-authority-domain",
-    "mainFinding": "Required startup failures are observable, but cleanup, bounded retry, fallback navigation, stale generation rejection and recovered-frame proof are not owned as one product lifecycle.",
+    "parentDomain": "prehistoric-rush-production-forest-legacy-vegetation-work-retirement-authority-domain",
+    "mainFinding": "Production forest presentation is active, but superseded legacy grass remains allocated and processed through patch and frame work paths; capacity overflow and frame convergence are not settled under one generation.",
     "plannedSurfaces": [
-      "startup-generation-manifest-kit",
-      "required-module-preflight-result-kit",
-      "required-asset-preparation-result-kit",
-      "tree-fidelity-bundle-admission-kit",
-      "runtime-image-hydration-result-kit",
-      "startup-failure-classification-kit",
-      "startup-failure-redaction-kit",
-      "startup-retry-policy-kit",
-      "startup-retry-budget-kit",
-      "startup-recovery-command-kit",
-      "startup-recovery-settlement-kit",
-      "startup-provider-retirement-kit",
-      "startup-runtime-retirement-kit",
-      "startup-navigation-fallback-kit",
-      "startup-status-projection-kit",
-      "startup-accessible-error-surface-kit",
-      "startup-source-failure-fixture-kit",
-      "startup-browser-retry-fixture-kit",
-      "startup-artifact-pages-failure-fixture-kit",
-      "first-recovered-game-frame-ack-kit"
+      "production-forest-generation-manifest-kit",
+      "vegetation-presentation-authority-admission-kit",
+      "legacy-vegetation-host-discovery-kit",
+      "legacy-grass-retirement-command-kit",
+      "legacy-grass-retirement-result-kit",
+      "patch-membership-work-routing-kit",
+      "production-patch-record-cache-kit",
+      "production-forest-capacity-policy-kit",
+      "production-forest-overflow-settlement-kit",
+      "production-forest-cull-budget-kit",
+      "production-forest-buffer-write-budget-kit",
+      "production-forest-material-revision-kit",
+      "production-forest-resource-ownership-kit",
+      "production-forest-disposal-settlement-kit",
+      "production-forest-frame-digest-kit",
+      "first-production-forest-bound-frame-ack-kit",
+      "production-forest-source-fixture-kit",
+      "legacy-work-retirement-fixture-kit",
+      "production-forest-browser-fixture-kit",
+      "production-forest-artifact-pages-fixture-kit"
     ]
   },
   "retainedAuthorities": [
-    {
-      "parentDomain": "prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain",
-      "status": "proposed-unimplemented"
-    },
-    {
-      "parentDomain": "prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain",
-      "status": "proposed-unimplemented"
-    },
-    {
-      "parentDomain": "prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain",
-      "status": "proposed-unimplemented"
-    },
-    {
-      "parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain",
-      "status": "proposed-unimplemented"
-    }
+    {"parentDomain": "prehistoric-rush-required-startup-asset-failure-recovery-authority-domain", "status": "proposed-unimplemented"},
+    {"parentDomain": "prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain", "status": "proposed-unimplemented"},
+    {"parentDomain": "prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain", "status": "proposed-unimplemented"},
+    {"parentDomain": "prehistoric-rush-pause-overlay-input-context-simulation-arbitration-authority-domain", "status": "proposed-unimplemented"},
+    {"parentDomain": "prehistoric-rush-render-host-generation-retirement-authority-domain", "status": "proposed-unimplemented"}
   ],
   "validation": {
     "documentationChanged": true,
