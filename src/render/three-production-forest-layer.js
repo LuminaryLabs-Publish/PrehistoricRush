@@ -31,11 +31,6 @@ function unit(seed, salt = "") {
   return (value >>> 0) / 4294967295;
 }
 
-function colorArray(THREE, value) {
-  const color = new THREE.Color(value);
-  return [color.r, color.g, color.b];
-}
-
 function combineBounds(trunk, crown) {
   const min = [
     Math.min(trunk.bounds.min[0], crown.bounds.min[0]),
@@ -133,7 +128,8 @@ transformed.z += sway * 0.35;`
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nvarying vec3 vProductionTint;\nvarying float vProductionFade;\nvarying float vProductionLight;\nfloat productionHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}")
+        "#include <common>\nvarying vec3 vProductionTint;\nvarying float vProductionFade;\nvarying float vProductionLight;\nfloat productionHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}"
+      )
       .replace(
         "vec4 diffuseColor = vec4( diffuse, opacity );",
         "vec4 diffuseColor = vec4(diffuse * vProductionTint * mix(0.78, 1.18, vProductionLight), opacity);"
@@ -150,7 +146,7 @@ transformed.z += sway * 0.35;`
 function createBarkBatch(THREE, scene, capacity) {
   const geometry = addInstanceAttributes(
     THREE,
-    new THREE.CylinderGeometry(1, 1, 1, 8, 3, false),
+    new THREE.CylinderGeometry(0.58, 1, 1, 8, 3, false),
     capacity,
     [["productionTint", 3, 1], ["productionBark", 4, 0]]
   );
@@ -414,7 +410,7 @@ function matrixBetween(THREE, start, end, radiusStart, radiusEnd = radiusStart) 
   const length = Math.max(0.001, direction.length());
   const position = startVector.clone().add(endVector).multiplyScalar(0.5);
   const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
-  const scale = new THREE.Vector3(Math.max(radiusStart, radiusEnd), length, Math.max(radiusStart, radiusEnd));
+  const scale = new THREE.Vector3(radiusStart, length, radiusStart);
   return new THREE.Matrix4().compose(position, quaternion, scale).toArray();
 }
 
@@ -647,7 +643,7 @@ export function createThreeProductionForestLayer(THREE, options = {}) {
           const detailVariant = hashText(`${descriptor.id}:detail`) % DETAIL_VARIANT_COUNT;
           const detailScale = 0.9 + unit(descriptor.id, "detail-scale") * 2.2;
           const detailPosition = new THREE.Vector3(position.x, position.y + 0.018, position.z);
-          const detailQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI * 0.5, unit(descriptor.id, "detail-yaw") * Math.PI * 2, 0));
+          const detailQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, unit(descriptor.id, "detail-yaw") * Math.PI * 2, 0));
           production.details.push({
             id: `${descriptor.id}:detail`,
             variant: detailVariant,
