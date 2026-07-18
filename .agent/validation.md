@@ -1,13 +1,13 @@
 # PrehistoricRush Validation
 
-**Audit timestamp:** `2026-07-18T13-39-48-04-00`  
-**Scope:** organization selection, full kit/service inventory, streamed collider membership, Core Physics/fallback collision convergence and executable-proof boundaries
+**Audit timestamp:** `2026-07-18T14-40-12-04-00`  
+**Scope:** organization selection, full kit/service inventory, natural tree growth compute preparation, capture/fidelity source binding and executable-proof boundaries
 
 ## Summary
 
-Source inspection confirms that patch generation emits tree collider records; the base adapter stores them by patch; activation and effective release rebuild a sorted flattened complete collider view; and the complete view is passed to `corePhysics.syncColliders()`.
+Source inspection confirms that the tree-fidelity runtime installs Core Compute, prepares deterministic near/medium natural-growth plans for every archetype, validates them, packs branch/foliage/shading arrays, publishes them on `runtime.growthPlans` and includes the growth revision in asset versions and metadata.
 
-Source inspection also confirms that accepted simulation ticks run a Core Physics observation and a separate fallback collision observation. The resolution policy selects a fatal physics contact first and a fallback hit only when no fatal physics contact exists.
+Source inspection also confirms that the active fidelity provider still calls `createPrehistoricTreeObject(THREE, archetype)`. The reviewed provider does not select `runtime.growthPlans` and does not call the new `createPrehistoricNaturalTreeObject()` builder.
 
 ## Confirmed by inspection
 
@@ -15,63 +15,82 @@ Source inspection also confirms that accepted simulation ticks run a Core Physic
 Publish repositories observed: 11
 eligible after Cavalry exclusion: 10
 selected: PrehistoricRush
-selection reason: oldest synchronized documented eligible repository
-reviewed repository head: 8ebddd3d89e02227898fbcd7ce75d7fb56efeaa4
-reviewed runtime source revision: 9462a74d747286d937d5dbfb2b245a2e7ae8371b
+selection reason: only runtime-ahead eligible repository
+prior documented repo-local head: b734e087e4d70315285fc3ef29b1788c487945b6
+reviewed runtime head: 3c8175991939632cc9e4029f4554fbebf360f9f5
+ahead by: 4
 
-patch tree collider records: present
-collidersByPatch map: present
-complete ordered view rebuild: present
-corePhysics.syncColliders complete-view call: present
-physics.frame observation: present
-fallback collision observation: present
-physics-first resolution precedence: present
-membership generation and parity result: absent
+Core Compute installation: present
+natural growth compute provider: present
+tree archetypes prepared: 12
+near/medium executions: 24
+growth validation: present
+packed branch/foliage/shading outputs: present
+runtime.growthPlans: present
+growth revision package metadata: present
+natural growth Three.js source builder: present
+active provider growth-plan consumption: not observed
+active provider natural builder call: not observed
+active provider legacy source call: present
 ```
 
 ## Source inspected
 
 ```txt
 package.json
-src/game-runtime-lod.js
-src/world/prehistoric-patch-generator.js
-src/render/three-patch-stream-adapter.js
-src/render/three-patch-stream-lod-adapter.js
-src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js
-src/domains/prehistoric-rush/prehistoric-rush-resolution-policy.js
+src/shared/tree-archetype-catalog.js
+src/shared/prehistoric-tree-growth-compute.js
+src/render/prehistoric-natural-tree-geometry.js
+src/shared/prehistoric-tree-fidelity-runtime.js
+src/shared/vegetation-tree-fidelity-provider.js
+NexusEngine core-compute-domain
+NexusEngine core-compute-kit
+NexusEngine vegetation Tree domain natural-growth/compute services
 current .agent tracker and kit registry
 central PrehistoricRush ledger
+four-commit compare from b734e087... to 3c817599...
 ```
 
-## Source-derived limits
+## Source-derived preparation scale
 
 ```txt
-active radius: 2
-maximum active patch positions: 25
-maximum tree candidates per patch: 7
-maximum candidate tree colliders across active positions: 175
+archetypes: 12
+buffers per archetype: 4
+kernels per archetype: 3
+graphs per archetype: 1
+executions per archetype: 2
+
+total buffers: 48
+total kernels: 36
+total graphs: 12
+total near/medium executions: 24
+maximum segments per graph: 320
+minimum foliage capacity per graph: 96 clusters
 ```
 
-Actual collider counts can be lower. No runtime count or cost was measured.
+These are configured descriptor counts and capacities, not measured output counts, duration, memory or GPU cost.
 
 ## Required executable fixtures
 
 ```txt
 npm test
-collider membership ordering and digest
-added/retained/removed delta settlement
-unchanged membership synchronization suppression
-provider synchronization result
-physics/fallback agreement
-physics-only and fallback-only collisions
-collider-ID divergence
-stale patch and stale run rejection
-restart isolation
-jump-threshold boundary
-browser Rapier convergence
+syntax/import checks for both new modules
+all-archetype deterministic growth plans
+growth-plan validation and digest
+packed output shape and capacity
+natural source object construction
+portable geometry bounds/attributes
+provider growth-plan consumption
+source-plan mismatch rejection
+near/medium Shape binding
+far/horizon capture binding
+fidelity package growth digest
+stale generation rejection
+resource retirement
+browser visual comparison
 built-output smoke
 Pages-origin smoke
-FirstCollisionBoundFrameAck
+FirstGrowthBoundFrameAck
 ```
 
 ## Change scope
@@ -88,7 +107,7 @@ pull request created: no
 
 source inspection performed: yes
 npm test run by audit: no
-physics provider fixture run: no
+natural-growth fixture run: no
 browser fixture run: no
 artifact smoke run: no
 Pages smoke run: no
@@ -96,10 +115,10 @@ Pages smoke run: no
 
 ## Execution boundary
 
-The environment could not resolve `github.com` for a direct checkout. Validation therefore used the GitHub connector and source inspection only. No Node command, browser fixture, physics profiler, artifact download or Pages-origin smoke was executed.
+Direct checkout could not resolve `github.com`. Validation therefore used the GitHub connector and source inspection. No Node command, browser fixture, capture render, profiler, artifact download or Pages-origin smoke was executed.
 
-The package test script has syntax and contract/source tests, but no real collider membership, provider synchronization, physics/fallback parity, browser, built artifact or Pages fixture.
+The package test script does not list the two new source modules in `test:syntax` and contains no natural-growth source-binding fixture.
 
 ## Claim boundary
 
-Collision generation, full-view submission, physics observation, fallback observation and resolution precedence are documented as implemented. Collision correctness under disagreement, provider-side incremental behavior, performance, resource lifetime, browser parity, artifact parity, Pages parity and production readiness are not claimed.
+Natural-growth computation, validation, packing, revision metadata and the new geometry builder are documented as implemented. Their active fidelity-provider consumption, visible correctness, performance, resource lifetime, browser parity, artifact parity, Pages parity and production readiness are not claimed.
