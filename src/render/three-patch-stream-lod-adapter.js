@@ -3,6 +3,7 @@ import { applyLushJungleAtmosphere } from "./lush-jungle-atmosphere.js";
 import { createPrehistoricFoliageAtlas } from "./prehistoric-foliage-atlas.js";
 import { createThreeGroundCoverLayer } from "./three-ground-cover-layer.js";
 import { createThreeLushFoliageLayer } from "./three-lush-foliage-layer.js";
+import { createThreeProductionForestLayer } from "./three-production-forest-layer.js";
 import { createThreeTerrainLodLayer } from "./three-terrain-lod-layer.js";
 import { createThreeTreeFidelityLayer } from "./three-tree-fidelity-layer.js";
 
@@ -73,11 +74,21 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     atlas: foliageAtlas,
     capacityPerSpecies: groundCoverCapacity
   });
+  const productionForest = createThreeProductionForestLayer(THREE, {
+    scene: base.scene,
+    camera: base.camera,
+    atlas: foliageAtlas,
+    barkCapacity: options.productionBarkCapacity ?? 9000,
+    canopyCapacityPerFamily: options.productionCanopyCapacity ?? 2600,
+    grassCapacityPerVariant: options.productionGrassCapacity ?? 2800,
+    groundDetailCapacityPerVariant: options.productionGroundDetailCapacity ?? 900
+  });
 
   base.view.terrainLod = terrain.view;
   base.view.treeFidelity = treeFidelity?.view ?? { enabled: false, packageCount: 0, counts: { near: 0, medium: 0, far: 0, horizon: 0 } };
   base.view.lushFoliage = lushFoliage?.view ?? { enabled: false, nearCards: 0, mediumCards: 0, treeCount: 0 };
   base.view.groundCover = groundCover.view;
+  base.view.productionForest = productionForest.view;
   base.view.jungleAtmosphere = Object.freeze({
     background: `#${atmosphere.background.getHexString()}`,
     fogColor: `#${atmosphere.fogColor.getHexString()}`,
@@ -99,6 +110,7 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     treeFidelity?.activatePatch(patch, state);
     lushFoliage?.activatePatch(patch, state);
     groundCover.activatePatch(patch, state);
+    productionForest.activatePatch(patch, state);
     try {
       baseActivatePatch(entry, state);
       base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
@@ -108,6 +120,7 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       treeFidelity?.releasePatches([patch.id]);
       lushFoliage?.releasePatches([patch.id]);
       groundCover.releasePatches([patch.id]);
+      productionForest.releasePatches([patch.id]);
       throw error;
     }
   }
@@ -117,6 +130,7 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     treeFidelity?.releasePatches(ids);
     lushFoliage?.releasePatches(ids);
     groundCover.releasePatches(ids);
+    productionForest.releasePatches(ids);
     return baseReleasePatches(ids);
   }
 
@@ -125,6 +139,7 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     treeFidelity?.update(state, deltaTime);
     lushFoliage?.update(state, deltaTime);
     groundCover.update(state, deltaTime);
+    productionForest.update(state, deltaTime);
     const result = baseRender(state, deltaTime);
     renderedFrame += 1;
     terrain.view.lastVisibleFrameAck = Object.freeze({
@@ -137,6 +152,10 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       frame: renderedFrame,
       foliageAtlasRevision: foliageAtlas.revision,
       treeCards: (lushFoliage?.view.nearCards ?? 0) + (lushFoliage?.view.mediumCards ?? 0),
+      productionCanopyGroups: productionForest.view.canopyGroups,
+      productionBranchesAndBark: productionForest.view.barkInstances,
+      productionGrassClumps: productionForest.view.grassClumps,
+      groundSurfaceDetails: productionForest.view.groundDetails,
       groundCover: groundCover.view.count,
       treeGenerationDigest: treeFidelity?.view.generationDigest ?? null
     });
@@ -149,12 +168,14 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     treeFidelity,
     lushFoliage,
     groundCover,
+    productionForest,
     foliageAtlas,
     atmosphere,
     activatePatch,
     releasePatches,
     render,
     dispose() {
+      productionForest.dispose();
       lushFoliage?.dispose();
       groundCover.dispose();
       treeFidelity?.dispose();
