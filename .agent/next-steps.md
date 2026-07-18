@@ -1,66 +1,68 @@
 # PrehistoricRush Next Steps
 
-**Audit:** `2026-07-18T02-39-16-04-00`  
-**Authority:** `prehistoric-rush-required-startup-asset-failure-recovery-authority-domain`
+**Audit:** `2026-07-18T05-40-17-04-00`  
+**Authority:** `prehistoric-rush-production-forest-legacy-vegetation-work-retirement-authority-domain`
 
 ## Intent
 
-Turn observable startup exceptions into one bounded, generation-owned recovery capability without changing gameplay or asset fidelity.
+Keep the new production forest presentation while retiring superseded legacy vegetation work and proving generation, capacity, patch and frame convergence.
 
 ## Checklist
 
-### Phase 1: Unified startup generation
+### Phase 1: Presentation authority
 
-- [ ] Create one startup generation before module preflight.
-- [ ] Bind module URLs, Nexus revision, bundle version, provider revision and foliage atlas revision.
-- [ ] Publish `StartupGenerationResult`.
+- [ ] Create `ProductionForestGenerationResult` with renderer, density, atlas, material and patch-generator revisions.
+- [ ] Select one authoritative grass/forest presentation path before host construction.
+- [ ] Expose the selected authority through the runtime snapshot.
 
-### Phase 2: Required preparation settlement
+### Phase 2: Retire legacy work
 
-- [ ] Normalize module preflight, bundle request and image hydration into `RequiredStartupPreparationResult`.
-- [ ] Classify failure stage, code, retryability and partial ownership.
-- [ ] Separate concise public text from detailed diagnostics.
+- [ ] Prevent legacy grass meshes and batch controllers from being created when production forest is authoritative.
+- [ ] Stop legacy grass `replaceCell`, `releaseCell`, `flush` and per-frame uniform work.
+- [ ] Publish `LegacyVegetationRetirementResult` with retired hosts, batches and resources.
+- [ ] Preserve gameplay colliders, pickups, terrain and non-superseded patch data.
 
-### Phase 3: Cleanup and retry
+### Phase 3: Capacity and patch convergence
 
-- [ ] Retire the temporary provider on every terminal path.
-- [ ] Retire partial runtime and decoded images when ownership is not transferred.
-- [ ] Add bounded retry attempts and backoff.
-- [ ] Reject stale progress and completion from earlier generations.
-- [ ] Prevent duplicate game-host construction.
+- [ ] Version bark, canopy, grass and ground-detail capacity policy.
+- [ ] Classify overflow by family, patch, reason and accepted degradation.
+- [ ] Bind patch cache identity and density policy to production records.
+- [ ] Reject stale patch records from earlier production generations.
+- [ ] Make disposal settle all atlas clones, materials, geometries, batches and patch records.
 
-### Phase 4: User recovery
+### Phase 4: Visible-frame proof
 
-- [ ] Project accessible Retry and Return to Menu actions.
-- [ ] Disable duplicate actions while retry is active.
-- [ ] Publish `StartupRecoveryResult` and `StartupNavigationResult`.
-- [ ] Publish `FirstRecoveredGameFrameAck` after successful recovery.
+- [ ] Publish `ProductionForestFrameDigest` with generation, active patches, capacities, overflow and retirement state.
+- [ ] Publish `FirstProductionForestBoundFrameAck` only after the accepted generation is visible.
+- [ ] Include the digest in startup and public host snapshots.
 
 ### Phase 5: Executable proof
 
 - [ ] Run `npm test`.
-- [ ] Add module, bundle, fetch, decode, dimension, canvas and readback failure fixtures.
-- [ ] Add retry success, retry exhaustion and stale-generation fixtures.
-- [ ] Add built-artifact and GitHub Pages failure/recovery fixtures.
+- [ ] Add a layer-construction and patch activate/update/release fixture.
+- [ ] Assert zero legacy grass batch work under production authority.
+- [ ] Add capacity overflow, stale patch and disposal fixtures.
+- [ ] Add browser, built-artifact and GitHub Pages frame-convergence fixtures.
 
 ### Retained work
 
-- [ ] Complete foliage family/atlas convergence proof.
-- [ ] Complete pinned-provider admission proof.
+- [ ] Complete startup failure recovery.
+- [ ] Complete foliage family/atlas convergence.
+- [ ] Complete pinned-provider admission.
 - [ ] Resolve pause/menu input and simulation semantics.
 - [ ] Implement parent render-host generation retirement.
 
 ## Recommended file cut
 
 ```txt
-src/pages/game.js
-src/game.js
-src/shared/tree-fidelity-runtime-images.js
-src/shared/prehistoric-tree-fidelity-runtime.js
-tests/startup-failure-recovery.mjs
-tests/browser/startup-failure-recovery.html
+src/render/three-patch-stream-adapter.js
+src/render/three-patch-stream-lod-adapter.js
+src/render/three-production-forest-layer.js
+src/game-runtime-lod.js
+tests/production-forest-retirement.mjs
+tests/browser/production-forest-retirement.html
 ```
 
 ## Compatibility constraints
 
-Preserve required tree fidelity, existing progress behavior, runtime versions, deterministic generation, tree/ground-cover density, route readability, collision, pickups, score, pause and outcome tuning.
+Preserve route readability, deterministic patch generation, tree and ground-cover selection, player collision, pickups, score, pause, outcome tuning, startup receipts, current production forest appearance and fallback compatibility.
