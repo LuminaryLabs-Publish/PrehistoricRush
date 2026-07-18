@@ -1,34 +1,38 @@
 {
   "schema": "luminarylabs.agent.kit-registry.v1",
   "repo": "LuminaryLabs-Publish/PrehistoricRush",
-  "generatedAt": "2026-07-17T16-40-37-04-00",
-  "status": "foliage-family-closure-atlas-revision-convergence-authority-audited",
-  "technicalStatus": "foliage-family-closure-atlas-revision-convergence-authority-audited",
-  "repositoryRevisionReviewed": "06e2bc0439643e46153b8c7f7f42a4e91a2db5e1",
+  "generatedAt": "2026-07-18T02-39-16-04-00",
+  "status": "required-startup-asset-failure-recovery-authority-audited",
+  "technicalStatus": "required-startup-asset-failure-recovery-authority-audited",
+  "repositoryRevisionReviewed": "791f273d96a136e15fc15c077913ca377a017b2a",
+  "runtimeSourceRevisionReviewed": "06e2bc0439643e46153b8c7f7f42a4e91a2db5e1",
   "nexusEngineRevisionReviewed": "d41992636de2752f1ad9047b80701e6313f19b87",
-  "priorRepoLocalDocumentationHead": "f5a4748b1b6f897c92930094737565528839fb41",
-  "currentAuditedSlice": "Foliage Family Closure / Atlas Revision V2 / Browser Worker Patch Frame Convergence",
-  "latestTracker": ".agent/trackers/2026-07-17T16-40-37-04-00/project-breakdown.md",
-  "latestTurnLedger": ".agent/turn-ledger/2026-07-17T16-40-37-04-00.md",
+  "priorRepoLocalDocumentationHead": "791f273d96a136e15fc15c077913ca377a017b2a",
+  "currentAuditedSlice": "Required Startup Module Asset Image Failure Settlement Cleanup Retry and Recovery",
+  "latestTracker": ".agent/trackers/2026-07-18T02-39-16-04-00/project-breakdown.md",
+  "latestTurnLedger": ".agent/turn-ledger/2026-07-18T02-39-16-04-00.md",
   "audits": {
-    "architecture": ".agent/architecture-audit/2026-07-17T16-40-37-04-00-foliage-family-closure-atlas-revision-dsk-map.md",
-    "render": ".agent/render-audit/2026-07-17T16-40-37-04-00-family-complete-atlas-frame-convergence-gap.md",
-    "gameplay": ".agent/gameplay-audit/2026-07-17T16-40-37-04-00-foliage-catalog-patch-play-loop.md",
-    "interaction": ".agent/interaction-audit/2026-07-17T16-40-37-04-00-foliage-closure-command-result-map.md",
-    "vegetationSystem": ".agent/vegetation-system-audit/2026-07-17T16-40-37-04-00-card-family-reference-closure-contract.md",
-    "deploy": ".agent/deploy-audit/2026-07-17T16-40-37-04-00-atlas-revision-browser-worker-pages-gate.md",
-    "centralSync": ".agent/central-sync-audit/2026-07-17T16-40-37-04-00-runtime-ahead-family-closure-reconciliation.md"
+    "architecture": ".agent/architecture-audit/2026-07-18T02-39-16-04-00-startup-failure-recovery-asset-preparation-dsk-map.md",
+    "render": ".agent/render-audit/2026-07-18T02-39-16-04-00-loading-failure-surface-recovery-gap.md",
+    "gameplay": ".agent/gameplay-audit/2026-07-18T02-39-16-04-00-required-tree-assets-startup-loop.md",
+    "interaction": ".agent/interaction-audit/2026-07-18T02-39-16-04-00-startup-failure-command-result-map.md",
+    "startupSystem": ".agent/startup-system-audit/2026-07-18T02-39-16-04-00-required-asset-preparation-failure-retry-contract.md",
+    "deploy": ".agent/deploy-audit/2026-07-18T02-39-16-04-00-startup-failure-browser-pages-fixture-gate.md",
+    "centralSync": ".agent/central-sync-audit/2026-07-18T02-39-16-04-00-oldest-selection-startup-recovery-reconciliation.md"
   },
   "selection": {
     "accessibleRepoCount": 11,
     "eligibleRepoCount": 10,
+    "centralLedgerMissingCount": 0,
+    "rootAgentMissingCount": 0,
+    "newOrUndocumentedCount": 0,
+    "runtimeAheadCount": 0,
+    "allEligibleHeadsMatched": true,
     "selectedRepo": "LuminaryLabs-Publish/PrehistoricRush",
-    "selectedRepositoryHead": "06e2bc0439643e46153b8c7f7f42a4e91a2db5e1",
+    "selectedRepositoryHead": "791f273d96a136e15fc15c077913ca377a017b2a",
     "excludedRepo": "LuminaryLabs-Publish/TheCavalryOfRome",
-    "reason": "runtime-ahead eligible repository",
-    "runtimeAheadCommitCount": 3,
-    "runtimeDeltaFileCount": 3,
-    "previousDocumentedHead": "f5a4748b1b6f897c92930094737565528839fb41"
+    "reason": "oldest synchronized documented timestamp",
+    "selectedPriorTimestamp": "2026-07-17T16-40-37-04-00"
   },
   "census": {
     "nexusRootAndSubdomainKitCount": 29,
@@ -37,129 +41,124 @@
     "externalHostCaptureRenderAdapterCount": 21,
     "proofKitAndFixtureCount": 14,
     "totalSurfaceCount": 97,
-    "plannedFoliageConvergenceSurfaceCount": 20,
+    "plannedStartupRecoverySurfaceCount": 20,
+    "retainedPlannedFoliageConvergenceSurfaceCount": 20,
     "retainedPlannedProviderAdmissionSurfaceCount": 20,
     "retainedPlannedPauseArbitrationSurfaceCount": 19,
     "retainedPlannedRenderHostRetirementSurfaceCount": 19
   },
-  "foliageFamilyClosure": {
-    "oldAtlasRevision": "prehistoric-foliage-cards-v1",
-    "newAtlasRevision": "prehistoric-foliage-cards-v2",
-    "familyCount": 8,
-    "treeArchetypeCount": 12,
-    "groundCoverArchetypeCount": 6,
-    "runtimeCommits": [
-      "a96a0ecdc69736e4fbc48d12f40feb205a3219ec",
-      "ed814f2ec320f488ae2746a104e3a4d9e7bbc40c",
-      "06e2bc0439643e46153b8c7f7f42a4e91a2db5e1"
-    ],
-    "changedFiles": [
-      "src/shared/prehistoric-foliage-card-recipes.js",
-      "src/shared/prehistoric-vegetation-domain.js",
-      "tests/foliage-card-system.mjs"
-    ],
-    "completeDescriptorClosurePresent": true,
-    "unknownSecondaryFamilyRejectionPresent": true,
-    "allArchetypeSourceAssertionPresent": true,
-    "broadCanopySecondaryFamilyAssertionPresent": true,
-    "workerAtlasRevisionEchoPresent": true,
-    "renderFrameAtlasRevisionAckPresent": true,
-    "canonicalDescriptorDigestPresent": false,
-    "mainWorkerFamilyParityPresent": false,
-    "patchAtlasRevisionBindingPresent": false,
-    "staleAtlasGenerationRejectionPresent": false,
-    "browserFamilyCoverageFixturePresent": false,
-    "firstFamilyCompleteFoliageFrameAckPresent": false
+  "startupFailureRecovery": {
+    "requiredModuleCount": 9,
+    "modulePreflightSettlementPresent": true,
+    "moduleFailureTextProjectionPresent": true,
+    "requiredTreeBundlePreparationPresent": true,
+    "runtimeImagePreparationTrackingPresent": true,
+    "runtimeImageFailureReportPresent": true,
+    "successfulProviderUnregisterPresent": true,
+    "successfulRuntimePublicationPresent": true,
+    "unifiedFailureResultPresent": false,
+    "failedPathProviderRuntimeRetirementResultPresent": false,
+    "boundedRetryPolicyPresent": false,
+    "retryCommandResultPresent": false,
+    "staleGenerationRejectionPresent": false,
+    "navigationFallbackResultPresent": false,
+    "browserFailureRecoveryFixturePresent": false,
+    "firstRecoveredGameFrameAckPresent": false,
+    "sourceFiles": [
+      "game.html",
+      "src/pages/game.js",
+      "src/game.js",
+      "src/shared/prehistoric-tree-fidelity-runtime.js",
+      "src/shared/tree-fidelity-runtime-images.js",
+      "package.json"
+    ]
   },
   "interactionLoop": [
-    "author tree archetypes and deterministic card placements",
-    "close each foliage descriptor over all referenced card families",
-    "register the family-complete catalog in browser and Worker realms",
-    "generate and activate streamed terrain and vegetation patches",
-    "construct atlas v2 and near or medium family batches",
-    "render foliage and ground cover",
-    "run route, collision, pickup, score, pause and outcome gameplay"
+    "preflight required runtime modules",
+    "prepare the required tree fidelity bundle",
+    "decode and enrich runtime tree atlas images",
+    "publish the prepared runtime and import the LOD host",
+    "stream terrain and vegetation",
+    "run collision pickup score pause and outcome gameplay",
+    "on startup failure require cleanup retry fallback and recovered frame settlement"
   ],
   "domainsInUse": [
-    "browser route module delivery DOM keyboard focus lifecycle RAF storage IndexedDB Worker and CDN",
-    "Nexus Engine runtime scene input physics simulation motion camera graphics UI diagnostics composition and presentation",
-    "Core Assets Startup Object Shape Capture Fidelity Vegetation Ecology Tree Foliage and Object Bridge",
-    "NexusEngine-Kits seed creature instance patch and camera services",
-    "PrehistoricRush run route player pause terrain streaming vegetation pickup score and outcome",
-    "Three.js presentation Rapier physics source fixtures Pages audit governance and central tracking"
+    "browser module delivery DOM image decode Canvas2D lifecycle RAF storage Worker CDN and Pages",
+    "Nexus Engine Assets Startup Object Shape Capture Fidelity Vegetation and gameplay core domains",
+    "NexusEngine Kits seed creature instance patch and camera services",
+    "PrehistoricRush entry tree fidelity streaming run route player pause score and outcome",
+    "Three.js Rapier source fixtures deployment audit governance and central tracking"
   ],
   "serviceInventory": {
-    "completeInventory": ".agent/trackers/2026-07-17T16-40-37-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
+    "completeInventory": ".agent/trackers/2026-07-18T02-39-16-04-00/project-breakdown.md#complete-kit-and-offered-service-inventory",
     "criticalSurfaces": {
-      "prehistoric-foliage-card-recipe-kit": [
-        "eight-family catalog",
-        "atlas revision",
-        "archetype family mapping",
-        "near and medium deterministic placements",
-        "secondary family references",
-        "ground-cover archetypes"
+      "game-page-entry-kit": [
+        "required module manifest",
+        "module preflight settlement",
+        "failure text projection",
+        "game runtime import"
       ],
-      "prehistoric-vegetation-catalog-registration-kit": [
-        "species registration",
-        "tree registration",
-        "complete foliage descriptor closure",
-        "unknown family rejection",
-        "ground-cover registration",
-        "object bridge registration"
+      "core-startup-kit": [
+        "launch generation",
+        "required preparations",
+        "progress",
+        "ready and failed reports",
+        "first frame presentation"
       ],
-      "prehistoric-patch-worker": [
-        "provider import",
-        "catalog initialization",
-        "atlas revision ready evidence",
-        "patch generation",
-        "transferable results",
-        "error projection"
+      "core-assets-kit": [
+        "provider registration",
+        "asset and bundle registration",
+        "required requests",
+        "progress and receipts",
+        "values and release"
       ],
-      "three-lush-foliage-layer": [
-        "family batches",
-        "projected-size LOD",
-        "hysteresis",
-        "crossfade",
-        "wind and tint",
-        "ownership and disposal"
+      "tree-fidelity-route-preparation-kit": [
+        "required bundle preparation",
+        "progress projection",
+        "successful provider retirement",
+        "runtime publication"
       ],
-      "three-patch-stream-lod-adapter": [
-        "patch activation",
-        "child layer coordination",
-        "atlas ownership",
-        "render submission",
-        "lush vegetation frame acknowledgement",
-        "disposal"
+      "tree-fidelity-runtime-image-hydration-kit": [
+        "source discovery",
+        "fetch and image decode",
+        "Canvas2D alpha readback",
+        "frame crop metadata",
+        "runtime image binding",
+        "thrown failures"
       ]
     }
   },
   "authority": {
-    "parentDomain": "prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain",
-    "mainFinding": "Descriptor family closure and atlas v2 are implemented, but there is no canonical cross-realm digest, patch revision binding, stale-generation settlement or family-complete frame proof.",
+    "parentDomain": "prehistoric-rush-required-startup-asset-failure-recovery-authority-domain",
+    "mainFinding": "Required startup failures are observable, but cleanup, bounded retry, fallback navigation, stale generation rejection and recovered-frame proof are not owned as one product lifecycle.",
     "plannedSurfaces": [
-      "foliage-family-reference-manifest-kit",
-      "placement-family-enumeration-kit",
-      "descriptor-family-closure-kit",
-      "missing-family-rejection-kit",
-      "foliage-descriptor-digest-kit",
-      "atlas-revision-manifest-kit",
-      "atlas-revision-propagation-kit",
-      "main-catalog-registration-result-kit",
-      "worker-catalog-registration-result-kit",
-      "worker-family-digest-echo-kit",
-      "worker-atlas-revision-echo-kit",
-      "main-worker-family-parity-settlement-kit",
-      "patch-atlas-revision-binding-kit",
-      "renderer-atlas-admission-kit",
-      "stale-atlas-result-rejection-kit",
-      "source-family-closure-fixture-kit",
-      "browser-family-coverage-fixture-kit",
-      "worker-family-coverage-fixture-kit",
-      "artifact-pages-family-coverage-fixture-kit",
-      "first-family-complete-foliage-frame-ack-kit"
+      "startup-generation-manifest-kit",
+      "required-module-preflight-result-kit",
+      "required-asset-preparation-result-kit",
+      "tree-fidelity-bundle-admission-kit",
+      "runtime-image-hydration-result-kit",
+      "startup-failure-classification-kit",
+      "startup-failure-redaction-kit",
+      "startup-retry-policy-kit",
+      "startup-retry-budget-kit",
+      "startup-recovery-command-kit",
+      "startup-recovery-settlement-kit",
+      "startup-provider-retirement-kit",
+      "startup-runtime-retirement-kit",
+      "startup-navigation-fallback-kit",
+      "startup-status-projection-kit",
+      "startup-accessible-error-surface-kit",
+      "startup-source-failure-fixture-kit",
+      "startup-browser-retry-fixture-kit",
+      "startup-artifact-pages-failure-fixture-kit",
+      "first-recovered-game-frame-ack-kit"
     ]
   },
   "retainedAuthorities": [
+    {
+      "parentDomain": "prehistoric-rush-foliage-family-closure-atlas-revision-convergence-authority-domain",
+      "status": "proposed-unimplemented"
+    },
     {
       "parentDomain": "prehistoric-rush-pinned-vegetation-provider-admission-browser-worker-parity-authority-domain",
       "status": "proposed-unimplemented"
@@ -177,7 +176,6 @@
     "documentationChanged": true,
     "runtimeSourceChangedByAudit": false,
     "testsPackageScriptsChangedByAudit": false,
-    "workerBehaviorChangedByAudit": false,
     "gameplayRenderingPhysicsChangedByAudit": false,
     "workflowsDeploymentChangedByAudit": false,
     "branchCreated": false,
@@ -185,7 +183,6 @@
     "sourceInspectionPerformed": true,
     "npmTestRunByAudit": false,
     "browserFixtureRun": false,
-    "workerFixtureRun": false,
     "builtOutputSmokeRun": false,
     "pagesSmokeRun": false
   }
