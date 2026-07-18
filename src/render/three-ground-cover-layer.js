@@ -9,15 +9,33 @@ function addAttributes(THREE, geometry, capacity) {
   return geometry;
 }
 
-function crossedGeometry(THREE, planes, capacity) {
+function groundCoverGeometry(THREE, species, capacity) {
+  const radial = /fern-frond|palm-frond/.test(species.familyId);
+  const creeping = species.familyId === "hanging-vine";
+  const whorl = species.familyId === "horsetail-whorl";
+  const planes = radial ? Math.max(5, species.crossedPlanes) : whorl ? Math.max(4, species.crossedPlanes) : species.crossedPlanes;
   const positions = [];
   const uvs = [];
   const indices = [];
   let offset = 0;
+
   for (let plane = 0; plane < planes; plane += 1) {
     const geometry = new THREE.PlaneGeometry(1, 1, 1, 2);
     geometry.translate(0, 0.5, 0);
-    geometry.rotateY(Math.PI * plane / planes);
+    const angle = Math.PI * 2 * plane / planes;
+    if (creeping) {
+      geometry.rotateX(-Math.PI * 0.5);
+      geometry.rotateZ(angle);
+      geometry.translate(0, 0.025 + plane * 0.002, 0);
+    } else if (radial) {
+      const tilt = species.id.includes("palm") ? -0.48 : -0.62;
+      geometry.rotateZ(tilt);
+      geometry.rotateY(angle);
+    } else {
+      geometry.rotateZ((plane % 2 === 0 ? -1 : 1) * 0.08);
+      geometry.rotateY(Math.PI * plane / planes);
+    }
+
     const position = geometry.getAttribute("position");
     const uv = geometry.getAttribute("uv");
     for (let index = 0; index < position.count; index += 1) {
@@ -28,10 +46,12 @@ function crossedGeometry(THREE, planes, capacity) {
     offset += position.count;
     geometry.dispose();
   }
+
   const output = new THREE.BufferGeometry();
   output.setIndex(indices);
   output.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   output.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  output.userData.groundCoverMode = creeping ? "ground-conforming" : radial ? "radial-frond" : "upright-clump";
   addAttributes(THREE, output, capacity);
   return output;
 }
@@ -65,13 +85,13 @@ function patchMaterial(material, species) {
         `#include <clipping_planes_fragment>\nfloat groundFade = 1.0 - smoothstep(fadeStart, fadeEnd, vGroundDistance);\nif (groundHash(gl_FragCoord.xy) > groundFade) discard;`
       );
   };
-  material.customProgramCacheKey = () => `prehistoric-ground-cover-${species.id}-v1`;
+  material.customProgramCacheKey = () => `prehistoric-ground-cover-${species.id}-v2`;
   return material;
 }
 
 function createBatch(THREE, scene, atlas, species, capacity) {
   const family = getPrehistoricFoliageCardFamily(species.familyId);
-  const geometry = crossedGeometry(THREE, species.crossedPlanes, capacity);
+  const geometry = groundCoverGeometry(THREE, species, capacity);
   const material = patchMaterial(new THREE.MeshStandardMaterial({
     name: `ground-cover:${species.id}`,
     map: atlas.createFamilyTexture(species.familyId),
@@ -111,6 +131,7 @@ export function createThreeGroundCoverLayer(THREE, options = {}) {
     count: 0,
     overflow: 0,
     counts: Object.fromEntries(PREHISTORIC_GROUND_COVER_ARCHETYPES.map((species) => [species.id, 0])),
+    geometryModes: Object.fromEntries(PREHISTORIC_GROUND_COVER_ARCHETYPES.map((species) => [species.id, batches.get(species.id).mesh.geometry.userData.groundCoverMode])),
     atlasRevision: atlas.revision
   };
 
