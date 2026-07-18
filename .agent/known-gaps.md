@@ -1,54 +1,58 @@
 # PrehistoricRush Known Gaps
 
-**Audit:** `2026-07-18T02-39-16-04-00`  
-**Status:** `required-startup-asset-failure-recovery-authority-audited`
+**Audit:** `2026-07-18T05-40-17-04-00`  
+**Status:** `production-forest-legacy-vegetation-work-retirement-authority-audited`
 
 ## Summary
 
-Required startup progress and failures are observable, but failure does not settle into a complete cleanup, retry, fallback and recovered-frame lifecycle.
+The production forest visibly replaces legacy vegetation, but the hidden legacy grass path still owns batch construction, patch membership, buffer flushes and per-frame uniform updates. Capacity and visible-frame evidence also lack one generation-bound settlement.
 
-## Startup recovery gaps
+## Production forest retirement gaps
 
 ```txt
-unified startup generation manifest: absent
-module/bundle/image preparation result parity: absent
-startup failure classification result: absent
-public-safe failure projection policy: absent
-partial provider/runtime ownership report: absent
-failed-path provider retirement result: absent
-partial runtime and decoded-image retirement result: absent
-bounded retry policy and attempt budget: absent
-retry command/result: absent
-stale generation rejection: absent
-menu-return fallback result: absent
-first recovered gameplay frame acknowledgement: absent
+presentation-authority admission result: absent
+legacy grass host construction retirement: absent
+legacy grass batch-controller retirement: absent
+legacy grass patch replace/release retirement: absent
+legacy grass buffer-flush retirement: absent
+legacy grass per-frame uniform retirement: absent
+legacy resource retirement receipt: absent
+production capacity policy revision: absent
+overflow classification by family/patch: absent
+accepted overflow degradation result: absent
+patch generation/cache identity in production records: absent
+stale production patch rejection: absent
+production resource ownership manifest: absent
+generation-bound production frame digest: absent
+FirstProductionForestBoundFrameAck: absent
 ```
 
 ## Fixture gaps
 
 ```txt
-npm test execution for current head: not recorded
-forced module rejection fixture: absent
-forced bundle preparation failure fixture: absent
-atlas fetch/decode/dimension failure fixtures: absent
-Canvas2D/readback failure fixture: absent
-retry success fixture: absent
-retry exhaustion fixture: absent
-stale completion fixture: absent
-failed-path cleanup fixture: absent
+npm test execution for current runtime head: not recorded
+real production-layer construction fixture: absent
+patch activate/update/release fixture: absent
+legacy work retirement fixture: absent
+capacity and overflow fixture: absent
+stale patch-generation fixture: absent
+resource disposal fixture: absent
+browser frame-convergence fixture: absent
 built artifact fixture: absent
 Pages fixture: absent
+measured CPU/GPU/frame-cost evidence: absent
 ```
 
 ## Retained gaps
 
 ```txt
+required startup failure recovery: unresolved
 foliage family and atlas convergence: unresolved
-pinned provider identity and browser/Worker provider admission: unresolved
+pinned provider identity and browser/Worker admission: unresolved
 pause input/simulation arbitration: unresolved
 parent RenderHostGeneration retirement: unresolved
 ```
 
 ## Risk boundary
 
-No current startup outage, resource leak, broken retry, artifact failure or Pages failure was reproduced. The audit documents missing ownership and proof, not a confirmed production incident.
+No production performance regression, resource leak, visual defect, capacity failure, browser incompatibility or deployed-origin failure was reproduced. The audit documents source-backed duplicate work and missing ownership/proof, not a confirmed production incident.
