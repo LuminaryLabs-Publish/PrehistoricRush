@@ -1,103 +1,80 @@
-import {
-  PREHISTORIC_FOLIAGE_CARD_FAMILIES,
-  createTreeFoliageCardPlacements
-} from "../shared/prehistoric-foliage-card-recipes.js";
+import { PREHISTORIC_FOLIAGE_CARD_FAMILIES } from "../shared/prehistoric-foliage-card-recipes.js";
 import { PREHISTORIC_TREE_ARCHETYPES } from "../shared/tree-archetype-catalog.js";
-
-const FORMS = Object.freeze(["near", "medium", "absent"]);
 
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value));
-}
-
-function combineBounds(trunk, crown) {
-  const min = [
-    Math.min(trunk.bounds.min[0], crown.bounds.min[0]),
-    Math.min(trunk.bounds.min[1], crown.bounds.min[1]),
-    Math.min(trunk.bounds.min[2], crown.bounds.min[2])
-  ];
-  const max = [
-    Math.max(trunk.bounds.max[0], crown.bounds.max[0]),
-    Math.max(trunk.bounds.max[1], crown.bounds.max[1]),
-    Math.max(trunk.bounds.max[2], crown.bounds.max[2])
-  ];
-  return {
-    min,
-    max,
-    center: [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5],
-    size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
-    height: max[1] - min[1]
-  };
-}
-
-function projectedPixels(camera, renderer, worldHeight, distance) {
-  const viewportHeight = renderer.domElement?.height || globalThis.innerHeight || 720;
-  const fov = Math.max(1, Number(camera.fov ?? 60)) * Math.PI / 180;
-  return worldHeight * viewportHeight / Math.max(0.001, 2 * distance * Math.tan(fov * 0.5));
-}
-
-function rawForm(packageValue, pixels) {
-  const near = Number(packageValue?.forms?.near?.minimumProjectedSize ?? 360);
-  const medium = Number(packageValue?.forms?.medium?.minimumProjectedSize ?? 150);
-  if (pixels >= near) return "near";
-  if (pixels >= medium) return "medium";
-  return "absent";
-}
-
-function retainedForm(packageValue, pixels, previous) {
-  if (!FORMS.includes(previous)) return rawForm(packageValue, pixels);
-  const near = Number(packageValue?.forms?.near?.minimumProjectedSize ?? 360);
-  const medium = Number(packageValue?.forms?.medium?.minimumProjectedSize ?? 150);
-  const hysteresis = clamp(Number(packageValue?.change?.hysteresis ?? 0.16), 0, 0.4);
-  if (previous === "near" && pixels >= near * (1 - hysteresis)) return "near";
-  if (previous === "medium" && pixels >= medium * (1 - hysteresis) && pixels < near * (1 + hysteresis)) return "medium";
-  if (previous === "absent" && pixels < medium * (1 + hysteresis)) return "absent";
-  return rawForm(packageValue, pixels);
 }
 
 function addInstanceAttributes(THREE, geometry, capacity) {
   geometry.setAttribute("fidelityFade", new THREE.InstancedBufferAttribute(new Float32Array(capacity).fill(1), 1));
   geometry.setAttribute("instanceTint", new THREE.InstancedBufferAttribute(new Float32Array(capacity * 3).fill(1), 3));
   geometry.setAttribute("foliageWind", new THREE.InstancedBufferAttribute(new Float32Array(capacity * 4), 4));
+  geometry.setAttribute("foliageShade", new THREE.InstancedBufferAttribute(new Float32Array(capacity * 4), 4));
   return geometry;
 }
 
 function patchFoliageMaterial(material, family, formId) {
-  const uniforms = {
-    foliageTime: { value: 0 }
-  };
+  const uniforms = { foliageTime: { value: 0 } };
   material.userData.foliageUniforms = uniforms;
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
       .replace(
         "#include <common>",
-        `#include <common>\nattribute float fidelityFade;\nattribute vec3 instanceTint;\nattribute vec4 foliageWind;\nuniform float foliageTime;\nvarying float vFidelityFade;\nvarying vec3 vInstanceTint;`
+        `#include <common>
+attribute float fidelityFade;
+attribute vec3 instanceTint;
+attribute vec4 foliageWind;
+attribute vec4 foliageShade;
+uniform float foliageTime;
+varying float vFidelityFade;
+varying vec3 vInstanceTint;
+varying vec4 vFoliageShade;`
       )
       .replace(
         "#include <begin_vertex>",
-        `vec3 transformed = vec3(position);\nvFidelityFade = fidelityFade;\nvInstanceTint = instanceTint;\nfloat windWeight = uv.y * uv.y;\nfloat phase = foliageWind.z + instanceMatrix[3].x * 0.027 + instanceMatrix[3].z * 0.019;\nfloat sway = sin(foliageTime * foliageWind.y + phase) * foliageWind.x * windWeight * (1.0 - foliageWind.w * 0.45);\ntransformed.x += sway;\ntransformed.z += sway * 0.32;`
+        `vec3 transformed = vec3(position);
+vFidelityFade = fidelityFade;
+vInstanceTint = instanceTint;
+vFoliageShade = foliageShade;
+float windWeight = uv.y * uv.y;
+float phase = foliageWind.z + instanceMatrix[3].x * 0.027 + instanceMatrix[3].z * 0.019;
+float sway = sin(foliageTime * foliageWind.y + phase) * foliageWind.x * windWeight * (1.0 - foliageWind.w * 0.45);
+transformed.x += sway;
+transformed.z += sway * 0.32;`
       );
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
-        `#include <common>\nvarying float vFidelityFade;\nvarying vec3 vInstanceTint;\nfloat foliageHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}`
+        `#include <common>
+varying float vFidelityFade;
+varying vec3 vInstanceTint;
+varying vec4 vFoliageShade;
+float foliageHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}`
       )
-      .replace("vec4 diffuseColor = vec4( diffuse, opacity );", "vec4 diffuseColor = vec4( diffuse * vInstanceTint, opacity );")
+      .replace(
+        "vec4 diffuseColor = vec4( diffuse, opacity );",
+        "vec3 computedLeafColor = diffuse * vInstanceTint * mix(0.68, 1.2, vFoliageShade.x) * mix(1.0, 0.76, vFoliageShade.y);\nvec4 diffuseColor = vec4(computedLeafColor, opacity);"
+      )
+      .replace(
+        "vec3 totalEmissiveRadiance = emissive;",
+        "vec3 totalEmissiveRadiance = emissive + diffuse * vInstanceTint * vFoliageShade.z * 0.14;"
+      )
       .replace(
         "#include <clipping_planes_fragment>",
-        `#include <clipping_planes_fragment>\nif (foliageHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;`
+        `#include <clipping_planes_fragment>
+if (foliageHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;`
       );
   };
-  material.customProgramCacheKey = () => `prehistoric-lush-foliage-${family.id}-${formId}-v1`;
+  material.customProgramCacheKey = () => `prehistoric-compute-foliage-${family.id}-${formId}-v2`;
   return material;
 }
 
 function createFamilyBatch(THREE, scene, atlas, family, formId, capacity) {
   const geometry = new THREE.PlaneGeometry(1, 1, 1, 2);
   addInstanceAttributes(THREE, geometry, capacity);
-  const material = patchFoliageMaterial(new THREE.MeshStandardMaterial({
-    name: `lush-foliage:${family.id}:${formId}`,
+  const parameters = {
+    name: `compute-foliage:${family.id}:${formId}`,
     map: atlas.createFamilyTexture(family.id),
     color: 0xffffff,
     alphaTest: family.alphaCutoff,
@@ -108,12 +85,23 @@ function createFamilyBatch(THREE, scene, atlas, family, formId, capacity) {
     side: THREE.DoubleSide,
     roughness: family.roughness,
     metalness: 0,
-    emissive: 0x122c18,
-    emissiveIntensity: family.translucency * (formId === "near" ? 0.26 : 0.32),
+    emissive: 0x102818,
+    emissiveIntensity: family.translucency * (formId === "near" ? 0.2 : 0.25),
     fog: true
-  }), family, formId);
+  };
+  const baseMaterial = THREE.MeshPhysicalMaterial
+    ? new THREE.MeshPhysicalMaterial({
+        ...parameters,
+        clearcoat: 0.02,
+        clearcoatRoughness: 0.88,
+        sheen: 0.08,
+        sheenRoughness: 0.8,
+        sheenColor: new THREE.Color(0x72935f)
+      })
+    : new THREE.MeshStandardMaterial(parameters);
+  const material = patchFoliageMaterial(baseMaterial, family, formId);
   const mesh = new THREE.InstancedMesh(geometry, material, capacity);
-  mesh.name = `prehistoric-lush-foliage-${family.id}-${formId}`;
+  mesh.name = `prehistoric-compute-foliage-${family.id}-${formId}`;
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mesh.castShadow = formId === "near";
   mesh.receiveShadow = true;
@@ -122,61 +110,120 @@ function createFamilyBatch(THREE, scene, atlas, family, formId, capacity) {
   return { mesh, family, formId, capacity, count: 0 };
 }
 
-function markAttributes(mesh) {
-  for (const name of ["fidelityFade", "instanceTint", "foliageWind"]) mesh.geometry.getAttribute(name).needsUpdate = true;
+function sourceBounds(packageValue) {
+  const bounds = packageValue?.source?.bounds ?? {};
+  return {
+    size: bounds.size ?? [bounds.width ?? 1, bounds.height ?? 1, bounds.depth ?? bounds.width ?? 1]
+  };
 }
 
-function setAttributes(mesh, index, fade, tint, wind) {
-  mesh.geometry.getAttribute("fidelityFade").setX(index, fade);
-  mesh.geometry.getAttribute("instanceTint").setXYZ(index, tint[0], tint[1], tint[2]);
-  mesh.geometry.getAttribute("foliageWind").setXYZW(index, wind.amplitude, wind.frequency, wind.phase, wind.stiffness);
+function variationFor(record) {
+  return record.trunk.metadata?.variation ?? record.crown.metadata?.variation ?? {};
 }
 
-function colorTint(THREE, archetype, record, placement) {
+function treeMatrixFor(THREE, record, packageValue, target) {
+  const bounds = record.bounds;
+  const source = sourceBounds(packageValue);
+  const variation = variationFor(record);
+  const ground = variation.groundPosition ?? [bounds.center[0], bounds.min[1], bounds.center[2]];
+  const position = target.position;
+  const rotation = target.rotation;
+  const quaternion = target.quaternion;
+  const scale = target.scale;
+  position.set(ground[0], ground[1], ground[2]);
+  rotation.set(
+    Number(variation.leanXRadians ?? Number(variation.leanXDegrees ?? 0) * Math.PI / 180),
+    Number(variation.yawRadians ?? Number(variation.yawDegrees ?? 0) * Math.PI / 180),
+    Number(variation.leanZRadians ?? Number(variation.leanZDegrees ?? 0) * Math.PI / 180),
+    "YXZ"
+  );
+  quaternion.setFromEuler(rotation);
+  scale.set(
+    bounds.size[0] / Math.max(0.001, source.size[0]),
+    bounds.size[1] / Math.max(0.001, source.size[1]),
+    bounds.size[2] / Math.max(0.001, source.size[2])
+  );
+  target.treeMatrix.compose(position, quaternion, scale);
+}
+
+function shadingFor(form, cluster, clusterIndex) {
+  const buffer = form?.shadingBuffer ?? [];
+  const offset = clusterIndex * 8;
+  if (buffer.length >= offset + 8) {
+    return {
+      lightExposure: clamp(Number(buffer[offset]), 0, 1),
+      shade: clamp(Number(buffer[offset + 1]), 0, 1),
+      backlight: clamp(Number(buffer[offset + 2]), 0, 1),
+      windScale: Math.max(0, Number(buffer[offset + 3]) || 0),
+      seed: Number(buffer[offset + 4]) || 0,
+      cardCount: Math.max(1, Math.floor(Number(buffer[offset + 5]) || 1)),
+      radial: Number(buffer[offset + 6]) > 0.5,
+      hanging: Number(buffer[offset + 7]) > 0.5
+    };
+  }
+  return {
+    lightExposure: clamp(Number(cluster.lightExposure ?? 0.5), 0, 1),
+    shade: clamp(Number(cluster.shade ?? 0.5), 0, 1),
+    backlight: Math.max(0.04, 1 - Number(cluster.shade ?? 0.5) * 0.68),
+    windScale: Math.max(0, Number(cluster.windScale ?? 1)),
+    seed: Number(cluster.seed ?? 0),
+    cardCount: Math.max(1, Math.floor(Number(cluster.cardCount ?? 1))),
+    radial: cluster.mode === "radial-frond",
+    hanging: cluster.mode === "hanging-edge"
+  };
+}
+
+function colorTint(THREE, archetype, record, shading, cardIndex) {
   const color = new THREE.Color(archetype.foliageColor);
   const accent = new THREE.Color(archetype.accentColor ?? archetype.foliageColor);
-  const amount = clamp(Number(placement.seed ?? 0.5) * 0.42, 0, 0.42);
-  color.lerp(accent, amount);
-  const variationTint = record.trunk.metadata?.variation?.tint ?? [1, 1, 1];
-  const placementTint = placement.tint ?? [1, 1, 1];
+  const edgeAmount = clamp(shading.lightExposure * 0.48 + (cardIndex % 3) * 0.035, 0, 0.58);
+  color.lerp(accent, edgeAmount);
+  const variationTint = variationFor(record).tint ?? [1, 1, 1];
   return [
-    color.r * Number(variationTint[0] ?? 1) * Number(placementTint[0] ?? 1),
-    color.g * Number(variationTint[1] ?? 1) * Number(placementTint[1] ?? 1),
-    color.b * Number(variationTint[2] ?? 1) * Number(placementTint[2] ?? 1)
+    color.r * Number(variationTint[0] ?? 1),
+    color.g * Number(variationTint[1] ?? 1),
+    color.b * Number(variationTint[2] ?? 1)
   ];
 }
 
+function setAttributes(mesh, index, fade, tint, wind, shade) {
+  mesh.geometry.getAttribute("fidelityFade").setX(index, fade);
+  mesh.geometry.getAttribute("instanceTint").setXYZ(index, tint[0], tint[1], tint[2]);
+  mesh.geometry.getAttribute("foliageWind").setXYZW(index, wind.amplitude, wind.frequency, wind.phase, wind.stiffness);
+  mesh.geometry.getAttribute("foliageShade").setXYZW(index, shade.lightExposure, shade.shade, shade.backlight, shade.windScale);
+}
+
+function markAttributes(mesh) {
+  for (const name of ["fidelityFade", "instanceTint", "foliageWind", "foliageShade"]) mesh.geometry.getAttribute(name).needsUpdate = true;
+}
+
 export function createThreeLushFoliageLayer(THREE, options = {}) {
-  const {
-    scene,
-    camera,
-    renderer,
-    packages = [],
-    atlas,
-    capacityPerFamily = 8192
-  } = options;
-  if (!scene || !camera || !renderer || !atlas) throw new TypeError("Lush foliage layer requires scene, camera, renderer, and foliage atlas.");
+  const { scene, packages = [], atlas, authority, capacityPerFamily = 8192 } = options;
+  if (!scene || !atlas || !authority?.getPresentationRecords) throw new TypeError("Lush foliage layer requires scene, foliage atlas, and Object Fidelity presentation authority.");
   if (packages.length !== PREHISTORIC_TREE_ARCHETYPES.length) throw new Error("Lush foliage package and archetype counts must match.");
+  for (const packageValue of packages) {
+    if (!packageValue?.growth?.forms?.near?.plan || !packageValue?.growth?.forms?.medium?.plan || !packageValue?.growth?.digest) {
+      throw new Error(`Tree package ${packageValue?.archetypeId ?? "unknown"} is missing admitted natural-growth forms.`);
+    }
+  }
 
   const batches = new Map();
   for (const family of PREHISTORIC_FOLIAGE_CARD_FAMILIES) {
     batches.set(`${family.id}:near`, createFamilyBatch(THREE, scene, atlas, family, "near", capacityPerFamily));
     batches.set(`${family.id}:medium`, createFamilyBatch(THREE, scene, atlas, family, "medium", capacityPerFamily));
   }
-  const placements = PREHISTORIC_TREE_ARCHETYPES.map((archetype) => ({
-    near: createTreeFoliageCardPlacements(archetype, "near"),
-    medium: createTreeFoliageCardPlacements(archetype, "medium")
-  }));
-  const patches = new Map();
-  const selections = new Map();
-  const treeMatrix = new THREE.Matrix4();
-  const localMatrix = new THREE.Matrix4();
-  const worldMatrix = new THREE.Matrix4();
-  const position = new THREE.Vector3();
-  const rotation = new THREE.Euler(0, 0, 0, "YXZ");
-  const quaternion = new THREE.Quaternion();
-  const scale = new THREE.Vector3();
+  const familyById = new Map(PREHISTORIC_FOLIAGE_CARD_FAMILIES.map((family) => [family.id, family]));
+  const treeTransform = {
+    treeMatrix: new THREE.Matrix4(),
+    localMatrix: new THREE.Matrix4(),
+    worldMatrix: new THREE.Matrix4(),
+    position: new THREE.Vector3(),
+    rotation: new THREE.Euler(0, 0, 0, "YXZ"),
+    quaternion: new THREE.Quaternion(),
+    scale: new THREE.Vector3()
+  };
   let elapsed = 0;
+  const growthDigest = packages.map((entry) => entry.growth.digest).join("|");
 
   const view = {
     enabled: true,
@@ -187,146 +234,101 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     mediumCards: 0,
     transitioning: 0,
     overflow: 0,
-    atlasRevision: atlas.revision
+    atlasRevision: atlas.revision,
+    growthDigest,
+    authority: "object-fidelity-natural-growth",
+    computePreparedShading: true
   };
 
-  function activatePatch(patch) {
-    patches.set(patch.id, patch);
-    view.activePatches = patches.size;
+  function activatePatch() {
+    view.activePatches = authority.view.activePatches;
   }
 
-  function releasePatches(ids = []) {
-    for (const id of ids) patches.delete(id);
-    view.activePatches = patches.size;
+  function releasePatches() {
+    view.activePatches = authority.view.activePatches;
   }
 
-  function treeTransform(record, archetype) {
-    const variation = record.trunk.metadata?.variation ?? {};
-    const bounds = combineBounds(record.trunk, record.crown);
-    const ground = variation.groundPosition ?? [bounds.center[0], bounds.min[1], bounds.center[2]];
-    const trunkHeight = record.trunk.bounds.max[1] - record.trunk.bounds.min[1];
-    const verticalScale = trunkHeight / Math.max(0.001, archetype.averageHeight);
-    const horizontalScale = Math.max(
-      (record.crown.bounds.max[0] - record.crown.bounds.min[0]) / Math.max(0.001, archetype.crownRadius * 2),
-      (record.crown.bounds.max[2] - record.crown.bounds.min[2]) / Math.max(0.001, archetype.crownRadius * 2)
-    );
-    position.set(ground[0], ground[1], ground[2]);
-    rotation.set(
-      Number(variation.leanXRadians ?? Number(variation.leanXDegrees ?? 0) * Math.PI / 180),
-      Number(variation.yawRadians ?? Number(variation.yawDegrees ?? 0) * Math.PI / 180),
-      Number(variation.leanZRadians ?? Number(variation.leanZDegrees ?? 0) * Math.PI / 180),
-      "YXZ"
-    );
-    quaternion.setFromEuler(rotation);
-    scale.set(horizontalScale, verticalScale, horizontalScale);
-    treeMatrix.compose(position, quaternion, scale);
-    return bounds;
-  }
+  function appendPlanCards(buckets, entry) {
+    const packageValue = packages[entry.typeIndex];
+    const archetype = PREHISTORIC_TREE_ARCHETYPES[entry.typeIndex];
+    const form = packageValue.growth.forms[entry.formId];
+    const plan = form.plan;
+    treeMatrixFor(THREE, entry.record, packageValue, treeTransform);
 
-  function appendCards(buckets, typeIndex, record, formId, fade) {
-    if (formId === "absent" || fade <= 0.005) return;
-    const archetype = PREHISTORIC_TREE_ARCHETYPES[typeIndex];
-    treeTransform(record, archetype);
-    for (const card of placements[typeIndex][formId]) {
-      position.set(...card.position);
-      rotation.set(...card.rotation, "YXZ");
-      quaternion.setFromEuler(rotation);
-      scale.set(card.scale[0], card.scale[1], 1);
-      localMatrix.compose(position, quaternion, scale);
-      worldMatrix.multiplyMatrices(treeMatrix, localMatrix);
-      const bucket = buckets.get(`${card.familyId}:${formId}`);
-      bucket.push({ matrix: worldMatrix.toArray(), fade, tint: colorTint(THREE, archetype, record, card), wind: card.wind });
-    }
+    plan.foliageClusters.forEach((cluster, clusterIndex) => {
+      const family = familyById.get(cluster.familyId);
+      if (!family) throw new Error(`Growth cluster ${cluster.id} references unknown foliage family ${cluster.familyId}.`);
+      const shading = shadingFor(form, cluster, clusterIndex);
+      for (let cardIndex = 0; cardIndex < shading.cardCount; cardIndex += 1) {
+        const yawOffset = shading.cardCount === 1 ? 0 : cardIndex / shading.cardCount * Math.PI;
+        treeTransform.position.set(...cluster.position);
+        treeTransform.rotation.set(
+          Number(cluster.rotation?.[0] ?? 0) + (shading.radial ? -0.08 : 0),
+          Number(cluster.rotation?.[1] ?? 0) + yawOffset,
+          Number(cluster.rotation?.[2] ?? 0) + (cardIndex % 2 === 0 ? -1 : 1) * 0.035,
+          "YXZ"
+        );
+        treeTransform.quaternion.setFromEuler(treeTransform.rotation);
+        const jitter = 0.94 + (shading.seed + cardIndex * 0.173) % 1 * 0.12;
+        treeTransform.scale.set(cluster.scale[0] * jitter, cluster.scale[1] * jitter, 1);
+        treeTransform.localMatrix.compose(treeTransform.position, treeTransform.quaternion, treeTransform.scale);
+        treeTransform.worldMatrix.multiplyMatrices(treeTransform.treeMatrix, treeTransform.localMatrix);
+        const bucket = buckets.get(`${cluster.familyId}:${entry.formId}`);
+        bucket.push({
+          matrix: treeTransform.worldMatrix.toArray(),
+          fade: entry.fade,
+          tint: colorTint(THREE, archetype, entry.record, shading, cardIndex),
+          wind: {
+            amplitude: family.wind.amplitude * shading.windScale,
+            frequency: family.wind.frequency,
+            phase: shading.seed * Math.PI * 2 + cardIndex * 0.73,
+            stiffness: family.wind.stiffness
+          },
+          shade: shading
+        });
+      }
+    });
   }
 
   function update(_state, deltaTime = 1 / 60) {
     elapsed += Math.max(0, Number(deltaTime) || 0);
     const buckets = new Map(Array.from(batches.keys()).map((key) => [key, []]));
-    const seen = new Set();
-    let transitioning = 0;
-    let treeCount = 0;
+    const records = authority.getPresentationRecords();
+    for (const entry of records) appendPlanCards(buckets, entry);
 
-    for (const patch of patches.values()) {
-      patch.trees.forEach((treeSet, typeIndex) => {
-        const packageValue = packages[typeIndex];
-        const count = Math.min(treeSet.trunks.length, treeSet.crowns.length);
-        for (let index = 0; index < count; index += 1) {
-          const record = { trunk: treeSet.trunks[index], crown: treeSet.crowns[index] };
-          const treeId = record.trunk.metadata?.treeId ?? record.trunk.id;
-          const bounds = combineBounds(record.trunk, record.crown);
-          const distance = Math.max(0.001, camera.position.distanceTo(position.set(...bounds.center)));
-          const pixels = projectedPixels(camera, renderer, bounds.height, distance);
-          const prior = selections.get(treeId) ?? { form: rawForm(packageValue, pixels), transition: null, candidate: null, candidateFrames: 0 };
-          const desired = retainedForm(packageValue, pixels, prior.transition?.to ?? prior.form);
-          const stableFrames = Math.max(1, Number(packageValue?.change?.stableSelectionFrames ?? 2));
-          if (!prior.transition && desired !== prior.form) {
-            if (prior.candidate === desired) prior.candidateFrames += 1;
-            else { prior.candidate = desired; prior.candidateFrames = 1; }
-            if (prior.candidateFrames >= stableFrames) {
-              prior.transition = { from: prior.form, to: desired, elapsed: 0 };
-              prior.candidate = null;
-              prior.candidateFrames = 0;
-            }
-          } else if (!prior.transition) {
-            prior.candidate = null;
-            prior.candidateFrames = 0;
-          }
-
-          if (prior.transition) {
-            const duration = Math.max(0.001, Number(packageValue?.change?.duration ?? 0.35));
-            prior.transition.elapsed += Math.max(0, Number(deltaTime) || 0);
-            const progress = clamp(prior.transition.elapsed / duration, 0, 1);
-            appendCards(buckets, typeIndex, record, prior.transition.from, 1 - progress);
-            appendCards(buckets, typeIndex, record, prior.transition.to, progress);
-            transitioning += 1;
-            if (progress >= 1) {
-              prior.form = prior.transition.to;
-              prior.transition = null;
-            }
-          } else {
-            prior.form = desired;
-            appendCards(buckets, typeIndex, record, prior.form, 1);
-          }
-          selections.set(treeId, prior);
-          seen.add(treeId);
-          treeCount += 1;
-        }
-      });
-    }
-
-    for (const key of selections.keys()) if (!seen.has(key)) selections.delete(key);
     view.nearCards = 0;
     view.mediumCards = 0;
     view.overflow = 0;
+    view.treeCount = new Set(records.map((entry) => entry.record.treeId)).size;
+    view.transitioning = authority.view.transitioning;
+    view.activePatches = authority.view.activePatches;
     for (const family of PREHISTORIC_FOLIAGE_CARD_FAMILIES) view.counts[family.id] = { near: 0, medium: 0 };
 
     for (const [key, batch] of batches) {
-      const records = buckets.get(key);
-      const count = Math.min(batch.capacity, records.length);
+      const bucket = buckets.get(key);
+      const count = Math.min(batch.capacity, bucket.length);
       for (let index = 0; index < count; index += 1) {
-        const record = records[index];
-        batch.mesh.setMatrixAt(index, worldMatrix.fromArray(record.matrix));
-        setAttributes(batch.mesh, index, record.fade, record.tint, record.wind);
+        const record = bucket[index];
+        batch.mesh.setMatrixAt(index, treeTransform.worldMatrix.fromArray(record.matrix));
+        setAttributes(batch.mesh, index, record.fade, record.tint, record.wind, record.shade);
       }
       batch.mesh.count = count;
       batch.mesh.instanceMatrix.needsUpdate = true;
       markAttributes(batch.mesh);
       batch.mesh.material.userData.foliageUniforms.foliageTime.value = elapsed;
       batch.count = count;
-      const [familyId, formId] = key.split(":");
+      const separator = key.lastIndexOf(":");
+      const familyId = key.slice(0, separator);
+      const formId = key.slice(separator + 1);
       view.counts[familyId][formId] = count;
       if (formId === "near") view.nearCards += count;
       else view.mediumCards += count;
-      view.overflow += Math.max(0, records.length - count);
+      view.overflow += Math.max(0, bucket.length - count);
     }
-    view.treeCount = treeCount;
-    view.transitioning = transitioning;
     return view;
   }
 
   function dispose() {
-    patches.clear();
-    selections.clear();
     for (const batch of batches.values()) {
       scene.remove(batch.mesh);
       batch.mesh.geometry.dispose();
