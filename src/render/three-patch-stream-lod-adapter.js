@@ -137,6 +137,23 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     lushFoliage?.update(state, deltaTime);
     groundCover.update(state, deltaTime);
     productionGround.update(state, deltaTime);
+
+    const treeGrowthDigest = treeFidelity?.view.growthDigest ?? null;
+    const foliageGrowthDigest = lushFoliage?.view.growthDigest ?? null;
+    const singleTreeAuthority = Boolean(
+      treeFidelity
+      && lushFoliage
+      && lushFoliage.view.authority === treeFidelity.view.presentationAuthority
+      && treeGrowthDigest
+      && treeGrowthDigest === foliageGrowthDigest
+      && productionGround.view.treePresentationRetired === true
+      && productionGround.view.barkInstances === 0
+      && productionGround.view.canopyGroups === 0
+    );
+    if (treeFidelity && !singleTreeAuthority) {
+      throw new Error("Natural vegetation presentation authority diverged: wood, foliage, and impostor generations must share one Object Fidelity decision.");
+    }
+
     const result = baseRender(state, deltaTime);
     renderedFrame += 1;
     terrain.view.lastVisibleFrameAck = Object.freeze({
@@ -150,9 +167,9 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       foliageAtlasRevision: foliageAtlas.revision,
       treeCards: (lushFoliage?.view.nearCards ?? 0) + (lushFoliage?.view.mediumCards ?? 0),
       treePresentationAuthority: treeFidelity?.view.presentationAuthority ?? null,
-      singleTreeAuthority: Boolean(treeFidelity && lushFoliage?.view.authority === treeFidelity.view.presentationAuthority),
-      treeGrowthDigest: treeFidelity?.view.growthDigest ?? null,
-      foliageGrowthDigest: lushFoliage?.view.growthDigest ?? null,
+      singleTreeAuthority,
+      treeGrowthDigest,
+      foliageGrowthDigest,
       computePreparedShading: Boolean(lushFoliage?.view.computePreparedShading),
       productionCanopyGroups: 0,
       productionBranchesAndBark: 0,
