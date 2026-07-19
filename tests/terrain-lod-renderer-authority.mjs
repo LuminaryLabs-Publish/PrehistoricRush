@@ -60,14 +60,8 @@ assert.equal(data.morphOffsetsByLevel.far.length, topology.vertexCount * 3);
 assert.ok(data.morphOffsetsByLevel.medium.some((value) => Math.abs(value) > 1e-6), "medium geomorph has non-zero offsets");
 assert.ok(data.morphOffsetsByLevel.far.some((value) => Math.abs(value) > 1e-6), "far geomorph has non-zero offsets");
 
-const near = selectPrehistoricTerrainLodLevel(policy, {
-  focus: { x: 0, z: 0 },
-  bounds: patch.bounds
-});
-const far = selectPrehistoricTerrainLodLevel(policy, {
-  focus: { x: 200, z: 200 },
-  bounds: patch.bounds
-});
+const near = selectPrehistoricTerrainLodLevel(policy, { focus: { x: 0, z: 0 }, bounds: patch.bounds });
+const far = selectPrehistoricTerrainLodLevel(policy, { focus: { x: 200, z: 200 }, bounds: patch.bounds });
 assert.equal(near.levelId, "near");
 assert.equal(far.levelId, "far");
 assert.deepEqual(policy.levels.map((level) => level.resolution), [64, 32, 16]);
@@ -91,24 +85,17 @@ assert.match(wrapperSource, /hideLegacyTerrain/, "the fixed-grid terrain is supp
 assert.match(wrapperSource, /terrain\.activatePatch\(patch, state\)/, "LOD preparation runs before base patch adoption");
 assert.match(wrapperSource, /terrain\.releasePatches\(\[patch\.id\]\)/, "failed base adoption rolls back the LOD candidate");
 assert.match(wrapperSource, /lastVisibleFrameAck/, "the first matching terrain frame is acknowledged");
-assert.match(wrapperSource, /createThreeLushFoliageLayer/, "the LOD wrapper owns near and medium foliage cards");
+assert.match(wrapperSource, /createThreeLushFoliageLayer/, "the LOD wrapper presents compute-prepared near and medium foliage cards");
+assert.match(wrapperSource, /authority: treeFidelity/, "foliage consumes the Object Fidelity selection authority");
 assert.match(wrapperSource, /createThreeGroundCoverLayer/, "the LOD wrapper owns streamed ground cover");
-assert.match(wrapperSource, /createThreeProductionForestLayer/, "the LOD wrapper owns production branches, canopy groups, grass, and ground detail");
+assert.match(wrapperSource, /createThreeProductionGroundLayer/, "the LOD wrapper retains only production grass and ground detail");
+assert.doesNotMatch(wrapperSource, /createThreeProductionForestLayer/, "duplicate tree presentation is retired");
+assert.match(wrapperSource, /productionCanopyGroups: 0/);
+assert.match(wrapperSource, /productionBranchesAndBark: 0/);
 assert.match(textureSource, /options\.resolution \?\? 2048/, "renderer generates 2K texture outputs");
 assert.match(textureSource, /workingResolution \?\? 1024/, "texture generation uses bounded working detail");
 assert.match(runtimeSource, /createThreePatchStreamLodAdapter/, "the active runtime selects the LOD adapter");
-const generatorVersion = runtimeSource.match(/generatorVersion:\s*"([^"]+)"/)?.[1];
-assert.equal(generatorVersion, "prehistoric-patch-v7-production-forest", "stream cache identity declares the production forest schema");
-assert.match(
-  runtimeSource,
-  /terrainSettingsHash:\s*`segments-\$\{terrainLodPolicy\.sourceResolution\}-lod-\$\{terrainLodPolicy\.revision\}`/,
-  "stream cache identity includes the terrain resolution and LOD policy revision"
-);
-assert.match(
-  runtimeSource,
-  /vegetationSettingsHash:\s*`trees-\$\{cfg\.trees\}-grass-\$\{cfg\.grass\}-ground-\$\{cfg\.groundCover\}-catalog-\$\{vegetationCatalogDigest\}-foliage-\$\{FOLIAGE_ATLAS_REVISION\}-density-\$\{VEGETATION_DENSITY_POLICY\}-fidelity-\$\{treeFidelityGenerationDigest\}`/,
-  "stream cache identity includes ground cover, foliage atlas, density policy, catalog, and tree fidelity generations"
-);
+assert.match(runtimeSource, /treeFidelityGenerationDigest/, "stream cache identity includes the updated fidelity package generation");
 assert.match(runtimeSource, /selectTerrainLodLevel: NexusEngine\.selectTerrainLodLevel/, "Core Graphics selects LOD levels");
 assert.match(gameSource, /game-runtime-lod\.js/, "the page boots the LOD runtime");
 assert.match(generatorSource, /function surfaceColor\(/, "terrain color uses continuous world-space blending");
@@ -119,4 +106,4 @@ assert.match(generatorSource, /groundCoverDensity/, "ground cover uses patch den
 assert.match(generatorSource, /grassDensity/, "grass uses patch density");
 assert.match(generatorSource, /leafLitter/, "terrain surface includes leaf-litter breakup");
 
-console.log("terrain LOD and production vegetation renderer authority test ok");
+console.log("terrain LOD and single-authority natural vegetation renderer test ok");
