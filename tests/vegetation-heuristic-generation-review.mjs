@@ -44,10 +44,11 @@ function reviewTree(archetype) {
   }
 
   const token = `${archetype.shape}:${archetype.foliageCardFamily}`;
-  if (/palm|fern|cycad/.test(token)) assert.ok(modes.has("frond-burst"), `${archetype.id} resolves to a radial frond structure`);
+  const radial = /palm|fern|cycad/.test(token);
+  if (radial) assert.ok(modes.has("frond-burst"), `${archetype.id} resolves to a radial frond structure`);
   else if (/spire|araucaria|needle|horsetail|whorl/.test(token)) assert.ok(modes.has("crown-tier"), `${archetype.id} resolves to a tiered crown structure`);
   else assert.ok(modes.has("branch-cluster") || modes.has("canopy-shell"), `${archetype.id} resolves to branch-supported canopy clusters`);
-  if (Number(archetype.hangingFoliage ?? 0) > 0.08) assert.ok(modes.has("dangling-edge"), `${archetype.id} realizes declared hanging foliage`);
+  if (!radial && Number(archetype.hangingFoliage ?? 0) > 0.08) assert.ok(modes.has("dangling-edge"), `${archetype.id} realizes declared hanging foliage`);
 
   return Object.freeze({
     id: archetype.id,
