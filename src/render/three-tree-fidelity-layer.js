@@ -1,4 +1,4 @@
-const DEFAULT_THRESHOLDS = Object.freeze({ near: 360, medium: 150, far: 18 });
+const DEFAULT_THRESHOLDS = Object.freeze({ near: 300, medium: 84, far: 12 });
 const FORM_ORDER = Object.freeze(["near", "medium", "far", "horizon"]);
 
 function clamp(value, min, max) {
@@ -60,11 +60,7 @@ export function resolveTreeImpostorBlend(frames = [], cameraPosition = {}, bound
   elevations.sort((left, right) => Math.abs(left - view.elevationDegrees) - Math.abs(right - view.elevationDegrees) || left - right);
   const selectedElevation = elevations[0] ?? 0;
   const row = frames
-    .map((frame, arrayIndex) => ({
-      frame,
-      arrayIndex,
-      azimuth: normalizedDegrees(frame.azimuthDegrees ?? 0)
-    }))
+    .map((frame, arrayIndex) => ({ frame, arrayIndex, azimuth: normalizedDegrees(frame.azimuthDegrees ?? 0) }))
     .filter((entry) => Number(entry.frame.elevationDegrees ?? 0) === selectedElevation)
     .sort((left, right) => left.azimuth - right.azimuth || left.arrayIndex - right.arrayIndex);
   if (!row.length) return [];
@@ -91,8 +87,7 @@ export function resolveTreeImpostorBlend(frames = [], cameraPosition = {}, bound
     const leftAngle = left.azimuth;
     const rightAngle = index === row.length - 1 ? right.azimuth + 360 : right.azimuth;
     if (angle < leftAngle || angle > rightAngle) continue;
-    const span = Math.max(0.000001, rightAngle - leftAngle);
-    const amount = clamp((angle - leftAngle) / span, 0, 1);
+    const amount = clamp((angle - leftAngle) / Math.max(0.000001, rightAngle - leftAngle), 0, 1);
     const makeBinding = (entry, weight) => ({
       arrayIndex: entry.arrayIndex,
       frame: entry.frame,
@@ -109,7 +104,7 @@ export function resolveTreeImpostorBlend(frames = [], cameraPosition = {}, bound
     return [makeBinding(left, 1 - amount), makeBinding(right, amount)];
   }
 
-  const nearest = row.sort((left, right) => circularDegreesDistance(left.azimuth, view.azimuthDegrees) - circularDegreesDistance(right.azimuth, view.azimuthDegrees))[0];
+  const nearest = row.slice().sort((left, right) => circularDegreesDistance(left.azimuth, view.azimuthDegrees) - circularDegreesDistance(right.azimuth, view.azimuthDegrees))[0];
   return [{
     arrayIndex: nearest.arrayIndex,
     frame: nearest.frame,
@@ -170,7 +165,7 @@ function patchMeshMaterial(material) {
       .replace("vec4 diffuseColor = vec4( diffuse, opacity );", "vec4 diffuseColor = vec4( diffuse * vInstanceTint, opacity );")
       .replace("#include <clipping_planes_fragment>", "#include <clipping_planes_fragment>\nif (fidelityHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;");
   };
-  material.customProgramCacheKey = () => "prehistoric-tree-mesh-fidelity-v2";
+  material.customProgramCacheKey = () => "prehistoric-natural-tree-mesh-fidelity-v3";
   return material;
 }
 
@@ -206,9 +201,7 @@ function validImageDimensions(image) {
 function createAtlasTexture(THREE, atlas) {
   const image = atlas?.runtimeImage;
   const dimensions = validImageDimensions(image);
-  if (!image || dimensions.width < 1 || dimensions.height < 1) {
-    throw new Error("Tree impostor atlas entered rendering without valid decoded image data.");
-  }
+  if (!image || dimensions.width < 1 || dimensions.height < 1) throw new Error("Tree impostor atlas entered rendering without valid decoded image data.");
   const texture = new THREE.Texture(image);
   texture.name = `tree-atlas:${atlas.assetId ?? "runtime"}`;
   texture.flipY = false;
@@ -232,8 +225,8 @@ function createBillboardMaterial(THREE, scene, atlasTexture, options = {}) {
       atlasMap: { value: atlasTexture },
       fogColor: { value: fogColor.clone() },
       fogDensity: { value: fogDensity },
-      saturation: { value: options.formId === "horizon" ? 0.76 : 0.88 },
-      ambientLift: { value: options.formId === "horizon" ? 1.18 : 1.1 },
+      saturation: { value: options.formId === "horizon" ? 0.78 : 0.9 },
+      ambientLift: { value: options.formId === "horizon" ? 1.16 : 1.08 },
       topLight: { value: options.formId === "horizon" ? 0.05 : 0.09 }
     },
     vertexShader: `
@@ -294,10 +287,12 @@ function createBillboardMaterial(THREE, scene, atlasTexture, options = {}) {
 function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
   const form = packageValue?.forms?.[formId];
   const geometry = createGeometryFromPortable(THREE, form?.geometry, capacity);
-  const material = patchMeshMaterial(new THREE.MeshStandardMaterial({
+  const material = patchMeshMaterial(new THREE.MeshPhysicalMaterial({
     vertexColors: Boolean(geometry.getAttribute("color")),
     roughness: packageValue?.material?.roughness ?? (formId === "near" ? 0.82 : 0.88),
-    metalness: 0
+    metalness: 0,
+    clearcoat: 0.025,
+    clearcoatRoughness: 0.9
   }));
   const mesh = new THREE.InstancedMesh(geometry, material, capacity);
   mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}`;
@@ -323,17 +318,12 @@ function createBillboardBatch(THREE, scene, packageValue, formId, atlasTexture, 
 }
 
 function createTypeLayer(THREE, scene, packageValue, typeIndex, capacity) {
-  if (!packageValue?.forms?.near?.geometry || !packageValue?.forms?.medium?.geometry) {
-    throw new TypeError(`Tree fidelity package ${packageValue?.archetypeId ?? typeIndex} is missing Object Shape mesh forms.`);
-  }
+  if (!packageValue?.forms?.near?.geometry || !packageValue?.forms?.medium?.geometry) throw new TypeError(`Tree fidelity package ${packageValue?.archetypeId ?? typeIndex} is missing Object Shape mesh forms.`);
+  if (!packageValue?.growth?.digest) throw new TypeError(`Tree fidelity package ${packageValue?.archetypeId ?? typeIndex} is missing its admitted growth digest.`);
   const farAtlas = packageValue?.forms?.far?.atlas;
   const horizonAtlas = packageValue?.forms?.horizon?.atlas;
-  if (!farAtlas?.runtimeImage || !horizonAtlas?.runtimeImage) {
-    throw new Error(`Tree fidelity package ${packageValue.archetypeId} entered rendering before atlas decoding completed.`);
-  }
-  if (String(farAtlas.assetId) !== String(horizonAtlas.assetId)) {
-    throw new Error(`Tree fidelity package ${packageValue.archetypeId} must share one atlas across far and horizon forms.`);
-  }
+  if (!farAtlas?.runtimeImage || !horizonAtlas?.runtimeImage) throw new Error(`Tree fidelity package ${packageValue.archetypeId} entered rendering before atlas decoding completed.`);
+  if (String(farAtlas.assetId) !== String(horizonAtlas.assetId)) throw new Error(`Tree fidelity package ${packageValue.archetypeId} must share one atlas across far and horizon forms.`);
   const billboardCapacity = capacity * 4;
   const atlasTexture = createAtlasTexture(THREE, farAtlas);
   return {
@@ -374,7 +364,7 @@ function rawForm(packageValue, pixels) {
 function retainWithHysteresis(packageValue, pixels, previous) {
   if (!previous || !FORM_ORDER.includes(previous)) return rawForm(packageValue, pixels);
   const thresholds = thresholdSet(packageValue);
-  const hysteresis = clamp(Number(packageValue?.change?.hysteresis ?? 0.16), 0, 0.45);
+  const hysteresis = clamp(Number(packageValue?.change?.hysteresis ?? 0.14), 0, 0.45);
   if (previous === "near" && pixels >= thresholds.near * (1 - hysteresis)) return previous;
   if (previous === "medium" && pixels >= thresholds.medium * (1 - hysteresis) && pixels < thresholds.near * (1 + hysteresis)) return previous;
   if (previous === "far" && pixels >= thresholds.far * (1 - hysteresis) && pixels < thresholds.medium * (1 + hysteresis)) return previous;
@@ -386,8 +376,7 @@ function sourceBounds(packageValue) {
   const bounds = packageValue?.source?.bounds ?? {};
   const min = bounds.min ?? [-(bounds.width ?? 1) * 0.5, 0, -(bounds.depth ?? bounds.width ?? 1) * 0.5];
   const size = bounds.size ?? [bounds.width ?? 1, bounds.height ?? 1, bounds.depth ?? bounds.width ?? 1];
-  const center = bounds.center ?? [0, min[1] + size[1] * 0.5, 0];
-  return { min, size, center };
+  return { min, size };
 }
 
 function variationFor(record) {
@@ -438,6 +427,9 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const suppressedLegacyMeshes = suppressLegacyTreeMeshes(scene, treeTypes.length);
   const generationIds = packages.map((entry) => entry.generation?.id).filter(Boolean);
   const generationDigest = generationIds.join("|");
+  const growthDigests = packages.map((entry) => entry.growth?.digest).filter(Boolean);
+  const growthDigest = growthDigests.join("|");
+  let presentationRecords = [];
   const view = {
     enabled: true,
     activePatches: 0,
@@ -449,6 +441,10 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     textureCount: layers.length,
     generationIds,
     generationDigest,
+    growthDigests,
+    growthDigest,
+    presentationAuthority: "object-fidelity-natural-growth",
+    presentationCount: 0,
     frameSelectionRevision: 0,
     frameBindingCount: 0,
     frameBindingDigest: "00000000",
@@ -524,21 +520,13 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
           const bounds = combineBounds(trunk, crown);
           const distance = Math.max(0.001, camera.position.distanceTo(position.set(...bounds.center)));
           const pixels = projectedPixels(camera, renderer, bounds.height, distance);
-          const prior = selections.get(treeId) ?? {
-            form: rawForm(layer.packageValue, pixels),
-            transition: null,
-            candidate: null,
-            candidateFrames: 0
-          };
+          const prior = selections.get(treeId) ?? { form: rawForm(layer.packageValue, pixels), transition: null, candidate: null, candidateFrames: 0 };
           const desired = retainWithHysteresis(layer.packageValue, pixels, prior.transition?.to ?? prior.form);
-          const stableFrames = Math.max(1, Number(layer.packageValue?.change?.stableSelectionFrames ?? 2));
+          const stableFrames = Math.max(1, Number(layer.packageValue?.change?.stableSelectionFrames ?? 3));
 
           if (!prior.transition && desired !== prior.form) {
             if (prior.candidate === desired) prior.candidateFrames += 1;
-            else {
-              prior.candidate = desired;
-              prior.candidateFrames = 1;
-            }
+            else { prior.candidate = desired; prior.candidateFrames = 1; }
             if (prior.candidateFrames >= stableFrames) {
               prior.transition = { from: prior.form, to: desired, elapsed: 0 };
               prior.candidate = null;
@@ -548,16 +536,14 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
             prior.candidate = null;
             prior.candidateFrames = 0;
           } else if (desired !== prior.transition.to) {
-            const current = prior.transition.elapsed >= (layer.packageValue.change?.duration ?? 0.35) * 0.5
-              ? prior.transition.to
-              : prior.transition.from;
+            const current = prior.transition.elapsed >= (layer.packageValue.change?.duration ?? 0.32) * 0.5 ? prior.transition.to : prior.transition.from;
             prior.form = current;
             prior.transition = current === desired ? null : { from: current, to: desired, elapsed: 0 };
           }
 
           const record = { trunk, crown, bounds, pixels, treeId };
           if (prior.transition) {
-            const duration = Math.max(0.001, Number(layer.packageValue.change?.duration ?? 0.35));
+            const duration = Math.max(0.001, Number(layer.packageValue.change?.duration ?? 0.32));
             prior.transition.elapsed += Math.max(0, Number(deltaTime) || 0);
             const progress = Math.min(1, prior.transition.elapsed / duration);
             pushRecord(perType[typeIndex], prior.transition.from, record, 1 - progress);
@@ -580,12 +566,14 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     view.counts = { near: 0, medium: 0, far: 0, horizon: 0 };
     view.treeCount = seen.size;
     view.transitioning = transitioning;
+    const nextPresentationRecords = [];
 
     perType.forEach((selection, typeIndex) => {
       const layer = layers[typeIndex];
       for (const formId of ["near", "medium"]) {
         const mesh = layer[formId];
         const records = selection[formId];
+        for (const entry of records) nextPresentationRecords.push({ typeIndex, formId, record: entry.record, fade: entry.fade });
         const count = Math.min(layer.capacities[formId], records.length);
         for (let index = 0; index < count; index += 1) {
           const entry = records[index];
@@ -609,8 +597,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
           const bindings = resolveTreeImpostorBlend(form.frames, camera.position, entry.record.bounds, yawDegrees);
           for (const binding of bindings) {
             const fade = entry.fade * binding.weight;
-            if (fade <= 0.005) continue;
-            rendered.push({ entry, binding, fade });
+            if (fade > 0.005) rendered.push({ entry, binding, fade });
           }
         }
         const count = Math.min(layer.capacities[formId], rendered.length);
@@ -639,6 +626,8 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
       }
     });
 
+    presentationRecords = nextPresentationRecords;
+    view.presentationCount = presentationRecords.length;
     frameBindings.sort((left, right) => left.treeId.localeCompare(right.treeId) || left.formId.localeCompare(right.formId) || left.frameIndex - right.frameIndex);
     view.frameSelectionRevision += 1;
     view.frameBindingCount = frameBindings.length;
@@ -646,17 +635,24 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     view.frameBindingSample = frameBindings.slice(0, 32);
     view.exactFrameAck = Object.freeze({
       generationDigest,
+      growthDigest,
       revision: view.frameSelectionRevision,
       bindingCount: view.frameBindingCount,
       bindingDigest: view.frameBindingDigest,
-      textureCount: view.textureCount
+      textureCount: view.textureCount,
+      presentationAuthority: view.presentationAuthority
     });
     return view;
+  }
+
+  function getPresentationRecords() {
+    return presentationRecords;
   }
 
   function dispose() {
     patches.clear();
     selections.clear();
+    presentationRecords = [];
     for (const layer of layers) {
       disposeMesh(scene, layer.near);
       disposeMesh(scene, layer.medium);
@@ -666,7 +662,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     }
   }
 
-  return Object.freeze({ view, activatePatch, releasePatches, update, dispose });
+  return Object.freeze({ view, activatePatch, releasePatches, update, getPresentationRecords, dispose });
 }
 
 export default createThreeTreeFidelityLayer;
