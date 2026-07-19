@@ -25,7 +25,7 @@ export {
   TREE_FIDELITY_PROVIDER_ID
 };
 
-const VEGETATION_PROVIDER_REVISION = "object-vegetation-natural-growth-v3";
+const VEGETATION_PROVIDER_REVISION = "object-vegetation-natural-growth-v4-single-authority";
 const packageAssetId = (archetype) => `prehistoric-tree-fidelity:${archetype.id}`;
 
 function descriptorVersion() {
@@ -49,9 +49,11 @@ function rebindVegetationAssetDescriptors(runtime) {
         packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
         providerRevision: VEGETATION_PROVIDER_REVISION,
         growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+        growthDigest: runtime.treeGrowthDigest,
         foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
         vegetationDomain: "n:object:vegetation",
-        computeDomain: "n:compute"
+        computeDomain: "n:compute",
+        singleVisualAuthority: true
       }
     });
   }
@@ -66,9 +68,11 @@ function rebindVegetationAssetDescriptors(runtime) {
       packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
       providerRevision: VEGETATION_PROVIDER_REVISION,
       growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+      growthDigest: runtime.treeGrowthDigest,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       vegetationDomain: "n:object:vegetation",
-      computeDomain: "n:compute"
+      computeDomain: "n:compute",
+      singleVisualAuthority: true
     }
   });
   runtime.assets.registerBundle({
@@ -76,13 +80,15 @@ function rebindVegetationAssetDescriptors(runtime) {
     version: descriptorVersion(),
     assets: [TREE_FIDELITY_MANIFEST_ASSET_ID],
     metadata: {
-      purpose: "PrehistoricRush natural-growth Object Vegetation, compute-prepared alpha-cutout foliage cards, Shape, Capture, and Fidelity tree package.",
+      purpose: "PrehistoricRush single-authority natural-growth Object Vegetation, compute-prepared foliage, Shape, Capture, and Fidelity package.",
       packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
       providerRevision: VEGETATION_PROVIDER_REVISION,
       growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+      growthDigest: runtime.treeGrowthDigest,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       vegetationDomain: "n:object:vegetation",
       computeDomain: "n:compute",
+      singleVisualAuthority: true,
       speciesCount: PREHISTORIC_TREE_ARCHETYPES.length
     }
   });
@@ -100,6 +106,20 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
   const growthPlans = await preparePrehistoricTreeGrowthPlans(NexusEngine, { ...runtime, vegetationCatalog });
   const growthValidation = validatePrehistoricTreeGrowthPlans(growthPlans);
   if (!growthValidation.valid) throw new Error(`Prehistoric tree growth validation failed: ${growthValidation.errors.join("; ")}`);
+  const treeGrowthDigest = NexusEngine.hashFidelityValue(
+    PREHISTORIC_TREE_ARCHETYPES.map((archetype) => ({
+      speciesId: archetype.id,
+      revision: growthPlans[archetype.id]?.revision,
+      near: growthPlans[archetype.id]?.near,
+      medium: growthPlans[archetype.id]?.medium,
+      shading: growthPlans[archetype.id]?.buffers
+        ? {
+            near: growthPlans[archetype.id].buffers.near.shading,
+            medium: growthPlans[archetype.id].buffers.medium.shading
+          }
+        : null
+    }))
+  );
   const semanticFidelityProfiles = vegetationCatalog.treeStructures.map((tree) =>
     runtime.engine.n.vegetationTree.createFidelityProfile(tree, {
       id: `prehistoric-tree-fidelity-profile:${tree.speciesId}`,
@@ -120,6 +140,7 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
         product: "prehistoric-rush",
         foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
         growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+        treeGrowthDigest,
         singleVisualAuthority: true
       }
     })
@@ -135,6 +156,7 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
     vegetationCatalog,
     growthPlans,
     growthValidation,
+    treeGrowthDigest,
     semanticFidelityProfiles,
     vegetationProviderRevision: VEGETATION_PROVIDER_REVISION,
     treeGrowthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
