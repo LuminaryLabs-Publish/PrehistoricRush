@@ -1,23 +1,29 @@
 import {
   PREHISTORIC_TREE_ARCHETYPES,
-  TREE_FIDELITY_PACKAGE_VERSION,
-  createPrehistoricTreeObject
+  TREE_FIDELITY_PACKAGE_VERSION
 } from "./tree-archetype-catalog.js";
 import { FOLIAGE_ATLAS_REVISION } from "./prehistoric-foliage-card-recipes.js";
+import { PREHISTORIC_TREE_GROWTH_REVISION } from "./prehistoric-tree-growth-compute.js";
 import { TREE_FIDELITY_PROVIDER_ID } from "./tree-fidelity-assets.js";
+import { createPrehistoricNaturalTreeObject } from "../render/prehistoric-natural-tree-geometry.js";
 
 const TREE_SHAPE_PROVIDER_ID = "prehistoric-tree-shape-provider";
 const TREE_CAPTURE_PROVIDER_ID = "prehistoric-tree-capture-provider";
 const TREE_SHAPE_PROFILE_ID = "prehistoric-tree-shape-profile";
+const TREE_GROWTH_PACKAGE_SCHEMA = "prehistoric-rush.tree-growth-package/1";
 
 const objectIdFor = (archetype) => `prehistoric-tree-object:${archetype.id}`;
 const sourceShapeIdFor = (archetype) => `prehistoric-tree-source-shape:${archetype.id}`;
 const fidelityProfileIdFor = (archetype) => `prehistoric-tree-fidelity-profile:${archetype.id}`;
 
 function disposeTree(object) {
+  const disposedGeometry = new Set();
   const disposedMaterials = new Set();
   object.traverse?.((child) => {
-    child.geometry?.dispose?.();
+    if (child.geometry && !disposedGeometry.has(child.geometry)) {
+      disposedGeometry.add(child.geometry);
+      child.geometry.dispose?.();
+    }
     const materials = Array.isArray(child.material) ? child.material : child.material ? [child.material] : [];
     for (const material of materials) {
       if (disposedMaterials.has(material)) continue;
@@ -27,7 +33,7 @@ function disposeTree(object) {
   });
 }
 
-function portableGeometryFromObject(THREE, object) {
+function portableWoodGeometryFromObject(THREE, object) {
   object.updateMatrixWorld(true);
   const positions = [];
   const indices = [];
@@ -39,6 +45,7 @@ function portableGeometryFromObject(THREE, object) {
 
   object.traverse((mesh) => {
     if (!mesh?.isMesh || !mesh.geometry?.getAttribute) return;
+    if (mesh.userData?.foliageCard || mesh.userData?.vegetationRole === "bounds-proxy" || mesh.material?.visible === false) return;
     const geometry = mesh.geometry;
     const position = geometry.getAttribute("position");
     if (!position) return;
@@ -69,7 +76,7 @@ function portableGeometryFromObject(THREE, object) {
     }
   });
 
-  if (positions.length < 9 || indices.length < 3) throw new Error(`Tree ${object.name} produced no portable triangle geometry.`);
+  if (positions.length < 9 || indices.length < 3) throw new Error(`Tree ${object.name} produced no portable wood geometry.`);
   return {
     positions,
     indices,
@@ -99,9 +106,10 @@ function objectShapeProfileFromTreeRecipe(recipe) {
       preserve: { borders: true, vertexColors: true }
     })),
     metadata: {
-      purpose: "Tree-domain Shape recipe adapted for PrehistoricRush wood structure.",
+      purpose: "Tree-domain Shape recipe adapted for natural-growth wood only.",
       speciesId: recipe.speciesId,
       sourceRecipeId: recipe.id,
+      growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
@@ -115,22 +123,28 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
     version: Number(TREE_FIDELITY_PACKAGE_VERSION),
     shapeBuilderId: "object-shape-form",
     captureProviderId: TREE_CAPTURE_PROVIDER_ID,
-    nearPixels: 360,
-    mediumPixels: 150,
-    mediumMaximumPixels: 410,
-    farPixels: 18,
-    farMaximumPixels: 175,
-    horizonPixels: 26,
-    transitionDuration: 0.35,
-    hysteresis: 0.16,
-    stableFrames: 2,
-    capturePadding: 0.05,
+    nearPixels: 300,
+    mediumPixels: 84,
+    mediumMaximumPixels: 330,
+    farPixels: 12,
+    farMaximumPixels: 105,
+    horizonPixels: 18,
+    transitionDuration: 0.32,
+    hysteresis: 0.14,
+    stableFrames: 3,
+    capturePadding: 0.04,
     frameSize: 256,
     horizonFrameSize: 128,
     azimuthCount: 8,
     elevations: [0, 12],
     observations: ["color", "opacity"],
-    metadata: { product: "prehistoric-rush", archetypeId: archetype.id, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
+    metadata: {
+      product: "prehistoric-rush",
+      archetypeId: archetype.id,
+      growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+      singleVisualAuthority: true
+    }
   });
   return {
     ...profile,
@@ -150,6 +164,7 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
             },
             treeStructureId: tree.id,
             foliageDescriptorId: `${archetype.id}:foliage`,
+            growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
             foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
           }
         };
@@ -164,6 +179,7 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
             ...(form.capture?.metadata ?? {}),
             archetypeId: archetype.id,
             packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+            growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
             foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
           }
         }
@@ -171,10 +187,12 @@ function objectFidelityProfileFromTree(engine, archetype, sourceShapeId) {
     }),
     metadata: {
       ...(profile.metadata ?? {}),
-      stableSelectionFrames: 2,
+      stableSelectionFrames: 3,
       treeStructureId: tree.id,
       foliageDescriptorId: `${archetype.id}:foliage`,
-      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+      growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+      foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+      singleVisualAuthority: true
     }
   };
 }
@@ -188,7 +206,8 @@ function enrichedAtlas(result) {
       ...(color.metadata ?? {}),
       ...(result.metadata?.atlas ?? {}),
       captureBounds: result.metadata?.bounds ?? null,
-      padding: 0.05,
+      padding: 0.04,
+      growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
     }
   };
@@ -209,7 +228,28 @@ function captureResultForForm(engine, form) {
   return result;
 }
 
-function portablePackageFromFidelity(NexusEngine, engine, archetype, object, build, packageValue) {
+function growthPayload(NexusEngine, runtime, archetype) {
+  const entry = runtime.growthPlans?.[archetype.id];
+  if (!entry?.near || !entry?.medium) throw new Error(`Missing admitted natural growth plans for ${archetype.id}.`);
+  if (!entry.validation?.near?.valid || !entry.validation?.medium?.valid) throw new Error(`Natural growth plans for ${archetype.id} were not validated.`);
+  const payload = {
+    schema: TREE_GROWTH_PACKAGE_SCHEMA,
+    revision: PREHISTORIC_TREE_GROWTH_REVISION,
+    algorithm: entry.near.algorithm?.kind ?? null,
+    forms: {
+      near: { plan: entry.near, shadingBuffer: entry.buffers?.near?.shading ?? [] },
+      medium: { plan: entry.medium, shadingBuffer: entry.buffers?.medium?.shading ?? [] }
+    },
+    metrics: entry.metrics
+  };
+  return {
+    ...payload,
+    digest: NexusEngine.hashFidelityValue(payload)
+  };
+}
+
+function portablePackageFromFidelity(NexusEngine, runtime, archetype, object, build, packageValue) {
+  const engine = runtime.engine;
   const profile = engine.n.objectFidelity.getSnapshot().profiles[packageValue.profileId];
   const nearForm = engine.n.objectFidelity.getForm(packageValue.forms.near);
   const mediumForm = engine.n.objectFidelity.getForm(packageValue.forms.medium);
@@ -220,6 +260,7 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   const species = engine.n.vegetation.getSpecies(archetype.id);
   const tree = engine.n.vegetationTree.get(`${archetype.id}:tree-structure`);
   const foliage = engine.n.vegetationFoliage.get(`${archetype.id}:foliage`);
+  const growth = growthPayload(NexusEngine, runtime, archetype);
   const generationInput = {
     objectId: object.id,
     objectContentHash: object.contentHash,
@@ -228,6 +269,8 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
     treeStructureHash: tree ? NexusEngine.hashFidelityValue(tree) : null,
     foliageDescriptorId: foliage?.id ?? null,
     foliageDescriptorHash: foliage ? NexusEngine.hashFidelityValue(foliage) : null,
+    growthRevision: growth.revision,
+    growthDigest: growth.digest,
     foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
     shapeProfileId: TREE_SHAPE_PROFILE_ID,
     fidelityProfileId: packageValue.profileId,
@@ -247,11 +290,13 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   const sourceBounds = object.bounds;
   const sharedAtlas = enrichedAtlas(farCapture);
   const farFrames = farCapture.frames.map((frame) => ({ ...frame }));
+  const formProfile = (id) => profile.forms.find((entry) => entry.id === id);
   return {
     schema: "prehistoric-rush.tree-fidelity-package/5",
     version: TREE_FIDELITY_PACKAGE_VERSION,
     archetypeId: archetype.id,
     generation: { id: generationId, ...generationInput },
+    growth,
     source: {
       bounds: {
         min: sourceBounds.min,
@@ -268,42 +313,46 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
     },
     forms: {
       near: {
-        kind: "wood-mesh-plus-foliage-cards",
-        minimumProjectedSize: profile.forms.find((entry) => entry.id === "near").minimumProjectedSize,
-        foliageDensity: profile.forms.find((entry) => entry.id === "near").metadata?.foliageDensity ?? 1,
+        kind: "natural-wood-mesh-plus-compute-foliage-cards",
+        minimumProjectedSize: formProfile("near").minimumProjectedSize,
+        foliageDensity: formProfile("near").metadata?.foliageDensity ?? 1,
         geometry: meshGeometryForForm(engine, nearForm),
+        growthDigest: growth.digest,
         formId: nearForm.id,
         contentHash: nearForm.contentHash
       },
       medium: {
-        kind: "reduced-wood-mesh-plus-foliage-cards",
-        minimumProjectedSize: profile.forms.find((entry) => entry.id === "medium").minimumProjectedSize,
-        maximumProjectedSize: profile.forms.find((entry) => entry.id === "medium").maximumProjectedSize,
-        foliageDensity: profile.forms.find((entry) => entry.id === "medium").metadata?.foliageDensity ?? 0.46,
+        kind: "reduced-natural-wood-mesh-plus-compute-foliage-cards",
+        minimumProjectedSize: formProfile("medium").minimumProjectedSize,
+        maximumProjectedSize: formProfile("medium").maximumProjectedSize,
+        foliageDensity: formProfile("medium").metadata?.foliageDensity ?? 0.46,
         geometry: meshGeometryForForm(engine, mediumForm),
+        growthDigest: growth.digest,
         formId: mediumForm.id,
         contentHash: mediumForm.contentHash
       },
       far: {
-        kind: "multi-angle-impostor",
-        minimumProjectedSize: profile.forms.find((entry) => entry.id === "far").minimumProjectedSize,
-        maximumProjectedSize: profile.forms.find((entry) => entry.id === "far").maximumProjectedSize,
+        kind: "natural-growth-multi-angle-impostor",
+        minimumProjectedSize: formProfile("far").minimumProjectedSize,
+        maximumProjectedSize: formProfile("far").maximumProjectedSize,
         atlas: sharedAtlas,
         frames: farFrames,
+        growthDigest: growth.digest,
         formId: farForm.id,
         contentHash: farForm.contentHash
       },
       horizon: {
-        kind: "horizon-impostor",
-        minimumProjectedSize: profile.forms.find((entry) => entry.id === "horizon").minimumProjectedSize,
-        maximumProjectedSize: profile.forms.find((entry) => entry.id === "horizon").maximumProjectedSize,
+        kind: "natural-growth-horizon-impostor",
+        minimumProjectedSize: formProfile("horizon").minimumProjectedSize,
+        maximumProjectedSize: formProfile("horizon").maximumProjectedSize,
         atlas: sharedAtlas,
         frames: farFrames,
+        growthDigest: growth.digest,
         formId: horizonForm.id,
         contentHash: horizonForm.contentHash
       }
     },
-    change: { ...profile.change, stableSelectionFrames: 2 },
+    change: { ...profile.change, stableSelectionFrames: 3 },
     material: {
       vertexColors: true,
       roughness: 0.82,
@@ -316,7 +365,8 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
       foliageCardFamily: archetype.foliageCardFamily,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
       alphaCutout: true,
-      doubleSidedFoliage: true
+      doubleSidedFoliage: true,
+      computePreparedShading: true
     },
     ecology: species?.ecology ?? archetype.ecology,
     spawn: {
@@ -328,14 +378,18 @@ function portablePackageFromFidelity(NexusEngine, engine, archetype, object, bui
   };
 }
 
-async function buildTree(NexusEngine, THREE, engine, subjects, archetype, context) {
+async function buildTree(NexusEngine, THREE, runtime, subjects, archetype, context) {
+  const engine = runtime.engine;
   const objectId = objectIdFor(archetype);
   const sourceShapeId = sourceShapeIdFor(archetype);
   const treeStructure = engine.n.vegetationTree.get(`${archetype.id}:tree-structure`);
+  const growthEntry = runtime.growthPlans?.[archetype.id];
   if (!treeStructure) throw new RangeError(`Missing Tree-domain structure for ${archetype.id}.`);
-  const treeObject = createPrehistoricTreeObject(THREE, archetype);
-  const portableGeometry = portableGeometryFromObject(THREE, treeObject);
+  if (!growthEntry?.near) throw new RangeError(`Missing natural-growth capture plan for ${archetype.id}.`);
+  const treeObject = createPrehistoricNaturalTreeObject(THREE, archetype, growthEntry.near);
+  const portableGeometry = portableWoodGeometryFromObject(THREE, treeObject);
   const metrics = NexusEngine.computeShapeMetrics(portableGeometry);
+  const fullBounds = growthEntry.near.bounds;
   subjects.set(objectId, treeObject);
 
   try {
@@ -343,13 +397,18 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
     const shapeRecipe = engine.n.vegetationTree.createShapeRecipe(treeStructure, {
       id: TREE_SHAPE_PROFILE_ID,
       mediumRatio: 0.32,
-      metadata: { product: "prehistoric-rush", foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
+      metadata: {
+        product: "prehistoric-rush",
+        growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+        woodOnly: true
+      }
     });
     engine.n.objectShape.registerProfile(objectShapeProfileFromTreeRecipe(shapeRecipe));
     const object = engine.n.coreObject.register({
       id: objectId,
       objectType: "tree-archetype",
-      bounds: { min: metrics.bounds.min, max: metrics.bounds.max },
+      bounds: { min: fullBounds.min, max: fullBounds.max },
       pivot: [0, 0, 0],
       groundAnchor: [0, 0, 0],
       geometry: { provider: "core-object-shape", descriptorId: sourceShapeId },
@@ -363,11 +422,14 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
         treeStructureId: treeStructure.id,
         foliageDescriptorId: `${archetype.id}:foliage`,
         foliageCardFamily: archetype.foliageCardFamily,
+        growthPlanId: growthEntry.near.id,
+        growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
         foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
         archetypeId: archetype.id,
         label: archetype.label,
         shape: archetype.shape,
-        packageVersion: TREE_FIDELITY_PACKAGE_VERSION
+        packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+        woodMetrics: metrics
       }
     });
     engine.n.objectShape.registerSource({
@@ -376,20 +438,27 @@ async function buildTree(NexusEngine, THREE, engine, subjects, archetype, contex
       objectContentHash: object.contentHash,
       kind: "triangle-mesh",
       geometry: portableGeometry,
-      metadata: { speciesId: archetype.id, archetypeId: archetype.id, shape: archetype.shape, foliageAtlasRevision: FOLIAGE_ATLAS_REVISION }
+      metadata: {
+        speciesId: archetype.id,
+        archetypeId: archetype.id,
+        shape: archetype.shape,
+        growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+        foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+        woodOnly: true
+      }
     });
     engine.n.objectFidelity.registerProfile(objectFidelityProfileFromTree(engine, archetype, sourceShapeId));
-    context.updateProgress(0.16, 1, `Deriving ${archetype.label} wood LODs and foliage captures`);
+    context.updateProgress(0.16, 1, `Deriving ${archetype.label} natural wood LODs and matching foliage captures`);
     const build = await engine.n.objectFidelity.requestBuild({
       objectId: object.id,
       profileId: fidelityProfileIdFor(archetype),
       quality: "high"
     });
     if (build.state !== "ready") throw new Error(`Object Fidelity build ${build.id} finished in state ${build.state}.`);
-    context.updateProgress(0.96, 1, `Committing ${archetype.label} foliage-card fidelity package`);
+    context.updateProgress(0.96, 1, `Committing ${archetype.label} single-authority fidelity package`);
     const packageValue = engine.n.objectFidelity.getActivePackage(object.id);
     if (!packageValue?.readiness?.complete) throw new Error(`Object Fidelity package for ${archetype.id} is incomplete.`);
-    return portablePackageFromFidelity(NexusEngine, engine, archetype, object, build, packageValue);
+    return portablePackageFromFidelity(NexusEngine, runtime, archetype, object, build, packageValue);
   } finally {
     subjects.delete(objectId);
     disposeTree(treeObject);
@@ -416,15 +485,18 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
 
   return {
     id: TREE_FIDELITY_PROVIDER_ID,
-    version: "5.0.0",
+    version: "5.1.0",
     metadata: {
-      purpose: "Build PrehistoricRush wood, alpha-cutout foliage cards, and impostors through Object Vegetation, Tree, Foliage, Object Shape, Capture, and Object Fidelity.",
+      purpose: "Build one admitted natural-growth tree representation through Object Vegetation, Compute, Shape, Capture, and Fidelity.",
+      growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
       foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+      singleVisualAuthority: true,
       domains: [
         "n:object",
         "n:object:vegetation",
         "n:object:vegetation:tree",
         "n:object:vegetation:foliage",
+        "n:compute",
         "n:object:shape",
         "n:capture",
         "n:object:fidelity"
@@ -438,7 +510,11 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
             revision: asset.version,
             bundleId: runtime.bundleId,
             vegetationDomain: "n:object:vegetation",
+            computeDomain: "n:compute",
+            growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+            growthDigest: runtime.treeGrowthDigest ?? null,
             foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+            singleVisualAuthority: true,
             archetypes: PREHISTORIC_TREE_ARCHETYPES.map((tree) => ({
               id: tree.id,
               label: tree.label,
@@ -453,13 +529,16 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
             kind: "manifest",
             packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
             speciesCount: runtime.vegetationCatalog.species.length,
-            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+            growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+            growthDigest: runtime.treeGrowthDigest ?? null,
+            foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+            singleVisualAuthority: true
           }
         };
       }
       const archetype = PREHISTORIC_TREE_ARCHETYPES.find((tree) => tree.id === asset.metadata.archetypeId);
       if (!archetype) throw new RangeError(`Unknown tree archetype: ${asset.metadata.archetypeId}`);
-      const portable = await buildTree(NexusEngine, THREE, engine, subjects, archetype, context);
+      const portable = await buildTree(NexusEngine, THREE, runtime, subjects, archetype, context);
       context.updateProgress(1, 1, `${archetype.label} ready`);
       return {
         portable,
@@ -467,9 +546,12 @@ export function createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime
           archetypeId: archetype.id,
           speciesId: archetype.id,
           generationId: portable.generation.id,
+          growthDigest: portable.growth.digest,
           fidelityPackageId: portable.generation.fidelityPackageId,
           packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
-          foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+          growthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+          foliageAtlasRevision: FOLIAGE_ATLAS_REVISION,
+          singleVisualAuthority: true
         }
       };
     },
