@@ -20,7 +20,7 @@ assert.match(adapterSource, /grass\[layerIndex\]\.batch\.replaceCell\(patch\.id/
 assert.match(adapterSource, /shardBatch\.replaceCell\(patchId, visible\)/, "pickup visibility replaces one shard cell");
 assert.match(adapterSource, /tree\.trunkBatch\.releaseCell\(patchId\)/, "tree release removes one patch cell");
 assert.match(adapterSource, /layer\.batch\.releaseCell\(patchId\)/, "grass release removes one patch cell");
-assert.match(adapterSource, /shardBatch\.releaseCell\(patchId\)/, "shard release removes one patch cell");
+assert.match(adapterSource, /shardBatch\.releaseCell\(patchId\)/, "shards release one patch cell");
 assert.match(adapterSource, /mesh\.instanceMatrix\.addUpdateRange\?\.\(write\.start \* 16, write\.count \* 16\)/, "GPU uploads use reported changed ranges");
 assert.match(adapterSource, /function syncColliderMembership\(\)/, "collider flattening is isolated to membership changes");
 assert.equal((adapterSource.match(/corePhysics\.syncColliders\(/g) ?? []).length, 1, "collider synchronization has one bounded authority");
@@ -49,6 +49,8 @@ assert.match(lodAdapterSource, /activeTerrainSlotCount \+ visualPrefetchCapacity
 assert.match(lodAdapterSource, /presentationOnly: true/, "visual-prefetch admission is explicitly presentation-only");
 const prefetchBody = lodAdapterSource.match(/function prefetchPatch\(entry, state\) \{([\s\S]*?)\n  \}/)?.[1] ?? "";
 assert.doesNotMatch(prefetchBody, /baseActivatePatch/, "visual prefetch does not activate pickups, colliders, or gameplay ownership");
-assert.match(versionsSource, /KITS_COMMIT = "6bcda82797ab7ba2929262fc9bb13eac3f9d3749"/, "the game pins the two-tier streaming kit revision");
+assert.match(versionsSource, /KITS_COMMIT = "9fd5b10053135e278c84b8b1591aece5cc641da1"/, "unchanged kits retain their prior immutable revision");
+assert.match(versionsSource, /PATCH_KIT_COMMIT = "6bcda82797ab7ba2929262fc9bb13eac3f9d3749"/, "the patch controller alone pins the two-tier streaming revision");
+assert.match(versionsSource, /patchKit: `[^`]*@\$\{PATCH_KIT_COMMIT\}/, "the patch-controller URL uses the isolated revision");
 
 console.log("patch-owned two-tier streaming authority test ok");
