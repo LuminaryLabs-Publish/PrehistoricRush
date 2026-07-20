@@ -83,7 +83,10 @@ assert.match(layerSource, /geometry\.morphAttributes\.position/, "terrain alloca
 assert.match(layerSource, /setIndexForLevel/, "terrain switches reusable LOD index buffers");
 assert.match(wrapperSource, /hideLegacyTerrain/, "the fixed-grid terrain is suppressed");
 assert.match(wrapperSource, /terrain\.activatePatch\(patch, state\)/, "LOD preparation runs before base patch adoption");
-assert.match(wrapperSource, /terrain\.releasePatches\(\[patch\.id\]\)/, "failed base adoption rolls back the LOD candidate");
+assert.match(wrapperSource, /releaseVisualPatchIds\(\[patch\.id\]\)/, "failed visual admission rolls back the LOD candidate");
+assert.match(wrapperSource, /slotCount: activeTerrainSlotCount \+ visualPrefetchCapacity/, "terrain slots cover simulation and presentation-prefetch patches");
+assert.match(wrapperSource, /function prefetchPatch\(entry, state\)/, "terrain can be admitted without gameplay ownership");
+assert.match(wrapperSource, /function promotePrefetchPatch\(entry, state\)/, "prefetched terrain promotes without duplicate GPU creation");
 assert.match(wrapperSource, /lastVisibleFrameAck/, "the first matching terrain frame is acknowledged");
 assert.match(wrapperSource, /createThreeLushFoliageLayer/, "the LOD wrapper presents compute-prepared near and medium foliage cards");
 assert.match(wrapperSource, /authority: treeFidelity/, "foliage consumes the Object Fidelity selection authority");
@@ -106,4 +109,4 @@ assert.match(generatorSource, /groundCoverDensity/, "ground cover uses patch den
 assert.match(generatorSource, /grassDensity/, "grass uses patch density");
 assert.match(generatorSource, /leafLitter/, "terrain surface includes leaf-litter breakup");
 
-console.log("terrain LOD and single-authority natural vegetation renderer test ok");
+console.log("terrain LOD and two-tier natural vegetation renderer test ok");
