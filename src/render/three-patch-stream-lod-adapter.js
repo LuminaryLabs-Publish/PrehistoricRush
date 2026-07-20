@@ -34,19 +34,25 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     treeFidelityPackages = [],
     treeBatchCapacity = 256,
     foliageCardCapacity = 8192,
-    groundCoverCapacity = 2400
+    groundCoverCapacity = 2400,
+    visualPrefetchCapacity = 12
   } = options;
   if (!terrainLodPolicy) throw new TypeError("Three patch stream LOD adapter requires terrainLodPolicy.");
+  if (!Number.isInteger(visualPrefetchCapacity) || visualPrefetchCapacity < 0) {
+    throw new TypeError("Three patch stream LOD adapter visualPrefetchCapacity must be a non-negative integer.");
+  }
+
   const base = createBasePatchStreamAdapter(THREE, options);
   const atmosphere = applyLushJungleAtmosphere(THREE, base.scene, base.renderer, options.atmosphere ?? {});
   const foliageAtlas = createPrehistoricFoliageAtlas(THREE, { tileSize: options.foliageTileSize ?? 256 });
   const expectedLegacyVertices = (Number(config.segments) + 1) ** 2;
+  const activeTerrainSlotCount = (stream.activeRadius * 2 + 1) ** 2;
   const terrain = createThreeTerrainLodLayer(THREE, {
     scene: base.scene,
     renderer: base.renderer,
     policy: terrainLodPolicy,
     selectTerrainLodLevel,
-    slotCount: (stream.activeRadius * 2 + 1) ** 2,
+    slotCount: activeTerrainSlotCount + visualPrefetchCapacity,
     textureSeed: config.seed
   });
   const treeFidelity = treeFidelityPackages.length > 0
@@ -80,12 +86,21 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     groundDetailCapacityPerVariant: options.productionGroundDetailCapacity ?? 900
   });
 
+  const visualPatchIds = new Set();
+  const presentationPrefetchIds = new Set();
+
   base.view.terrainLod = terrain.view;
   base.view.treeFidelity = treeFidelity?.view ?? { enabled: false, packageCount: 0, counts: { near: 0, medium: 0, far: 0, horizon: 0 } };
   base.view.lushFoliage = lushFoliage?.view ?? { enabled: false, nearCards: 0, mediumCards: 0, treeCount: 0 };
   base.view.groundCover = groundCover.view;
   base.view.productionGround = productionGround.view;
   base.view.productionForest = productionGround.view;
+  base.view.presentationPrefetch = {
+    capacity: visualPrefetchCapacity,
+    count: 0,
+    visualPatchCount: 0,
+    patchIds: []
+  };
   base.view.jungleAtmosphere = Object.freeze({
     background: `#${atmosphere.background.getHexString()}`,
     fogColor: `#${atmosphere.fogColor.getHexString()}`,
@@ -100,34 +115,92 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
   const baseRender = base.render;
   let renderedFrame = 0;
 
-  function activatePatch(entry, state) {
-    const patch = entry?.patch ?? entry;
-    if (!patch?.terrain) throw new TypeError("Terrain patch activation requires terrain fields.");
-    const admission = terrain.activatePatch(patch, state);
-    treeFidelity?.activatePatch(patch, state);
-    lushFoliage?.activatePatch(patch, state);
-    groundCover.activatePatch(patch, state);
-    productionGround.activatePatch(patch, state);
-    try {
-      baseActivatePatch(entry, state);
-      base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
-      return admission;
-    } catch (error) {
-      terrain.releasePatches([patch.id]);
-      treeFidelity?.releasePatches([patch.id]);
-      lushFoliage?.releasePatches([patch.id]);
-      groundCover.releasePatches([patch.id]);
-      productionGround.releasePatches([patch.id]);
-      throw error;
-    }
+  function refreshPresentationPrefetchView() {
+    base.view.presentationPrefetch = {
+      capacity: visualPrefetchCapacity,
+      count: presentationPrefetchIds.size,
+      visualPatchCount: visualPatchIds.size,
+      patchIds: [...presentationPrefetchIds].sort()
+    };
   }
 
-  function releasePatches(ids) {
+  function releaseVisualPatchIds(ids) {
     terrain.releasePatches(ids);
     treeFidelity?.releasePatches(ids);
     lushFoliage?.releasePatches(ids);
     groundCover.releasePatches(ids);
     productionGround.releasePatches(ids);
+    for (const patchId of ids) {
+      visualPatchIds.delete(String(patchId));
+      presentationPrefetchIds.delete(String(patchId));
+    }
+    refreshPresentationPrefetchView();
+  }
+
+  function activateVisualPatch(patch, state) {
+    if (!patch?.terrain) throw new TypeError("Terrain patch activation requires terrain fields.");
+    if (visualPatchIds.has(patch.id)) {
+      return Object.freeze({ accepted: true, patchId: patch.id, reused: true });
+    }
+
+    try {
+      const admission = terrain.activatePatch(patch, state);
+      treeFidelity?.activatePatch(patch, state);
+      lushFoliage?.activatePatch(patch, state);
+      groundCover.activatePatch(patch, state);
+      productionGround.activatePatch(patch, state);
+      visualPatchIds.add(patch.id);
+      refreshPresentationPrefetchView();
+      return admission;
+    } catch (error) {
+      releaseVisualPatchIds([patch.id]);
+      throw error;
+    }
+  }
+
+  function prefetchPatch(entry, state) {
+    const patch = entry?.patch ?? entry;
+    if (!visualPatchIds.has(patch?.id) && presentationPrefetchIds.size >= visualPrefetchCapacity) {
+      throw new RangeError(`Presentation-prefetch capacity ${visualPrefetchCapacity} was exceeded.`);
+    }
+    const admission = activateVisualPatch(patch, state);
+    presentationPrefetchIds.add(patch.id);
+    refreshPresentationPrefetchView();
+    return Object.freeze({
+      ...admission,
+      presentationOnly: true,
+      patchId: patch.id
+    });
+  }
+
+  function activatePatch(entry, state) {
+    const patch = entry?.patch ?? entry;
+    const wasVisual = visualPatchIds.has(patch?.id);
+    const admission = activateVisualPatch(patch, state);
+    try {
+      baseActivatePatch(entry, state);
+      presentationPrefetchIds.delete(patch.id);
+      refreshPresentationPrefetchView();
+      base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
+      return admission;
+    } catch (error) {
+      if (!wasVisual) releaseVisualPatchIds([patch.id]);
+      throw error;
+    }
+  }
+
+  function promotePrefetchPatch(entry, state) {
+    const patch = entry?.patch ?? entry;
+    if (!presentationPrefetchIds.has(patch?.id)) return activatePatch(entry, state);
+    baseActivatePatch(entry, state);
+    presentationPrefetchIds.delete(patch.id);
+    refreshPresentationPrefetchView();
+    base.view.legacyTerrainSlotsSuppressed = hideLegacyTerrain(base.scene, expectedLegacyVertices);
+    return Object.freeze({ accepted: true, patchId: patch.id, promoted: true, reusedVisuals: true });
+  }
+
+  function releasePatches(ids) {
+    releaseVisualPatchIds(ids);
     return baseReleasePatches(ids);
   }
 
@@ -176,7 +249,9 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       productionGrassClumps: productionGround.view.grassClumps,
       groundSurfaceDetails: productionGround.view.groundDetails,
       groundCover: groundCover.view.count,
-      treeGenerationDigest: treeFidelity?.view.generationDigest ?? null
+      treeGenerationDigest: treeFidelity?.view.generationDigest ?? null,
+      visualPatchCount: visualPatchIds.size,
+      presentationPrefetchCount: presentationPrefetchIds.size
     });
     return result;
   }
@@ -191,8 +266,16 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
     productionForest: productionGround,
     foliageAtlas,
     atmosphere,
+    prefetchPatch,
     activatePatch,
+    promotePrefetchPatch,
     releasePatches,
+    isVisualPatchActive(patchId) {
+      return visualPatchIds.has(String(patchId));
+    },
+    getVisualPatchIds() {
+      return [...visualPatchIds].sort();
+    },
     render,
     dispose() {
       productionGround.dispose();
@@ -201,6 +284,8 @@ export function createThreePatchStreamLodAdapter(THREE, options = {}) {
       treeFidelity?.dispose();
       terrain.dispose();
       foliageAtlas.dispose();
+      visualPatchIds.clear();
+      presentationPrefetchIds.clear();
     }
   });
 }
