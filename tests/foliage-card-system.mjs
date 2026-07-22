@@ -75,7 +75,7 @@ assert.match(treeLayerSource, /foliageWind/);
 assert.match(treeLayerSource, /nearCards/);
 assert.match(treeLayerSource, /mediumCards/);
 assert.match(groundLayerSource, /patch\.groundCover/);
-assert.match(groundLayerSource, /crossedGeometry/);
+assert.match(groundLayerSource, /groundCoverGeometry/);
 assert.match(wrapperSource, /createThreeLushFoliageLayer/);
 assert.match(wrapperSource, /createThreeGroundCoverLayer/);
 assert.match(wrapperSource, /createPrehistoricFoliageAtlas/);
