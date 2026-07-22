@@ -3,6 +3,44 @@ import { PREHISTORIC_TREE_ARCHETYPES } from "./tree-archetype-catalog.js";
 export const PREHISTORIC_TREE_GROWTH_COMPUTE_PROVIDER_ID = "prehistoric-tree-growth-compute-provider";
 export const PREHISTORIC_TREE_GROWTH_REVISION = "natural-growth-v1";
 
+const GENERIC_CROWN_COVERAGE_ERROR = /^Tree crown coverage .* is too sparse\.$/;
+
+export function getPrehistoricTreeCrownCoverageMinimum(algorithmKind, quality = "near") {
+  if (String(algorithmKind) === "radial-frond") return quality === "medium" ? 0.12 : 0.27;
+  return 0.28;
+}
+
+export function validatePrehistoricTreeCrownCoverage(plan, quality = plan?.quality ?? "near") {
+  const coverage = Number(plan?.metrics?.crownCoverage ?? 0);
+  const minimum = getPrehistoricTreeCrownCoverageMinimum(plan?.algorithm?.kind, quality);
+  return Object.freeze({
+    valid: Number.isFinite(coverage) && coverage >= minimum,
+    coverage,
+    minimum,
+    algorithmKind: plan?.algorithm?.kind ?? null,
+    quality
+  });
+}
+
+function validateGrowthPlan(treeApi, plan, quality) {
+  const generic = treeApi.validateGrowthPlan(plan, {
+    minimumClusters: plan.algorithm.kind === "radial-frond" ? 8 : quality === "medium" ? 6 : 12
+  });
+  const coverage = validatePrehistoricTreeCrownCoverage(plan, quality);
+  const errors = generic.errors.filter((message) => !GENERIC_CROWN_COVERAGE_ERROR.test(message));
+  if (!coverage.valid) {
+    errors.push(
+      `Tree crown coverage ${coverage.coverage.toFixed(3)} is below the PrehistoricRush ${coverage.algorithmKind ?? "unknown"} ${quality} minimum ${coverage.minimum.toFixed(3)}.`
+    );
+  }
+  return Object.freeze({
+    ...generic,
+    valid: errors.length === 0,
+    errors: Object.freeze(errors),
+    policy: coverage
+  });
+}
+
 function packGrowthBuffers(plan) {
   const segments = [...plan.roots, ...plan.woodSegments];
   return {
@@ -63,15 +101,14 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
         height: request.input?.height,
         crownRadius: request.input?.crownRadius,
         crownHeight: request.input?.crownHeight,
+        allowInvalid: true,
         metadata: {
           product: "prehistoric-rush",
           computeGraphId: request.graph.id,
           revision: PREHISTORIC_TREE_GROWTH_REVISION
         }
       });
-      const validation = treeApi.validateGrowthPlan(plan, {
-        minimumClusters: plan.algorithm.kind === "radial-frond" ? 8 : quality === "medium" ? 6 : 12
-      });
+      const validation = validateGrowthPlan(treeApi, plan, quality);
       if (!validation.valid) throw new Error(`Tree growth compute rejected ${tree.speciesId}: ${validation.errors.join("; ")}`);
       const buffers = packGrowthBuffers(plan);
       return {
@@ -85,6 +122,8 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
           branchCount: plan.metrics.branchCount,
           clusterCount: plan.metrics.clusterCount,
           estimatedCardCount: plan.metrics.estimatedCardCount,
+          crownCoverage: plan.metrics.crownCoverage,
+          minimumCrownCoverage: validation.policy.minimum,
           revision: PREHISTORIC_TREE_GROWTH_REVISION
         }
       };
@@ -155,7 +194,12 @@ export function validatePrehistoricTreeGrowthPlans(plans = {}) {
       if (!plan || plan.speciesId !== archetype.id) errors.push(`${archetype.id} ${quality} plan has incorrect species identity.`);
       if (!entry.validation?.[quality]?.valid) errors.push(`${archetype.id} ${quality} plan failed validation.`);
       if ((plan?.metrics?.clusterCount ?? 0) < (quality === "near" ? 8 : 4)) errors.push(`${archetype.id} ${quality} plan is too sparse.`);
-      if (!(plan?.metrics?.crownCoverage >= 0.28)) errors.push(`${archetype.id} ${quality} crown coverage is too low.`);
+      const coverage = validatePrehistoricTreeCrownCoverage(plan, quality);
+      if (!coverage.valid) {
+        errors.push(
+          `${archetype.id} ${quality} crown coverage ${coverage.coverage.toFixed(3)} is below ${coverage.minimum.toFixed(3)}.`
+        );
+      }
     }
   }
   return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors), speciesCount: Object.keys(plans).length });
