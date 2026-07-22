@@ -5,12 +5,40 @@ import {
   TREE_FIDELITY_PACKAGE_VERSION
 } from "../src/shared/tree-archetype-catalog.js";
 import { PREHISTORIC_GROUND_COVER_ARCHETYPES } from "../src/shared/prehistoric-foliage-card-recipes.js";
+import {
+  getPrehistoricTreeCrownCoverageMinimum,
+  validatePrehistoricTreeCrownCoverage
+} from "../src/shared/prehistoric-tree-growth-compute.js";
 import { NEXUS_COMMIT } from "../src/shared/runtime-versions.js";
 
 assert.equal(NEXUS_COMMIT, "06305727778d579ca18309221e60c3e41bd066c7");
 assert.equal(TREE_FIDELITY_PACKAGE_VERSION, "5");
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
+
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "near"), 0.27);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "medium"), 0.12);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("umbrella", "near"), 0.28);
+assert.equal(validatePrehistoricTreeCrownCoverage({
+  algorithm: { kind: "radial-frond" },
+  quality: "near",
+  metrics: { crownCoverage: 0.276 }
+}).valid, true, "the production Giant Fern near crown is admitted");
+assert.equal(validatePrehistoricTreeCrownCoverage({
+  algorithm: { kind: "radial-frond" },
+  quality: "medium",
+  metrics: { crownCoverage: 0.128 }
+}).valid, true, "the reduced Giant Fern medium crown is admitted");
+assert.equal(validatePrehistoricTreeCrownCoverage({
+  algorithm: { kind: "radial-frond" },
+  quality: "near",
+  metrics: { crownCoverage: 0.269 }
+}).valid, false, "radial near crowns below the product minimum remain rejected");
+assert.equal(validatePrehistoricTreeCrownCoverage({
+  algorithm: { kind: "umbrella" },
+  quality: "near",
+  metrics: { crownCoverage: 0.279 }
+}).valid, false, "dense canopy trees retain the existing minimum");
 
 const computeSource = readFileSync(new URL("../src/shared/prehistoric-tree-growth-compute.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
@@ -23,6 +51,9 @@ const adapterSource = readFileSync(new URL("../src/render/three-patch-stream-lod
 
 assert.match(computeSource, /grow-skeleton|createGrowthComputeDescriptors/);
 assert.match(computeSource, /shadingBuffer/);
+assert.match(computeSource, /allowInvalid: true/);
+assert.match(computeSource, /GENERIC_CROWN_COVERAGE_ERROR/);
+assert.match(computeSource, /getPrehistoricTreeCrownCoverageMinimum/);
 assert.match(runtimeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(runtimeSource, /treeGrowthDigest/);
 assert.match(runtimeSource, /singleVisualAuthority: true/);
@@ -68,4 +99,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("natural-growth capture, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("natural-growth capture, radial coverage policy, compute shading, single LOD authority, and ground-only production presentation passed");
