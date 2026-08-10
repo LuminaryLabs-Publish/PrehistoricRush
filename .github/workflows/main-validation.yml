@@ -148,3 +148,41 @@ jobs:
           git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
           git commit -m "record prehistoric main validation pass [skip ci]"
           git push origin HEAD:main
+
+  record-result:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [node-contracts, browser-evidence, pages-smoke, record-deployment]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Persist observable workflow result
+        env:
+          VALIDATED_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          NODE_RESULT: ${{ needs.node-contracts.result }}
+          BROWSER_RESULT: ${{ needs.browser-evidence.result }}
+          PAGES_RESULT: ${{ needs.pages-smoke.result }}
+          HEADLESS_RESULT: ${{ needs.record-deployment.result }}
+        run: |
+          mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
+          cat > .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json <<EOF
+          {
+            "validatedCommit": "${VALIDATED_SHA}",
+            "workflowRunId": "${RUN_ID}",
+            "jobs": {
+              "nodeContracts": "${NODE_RESULT}",
+              "browserEvidence": "${BROWSER_RESULT}",
+              "pagesSmoke": "${PAGES_RESULT}",
+              "headlessLifecycle": "${HEADLESS_RESULT}"
+            }
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "record prehistoric workflow result [skip ci]"
+          git push origin HEAD:main
