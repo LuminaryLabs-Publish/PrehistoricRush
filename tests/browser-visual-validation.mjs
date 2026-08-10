@@ -19,28 +19,32 @@ const scenes = [
   ["full-game-seed", "game"]
 ];
 
+const chromiumArgs = [
+  "--use-gl=angle",
+  "--use-angle=swiftshader",
+  "--enable-webgl",
+  "--ignore-gpu-blocklist",
+  "--enable-unsafe-swiftshader",
+  "--disable-dev-shm-usage"
+];
+
+async function launchEvidenceBrowser() {
+  return chromium.launch({ headless: true, args: chromiumArgs });
+}
+
 async function writeJson(file, value) {
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-const browser = await chromium.launch({
-  headless: true,
-  args: [
-    "--use-gl=angle",
-    "--use-angle=swiftshader",
-    "--enable-webgl",
-    "--ignore-gpu-blocklist",
-    "--enable-unsafe-swiftshader"
-  ]
-});
-
+let browser = null;
 let labContext = null;
 let gameContext = null;
 const browserErrors = [];
 const gameErrors = [];
 
 try {
+  browser = await launchEvidenceBrowser();
   labContext = await browser.newContext({ viewport, deviceScaleFactor: 1 });
   const page = await labContext.newPage();
   page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.stack || error.message }));
@@ -77,11 +81,13 @@ try {
 
   assert.equal(browserErrors.length, 0, "forest lab browser errors");
 
-  // Release all validation-lab WebGL resources before the production game builds
-  // its 12 Fidelity packages. Keeping both workloads alive in one SwiftShader
-  // context can crash Chromium even though each workload succeeds independently.
+  // Fully terminate the validation-lab Chromium/GPU process before the production
+  // game prepares all 12 captured Fidelity packages. A fresh process avoids
+  // carrying SwiftShader GPU allocations or shared-memory pressure across phases.
   await labContext.close();
   labContext = null;
+  await browser.close();
+  browser = null;
 
   let gameplayProbe = {
     skipped: phase === "before",
@@ -89,6 +95,7 @@ try {
   };
 
   if (phase === "after") {
+    browser = await launchEvidenceBrowser();
     gameContext = await browser.newContext({ viewport, deviceScaleFactor: 1 });
     const gamePage = await gameContext.newPage();
     gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.stack || error.message }));
@@ -214,6 +221,8 @@ try {
 
     await gameContext.close();
     gameContext = null;
+    await browser.close();
+    browser = null;
   }
 
   const summary = {
@@ -234,5 +243,5 @@ try {
 } finally {
   if (gameContext) await gameContext.close().catch(() => {});
   if (labContext) await labContext.close().catch(() => {});
-  await browser.close();
+  if (browser) await browser.close().catch(() => {});
 }
