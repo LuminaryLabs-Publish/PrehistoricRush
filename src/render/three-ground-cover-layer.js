@@ -85,17 +85,17 @@ function patchMaterial(material, species) {
         `#include <clipping_planes_fragment>\nfloat groundFade = 1.0 - smoothstep(fadeStart, fadeEnd, vGroundDistance);\nif (groundHash(gl_FragCoord.xy) > groundFade) discard;`
       );
   };
-  material.customProgramCacheKey = () => `prehistoric-ground-cover-${species.id}-v2`;
+  material.customProgramCacheKey = () => `prehistoric-ground-cover-${species.id}-v3-lit`;
   return material;
 }
 
 function createBatch(THREE, scene, atlas, species, capacity) {
   const family = getPrehistoricFoliageCardFamily(species.familyId);
-  const geometry = groundCoverGeometry(THREE, species, capacity);
+  const foliageColor = new THREE.Color(species.color);
   const material = patchMaterial(new THREE.MeshStandardMaterial({
     name: `ground-cover:${species.id}`,
     map: atlas.createFamilyTexture(species.familyId),
-    color: species.color,
+    color: foliageColor,
     alphaTest: family?.alphaCutoff ?? 0.38,
     alphaToCoverage: true,
     transparent: false,
@@ -104,15 +104,16 @@ function createBatch(THREE, scene, atlas, species, capacity) {
     side: THREE.DoubleSide,
     roughness: family?.roughness ?? 0.8,
     metalness: 0,
-    emissive: 0x102616,
-    emissiveIntensity: Number(family?.translucency ?? 0.12) * 0.24,
+    emissive: foliageColor.clone().multiplyScalar(0.42),
+    emissiveIntensity: 0.42 + Number(family?.translucency ?? 0.12) * 0.5,
     fog: true
   }), species);
+  const geometry = groundCoverGeometry(THREE, species, capacity);
   const mesh = new THREE.InstancedMesh(geometry, material, capacity);
   mesh.name = `prehistoric-ground-cover-${species.id}`;
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mesh.castShadow = false;
-  mesh.receiveShadow = true;
+  mesh.receiveShadow = false;
   mesh.frustumCulled = false;
   scene.add(mesh);
   return { species, mesh, capacity, count: 0 };
