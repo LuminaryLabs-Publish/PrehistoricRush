@@ -34,7 +34,7 @@ const runtime = {
 };
 
 const receipt = resetTreeFidelityTransientBuildState(runtime);
-assert.equal(BOUNDED_TREE_FIDELITY_PROVIDER_REVISION, "object-vegetation-natural-growth-v5-bounded-transients");
+assert.equal(BOUNDED_TREE_FIDELITY_PROVIDER_REVISION, "object-vegetation-natural-growth-v6-bounded-medium-capture");
 assert.equal(snapshotReadCount, 0, "bounded reset must not structured-clone retained capture/Fidelity state");
 assert.equal(captureResetCount, 1, "Core Capture transient state resets once per completed package");
 assert.equal(fidelityResetCount, 1, "Object Fidelity transient state resets once per completed package");
