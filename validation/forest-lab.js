@@ -1,8 +1,12 @@
 import { RUNTIME_URLS } from "../src/shared/runtime-versions.js";
+import { PREHISTORIC_TREE_ARCHETYPES } from "../src/shared/tree-archetype-catalog.js";
+import { FOLIAGE_ATLAS_REVISION } from "../src/shared/prehistoric-foliage-card-recipes.js";
+import { registerPrehistoricVegetationCatalog } from "../src/shared/prehistoric-vegetation-domain.js";
 import {
-  PREHISTORIC_TREE_ARCHETYPES,
-  createPrehistoricTreeFidelityAssetRuntime
-} from "../src/shared/prehistoric-tree-fidelity-runtime.js";
+  PREHISTORIC_TREE_GROWTH_REVISION,
+  preparePrehistoricTreeGrowthPlans,
+  validatePrehistoricTreeGrowthPlans
+} from "../src/shared/prehistoric-tree-growth-compute.js";
 import { createPrehistoricNaturalTreeObject } from "../src/render/prehistoric-natural-tree-geometry.js";
 
 const status = document.querySelector("#status");
@@ -15,7 +19,38 @@ const [NexusEngine, THREE] = await Promise.all([
   import(RUNTIME_URLS.three)
 ]);
 
-const runtime = await createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THREE);
+function createGrowthLabRuntime() {
+  if (typeof NexusEngine.createCoreObjectDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreObjectDomain().");
+  if (typeof NexusEngine.createCoreVegetationDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreVegetationDomain().");
+  if (typeof NexusEngine.createCoreComputeDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreComputeDomain().");
+  const engine = NexusEngine.createEngine({ kits: NexusEngine.createCoreObjectDomain({ shape: false, fidelity: false }) });
+  for (const kit of NexusEngine.createCoreVegetationDomain()) engine.installKit(kit);
+  for (const kit of NexusEngine.createCoreComputeDomain()) engine.installKit(kit);
+  const vegetationCatalog = registerPrehistoricVegetationCatalog(NexusEngine, engine);
+  return { engine, vegetationCatalog };
+}
+
+const baseRuntime = createGrowthLabRuntime();
+const growthPlans = await preparePrehistoricTreeGrowthPlans(NexusEngine, baseRuntime);
+const growthValidation = validatePrehistoricTreeGrowthPlans(growthPlans);
+if (!growthValidation.valid) throw new Error(`Forest lab growth validation failed: ${growthValidation.errors.join("; ")}`);
+const treeGrowthDigest = NexusEngine.hashFidelityValue(
+  PREHISTORIC_TREE_ARCHETYPES.map((archetype) => ({
+    speciesId: archetype.id,
+    revision: growthPlans[archetype.id]?.revision,
+    near: growthPlans[archetype.id]?.near,
+    medium: growthPlans[archetype.id]?.medium
+  }))
+);
+const runtime = Object.freeze({
+  ...baseRuntime,
+  growthPlans,
+  growthValidation,
+  treeGrowthDigest,
+  treeGrowthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
+  foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
+});
+
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
 renderer.setPixelRatio(Math.min(1.5, globalThis.devicePixelRatio || 1));
 renderer.setSize(innerWidth, innerHeight);
@@ -251,6 +286,7 @@ function collectMetrics(sceneId) {
     woodMeshes,
     foliageCards,
     triangles,
+    runtimeKind: "nexus-vegetation-growth-source",
     growthRevision: runtime.treeGrowthRevision,
     growthDigest: runtime.treeGrowthDigest,
     foliageAtlasRevision: runtime.foliageAtlasRevision,
