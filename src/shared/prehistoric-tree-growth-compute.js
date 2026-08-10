@@ -1,13 +1,28 @@
 import { PREHISTORIC_TREE_ARCHETYPES } from "./tree-archetype-catalog.js";
+import {
+  PREHISTORIC_TREE_ART_DIRECTION,
+  getPrehistoricTreeFoliageTargets,
+  isPrehistoricRadialTree
+} from "./prehistoric-tree-art-direction.js";
 
 export const PREHISTORIC_TREE_GROWTH_COMPUTE_PROVIDER_ID = "prehistoric-tree-growth-compute-provider";
-export const PREHISTORIC_TREE_GROWTH_REVISION = "natural-growth-v1";
+export const PREHISTORIC_TREE_GROWTH_REVISION = "natural-growth-v2-stylized-canopy";
 
 const GENERIC_CROWN_COVERAGE_ERROR = /^Tree crown coverage .* is too sparse\.$/;
 
+function minimumClustersFor(archetypeOrKind, quality = "near") {
+  const radial = typeof archetypeOrKind === "string"
+    ? String(archetypeOrKind) === "radial-frond"
+    : isPrehistoricRadialTree(archetypeOrKind);
+  const policy = PREHISTORIC_TREE_ART_DIRECTION.validation.minimumClusters;
+  if (radial) return quality === "medium" ? policy.radialMedium : policy.radialNear;
+  return quality === "medium" ? policy.nonRadialMedium : policy.nonRadialNear;
+}
+
 export function getPrehistoricTreeCrownCoverageMinimum(algorithmKind, quality = "near") {
-  if (String(algorithmKind) === "radial-frond") return quality === "medium" ? 0.12 : 0.27;
-  return 0.28;
+  const policy = PREHISTORIC_TREE_ART_DIRECTION.validation.crownCoverage;
+  if (String(algorithmKind) === "radial-frond") return quality === "medium" ? policy.radialMedium : policy.radialNear;
+  return quality === "medium" ? policy.nonRadialMedium : policy.nonRadialNear;
 }
 
 export function validatePrehistoricTreeCrownCoverage(plan, quality = plan?.quality ?? "near") {
@@ -24,7 +39,7 @@ export function validatePrehistoricTreeCrownCoverage(plan, quality = plan?.quali
 
 function validateGrowthPlan(treeApi, plan, quality) {
   const generic = treeApi.validateGrowthPlan(plan, {
-    minimumClusters: plan.algorithm.kind === "radial-frond" ? 8 : quality === "medium" ? 6 : 12
+    minimumClusters: minimumClustersFor(plan.algorithm.kind, quality)
   });
   const coverage = validatePrehistoricTreeCrownCoverage(plan, quality);
   const errors = generic.errors.filter((message) => !GENERIC_CROWN_COVERAGE_ERROR.test(message));
@@ -83,11 +98,12 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
   if (!treeApi) throw new Error("Prehistoric tree growth compute requires the Tree vegetation domain.");
   return {
     id: PREHISTORIC_TREE_GROWTH_COMPUTE_PROVIDER_ID,
-    version: "1.0.0",
+    version: "2.0.0",
     metadata: {
       purpose: "Execute deterministic natural tree growth and pack GPU-ready branch, foliage, and shading buffers.",
       algorithm: "phyllotaxis-apical-tropism",
-      rendererNeutral: true
+      rendererNeutral: true,
+      artDirection: PREHISTORIC_TREE_GROWTH_REVISION
     },
     syncDescriptors() {},
     async executeGraph(request) {
@@ -144,10 +160,11 @@ export async function preparePrehistoricTreeGrowthPlans(NexusEngine, runtime) {
     const tree = treeApi.get(`${archetype.id}:tree-structure`);
     const foliage = foliageApi.get(`${archetype.id}:foliage`);
     if (!tree || !foliage) throw new Error(`Missing vegetation descriptors for ${archetype.id}.`);
+    const targets = getPrehistoricTreeFoliageTargets(archetype);
     const descriptors = treeApi.createGrowthComputeDescriptors(tree, {
       id: `prehistoric-tree-growth:${archetype.id}`,
       maximumSegments: 320,
-      maximumClusters: Math.max(96, archetype.heroCardCount * 4)
+      maximumClusters: Math.max(128, targets.near * 4)
     });
     for (const buffer of descriptors.buffers) compute.registerBuffer(buffer);
     for (const kernel of descriptors.kernels) compute.registerKernel(kernel);
@@ -174,7 +191,8 @@ export async function preparePrehistoricTreeGrowthPlans(NexusEngine, runtime) {
         medium: Object.freeze({ branches: medium.outputs.branchBuffer, foliage: medium.outputs.foliageBuffer, shading: medium.outputs.shadingBuffer })
       }),
       validation: Object.freeze({ near: near.outputs.validation, medium: medium.outputs.validation }),
-      metrics: Object.freeze({ near: near.metadata, medium: medium.metadata })
+      metrics: Object.freeze({ near: near.metadata, medium: medium.metadata }),
+      targets
     });
   }
   structuredClone(plans);
@@ -193,13 +211,15 @@ export function validatePrehistoricTreeGrowthPlans(plans = {}) {
       const plan = entry[quality];
       if (!plan || plan.speciesId !== archetype.id) errors.push(`${archetype.id} ${quality} plan has incorrect species identity.`);
       if (!entry.validation?.[quality]?.valid) errors.push(`${archetype.id} ${quality} plan failed validation.`);
-      if ((plan?.metrics?.clusterCount ?? 0) < (quality === "near" ? 8 : 4)) errors.push(`${archetype.id} ${quality} plan is too sparse.`);
+      const minimumClusters = minimumClustersFor(archetype, quality);
+      if ((plan?.metrics?.clusterCount ?? 0) < minimumClusters) errors.push(`${archetype.id} ${quality} plan is too sparse: ${plan?.metrics?.clusterCount ?? 0} < ${minimumClusters}.`);
       const coverage = validatePrehistoricTreeCrownCoverage(plan, quality);
       if (!coverage.valid) {
-        errors.push(
-          `${archetype.id} ${quality} crown coverage ${coverage.coverage.toFixed(3)} is below ${coverage.minimum.toFixed(3)}.`
-        );
+        errors.push(`${archetype.id} ${quality} crown coverage ${coverage.coverage.toFixed(3)} is below ${coverage.minimum.toFixed(3)}.`);
       }
+      const bounds = plan?.bounds;
+      const finiteBounds = bounds && [...(bounds.min ?? []), ...(bounds.max ?? [])].length === 6 && [...bounds.min, ...bounds.max].every(Number.isFinite);
+      if (!finiteBounds) errors.push(`${archetype.id} ${quality} has invalid growth bounds.`);
     }
   }
   return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors), speciesCount: Object.keys(plans).length });
