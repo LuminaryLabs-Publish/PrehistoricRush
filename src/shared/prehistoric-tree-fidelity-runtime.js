@@ -14,7 +14,10 @@ import {
   validatePrehistoricTreeGrowthPlans
 } from "./prehistoric-tree-growth-compute.js";
 import { registerPrehistoricVegetationCatalog } from "./prehistoric-vegetation-domain.js";
-import { replaceTreeFidelityProviderWithVegetation } from "./vegetation-tree-fidelity-provider.js";
+import {
+  BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
+  replaceTreeFidelityProviderWithBoundedVegetation
+} from "./bounded-tree-fidelity-provider.js";
 
 export {
   PREHISTORIC_TREE_ARCHETYPES,
@@ -25,7 +28,7 @@ export {
   TREE_FIDELITY_PROVIDER_ID
 };
 
-const VEGETATION_PROVIDER_REVISION = "object-vegetation-natural-growth-v4-single-authority";
+const VEGETATION_PROVIDER_REVISION = BOUNDED_TREE_FIDELITY_PROVIDER_REVISION;
 const packageAssetId = (archetype) => `prehistoric-tree-fidelity:${archetype.id}`;
 
 function descriptorVersion() {
@@ -162,7 +165,7 @@ export async function createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THR
     treeGrowthRevision: PREHISTORIC_TREE_GROWTH_REVISION,
     foliageAtlasRevision: FOLIAGE_ATLAS_REVISION
   };
-  replaceTreeFidelityProviderWithVegetation(NexusEngine, THREE, composed, options);
+  replaceTreeFidelityProviderWithBoundedVegetation(NexusEngine, THREE, composed, options);
   composed.packageIds = rebindVegetationAssetDescriptors(composed);
   return Object.freeze(composed);
 }
