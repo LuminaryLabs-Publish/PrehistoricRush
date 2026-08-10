@@ -83,8 +83,8 @@ export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, opti
       );
       const scaleJitter = 0.94 + Number(cluster.seed ?? 0.5) * 0.12;
       mesh.scale.set(cluster.scale[0] * scaleJitter, cluster.scale[1] * scaleJitter, 1);
-      mesh.castShadow = cluster.mode !== "hanging-edge";
-      mesh.receiveShadow = true;
+      mesh.castShadow = options.castShadow !== false && cluster.mode !== "hanging-edge";
+      mesh.receiveShadow = options.receiveShadow !== false;
       mesh.userData.foliageCard = true;
       mesh.userData.naturalGrowth = true;
       mesh.userData.familyId = cluster.familyId;
@@ -256,7 +256,7 @@ function addGrowthSegment(THREE, group, archetype, segment, material) {
   mesh.name = `${archetype.id}:natural-wood:${segment.id}`;
   mesh.position.copy(start).add(end).multiplyScalar(0.5);
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
-  mesh.castShadow = true;
+  mesh.castShadow = optionsShadow ?? true;
   mesh.receiveShadow = true;
   mesh.userData.vegetationRole = segment.role;
   mesh.userData.naturalGrowth = true;
@@ -271,14 +271,21 @@ function addGrowthSegment(THREE, group, archetype, segment, material) {
 
 export function createPrehistoricNaturalTreeObject(THREE, archetype, growthPlan, options = {}) {
   if (!growthPlan?.woodSegments?.length) throw new TypeError(`Natural tree object requires a growth plan for ${archetype.id}.`);
+  const foliageGrowthPlan = options.foliageGrowthPlan ?? growthPlan;
+  if (!foliageGrowthPlan?.foliageClusters?.length) throw new TypeError(`Natural tree foliage requires a growth plan for ${archetype.id}.`);
   const group = new THREE.Group();
   group.name = archetype.id;
   group.userData.naturalGrowth = true;
   group.userData.growthPlanId = growthPlan.id;
+  group.userData.foliageGrowthPlanId = foliageGrowthPlan.id;
+  group.userData.captureOptimizedFoliage = foliageGrowthPlan !== growthPlan;
   group.userData.artDirection = "chunky-prehistoric-canopy-v1";
   const material = barkMaterial(THREE, archetype);
   for (const segment of [...growthPlan.roots, ...growthPlan.woodSegments]) addGrowthSegment(THREE, group, archetype, segment, material);
-  attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, { ...options, growthPlan });
+  attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, {
+    ...options,
+    growthPlan: foliageGrowthPlan
+  });
   const bounds = growthPlan.bounds;
   const width = Math.max(0.1, bounds.max[0] - bounds.min[0]);
   const height = Math.max(0.1, bounds.max[1] - bounds.min[1]);
