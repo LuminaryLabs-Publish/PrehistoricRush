@@ -256,7 +256,7 @@ function addGrowthSegment(THREE, group, archetype, segment, material) {
   mesh.name = `${archetype.id}:natural-wood:${segment.id}`;
   mesh.position.copy(start).add(end).multiplyScalar(0.5);
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
-  mesh.castShadow = optionsShadow ?? true;
+  mesh.castShadow = true;
   mesh.receiveShadow = true;
   mesh.userData.vegetationRole = segment.role;
   mesh.userData.naturalGrowth = true;
