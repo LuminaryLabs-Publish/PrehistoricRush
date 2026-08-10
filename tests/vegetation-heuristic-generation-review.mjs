@@ -9,11 +9,12 @@ import { PREHISTORIC_TREE_ARCHETYPES } from "../src/shared/tree-archetype-catalo
 
 const FAMILY_IDS = new Set(PREHISTORIC_FOLIAGE_CARD_FAMILIES.map((entry) => entry.id));
 const SUPPORTED_TREE_MODES = new Set([
-  "frond-burst",
-  "branch-cluster",
+  "radial-frond",
+  "canopy-core",
   "canopy-shell",
-  "crown-tier",
-  "dangling-edge"
+  "canopy-fringe",
+  "hanging-edge",
+  "crown-tier"
 ]);
 
 function inRange(value, range) {
@@ -26,7 +27,7 @@ function reviewTree(archetype) {
   const medium = createTreeFoliageCardPlacements(archetype, "medium");
   assert.deepEqual(near, repeated, `${archetype.id} foliage generation is deterministic`);
   assert.ok(near.length >= medium.length, `${archetype.id} reduces foliage at medium fidelity`);
-  assert.ok(medium.length >= 3, `${archetype.id} retains a readable medium silhouette`);
+  assert.ok(medium.length >= 22, `${archetype.id} retains a readable medium silhouette`);
 
   const modes = new Set();
   for (const placement of near) {
@@ -45,10 +46,16 @@ function reviewTree(archetype) {
 
   const token = `${archetype.shape}:${archetype.foliageCardFamily}`;
   const radial = /palm|fern|cycad/.test(token);
-  if (radial) assert.ok(modes.has("frond-burst"), `${archetype.id} resolves to a radial frond structure`);
-  else if (/spire|araucaria|needle|horsetail|whorl/.test(token)) assert.ok(modes.has("crown-tier"), `${archetype.id} resolves to a tiered crown structure`);
-  else assert.ok(modes.has("branch-cluster") || modes.has("canopy-shell"), `${archetype.id} resolves to branch-supported canopy clusters`);
-  if (!radial && Number(archetype.hangingFoliage ?? 0) > 0.08) assert.ok(modes.has("dangling-edge"), `${archetype.id} realizes declared hanging foliage`);
+  if (radial) {
+    assert.ok(modes.has("radial-frond"), `${archetype.id} resolves to a radial frond structure`);
+  } else if (/spire|araucaria|needle|horsetail|whorl/.test(token)) {
+    assert.ok(modes.has("crown-tier"), `${archetype.id} resolves to a tiered crown structure`);
+  } else {
+    assert.ok(modes.has("canopy-core"), `${archetype.id} resolves a dense canopy core`);
+    assert.ok(modes.has("canopy-shell"), `${archetype.id} resolves a silhouette canopy shell`);
+    assert.ok(modes.has("canopy-fringe") || modes.has("hanging-edge"), `${archetype.id} resolves an authored canopy fringe`);
+  }
+  if (!radial && Number(archetype.hangingFoliage ?? 0) > 0.08) assert.ok(modes.has("hanging-edge"), `${archetype.id} realizes declared hanging foliage`);
 
   return Object.freeze({
     id: archetype.id,
@@ -85,7 +92,7 @@ function reviewGroundCover(archetype) {
   });
 }
 
-assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v2");
+assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v3-chunky-canopy");
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
 
