@@ -39,8 +39,8 @@ for (const [name, value] of Object.entries({
   assert.equal(typeof value, "function", `${name} resolves through the product module graph`);
 }
 
-assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v1");
-assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v2");
+assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v2-stylized-canopy");
+assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v3-chunky-canopy");
 assert.equal(PREHISTORIC_FOLIAGE_CARD_FAMILIES.length, 8);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
