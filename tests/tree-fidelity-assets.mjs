@@ -21,7 +21,7 @@ assert.equal(TREE_FIDELITY_MANIFEST_ASSET_ID, "prehistoric-tree-fidelity-manifes
 assert.equal(TREE_FIDELITY_PROVIDER_ID, "prehistoric-tree-fidelity-provider");
 assert.equal(TREE_FIDELITY_PACKAGE_VERSION, "5");
 assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v3-chunky-canopy");
-assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v3-authored-canopy");
+assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v4-volumetric-canopy");
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
 assert.equal(PREHISTORIC_TREE_TYPES.length, PREHISTORIC_TREE_ARCHETYPES.length);
 assert.equal(PREHISTORIC_FOLIAGE_CARD_FAMILIES.length, 8);
@@ -62,6 +62,7 @@ assert.match(computeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(computeSource, /shadingBuffer/);
 assert.match(computeSource, /withAuthoredFoliage/);
 assert.match(computeSource, /productAuthoredCanopy/);
+assert.match(computeSource, /volumetricCrossedCards/);
 assert.match(composedFidelitySource, /createCoreComputeDomain/);
 assert.match(composedFidelitySource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(composedFidelitySource, /treeGrowthDigest/);
@@ -143,4 +144,4 @@ assert.match(treeLayerSource, /growthDigest/);
 assert.match(treeLayerSource, /resolveTreeImpostorBlend/);
 assert.match(treeLayerSource, /exactFrameAck/);
 
-console.log("single-authority Core-growth/authored-canopy tree fidelity, bounded transient Fidelity/Capture state, compute shading, lit ground cover, startup, and renderer contracts passed");
+console.log("single-authority Core-growth/volumetric-authored-canopy tree fidelity, compute shading, lit ground cover, bounded transients, startup, and renderer contracts passed");
