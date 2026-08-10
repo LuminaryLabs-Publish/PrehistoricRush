@@ -39,6 +39,17 @@ for (const archetype of PREHISTORIC_TREE_ARCHETYPES) {
     assert.ok(placement.scale.every((value) => value > 0), `${archetype.id} card scale must be positive`);
   }
 
+  const nearCrownTop = Math.max(...near.map((placement) => placement.position[1] + placement.scale[1] * 0.5));
+  const nearCrownRadius = Math.max(...near.map((placement) => Math.hypot(placement.position[0], placement.position[2]) + placement.scale[0] * 0.5));
+  assert.ok(
+    nearCrownTop >= archetype.averageHeight * 0.96,
+    `${archetype.id} crown must visually reach the tree top: ${nearCrownTop.toFixed(2)} < ${(archetype.averageHeight * 0.96).toFixed(2)}`
+  );
+  assert.ok(
+    nearCrownRadius >= archetype.crownRadius * 0.82,
+    `${archetype.id} crown must occupy its authored silhouette radius: ${nearCrownRadius.toFixed(2)} < ${(archetype.crownRadius * 0.82).toFixed(2)}`
+  );
+
   if (isPrehistoricRadialTree(archetype)) {
     assert.ok(near.every((placement) => placement.mode === "radial-frond"), `${archetype.id} keeps radial-frond identity`);
   } else if (!/spire|araucaria|needle|horsetail|whorl/.test(`${archetype.shape}:${archetype.foliageCardFamily}`)) {
@@ -59,5 +70,7 @@ console.log(JSON.stringify({
   species: PREHISTORIC_TREE_ARCHETYPES.length,
   artDirection: PREHISTORIC_TREE_ART_DIRECTION_REVISION,
   nearRange: [64, 96],
-  mediumDensity: PREHISTORIC_TREE_ART_DIRECTION.canopy.mediumDensity
+  mediumDensity: PREHISTORIC_TREE_ART_DIRECTION.canopy.mediumDensity,
+  crownTopMinimum: 0.96,
+  silhouetteRadiusMinimum: 0.82
 }, null, 2));
