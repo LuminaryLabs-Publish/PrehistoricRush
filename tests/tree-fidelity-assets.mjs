@@ -69,8 +69,10 @@ assert.match(composedFidelitySource, /treeGrowthDigest/);
 assert.match(composedFidelitySource, /BOUNDED_TREE_FIDELITY_PROVIDER_REVISION/);
 assert.match(composedFidelitySource, /replaceTreeFidelityProviderWithBoundedVegetation/);
 assert.match(composedFidelitySource, /singleVisualAuthority: true/);
-assert.match(boundedProviderSource, /object-vegetation-natural-growth-v5-bounded-transients/);
+assert.match(boundedProviderSource, /object-vegetation-natural-growth-v6-bounded-medium-capture/);
 assert.match(boundedProviderSource, /reset-after-portable-package/);
+assert.match(boundedProviderSource, /captureFoliagePlan: "medium"/);
+assert.match(boundedProviderSource, /runtimeFoliagePlans: "near-and-medium-authoritative"/);
 
 assert.match(providerSource, /createPrehistoricNaturalTreeObject/);
 assert.doesNotMatch(providerSource, /createPrehistoricTreeObject/);
@@ -84,6 +86,7 @@ assert.match(providerSource, /singleVisualAuthority: true/);
 
 assert.match(naturalGeometrySource, /createPrehistoricNaturalTreeObject/);
 assert.match(naturalGeometrySource, /attachPrehistoricTreeFoliageMeshes/);
+assert.match(naturalGeometrySource, /setPrehistoricTreeFidelityCapturePlanResolver/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.Sprite/);
 assert.match(naturalGeometrySource, /MeshPhysicalMaterial/);
 assert.match(naturalGeometrySource, /createOrganicSegmentGeometry/);
@@ -144,4 +147,4 @@ assert.match(treeLayerSource, /growthDigest/);
 assert.match(treeLayerSource, /resolveTreeImpostorBlend/);
 assert.match(treeLayerSource, /exactFrameAck/);
 
-console.log("single-authority Core-growth/volumetric-authored-canopy tree fidelity, compute shading, lit ground cover, bounded transients, startup, and renderer contracts passed");
+console.log("single-authority volumetric tree fidelity, medium-only capture foliage, bounded transients, compute shading, lit ground cover, startup, and renderer contracts passed");
