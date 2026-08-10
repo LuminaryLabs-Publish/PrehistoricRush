@@ -1,7 +1,8 @@
 import { TREE_FIDELITY_PROVIDER_ID } from "./tree-fidelity-assets.js";
 import { createVegetationTreeFidelityProvider } from "./vegetation-tree-fidelity-provider.js";
+import { setPrehistoricTreeFidelityCapturePlanResolver } from "../render/prehistoric-natural-tree-geometry.js";
 
-export const BOUNDED_TREE_FIDELITY_PROVIDER_REVISION = "object-vegetation-natural-growth-v5-bounded-transients";
+export const BOUNDED_TREE_FIDELITY_PROVIDER_REVISION = "object-vegetation-natural-growth-v6-bounded-medium-capture";
 
 export function resetTreeFidelityTransientBuildState(runtime) {
   const capture = runtime?.engine?.n?.coreCapture ?? runtime?.engine?.coreCapture ?? null;
@@ -16,14 +17,19 @@ export function resetTreeFidelityTransientBuildState(runtime) {
 }
 
 export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, runtime, options = {}) {
+  setPrehistoricTreeFidelityCapturePlanResolver((archetype, growthPlan) =>
+    runtime?.growthPlans?.[archetype.id]?.medium ?? growthPlan
+  );
   const provider = createVegetationTreeFidelityProvider(NexusEngine, THREE, runtime, options);
   return {
     ...provider,
-    version: "5.2.0",
+    version: "6.0.0",
     metadata: {
       ...(provider.metadata ?? {}),
       providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
-      transientBuildState: "reset-after-portable-package"
+      transientBuildState: "reset-after-portable-package",
+      captureFoliagePlan: "medium",
+      runtimeFoliagePlans: "near-and-medium-authoritative"
     },
     async load(asset, context) {
       const result = await provider.load(asset, context);
@@ -34,12 +40,14 @@ export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, 
         metadata: {
           ...(result.metadata ?? {}),
           providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
+          captureFoliagePlan: "medium",
           transientReset
         }
       };
     },
     dispose() {
       provider.dispose?.();
+      setPrehistoricTreeFidelityCapturePlanResolver(null);
     }
   };
 }
