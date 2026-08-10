@@ -55,7 +55,9 @@ assert.match(computeSource, /shadingBuffer/);
 assert.match(computeSource, /allowInvalid: true/);
 assert.match(computeSource, /GENERIC_CROWN_COVERAGE_ERROR/);
 assert.match(computeSource, /getPrehistoricTreeCrownCoverageMinimum/);
-assert.match(computeSource, /natural-growth-v2-stylized-canopy/);
+assert.match(computeSource, /natural-growth-v3-authored-canopy/);
+assert.match(computeSource, /withAuthoredFoliage/);
+assert.match(computeSource, /productAuthoredCanopy/);
 assert.match(runtimeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(runtimeSource, /treeGrowthDigest/);
 assert.match(runtimeSource, /singleVisualAuthority: true/);
@@ -75,6 +77,7 @@ assert.doesNotMatch(naturalGeometrySource, /new THREE\.Sprite\(/);
 assert.match(naturalGeometrySource, /MeshPhysicalMaterial/);
 assert.match(naturalGeometrySource, /growthPlan\.foliageClusters/);
 assert.match(naturalGeometrySource, /createOrganicSegmentGeometry/);
+assert.match(naturalGeometrySource, /segmentOverlap/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.CylinderGeometry\(segment\.radiusEnd/);
 
 assert.match(treeLayerSource, /presentationAuthority: "object-fidelity-natural-growth"/);
@@ -103,4 +106,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("natural-growth capture, dense crown policy, organic wood, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("Core skeleton growth, authored canopy admission, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
