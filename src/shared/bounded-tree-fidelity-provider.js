@@ -6,13 +6,9 @@ export const BOUNDED_TREE_FIDELITY_PROVIDER_REVISION = "object-vegetation-natura
 export function resetTreeFidelityTransientBuildState(runtime) {
   const capture = runtime?.engine?.n?.coreCapture ?? runtime?.engine?.coreCapture ?? null;
   const fidelity = runtime?.engine?.n?.objectFidelity ?? runtime?.engine?.objectFidelity ?? null;
-  const captureBefore = capture?.getSnapshot?.() ?? null;
-  const fidelityBefore = fidelity?.getSnapshot?.() ?? null;
   const receipt = {
-    captureResultsReleased: Object.keys(captureBefore?.results ?? {}).length,
-    fidelityFormsReleased: Object.keys(fidelityBefore?.forms ?? {}).length,
-    fidelityBuildsReleased: Object.keys(fidelityBefore?.builds ?? {}).length,
-    fidelityPackagesReleased: Object.keys(fidelityBefore?.activePackages ?? {}).length
+    fidelityReset: typeof fidelity?.reset === "function",
+    captureReset: typeof capture?.reset === "function"
   };
   fidelity?.reset?.();
   capture?.reset?.();
