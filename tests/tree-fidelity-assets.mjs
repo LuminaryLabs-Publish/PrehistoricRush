@@ -35,6 +35,7 @@ assert.equal(NEXUS_COMMIT, "06305727778d579ca18309221e60c3e41bd066c7");
 const vegetationSource = readFileSync(new URL("../src/shared/prehistoric-vegetation-domain.js", import.meta.url), "utf8");
 const composedFidelitySource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
 const providerSource = readFileSync(new URL("../src/shared/vegetation-tree-fidelity-provider.js", import.meta.url), "utf8");
+const boundedProviderSource = readFileSync(new URL("../src/shared/bounded-tree-fidelity-provider.js", import.meta.url), "utf8");
 const computeSource = readFileSync(new URL("../src/shared/prehistoric-tree-growth-compute.js", import.meta.url), "utf8");
 const naturalGeometrySource = readFileSync(new URL("../src/render/prehistoric-natural-tree-geometry.js", import.meta.url), "utf8");
 const imageSource = readFileSync(new URL("../src/shared/tree-fidelity-runtime-images.js", import.meta.url), "utf8");
@@ -64,8 +65,11 @@ assert.match(computeSource, /productAuthoredCanopy/);
 assert.match(composedFidelitySource, /createCoreComputeDomain/);
 assert.match(composedFidelitySource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(composedFidelitySource, /treeGrowthDigest/);
-assert.match(composedFidelitySource, /object-vegetation-natural-growth-v4-single-authority/);
+assert.match(composedFidelitySource, /BOUNDED_TREE_FIDELITY_PROVIDER_REVISION/);
+assert.match(composedFidelitySource, /replaceTreeFidelityProviderWithBoundedVegetation/);
 assert.match(composedFidelitySource, /singleVisualAuthority: true/);
+assert.match(boundedProviderSource, /object-vegetation-natural-growth-v5-bounded-transients/);
+assert.match(boundedProviderSource, /reset-after-portable-package/);
 
 assert.match(providerSource, /createPrehistoricNaturalTreeObject/);
 assert.doesNotMatch(providerSource, /createPrehistoricTreeObject/);
@@ -139,4 +143,4 @@ assert.match(treeLayerSource, /growthDigest/);
 assert.match(treeLayerSource, /resolveTreeImpostorBlend/);
 assert.match(treeLayerSource, /exactFrameAck/);
 
-console.log("single-authority Core-growth/authored-canopy tree fidelity, compute shading, lit ground cover, startup, and renderer contracts passed");
+console.log("single-authority Core-growth/authored-canopy tree fidelity, bounded transient Fidelity/Capture state, compute shading, lit ground cover, startup, and renderer contracts passed");
