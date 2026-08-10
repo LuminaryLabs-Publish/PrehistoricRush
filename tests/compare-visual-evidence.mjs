@@ -13,6 +13,8 @@ const beforeSummary = await json("before", "browser-summary.json");
 const afterSummary = await json("after", "browser-summary.json");
 assert.equal(beforeSummary.status, "PASS");
 assert.equal(afterSummary.status, "PASS");
+assert.equal(beforeSummary.gameplayProbe.skipped, true, "historical production game boot is intentionally excluded from the baseline");
+assert.equal(afterSummary.gameplayProbe.skipped, false, "current main production game must run live validation");
 
 const beforeCanopy = await json("canopy-lab", "before.metrics.json");
 const afterCanopy = await json("canopy-lab", "after.metrics.json");
@@ -33,11 +35,10 @@ const result = {
   canopyFoliageCards: { before: beforeCanopy.foliageCards, after: afterCanopy.foliageCards },
   treeLabFoliageCards: { before: beforeTree.foliageCards, after: afterTree.foliageCards },
   racingLineFoliageCards: { before: beforeRace.foliageCards, after: afterRace.foliageCards },
-  gameplayFrameTimeP95Ms: {
-    before: beforeSummary.gameplayProbe.frameTimeP95Ms,
-    after: afterSummary.gameplayProbe.frameTimeP95Ms
-  },
-  note: "Frame time is recorded for regression review; GitHub Actions is not a physical MacBook Air benchmark."
+  currentGameplayFrameTimeP95Ms: afterSummary.gameplayProbe.frameTimeP95Ms,
+  liveFidelityPackages: afterSummary.gameplayProbe.treeFidelity.packageCount,
+  liveFoliageOverflow: afterSummary.gameplayProbe.lushFoliage.overflow,
+  note: "Current-main frame time is recorded as a CI regression proxy; GitHub Actions is not a physical MacBook Air benchmark."
 };
 
 console.log(JSON.stringify(result, null, 2));
