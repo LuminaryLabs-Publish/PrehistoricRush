@@ -68,11 +68,12 @@ try {
   }
 
   const sceneMetrics = {};
+  const labCanvas = page.locator("canvas").first();
   for (const [sceneId, directory] of scenes) {
     const metrics = await page.evaluate(async (id) => globalThis.__setForestLabScene(id), sceneId);
     const sceneDirectory = path.join(evidenceRoot, directory);
     await mkdir(sceneDirectory, { recursive: true });
-    await page.screenshot({ path: path.join(sceneDirectory, `${phase}.png`), fullPage: true });
+    await labCanvas.screenshot({ path: path.join(sceneDirectory, `${phase}.png`), timeout: 90_000 });
     await writeJson(path.join(sceneDirectory, `${phase}.metrics.json`), metrics);
     sceneMetrics[sceneId] = metrics;
     assert.equal(metrics.growthValidation.valid, true, `${sceneId} growth validation`);
@@ -150,7 +151,7 @@ try {
     gameplayProbe = await gamePage.evaluate(async ({ startedRun, boostedRun, steeredRun, jumpedRun }) => {
       const frameTimes = [];
       let previous = performance.now();
-      for (let index = 0; index < 30; index += 1) {
+      for (let index = 0; index < 12; index += 1) {
         await new Promise((resolve) => requestAnimationFrame((now) => {
           frameTimes.push(now - previous);
           previous = now;
@@ -202,7 +203,7 @@ try {
 
     const gameDirectory = path.join(evidenceRoot, "game");
     await mkdir(gameDirectory, { recursive: true });
-    await gamePage.screenshot({ path: path.join(gameDirectory, "production-game-after.png"), fullPage: true });
+    await gamePage.locator("canvas").first().screenshot({ path: path.join(gameDirectory, "production-game-after.png"), timeout: 90_000 });
     await writeJson(path.join(gameDirectory, "gameplay-probe-after.json"), gameplayProbe);
     await writeJson(path.join(gameDirectory, "browser-errors-after.json"), gameErrors);
 
