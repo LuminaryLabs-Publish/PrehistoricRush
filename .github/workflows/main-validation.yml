@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths-ignore:
       - ".agent/evidence/**"
+      - ".agent/runs/**"
+      - ".agent/tracker.md"
+      - ".agent/target.md"
   workflow_dispatch:
 
 permissions:
