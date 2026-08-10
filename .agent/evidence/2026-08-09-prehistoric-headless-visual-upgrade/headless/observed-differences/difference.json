@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "structured": [
+    {
+      "key": "validatedCommit",
+      "before": "0f35372d783e19368c6c16fcc9db148f965f0cce",
+      "after": "0f35372d783e19368c6c16fcc9db148f965f0cce"
+    },
+    {
+      "key": "treeLabFoliageCards",
+      "before": 682,
+      "after": 1441
+    },
+    {
+      "key": "canopyFoliageCards",
+      "before": 708,
+      "after": 1038
+    },
+    {
+      "key": "racingLineFoliageCards",
+      "before": 810,
+      "after": 1557
+    }
+  ],
+  "visual": [
+    {
+      "beforeCaptures": 16,
+      "afterCaptures": 17
+    }
+  ],
+  "regressions": [],
+  "unverifiedClaims": [
+    "Physical MacBook Air frame-time budget requires target hardware and is not inferred from GitHub Actions Chromium."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "scene": {
+    "id": "prehistoric-rush",
+    "validationScenes": [
+      "tree-lab",
+      "root-lab",
+      "foliage-lab",
+      "canopy-lab",
+      "lod-lab",
+      "backlight-lab",
+      "racing-line",
+      "game"
+    ]
+  },
+  "hierarchy": {
+    "core": "NexusEngine",
+    "product": "PrehistoricRush",
+    "renderer": "Three"
+  },
+  "assets": [
+    {
+      "id": "tree-lab",
+      "before": "tree-lab/before.png",
+      "after": "tree-lab/after.png"
+    },
+    {
+      "id": "root-lab",
+      "before": "root-lab/before.png",
+      "after": "root-lab/after.png"
+    },
+    {
+      "id": "foliage-lab",
+      "before": "foliage-lab/before.png",
+      "after": "foliage-lab/after.png"
+    },
+    {
+      "id": "canopy-lab",
+      "before": "canopy-lab/before.png",
+      "after": "canopy-lab/after.png"
+    },
+    {
+      "id": "lod-lab",
+      "before": "lod-lab/before.png",
+      "after": "lod-lab/after.png"
+    },
+    {
+      "id": "backlight-lab",
+      "before": "backlight-lab/before.png",
+      "after": "backlight-lab/after.png"
+    },
+    {
+      "id": "racing-line",
+      "before": "racing-line/before.png",
+      "after": "racing-line/after.png"
+    },
+    {
+      "id": "game",
+      "before": "game/before.png",
+      "after": "game/after.png"
+    }
+  ],
+  "runtime": {
+    "validatedCommit": "0f35372d783e19368c6c16fcc9db148f965f0cce",
+    "workflowRunId": "31426832058",
+    "pagesPass": true,
+    "browserStatus": "PASS",
+    "hostPresent": true,
+    "canvasPresent": true
+  }
+}

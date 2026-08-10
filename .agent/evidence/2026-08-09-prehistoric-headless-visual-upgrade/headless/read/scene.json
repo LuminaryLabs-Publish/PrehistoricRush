@@ -1,0 +1,13 @@
+{
+  "id": "prehistoric-rush",
+  "validationScenes": [
+    "tree-lab",
+    "root-lab",
+    "foliage-lab",
+    "canopy-lab",
+    "lod-lab",
+    "backlight-lab",
+    "racing-line",
+    "game"
+  ]
+}

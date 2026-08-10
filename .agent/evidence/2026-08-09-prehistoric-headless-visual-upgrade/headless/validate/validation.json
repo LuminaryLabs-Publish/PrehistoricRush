@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "planId": "2026-08-09-prehistoric-headless-visual-upgrade:final-proof",
+  "issueCount": 0,
+  "issues": [],
+  "adapter": {
+    "ok": true,
+    "issues": [],
+    "requiredEvidence": [
+      "before/browser-summary.json",
+      "after/browser-summary.json",
+      "after/observed-differences.json"
+    ],
+    "pagesPass": true
+  }
+}

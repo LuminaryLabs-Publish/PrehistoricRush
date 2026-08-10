@@ -1,0 +1,22 @@
+[
+  {
+    "action": "validation.contracts.verify",
+    "target": "all-12-species"
+  },
+  {
+    "action": "validation.determinism.verify",
+    "target": "256-seed-sweep"
+  },
+  {
+    "action": "validation.visual.compare",
+    "target": "fixed-scenes"
+  },
+  {
+    "action": "validation.gameplay.verify",
+    "target": "production-game"
+  },
+  {
+    "action": "validation.deployment.verify",
+    "target": "github-pages-main"
+  }
+]

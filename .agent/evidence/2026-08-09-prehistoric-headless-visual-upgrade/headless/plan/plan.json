@@ -1,0 +1,30 @@
+{
+  "id": "2026-08-09-prehistoric-headless-visual-upgrade:final-proof",
+  "ok": true,
+  "goal": "# PrehistoricRush Headless Visual Upgrade Target\n\nRun: `2026-08-09-prehistoric-headless-visual-upgrade`\n\n## Goal\n\nUpgrade the production forest to a chunky stylized prehistoric canopy while preserving deterministic NexusEngine ownership, route readability, collision clarity, streaming stability, and playable performance.\n\n## Architectural constraints\n\n- Reuse NexusEngine Object Vegetation, Tree, Foliage, Compute, Shape, Fidelity, Capture, Placement, and Graphics semantics.\n- Keep authored species, visual tuning, route rules, and gameplay composition in PrehistoricRush.\n- Do not create a second tree engine or a parallel Fidelity system.\n- Keep tree collision trunk-authoritative; decorative roots/buttresses must not silently expand lethal collision.\n- Validate source changes through the real production modules and reproducible browser scenes.\n\n## Visual target\n\n- Dense upper canopy with reduced empty sky and overlapping crowns.\n- Bold readable species silhouettes at 26-31 m/s.\n- Organic trunks with visible taper, curvature, base flare, and grounded roots.\n- Stylized bark with broad stable variation rather than noisy photoreal detail.\n- Foliage with dark interior mass, readable midtones, and warm edge transmission.\n- Near detail high; medium preserves mass; far/horizon preserve species identity without obvious popping.\n- Track corridor remains immediately readable at maximum boost.\n\n## Quantitative acceptance\n\n- 12/12 tree archetypes produce valid deterministic near and medium growth plans.\n- Near foliage targets: 64-96 authored placements depending on species.\n- Medium foliage target: approximately 35% of near density, never below 22 placements for the current 12 species.\n- Non-radial near crown coverage minimum: 0.42.\n- Non-radial medium crown coverage minimum: 0.24.\n- Radial-frond near crown coverage minimum: 0.34.\n- Radial-frond medium crown coverage minimum: 0.18.\n- Near minimum foliage clusters: radial 18, non-radial 28.\n- Medium minimum foliage clusters: radial 10, non-radial 14.\n- Deterministic seed validation reports zero identity mismatches, invalid growth plans, malformed placement data, or non-finite bounds.\n- Normal target-density browser runs report zero foliage batch overflow.\n- Browser validation reports zero page errors, shader errors, or unhandled exceptions.\n- Production `game.html` boots, exposes `PrehistoricRushHost`, renders a canvas, starts a run, and remains responsive during representative input.\n\n## Required visual evidence\n\nFixed scenes:\n\n1. Tree Lab\n2. Root Lab\n3. Foliage Lab\n4. Canopy Lab\n5. LOD Lab\n6. Backlight Lab\n7. Racing-Line Lab\n8. Full Game Seed\n\nEach fixed scene uses deterministic seeds, fixed camera, fixed lighting, fixed viewport, and the real Nexus/Three tree-growth path.\n\n## Definition of done\n\n- All 12 species pass structure, foliage, material, near, medium, far, horizon, and screenshot checks.\n- Forest composition, route readability, placement/collision, determinism, streaming, browser startup, and batch capacity pass.\n- Before/after evidence is retained by the Headless/CI workflow.\n- The final ledger contains only `PASS` or explicitly documented external hardware exclusions.\n- Main remains playable and the deployed GitHub Pages game is reachable from the `main` revision.\n",
+  "commands": [
+    {
+      "action": "validation.contracts.verify",
+      "target": "all-12-species"
+    },
+    {
+      "action": "validation.determinism.verify",
+      "target": "256-seed-sweep"
+    },
+    {
+      "action": "validation.visual.compare",
+      "target": "fixed-scenes"
+    },
+    {
+      "action": "validation.gameplay.verify",
+      "target": "production-game"
+    },
+    {
+      "action": "validation.deployment.verify",
+      "target": "github-pages-main"
+    }
+  ],
+  "notes": [
+    "Evidence-only submit: source mutation already occurred through reviewed main changes."
+  ]
+}

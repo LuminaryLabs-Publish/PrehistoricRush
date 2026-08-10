@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "phase": "after",
+  "captures": [
+    {
+      "id": "tree-lab:after",
+      "kind": "screenshot",
+      "path": "tree-lab/after.png"
+    },
+    {
+      "id": "tree-lab:after:metrics",
+      "kind": "metrics",
+      "path": "tree-lab/after.metrics.json"
+    },
+    {
+      "id": "root-lab:after",
+      "kind": "screenshot",
+      "path": "root-lab/after.png"
+    },
+    {
+      "id": "root-lab:after:metrics",
+      "kind": "metrics",
+      "path": "root-lab/after.metrics.json"
+    },
+    {
+      "id": "foliage-lab:after",
+      "kind": "screenshot",
+      "path": "foliage-lab/after.png"
+    },
+    {
+      "id": "foliage-lab:after:metrics",
+      "kind": "metrics",
+      "path": "foliage-lab/after.metrics.json"
+    },
+    {
+      "id": "canopy-lab:after",
+      "kind": "screenshot",
+      "path": "canopy-lab/after.png"
+    },
+    {
+      "id": "canopy-lab:after:metrics",
+      "kind": "metrics",
+      "path": "canopy-lab/after.metrics.json"
+    },
+    {
+      "id": "lod-lab:after",
+      "kind": "screenshot",
+      "path": "lod-lab/after.png"
+    },
+    {
+      "id": "lod-lab:after:metrics",
+      "kind": "metrics",
+      "path": "lod-lab/after.metrics.json"
+    },
+    {
+      "id": "backlight-lab:after",
+      "kind": "screenshot",
+      "path": "backlight-lab/after.png"
+    },
+    {
+      "id": "backlight-lab:after:metrics",
+      "kind": "metrics",
+      "path": "backlight-lab/after.metrics.json"
+    },
+    {
+      "id": "racing-line:after",
+      "kind": "screenshot",
+      "path": "racing-line/after.png"
+    },
+    {
+      "id": "racing-line:after:metrics",
+      "kind": "metrics",
+      "path": "racing-line/after.metrics.json"
+    },
+    {
+      "id": "game:after",
+      "kind": "screenshot",
+      "path": "game/after.png"
+    },
+    {
+      "id": "game:after:metrics",
+      "kind": "metrics",
+      "path": "game/after.metrics.json"
+    },
+    {
+      "id": "production-game:after",
+      "kind": "screenshot",
+      "path": "game/production-game-after.png"
+    }
+  ]
+}

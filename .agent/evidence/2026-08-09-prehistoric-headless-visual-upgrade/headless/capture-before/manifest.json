@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "phase": "before",
+  "captures": [
+    {
+      "id": "tree-lab:before",
+      "kind": "screenshot",
+      "path": "tree-lab/before.png"
+    },
+    {
+      "id": "tree-lab:before:metrics",
+      "kind": "metrics",
+      "path": "tree-lab/before.metrics.json"
+    },
+    {
+      "id": "root-lab:before",
+      "kind": "screenshot",
+      "path": "root-lab/before.png"
+    },
+    {
+      "id": "root-lab:before:metrics",
+      "kind": "metrics",
+      "path": "root-lab/before.metrics.json"
+    },
+    {
+      "id": "foliage-lab:before",
+      "kind": "screenshot",
+      "path": "foliage-lab/before.png"
+    },
+    {
+      "id": "foliage-lab:before:metrics",
+      "kind": "metrics",
+      "path": "foliage-lab/before.metrics.json"
+    },
+    {
+      "id": "canopy-lab:before",
+      "kind": "screenshot",
+      "path": "canopy-lab/before.png"
+    },
+    {
+      "id": "canopy-lab:before:metrics",
+      "kind": "metrics",
+      "path": "canopy-lab/before.metrics.json"
+    },
+    {
+      "id": "lod-lab:before",
+      "kind": "screenshot",
+      "path": "lod-lab/before.png"
+    },
+    {
+      "id": "lod-lab:before:metrics",
+      "kind": "metrics",
+      "path": "lod-lab/before.metrics.json"
+    },
+    {
+      "id": "backlight-lab:before",
+      "kind": "screenshot",
+      "path": "backlight-lab/before.png"
+    },
+    {
+      "id": "backlight-lab:before:metrics",
+      "kind": "metrics",
+      "path": "backlight-lab/before.metrics.json"
+    },
+    {
+      "id": "racing-line:before",
+      "kind": "screenshot",
+      "path": "racing-line/before.png"
+    },
+    {
+      "id": "racing-line:before:metrics",
+      "kind": "metrics",
+      "path": "racing-line/before.metrics.json"
+    },
+    {
+      "id": "game:before",
+      "kind": "screenshot",
+      "path": "game/before.png"
+    },
+    {
+      "id": "game:before:metrics",
+      "kind": "metrics",
+      "path": "game/before.metrics.json"
+    }
+  ]
+}
