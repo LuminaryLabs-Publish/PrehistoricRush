@@ -40,8 +40,8 @@ function materialFactory(THREE, atlas, archetype) {
       side: THREE.DoubleSide,
       roughness: family.roughness,
       metalness: 0,
-      emissive: new THREE.Color(archetype.foliageColor).multiplyScalar(0.08 + Number(family.translucency ?? 0.12) * 0.22),
-      emissiveIntensity: 0.18 + Number(family.translucency ?? 0.12) * 0.5,
+      emissive: new THREE.Color(archetype.foliageColor).multiplyScalar(0.16 + Number(family.translucency ?? 0.12) * 0.26),
+      emissiveIntensity: 0.28 + Number(family.translucency ?? 0.12) * 0.58,
       fog: true
     };
     const material = THREE.MeshPhysicalMaterial
@@ -131,24 +131,31 @@ function createOrganicSegmentGeometry(THREE, archetype, segment) {
   const localCurve = segment.role === "trunk"
     ? PREHISTORIC_TREE_ART_DIRECTION.trunk.curvature
     : segment.role === "root" ? 0.018 : 0.012;
+  const overlap = segment.role === "trunk"
+    ? Math.min(0.3, Math.max(0.09, length * 0.035))
+    : segment.role === "root"
+      ? Math.min(0.2, Math.max(0.06, length * 0.025))
+      : Math.min(0.12, Math.max(0.025, length * 0.018));
+  const extendedLength = length + overlap * 2;
 
   for (let ring = 0; ring <= resolution.longitudinal; ring += 1) {
     const t = ring / resolution.longitudinal;
-    const y = (t - 0.5) * length;
-    const baseRadius = Number(segment.radiusStart) + (Number(segment.radiusEnd) - Number(segment.radiusStart)) * t;
+    const profileT = clamp((t * extendedLength - overlap) / length, 0, 1);
+    const y = (t - 0.5) * extendedLength;
+    const baseRadius = Number(segment.radiusStart) + (Number(segment.radiusEnd) - Number(segment.radiusStart)) * profileT;
     const trunkFlare = groundTrunk
-      ? 1 + (PREHISTORIC_TREE_ART_DIRECTION.trunk.baseFlare - 1) * Math.pow(1 - t, 3.2)
+      ? 1 + (PREHISTORIC_TREE_ART_DIRECTION.trunk.baseFlare - 1) * Math.pow(1 - profileT, 3.2)
       : 1;
     const rootFlare = segment.role === "root"
-      ? 1 + PREHISTORIC_TREE_ART_DIRECTION.roots.buttressStrength * Math.pow(1 - t, 2.2)
+      ? 1 + PREHISTORIC_TREE_ART_DIRECTION.roots.buttressStrength * Math.pow(1 - profileT, 2.2)
       : 1;
-    const centerX = Math.sin(t * Math.PI) * length * localCurve * Math.sin(seed * 3.1);
-    const centerZ = Math.sin(t * Math.PI * 0.82) * length * localCurve * 0.62 * Math.cos(seed * 2.7);
+    const centerX = Math.sin(profileT * Math.PI) * length * localCurve * Math.sin(seed * 3.1);
+    const centerZ = Math.sin(profileT * Math.PI * 0.82) * length * localCurve * 0.62 * Math.cos(seed * 2.7);
 
     for (let side = 0; side < resolution.radial; side += 1) {
       const u = side / resolution.radial;
       const theta = u * Math.PI * 2;
-      const ridge = Math.sin(theta * 5 + seed + t * 4.7) * 0.55 + Math.sin(theta * 9 - seed * 0.7 + t * 2.2) * 0.25;
+      const ridge = Math.sin(theta * 5 + seed + profileT * 4.7) * 0.55 + Math.sin(theta * 9 - seed * 0.7 + profileT * 2.2) * 0.25;
       const irregularity = 1 + ridge * PREHISTORIC_TREE_ART_DIRECTION.trunk.irregularity;
       const radius = Math.max(0.001, baseRadius * trunkFlare * rootFlare * irregularity);
       const rootEllipse = segment.role === "root"
@@ -192,7 +199,7 @@ function applyBarkVertexColors(THREE, geometry, archetype, segment) {
   const position = geometry.getAttribute("position");
   const colors = new Float32Array(position.count * 3);
   const roleFactor = segment.role === "root" ? 0.2 : segment.role === "trunk" ? 0.08 : 0.13;
-  const seed = segment.id.split("").reduce((sum, character) => sum + character.charCodeAt(0), 0) * 0.021;
+  const seed = archetype.id.split("").reduce((sum, character) => sum + character.charCodeAt(0), 0) * 0.021;
   const localMinY = geometry.boundingBox?.min?.y ?? -0.5;
   const localMaxY = geometry.boundingBox?.max?.y ?? 0.5;
   const localHeight = Math.max(0.001, localMaxY - localMinY);
@@ -203,9 +210,9 @@ function applyBarkVertexColors(THREE, geometry, archetype, segment) {
     const z = position.getZ(index);
     const t = clamp((y - localMinY) / localHeight, 0, 1);
     const treeSpaceY = Number(segment.start?.[1] ?? 0) + (Number(segment.end?.[1] ?? 0) - Number(segment.start?.[1] ?? 0)) * t;
-    const vertical = Math.sin(y * 1.35 + seed) * 0.42;
+    const vertical = Math.sin(treeSpaceY * 0.74 + seed) * 0.42;
     const ridges = Math.sin(Math.atan2(z, x) * 5 + seed * 0.7) * 0.34;
-    const broad = Math.sin((x + z) * 1.7 - seed * 0.5) * 0.18;
+    const broad = Math.sin(treeSpaceY * 0.19 + Math.atan2(z, x) * 2.0 - seed * 0.5) * 0.18;
     const amount = clamp(0.5 + vertical * 0.22 + ridges * 0.22 + broad * 0.16 + roleFactor, 0, 1);
     const color = base.clone().lerp(accent, amount * 0.24).multiplyScalar(0.78 + amount * 0.3);
     const groundLight = clamp(treeSpaceY / PREHISTORIC_TREE_ART_DIRECTION.bark.groundAoHeight, PREHISTORIC_TREE_ART_DIRECTION.bark.groundAoMinimum, 1);
@@ -257,6 +264,7 @@ function addGrowthSegment(THREE, group, archetype, segment, material) {
   mesh.userData.branchOrder = segment.order;
   mesh.userData.organicGeometry = true;
   mesh.userData.segmentLength = length;
+  mesh.userData.segmentOverlap = true;
   group.add(mesh);
   return mesh;
 }
