@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PrehistoricRush Forest Validation Lab</title>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102319;color:#eef6e8;font:14px/1.4 system-ui,sans-serif}
+    #app{position:relative;width:100%;height:100%}
+    canvas{display:block;width:100%;height:100%}
+    #status{position:absolute;left:16px;top:16px;padding:8px 10px;border-radius:8px;background:rgba(7,18,12,.78);backdrop-filter:blur(8px);pointer-events:none;max-width:380px}
+    #status strong{display:block;font-size:15px}
+    #status span{opacity:.76}
+  </style>
+</head>
+<body>
+  <main id="app" aria-label="PrehistoricRush forest validation lab">
+    <div id="status"><strong>Preparing forest lab</strong><span>Loading real Nexus/Three tree pipeline…</span></div>
+  </main>
+  <script type="module" src="./forest-lab.js"></script>
+</body>
+</html>
