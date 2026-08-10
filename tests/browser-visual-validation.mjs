@@ -27,7 +27,8 @@ async function writeJson(file, value) {
 const browser = await chromium.launch({
   headless: true,
   args: [
-    "--use-gl=swiftshader",
+    "--use-gl=angle",
+    "--use-angle=swiftshader",
     "--enable-webgl",
     "--ignore-gpu-blocklist",
     "--enable-unsafe-swiftshader"
