@@ -44,6 +44,7 @@ assert.equal(validatePrehistoricTreeCrownCoverage({
 const computeSource = readFileSync(new URL("../src/shared/prehistoric-tree-growth-compute.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
 const providerSource = readFileSync(new URL("../src/shared/vegetation-tree-fidelity-provider.js", import.meta.url), "utf8");
+const boundedProviderSource = readFileSync(new URL("../src/shared/bounded-tree-fidelity-provider.js", import.meta.url), "utf8");
 const naturalGeometrySource = readFileSync(new URL("../src/render/prehistoric-natural-tree-geometry.js", import.meta.url), "utf8");
 const treeLayerSource = readFileSync(new URL("../src/render/three-tree-fidelity-layer.js", import.meta.url), "utf8");
 const foliageLayerSource = readFileSync(new URL("../src/render/three-lush-foliage-layer.js", import.meta.url), "utf8");
@@ -61,7 +62,8 @@ assert.match(computeSource, /productAuthoredCanopy/);
 assert.match(runtimeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(runtimeSource, /treeGrowthDigest/);
 assert.match(runtimeSource, /singleVisualAuthority: true/);
-assert.match(runtimeSource, /object-vegetation-natural-growth-v4-single-authority/);
+assert.match(runtimeSource, /BOUNDED_TREE_FIDELITY_PROVIDER_REVISION/);
+assert.match(runtimeSource, /replaceTreeFidelityProviderWithBoundedVegetation/);
 
 assert.match(providerSource, /createPrehistoricNaturalTreeObject/);
 assert.doesNotMatch(providerSource, /createPrehistoricTreeObject/);
@@ -71,6 +73,11 @@ assert.match(providerSource, /TREE_GROWTH_PACKAGE_SCHEMA/);
 assert.match(providerSource, /growthDigest/);
 assert.match(providerSource, /computePreparedShading: true/);
 assert.match(providerSource, /singleVisualAuthority: true/);
+
+assert.match(boundedProviderSource, /object-vegetation-natural-growth-v5-bounded-transients/);
+assert.match(boundedProviderSource, /fidelity\?\.reset\?\.\(\)/);
+assert.match(boundedProviderSource, /capture\?\.reset\?\.\(\)/);
+assert.doesNotMatch(boundedProviderSource, /getSnapshot\?\.\(\)/);
 
 assert.match(naturalGeometrySource, /new THREE\.Mesh\(/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.Sprite\(/);
@@ -106,4 +113,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("Core skeleton growth, authored canopy admission, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("Core skeleton growth, authored canopy admission, bounded Fidelity/Capture transients, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
