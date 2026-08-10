@@ -24,18 +24,38 @@ async function writeJson(file, value) {
   await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({
+  headless: true,
+  args: [
+    "--use-gl=swiftshader",
+    "--enable-webgl",
+    "--ignore-gpu-blocklist",
+    "--enable-unsafe-swiftshader"
+  ]
+});
 const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
 const page = await context.newPage();
 const browserErrors = [];
-page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.message }));
+page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.stack || error.message }));
 page.on("console", (message) => {
   if (message.type() === "error") browserErrors.push({ type: "console", message: message.text() });
 });
 
 try {
   await page.goto(`${baseUrl}/validation/forest-lab.html?scene=tree-lab`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  await page.waitForFunction(() => globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true, null, { timeout: 120_000 });
+  await page.waitForFunction(
+    () => globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true || (globalThis.__PREHISTORIC_FOREST_LAB_ERRORS__?.length ?? 0) > 0,
+    null,
+    { timeout: 180_000 }
+  );
+  const labState = await page.evaluate(() => ({
+    ready: globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true,
+    errors: [...(globalThis.__PREHISTORIC_FOREST_LAB_ERRORS__ ?? [])],
+    status: document.querySelector("#status")?.innerText ?? ""
+  }));
+  if (!labState.ready) {
+    throw new Error(`Forest lab failed to initialize for ${phase}: ${[...labState.errors, ...browserErrors.map((entry) => entry.message), labState.status].filter(Boolean).join(" | ")}`);
+  }
 
   const sceneMetrics = {};
   for (const [sceneId, directory] of scenes) {
@@ -51,7 +71,7 @@ try {
 
   const gamePage = await context.newPage();
   const gameErrors = [];
-  gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.message }));
+  gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.stack || error.message }));
   gamePage.on("console", (message) => {
     if (message.type() === "error") gameErrors.push({ type: "console", message: message.text() });
   });
@@ -59,7 +79,7 @@ try {
   await gamePage.waitForFunction(
     () => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
     null,
-    { timeout: 120_000 }
+    { timeout: 180_000 }
   );
 
   await gamePage.keyboard.press("Space");
