@@ -6,9 +6,19 @@ import {
 } from "./prehistoric-tree-art-direction.js";
 
 export const PREHISTORIC_TREE_GROWTH_COMPUTE_PROVIDER_ID = "prehistoric-tree-growth-compute-provider";
-export const PREHISTORIC_TREE_GROWTH_REVISION = "natural-growth-v2-stylized-canopy";
+export const PREHISTORIC_TREE_GROWTH_REVISION = "natural-growth-v3-authored-canopy";
 
 const GENERIC_CROWN_COVERAGE_ERROR = /^Tree crown coverage .* is too sparse\.$/;
+
+function clamp(value, minimum, maximum) {
+  return Math.max(minimum, Math.min(maximum, value));
+}
+
+function hashText(value) {
+  let hash = 2166136261;
+  for (const character of String(value)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
+  return hash >>> 0;
+}
 
 function minimumClustersFor(archetypeOrKind, quality = "near") {
   const radial = typeof archetypeOrKind === "string"
@@ -34,6 +44,89 @@ export function validatePrehistoricTreeCrownCoverage(plan, quality = plan?.quali
     minimum,
     algorithmKind: plan?.algorithm?.kind ?? null,
     quality
+  });
+}
+
+function authoredShading(cluster) {
+  const zone = cluster.metadata?.zone ?? null;
+  if (cluster.mode === "radial-frond") return { lightExposure: 0.74, shade: 0.16 };
+  if (cluster.mode === "hanging-edge") return { lightExposure: 0.76, shade: 0.22 };
+  if (cluster.mode === "canopy-core" || zone === "core") return { lightExposure: 0.28, shade: 0.72 };
+  if (cluster.mode === "canopy-shell" || zone === "shell") return { lightExposure: 0.68, shade: 0.3 };
+  if (cluster.mode === "canopy-fringe" || zone === "fringe") return { lightExposure: 0.78, shade: 0.2 };
+  if (cluster.mode === "crown-tier") return { lightExposure: 0.58, shade: 0.38 };
+  return { lightExposure: 0.56, shade: 0.42 };
+}
+
+function selectAuthoredClusters(foliage, quality) {
+  const source = foliage?.clusters ?? [];
+  if (quality === "near" || source.length <= 1) return source;
+  const density = clamp(Number(foliage?.fidelity?.medium?.density ?? 0.35), 0.1, 1);
+  const target = Math.max(1, Math.round(source.length * density));
+  return Array.from({ length: target }, (_, index) => source[Math.min(source.length - 1, Math.floor((index + 0.5) * source.length / target))]);
+}
+
+function authoredFoliageClusters(tree, foliage, quality) {
+  const crossedPlanes = Math.max(1, Math.floor(Number(foliage?.card?.crossedPlanes ?? 1)));
+  const source = selectAuthoredClusters(foliage, quality);
+  const crownBottom = Math.max(0, Number(tree.averageHeight) - Number(tree.canopy?.height ?? tree.averageHeight * 0.32));
+  const crownHeight = Math.max(0.01, Number(tree.canopy?.height ?? tree.averageHeight * 0.32));
+  return source.map((cluster, index) => {
+    const shading = authoredShading(cluster);
+    const width = Math.max(0.08, Number(cluster.extent?.[0] ?? 1));
+    const height = Math.max(0.08, Number(cluster.extent?.[1] ?? 1));
+    const seed = hashText(`${tree.id}:${quality}:${cluster.id}`) / 4294967295;
+    const radial = cluster.mode === "radial-frond";
+    const hanging = cluster.mode === "hanging-edge";
+    const cardCount = quality === "medium" ? 1 : hanging || radial ? 1 : crossedPlanes;
+    const y = Number(cluster.position?.[1] ?? crownBottom);
+    return Object.freeze({
+      id: `${tree.id}:authored-foliage:${quality}:${index}:${cluster.id}`,
+      familyId: cluster.familyId,
+      anchorSegmentId: null,
+      mode: cluster.mode,
+      position: Object.freeze((cluster.position ?? [0, crownBottom, 0]).map(Number)),
+      rotation: Object.freeze((cluster.rotation ?? [0, 0, 0]).map(Number)),
+      scale: Object.freeze([width, height, 1]),
+      tangent: Object.freeze([0, hanging ? -1 : 0.2, 1]),
+      cardCount,
+      lightExposure: shading.lightExposure,
+      shade: shading.shade,
+      windScale: Math.max(0, Number(cluster.windScale ?? 1)),
+      layer: Math.max(0, Math.floor(clamp((y - crownBottom) / crownHeight, 0, 1) * Math.max(1, Number(tree.canopy?.layerCount ?? 3) - 1))),
+      seed,
+      metadata: Object.freeze({
+        ...(cluster.metadata ?? {}),
+        productAuthoredCanopy: true,
+        sourceClusterId: cluster.id,
+        quality
+      })
+    });
+  });
+}
+
+function withAuthoredFoliage(plan, tree, foliage, quality) {
+  const clusters = authoredFoliageClusters(tree, foliage, quality);
+  if (!clusters.length) return plan;
+  const crownRadius = Math.max(0.1, Number(tree.canopy?.radius ?? tree.averageWidth * 0.5));
+  const crownHeight = Math.max(0.1, Number(tree.canopy?.height ?? tree.averageHeight * 0.32));
+  const estimatedCardArea = clusters.reduce((sum, entry) => sum + entry.scale[0] * entry.scale[1] * entry.cardCount, 0);
+  const crownProjectedArea = Math.PI * crownRadius * Math.max(crownRadius, crownHeight * 0.5);
+  return Object.freeze({
+    ...plan,
+    foliageClusters: Object.freeze(clusters),
+    metrics: Object.freeze({
+      ...plan.metrics,
+      clusterCount: clusters.length,
+      estimatedCardCount: clusters.reduce((sum, entry) => sum + entry.cardCount, 0),
+      crownCoverage: crownProjectedArea > 0 ? estimatedCardArea / crownProjectedArea : 0
+    }),
+    metadata: Object.freeze({
+      ...(plan.metadata ?? {}),
+      productAuthoredCanopy: true,
+      authoredClusterCount: clusters.length,
+      authoredCardCount: clusters.reduce((sum, entry) => sum + entry.cardCount, 0)
+    })
   });
 }
 
@@ -83,7 +176,7 @@ function packGrowthBuffers(plan) {
     shadingBuffer: plan.foliageClusters.flatMap((entry) => [
       entry.lightExposure,
       entry.shade,
-      Math.max(0.04, 1 - entry.shade * 0.68),
+      Math.max(0.08, 1 - entry.shade * 0.62),
       entry.windScale,
       entry.seed,
       entry.cardCount,
@@ -98,10 +191,10 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
   if (!treeApi) throw new Error("Prehistoric tree growth compute requires the Tree vegetation domain.");
   return {
     id: PREHISTORIC_TREE_GROWTH_COMPUTE_PROVIDER_ID,
-    version: "2.0.0",
+    version: "3.0.0",
     metadata: {
-      purpose: "Execute deterministic natural tree growth and pack GPU-ready branch, foliage, and shading buffers.",
-      algorithm: "phyllotaxis-apical-tropism",
+      purpose: "Execute deterministic Core natural tree growth, admit the authored PrehistoricRush canopy recipe, and pack GPU-ready branch, foliage, and shading buffers.",
+      algorithm: "core-growth-plus-authored-canopy",
       rendererNeutral: true,
       artDirection: PREHISTORIC_TREE_GROWTH_REVISION
     },
@@ -110,7 +203,7 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
       const tree = request.input?.tree;
       const foliage = request.input?.foliage;
       const quality = request.input?.quality === "medium" ? "medium" : "near";
-      const plan = treeApi.createGrowthPlan(tree, {
+      const corePlan = treeApi.createGrowthPlan(tree, {
         foliage,
         quality,
         seed: request.input?.seed,
@@ -124,6 +217,7 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
           revision: PREHISTORIC_TREE_GROWTH_REVISION
         }
       });
+      const plan = withAuthoredFoliage(corePlan, tree, foliage, quality);
       const validation = validateGrowthPlan(treeApi, plan, quality);
       if (!validation.valid) throw new Error(`Tree growth compute rejected ${tree.speciesId}: ${validation.errors.join("; ")}`);
       const buffers = packGrowthBuffers(plan);
@@ -140,6 +234,7 @@ export function createPrehistoricTreeGrowthComputeProvider(runtime) {
           estimatedCardCount: plan.metrics.estimatedCardCount,
           crownCoverage: plan.metrics.crownCoverage,
           minimumCrownCoverage: validation.policy.minimum,
+          authoredCanopy: plan.metadata?.productAuthoredCanopy === true,
           revision: PREHISTORIC_TREE_GROWTH_REVISION
         }
       };
@@ -211,6 +306,7 @@ export function validatePrehistoricTreeGrowthPlans(plans = {}) {
       const plan = entry[quality];
       if (!plan || plan.speciesId !== archetype.id) errors.push(`${archetype.id} ${quality} plan has incorrect species identity.`);
       if (!entry.validation?.[quality]?.valid) errors.push(`${archetype.id} ${quality} plan failed validation.`);
+      if (plan?.metadata?.productAuthoredCanopy !== true) errors.push(`${archetype.id} ${quality} plan did not admit the authored product canopy.`);
       const minimumClusters = minimumClustersFor(archetype, quality);
       if ((plan?.metrics?.clusterCount ?? 0) < minimumClusters) errors.push(`${archetype.id} ${quality} plan is too sparse: ${plan?.metrics?.clusterCount ?? 0} < ${minimumClusters}.`);
       const coverage = validatePrehistoricTreeCrownCoverage(plan, quality);
