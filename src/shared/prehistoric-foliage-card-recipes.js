@@ -159,8 +159,8 @@ function placement(seed, familyId, position, rotation, scale, options = {}) {
 
 function radialPlacements(archetype, count, familyId, options = {}) {
   const output = [];
-  const baseY = options.baseY ?? archetype.averageHeight * 0.78;
-  const radius = options.radius ?? archetype.crownRadius * 0.58;
+  const baseY = options.baseY ?? archetype.averageHeight - archetype.crownHeight * 0.16;
+  const radius = options.radius ?? archetype.crownRadius * 0.92;
   const width = options.width ?? archetype.crownRadius * 0.58;
   const height = options.height ?? archetype.crownHeight * 0.38;
   const tilt = options.tilt ?? -0.18;
@@ -171,7 +171,7 @@ function radialPlacements(archetype, count, familyId, options = {}) {
     output.push(placement(
       seed,
       familyId,
-      [Math.sin(angle) * distance * 0.48, baseY + between(seed, "y", -height * 0.18, height * 0.28), Math.cos(angle) * distance * 0.48],
+      [Math.sin(angle) * distance * 0.88, baseY + between(seed, "y", -height * 0.18, height * 0.28), Math.cos(angle) * distance * 0.88],
       [tilt + between(seed, "pitch", -0.14, 0.14), angle, between(seed, "roll", -0.22, 0.22)],
       [width * between(seed, "width", 0.72, 1.08), height * between(seed, "height", 0.72, 1.12)],
       { mode: "radial-frond", windAmplitude: options.windAmplitude, tint: options.tint }
@@ -183,7 +183,7 @@ function radialPlacements(archetype, count, familyId, options = {}) {
 function canopyZonePlacements(archetype, count, familyId, options = {}) {
   const output = [];
   const art = PREHISTORIC_TREE_ART_DIRECTION.canopy;
-  const baseY = options.baseY ?? archetype.averageHeight * 0.72;
+  const baseY = options.baseY ?? archetype.averageHeight - archetype.crownHeight * 0.62;
   const coreCount = Math.max(1, Math.round(count * art.coreRatio));
   const shellCount = Math.max(1, Math.round(count * art.shellRatio));
   const fringeCount = Math.max(0, count - coreCount - shellCount);
@@ -205,17 +205,17 @@ function canopyZonePlacements(archetype, count, familyId, options = {}) {
     }
   };
 
-  addZone("core", coreCount, art.coreRadius, [0.25, 0.42], [0.2, 0.34], [0.04, 0.42], art.coreTint, "canopy-core");
-  addZone("shell", shellCount, art.shellRadius, [0.32, 0.52], [0.24, 0.42], [0.12, 0.58], art.shellTint, "canopy-shell");
+  addZone("core", coreCount, art.coreRadius, [0.28, 0.46], [0.24, 0.4], [0.02, 0.48], art.coreTint, "canopy-core");
+  addZone("shell", shellCount, art.shellRadius, [0.36, 0.58], [0.28, 0.48], [0.12, 0.66], art.shellTint, "canopy-shell");
 
   const wantsVines = Number(archetype.hangingFoliage ?? 0) > 0.08;
   addZone(
     "fringe",
     fringeCount,
     art.fringeRadius,
-    [0.16, 0.28],
-    [0.38, 0.72],
-    [-0.12, 0.3],
+    [0.18, 0.31],
+    [0.42, 0.78],
+    [-0.16, 0.34],
     art.fringeTint,
     wantsVines ? "hanging-edge" : "canopy-fringe",
     wantsVines ? "hanging-vine" : familyId
@@ -226,6 +226,7 @@ function canopyZonePlacements(archetype, count, familyId, options = {}) {
 function tieredPlacements(archetype, count, familyId, options = {}) {
   const output = [];
   const tiers = Math.max(3, archetype.canopyLayers ?? 6);
+  const crownBottom = archetype.averageHeight - archetype.crownHeight * 0.9;
   for (let index = 0; index < count; index += 1) {
     const seed = `${archetype.id}:tier:${options.quality ?? "near"}:${index}`;
     const tier = index % tiers;
@@ -235,9 +236,9 @@ function tieredPlacements(archetype, count, familyId, options = {}) {
     output.push(placement(
       seed,
       familyId,
-      [Math.sin(angle) * radius * 0.52, archetype.averageHeight * 0.42 + tierT * archetype.crownHeight * 0.78, Math.cos(angle) * radius * 0.52],
+      [Math.sin(angle) * radius * 0.82, crownBottom + tierT * archetype.crownHeight * 0.88, Math.cos(angle) * radius * 0.82],
       [between(seed, "pitch", -0.2, 0.12), angle, between(seed, "roll", -0.16, 0.16)],
-      [radius * between(seed, "width", 0.38, 0.62), archetype.crownHeight * between(seed, "height", 0.12, 0.22)],
+      [radius * between(seed, "width", 0.42, 0.68), archetype.crownHeight * between(seed, "height", 0.14, 0.25)],
       { mode: "crown-tier" }
     ));
   }
@@ -252,7 +253,7 @@ export function createTreeFoliageCardPlacements(archetype, quality = "near") {
   if (/palm/.test(token)) {
     return freeze(radialPlacements(archetype, count, "palm-frond", {
       quality,
-      baseY: archetype.averageHeight * 0.9,
+      baseY: archetype.averageHeight - archetype.crownHeight * 0.16,
       radius: archetype.crownRadius,
       width: archetype.crownRadius * 0.72,
       height: archetype.crownHeight * 0.26,
@@ -263,7 +264,7 @@ export function createTreeFoliageCardPlacements(archetype, quality = "near") {
   if (/fern|cycad/.test(token)) {
     return freeze(radialPlacements(archetype, count, familyId === "palm-frond" ? "fern-frond" : familyId, {
       quality,
-      baseY: archetype.averageHeight * 0.73,
+      baseY: archetype.averageHeight - archetype.crownHeight * 0.14,
       radius: archetype.crownRadius,
       width: archetype.crownRadius * 0.7,
       height: archetype.crownHeight * 0.22,
