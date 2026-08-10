@@ -24,8 +24,8 @@
     "canvasPresent": true,
     "canvasCount": 1,
     "bodyText": "",
-    "frameTimeAverageMs": 2066.584166666667,
-    "frameTimeP95Ms": 2183.1999999999825,
+    "frameTimeAverageMs": 1788.215,
+    "frameTimeP95Ms": 2066.5,
     "frameSamples": 120,
     "game": {
       "status": null,
@@ -34,27 +34,27 @@
     "treeFidelity": {
       "packageCount": 12,
       "counts": {
-        "near": 49,
-        "medium": 115,
-        "far": 70,
+        "near": 55,
+        "medium": 114,
+        "far": 62,
         "horizon": 0
       },
       "textureCount": 12,
       "transitioning": 0,
       "exactFrameAck": {
-        "generationDigest": "tree-fidelity:3a3a84d4|tree-fidelity:3c80d263|tree-fidelity:1b0a1eb1|tree-fidelity:e318050f|tree-fidelity:f5a8dd01|tree-fidelity:400ae4a3|tree-fidelity:c367528e|tree-fidelity:f16d7128|tree-fidelity:4d0df932|tree-fidelity:073750ce|tree-fidelity:41f00170|tree-fidelity:7b7c54de",
-        "growthDigest": "6c854a25|77833db7|15c4a6fd|e516ea47|5c74e202|580b369f|bbae5cc0|366920ba|d312580d|7ff5ee6f|c0b5d780|e0b551ec",
-        "revision": 140,
-        "bindingCount": 70,
-        "bindingDigest": "1882b94b",
+        "generationDigest": "tree-fidelity:224dbeb0|tree-fidelity:f3eb21d6|tree-fidelity:55924f2f|tree-fidelity:0e9507aa|tree-fidelity:f094f6de|tree-fidelity:5579c832|tree-fidelity:90400a3d|tree-fidelity:87e63d95|tree-fidelity:e6255a77|tree-fidelity:96fef874|tree-fidelity:bb240630|tree-fidelity:dc30b1db",
+        "growthDigest": "e33e70ac|ebf53bf9|fcb44018|87f7b3b1|5458eeef|15b0e59b|aa4271b7|c5d44dab|80f64ffe|1f118d52|bef93847|9daa4427",
+        "revision": 141,
+        "bindingCount": 62,
+        "bindingDigest": "44bc1500",
         "textureCount": 12,
         "presentationAuthority": "object-fidelity-natural-growth"
       }
     },
     "lushFoliage": {
       "overflow": 0,
-      "nearCards": 8351,
-      "mediumCards": 5076,
+      "nearCards": 7403,
+      "mediumCards": 3073,
       "sourceCards": null
     },
     "startup": {
@@ -93,10 +93,10 @@
         ],
         "timing": {
           "sampleCount": 21,
-          "generationP95Ms": 16115.599999999977,
-          "adoptionP95Ms": 32,
-          "patchReadyP95Seconds": 16.147599999999976,
-          "requiredLeadDistance": 387.5423999999994,
+          "generationP95Ms": 14099.900000000023,
+          "adoptionP95Ms": 18.600000000034925,
+          "patchReadyP95Seconds": 14.118500000000058,
+          "requiredLeadDistance": 338.8440000000014,
           "recommendedPrefetchDistance": 6,
           "configuredPrefetchDistance": 5
         }
@@ -104,7 +104,7 @@
       "assetStartup": {
         "schema": "nexusengine.core-startup-descriptor/1",
         "kind": "core-startup",
-        "launchId": "prehistoric-rush:game:1786327422898",
+        "launchId": "prehistoric-rush:game:1786328974086",
         "projectId": "prehistoric-rush",
         "status": "ready",
         "attempt": 1,
@@ -121,17 +121,17 @@
             "detail": "prehistoric-tree-fidelity ready",
             "receipt": {
               "schema": "nexusengine.core-assets.receipt/1",
-              "id": "core-assets:85270363:receipt",
+              "id": "core-assets:0074efc2:receipt",
               "kind": "bundle",
               "targetId": "prehistoric-tree-fidelity",
-              "operationId": "bundle:prehistoric-tree-fidelity:2781b9cb",
-              "contentHash": "2781b9cb",
+              "operationId": "bundle:prehistoric-tree-fidelity:91736cd0",
+              "contentHash": "91736cd0",
               "providerId": null,
               "cacheKey": null,
               "cached": false,
               "dependencies": [],
               "members": [
-                "core-assets:721a94cf:receipt"
+                "core-assets:4ef059ab:receipt"
               ],
               "result": {
                 "assetCount": 1,
@@ -141,8 +141,8 @@
                 "purpose": "PrehistoricRush single-authority natural-growth Object Vegetation, compute-prepared foliage, Shape, Capture, and Fidelity package.",
                 "packageVersion": "5",
                 "providerRevision": "object-vegetation-natural-growth-v4-single-authority",
-                "growthRevision": "natural-growth-v2-stylized-canopy",
-                "growthDigest": "244f7ef6",
+                "growthRevision": "natural-growth-v3-authored-canopy",
+                "growthDigest": "8e93f68f",
                 "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
                 "vegetationDomain": "n:object:vegetation",
                 "computeDomain": "n:compute",
@@ -186,20 +186,20 @@
           "presentationId": "prehistoric-rush-game",
           "backend": "webgl2",
           "receipt": {
-            "treeFidelityGenerationDigest": "tree-fidelity:3a3a84d4|tree-fidelity:3c80d263|tree-fidelity:1b0a1eb1|tree-fidelity:e318050f|tree-fidelity:f5a8dd01|tree-fidelity:400ae4a3|tree-fidelity:c367528e|tree-fidelity:f16d7128|tree-fidelity:4d0df932|tree-fidelity:073750ce|tree-fidelity:41f00170|tree-fidelity:7b7c54de",
+            "treeFidelityGenerationDigest": "tree-fidelity:224dbeb0|tree-fidelity:f3eb21d6|tree-fidelity:55924f2f|tree-fidelity:0e9507aa|tree-fidelity:f094f6de|tree-fidelity:5579c832|tree-fidelity:90400a3d|tree-fidelity:87e63d95|tree-fidelity:e6255a77|tree-fidelity:96fef874|tree-fidelity:bb240630|tree-fidelity:dc30b1db",
             "treeFidelityGenerationIds": [
-              "tree-fidelity:3a3a84d4",
-              "tree-fidelity:3c80d263",
-              "tree-fidelity:1b0a1eb1",
-              "tree-fidelity:e318050f",
-              "tree-fidelity:f5a8dd01",
-              "tree-fidelity:400ae4a3",
-              "tree-fidelity:c367528e",
-              "tree-fidelity:f16d7128",
-              "tree-fidelity:4d0df932",
-              "tree-fidelity:073750ce",
-              "tree-fidelity:41f00170",
-              "tree-fidelity:7b7c54de"
+              "tree-fidelity:224dbeb0",
+              "tree-fidelity:f3eb21d6",
+              "tree-fidelity:55924f2f",
+              "tree-fidelity:0e9507aa",
+              "tree-fidelity:f094f6de",
+              "tree-fidelity:5579c832",
+              "tree-fidelity:90400a3d",
+              "tree-fidelity:87e63d95",
+              "tree-fidelity:e6255a77",
+              "tree-fidelity:96fef874",
+              "tree-fidelity:bb240630",
+              "tree-fidelity:dc30b1db"
             ],
             "vegetationCatalogDigest": "4e5c2986|9e0a23d7|cf85ca9a|028ceb94|f12dbdc7|bbcd7006|bc947fe1|e57f1da0|721ba88a|35ffb692|9e62594e|a328c381|e5984e70|89260a76|4060819b|0bad126c|0cf83e9f|de8dcd30",
             "vegetationSpeciesCount": 18,
@@ -215,7 +215,7 @@
               "far": 40,
               "horizon": 0
             },
-            "foliageCards": 9314,
+            "foliageCards": 6798,
             "productionForest": {
               "enabled": true,
               "activePatches": 22,
@@ -231,8 +231,8 @@
             "groundCoverCount": 500,
             "transitioning": 0,
             "exactImpostorFrameAck": {
-              "generationDigest": "tree-fidelity:3a3a84d4|tree-fidelity:3c80d263|tree-fidelity:1b0a1eb1|tree-fidelity:e318050f|tree-fidelity:f5a8dd01|tree-fidelity:400ae4a3|tree-fidelity:c367528e|tree-fidelity:f16d7128|tree-fidelity:4d0df932|tree-fidelity:073750ce|tree-fidelity:41f00170|tree-fidelity:7b7c54de",
-              "growthDigest": "6c854a25|77833db7|15c4a6fd|e516ea47|5c74e202|580b369f|bbae5cc0|366920ba|d312580d|7ff5ee6f|c0b5d780|e0b551ec",
+              "generationDigest": "tree-fidelity:224dbeb0|tree-fidelity:f3eb21d6|tree-fidelity:55924f2f|tree-fidelity:0e9507aa|tree-fidelity:f094f6de|tree-fidelity:5579c832|tree-fidelity:90400a3d|tree-fidelity:87e63d95|tree-fidelity:e6255a77|tree-fidelity:96fef874|tree-fidelity:bb240630|tree-fidelity:dc30b1db",
+              "growthDigest": "e33e70ac|ebf53bf9|fcb44018|87f7b3b1|5458eeef|15b0e59b|aa4271b7|c5d44dab|80f64ffe|1f118d52|bef93847|9daa4427",
               "revision": 13,
               "bindingCount": 40,
               "bindingDigest": "b46822b6",
@@ -242,18 +242,18 @@
             "lushVegetationFrameAck": {
               "frame": 13,
               "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
-              "treeCards": 9314,
+              "treeCards": 6798,
               "treePresentationAuthority": "object-fidelity-natural-growth",
               "singleTreeAuthority": true,
-              "treeGrowthDigest": "6c854a25|77833db7|15c4a6fd|e516ea47|5c74e202|580b369f|bbae5cc0|366920ba|d312580d|7ff5ee6f|c0b5d780|e0b551ec",
-              "foliageGrowthDigest": "6c854a25|77833db7|15c4a6fd|e516ea47|5c74e202|580b369f|bbae5cc0|366920ba|d312580d|7ff5ee6f|c0b5d780|e0b551ec",
+              "treeGrowthDigest": "e33e70ac|ebf53bf9|fcb44018|87f7b3b1|5458eeef|15b0e59b|aa4271b7|c5d44dab|80f64ffe|1f118d52|bef93847|9daa4427",
+              "foliageGrowthDigest": "e33e70ac|ebf53bf9|fcb44018|87f7b3b1|5458eeef|15b0e59b|aa4271b7|c5d44dab|80f64ffe|1f118d52|bef93847|9daa4427",
               "computePreparedShading": true,
               "productionCanopyGroups": 0,
               "productionBranchesAndBark": 0,
               "productionGrassClumps": 607,
               "groundSurfaceDetails": 26,
               "groundCover": 500,
-              "treeGenerationDigest": "tree-fidelity:3a3a84d4|tree-fidelity:3c80d263|tree-fidelity:1b0a1eb1|tree-fidelity:e318050f|tree-fidelity:f5a8dd01|tree-fidelity:400ae4a3|tree-fidelity:c367528e|tree-fidelity:f16d7128|tree-fidelity:4d0df932|tree-fidelity:073750ce|tree-fidelity:41f00170|tree-fidelity:7b7c54de",
+              "treeGenerationDigest": "tree-fidelity:224dbeb0|tree-fidelity:f3eb21d6|tree-fidelity:55924f2f|tree-fidelity:0e9507aa|tree-fidelity:f094f6de|tree-fidelity:5579c832|tree-fidelity:90400a3d|tree-fidelity:87e63d95|tree-fidelity:e6255a77|tree-fidelity:96fef874|tree-fidelity:bb240630|tree-fidelity:dc30b1db",
               "visualPatchCount": 22,
               "presentationPrefetchCount": 12
             },
@@ -292,10 +292,10 @@
               ],
               "timing": {
                 "sampleCount": 21,
-                "generationP95Ms": 16115.599999999977,
-                "adoptionP95Ms": 32,
-                "patchReadyP95Seconds": 16.147599999999976,
-                "requiredLeadDistance": 387.5423999999994,
+                "generationP95Ms": 14099.900000000023,
+                "adoptionP95Ms": 18.600000000034925,
+                "patchReadyP95Seconds": 14.118500000000058,
+                "requiredLeadDistance": 338.8440000000014,
                 "recommendedPrefetchDistance": 6,
                 "configuredPrefetchDistance": 5
               }

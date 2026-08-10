@@ -1,13 +1,13 @@
 {
   "scene": "canopy-lab",
   "speciesCount": 12,
-  "objects": 2006,
+  "objects": 1250,
   "woodMeshes": 198,
-  "foliageCards": 1794,
-  "triangles": 24890,
+  "foliageCards": 1038,
+  "triangles": 21866,
   "runtimeKind": "nexus-vegetation-growth-source",
-  "growthRevision": "natural-growth-v2-stylized-canopy",
-  "growthDigest": "e15a5866",
+  "growthRevision": "natural-growth-v3-authored-canopy",
+  "growthDigest": "f63553ca",
   "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
   "growthValidation": {
     "valid": true,
@@ -24,9 +24,10 @@
         "branchCount": 0,
         "clusterCount": 72,
         "estimatedCardCount": 72,
-        "crownCoverage": 0.7677901911570567,
+        "crownCoverage": 2.1557428503229934,
         "minimumCrownCoverage": 0.34,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "giant-fern-tree",
@@ -35,9 +36,10 @@
         "branchCount": 0,
         "clusterCount": 26,
         "estimatedCardCount": 26,
-        "crownCoverage": 0.2782051202648768,
+        "crownCoverage": 0.7798398540083923,
         "minimumCrownCoverage": 0.18,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -49,9 +51,10 @@
         "branchCount": 40,
         "clusterCount": 84,
         "estimatedCardCount": 168,
-        "crownCoverage": 2.1413025175895046,
+        "crownCoverage": 5.955477850881585,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "tower-conifer",
@@ -59,10 +62,11 @@
         "algorithm": "conical-whorl",
         "branchCount": 40,
         "clusterCount": 30,
-        "estimatedCardCount": 60,
-        "crownCoverage": 0.7682809799918846,
+        "estimatedCardCount": 30,
+        "crownCoverage": 1.1132670354390233,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -74,9 +78,10 @@
         "branchCount": 0,
         "clusterCount": 64,
         "estimatedCardCount": 64,
-        "crownCoverage": 2.17872956176864,
+        "crownCoverage": 2.8153324970055467,
         "minimumCrownCoverage": 0.34,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "understory-cycad",
@@ -85,9 +90,10 @@
         "branchCount": 0,
         "clusterCount": 22,
         "estimatedCardCount": 22,
-        "crownCoverage": 0.737676939623995,
+        "crownCoverage": 0.9871991529966292,
         "minimumCrownCoverage": 0.18,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -97,22 +103,24 @@
         "quality": "near",
         "algorithm": "umbrella",
         "branchCount": 24,
-        "clusterCount": 107,
-        "estimatedCardCount": 299,
-        "crownCoverage": 3.638769714481711,
+        "clusterCount": 96,
+        "estimatedCardCount": 173,
+        "crownCoverage": 4.31943524569558,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "broad-canopy",
         "quality": "medium",
         "algorithm": "umbrella",
         "branchCount": 24,
-        "clusterCount": 38,
-        "estimatedCardCount": 72,
-        "crownCoverage": 0.8610157762327306,
+        "clusterCount": 34,
+        "estimatedCardCount": 34,
+        "crownCoverage": 0.8939997824022371,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -122,22 +130,24 @@
         "quality": "near",
         "algorithm": "columnar",
         "branchCount": 30,
-        "clusterCount": 90,
-        "estimatedCardCount": 246,
-        "crownCoverage": 5.216457611858427,
+        "clusterCount": 78,
+        "estimatedCardCount": 140,
+        "crownCoverage": 5.960551068155723,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "moss-column",
         "quality": "medium",
         "algorithm": "columnar",
         "branchCount": 30,
-        "clusterCount": 32,
-        "estimatedCardCount": 60,
-        "crownCoverage": 1.2684516414057976,
+        "clusterCount": 28,
+        "estimatedCardCount": 28,
+        "crownCoverage": 1.1761671924241794,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -149,9 +159,10 @@
         "branchCount": 40,
         "clusterCount": 88,
         "estimatedCardCount": 176,
-        "crownCoverage": 1.71061355734976,
+        "crownCoverage": 6.074084122416173,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "layered-araucaria",
@@ -159,10 +170,11 @@
         "algorithm": "conical-whorl",
         "branchCount": 40,
         "clusterCount": 31,
-        "estimatedCardCount": 62,
-        "crownCoverage": 0.6013591856634823,
+        "estimatedCardCount": 31,
+        "crownCoverage": 1.0708909111209242,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -174,9 +186,10 @@
         "branchCount": 0,
         "clusterCount": 68,
         "estimatedCardCount": 68,
-        "crownCoverage": 1.796547719880673,
+        "crownCoverage": 2.803152256726017,
         "minimumCrownCoverage": 0.34,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "fan-cycad",
@@ -185,9 +198,10 @@
         "branchCount": 0,
         "clusterCount": 24,
         "estimatedCardCount": 24,
-        "crownCoverage": 0.6516800205540982,
+        "crownCoverage": 0.9898044508920367,
         "minimumCrownCoverage": 0.18,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -198,10 +212,11 @@
         "algorithm": "umbrella",
         "branchCount": 24,
         "clusterCount": 92,
-        "estimatedCardCount": 276,
-        "crownCoverage": 4.395221182880708,
+        "estimatedCardCount": 184,
+        "crownCoverage": 5.746685627280583,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "ginkgo-crown-tree",
@@ -209,10 +224,11 @@
         "algorithm": "umbrella",
         "branchCount": 24,
         "clusterCount": 32,
-        "estimatedCardCount": 64,
-        "crownCoverage": 1.0830762740590192,
+        "estimatedCardCount": 32,
+        "crownCoverage": 0.9630087521383109,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -223,10 +239,11 @@
         "algorithm": "columnar",
         "branchCount": 30,
         "clusterCount": 64,
-        "estimatedCardCount": 192,
-        "crownCoverage": 4.510645147592458,
+        "estimatedCardCount": 128,
+        "crownCoverage": 2.969815751174579,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "marsh-horsetail-tower",
@@ -234,10 +251,11 @@
         "algorithm": "columnar",
         "branchCount": 30,
         "clusterCount": 22,
-        "estimatedCardCount": 44,
-        "crownCoverage": 0.976341149566804,
+        "estimatedCardCount": 22,
+        "crownCoverage": 0.5257632402055527,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -248,10 +266,11 @@
         "algorithm": "sparse-fork",
         "branchCount": 24,
         "clusterCount": 64,
-        "estimatedCardCount": 192,
-        "crownCoverage": 4.128773156231577,
+        "estimatedCardCount": 128,
+        "crownCoverage": 5.3864465871319815,
         "minimumCrownCoverage": 0.42,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "forked-ghostwood",
@@ -259,10 +278,11 @@
         "algorithm": "sparse-fork",
         "branchCount": 24,
         "clusterCount": 22,
-        "estimatedCardCount": 44,
-        "crownCoverage": 0.9687748190520734,
+        "estimatedCardCount": 22,
+        "crownCoverage": 0.9847251802663359,
         "minimumCrownCoverage": 0.24,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -274,9 +294,10 @@
         "branchCount": 0,
         "clusterCount": 72,
         "estimatedCardCount": 72,
-        "crownCoverage": 1.4165945048974653,
+        "crownCoverage": 2.5813859202814435,
         "minimumCrownCoverage": 0.34,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "tall-prehistoric-palm",
@@ -285,9 +306,10 @@
         "branchCount": 0,
         "clusterCount": 26,
         "estimatedCardCount": 26,
-        "crownCoverage": 0.49990861646075935,
+        "crownCoverage": 0.913725834351279,
         "minimumCrownCoverage": 0.18,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     },
     {
@@ -299,9 +321,10 @@
         "branchCount": 0,
         "clusterCount": 68,
         "estimatedCardCount": 68,
-        "crownCoverage": 1.7252296784166816,
+        "crownCoverage": 2.866407007559981,
         "minimumCrownCoverage": 0.34,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       },
       "medium": {
         "speciesId": "short-jungle-palm",
@@ -310,9 +333,10 @@
         "branchCount": 0,
         "clusterCount": 24,
         "estimatedCardCount": 24,
-        "crownCoverage": 0.6210818151082635,
+        "crownCoverage": 0.9999081937997212,
         "minimumCrownCoverage": 0.18,
-        "revision": "natural-growth-v2-stylized-canopy"
+        "authoredCanopy": true,
+        "revision": "natural-growth-v3-authored-canopy"
       }
     }
   ]
