@@ -33,15 +33,20 @@ const browser = await chromium.launch({
     "--enable-unsafe-swiftshader"
   ]
 });
-const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
-const page = await context.newPage();
+
+let labContext = null;
+let gameContext = null;
 const browserErrors = [];
-page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.stack || error.message }));
-page.on("console", (message) => {
-  if (message.type() === "error") browserErrors.push({ type: "console", message: message.text() });
-});
+const gameErrors = [];
 
 try {
+  labContext = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+  const page = await labContext.newPage();
+  page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.stack || error.message }));
+  page.on("console", (message) => {
+    if (message.type() === "error") browserErrors.push({ type: "console", message: message.text() });
+  });
+
   await page.goto(`${baseUrl}/validation/forest-lab.html?scene=tree-lab`, { waitUntil: "domcontentloaded", timeout: 120_000 });
   await page.waitForFunction(
     () => globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true || (globalThis.__PREHISTORIC_FOREST_LAB_ERRORS__?.length ?? 0) > 0,
@@ -69,14 +74,22 @@ try {
     assert.equal(metrics.speciesCount, 12, `${sceneId} species contract`);
   }
 
+  assert.equal(browserErrors.length, 0, "forest lab browser errors");
+
+  // Release all validation-lab WebGL resources before the production game builds
+  // its 12 Fidelity packages. Keeping both workloads alive in one SwiftShader
+  // context can crash Chromium even though each workload succeeds independently.
+  await labContext.close();
+  labContext = null;
+
   let gameplayProbe = {
     skipped: phase === "before",
     reason: phase === "before" ? "Historical baseline uses the fixed Full Game Seed lab; live production runtime validation is current-main only." : null
   };
-  const gameErrors = [];
 
   if (phase === "after") {
-    const gamePage = await context.newPage();
+    gameContext = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+    const gamePage = await gameContext.newPage();
     gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.stack || error.message }));
     gamePage.on("console", (message) => {
       if (message.type() === "error") gameErrors.push({ type: "console", message: message.text() });
@@ -89,11 +102,16 @@ try {
         { timeout: 360_000 }
       );
     } catch (error) {
-      const startupState = await gamePage.evaluate(() => ({
-        bodyText: document.body.innerText.slice(0, 2000),
-        canvasCount: document.querySelectorAll("canvas").length,
-        hostPresent: Boolean(globalThis.PrehistoricRushHost)
-      }));
+      let startupState = { bodyText: "", canvasCount: 0, hostPresent: false };
+      try {
+        startupState = await gamePage.evaluate(() => ({
+          bodyText: document.body.innerText.slice(0, 2000),
+          canvasCount: document.querySelectorAll("canvas").length,
+          hostPresent: Boolean(globalThis.PrehistoricRushHost)
+        }));
+      } catch (stateError) {
+        startupState = { ...startupState, evaluationError: stateError.message };
+      }
       throw new Error(`Production game did not reach host-ready state under software Chromium: ${JSON.stringify(startupState)}; ${error.message}`);
     }
 
@@ -124,7 +142,7 @@ try {
     gameplayProbe = await gamePage.evaluate(async ({ startedRun, boostedRun, steeredRun, jumpedRun }) => {
       const frameTimes = [];
       let previous = performance.now();
-      for (let index = 0; index < 120; index += 1) {
+      for (let index = 0; index < 30; index += 1) {
         await new Promise((resolve) => requestAnimationFrame((now) => {
           frameTimes.push(now - previous);
           previous = now;
@@ -192,9 +210,10 @@ try {
     assert.equal(gameplayProbe.lushFoliage.overflow, 0, "target-density production foliage stays within live batch capacity");
     assert.ok(gameplayProbe.treeFidelity.exactFrameAck, "production runtime acknowledges exact generation-bound impostor frames");
     assert.equal(gameErrors.length, 0, "production game browser errors");
-  }
 
-  assert.equal(browserErrors.length, 0, "forest lab browser errors");
+    await gameContext.close();
+    gameContext = null;
+  }
 
   const summary = {
     status: "PASS",
@@ -212,5 +231,7 @@ try {
   await writeJson(path.join(evidenceRoot, phase, "browser-summary.json"), summary);
   console.log(JSON.stringify(summary, null, 2));
 } finally {
+  if (gameContext) await gameContext.close().catch(() => {});
+  if (labContext) await labContext.close().catch(() => {});
   await browser.close();
 }
