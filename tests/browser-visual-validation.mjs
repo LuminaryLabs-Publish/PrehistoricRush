@@ -82,11 +82,20 @@ try {
       if (message.type() === "error") gameErrors.push({ type: "console", message: message.text() });
     });
     await gamePage.goto(`${baseUrl}/game.html`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-    await gamePage.waitForFunction(
-      () => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
-      null,
-      { timeout: 180_000 }
-    );
+    try {
+      await gamePage.waitForFunction(
+        () => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
+        null,
+        { timeout: 360_000 }
+      );
+    } catch (error) {
+      const startupState = await gamePage.evaluate(() => ({
+        bodyText: document.body.innerText.slice(0, 2000),
+        canvasCount: document.querySelectorAll("canvas").length,
+        hostPresent: Boolean(globalThis.PrehistoricRushHost)
+      }));
+      throw new Error(`Production game did not reach host-ready state under software Chromium: ${JSON.stringify(startupState)}; ${error.message}`);
+    }
 
     await gamePage.keyboard.press("Space");
     await gamePage.waitForTimeout(1200);
