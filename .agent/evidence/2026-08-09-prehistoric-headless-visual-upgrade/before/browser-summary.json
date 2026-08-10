@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "runId": "2026-08-09-prehistoric-headless-visual-upgrade",
+  "phase": "before",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "scenes": [
+    "tree-lab",
+    "root-lab",
+    "foliage-lab",
+    "canopy-lab",
+    "lod-lab",
+    "backlight-lab",
+    "racing-line",
+    "full-game-seed"
+  ],
+  "browserErrors": [],
+  "gameErrors": [],
+  "gameplayProbe": {
+    "skipped": true,
+    "reason": "Historical baseline uses the fixed Full Game Seed lab; live production runtime validation is current-main only."
+  },
+  "limits": {
+    "performance": "GitHub Actions Chromium is a repeatable regression proxy, not a physical MacBook Air benchmark."
+  }
+}

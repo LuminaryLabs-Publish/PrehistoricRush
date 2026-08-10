@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "canopyFoliageCards": {
+    "before": 708,
+    "after": 1794
+  },
+  "treeLabFoliageCards": {
+    "before": 682,
+    "after": 1893
+  },
+  "racingLineFoliageCards": {
+    "before": 810,
+    "after": 2131
+  },
+  "currentGameplayFrameTimeP95Ms": 2183.1999999999825,
+  "liveFidelityPackages": 12,
+  "liveFoliageOverflow": 0,
+  "note": "Current-main frame time is recorded as a CI regression proxy; GitHub Actions is not a physical MacBook Air benchmark."
+}
