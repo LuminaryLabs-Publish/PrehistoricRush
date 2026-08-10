@@ -1,4 +1,9 @@
-export const FOLIAGE_ATLAS_REVISION = "prehistoric-foliage-cards-v2";
+import {
+  PREHISTORIC_TREE_ART_DIRECTION,
+  getPrehistoricTreeFoliageTargets
+} from "./prehistoric-tree-art-direction.js";
+
+export const FOLIAGE_ATLAS_REVISION = "prehistoric-foliage-cards-v3-chunky-canopy";
 export const FOLIAGE_ATLAS_COLUMNS = 4;
 export const FOLIAGE_ATLAS_ROWS = 2;
 
@@ -12,7 +17,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([0, 0]),
     alphaCutoff: 0.42,
     roughness: 0.76,
-    translucency: 0.14,
+    translucency: 0.16,
     size: freeze({ minimum: freeze([0.8, 0.7]), maximum: freeze([4.2, 3.2]) }),
     wind: freeze({ amplitude: 0.12, frequency: 0.74, stiffness: 0.66 })
   }),
@@ -23,7 +28,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([1, 0]),
     alphaCutoff: 0.38,
     roughness: 0.72,
-    translucency: 0.18,
+    translucency: 0.2,
     size: freeze({ minimum: freeze([1.2, 0.55]), maximum: freeze([7.8, 2.2]) }),
     wind: freeze({ amplitude: 0.18, frequency: 0.62, stiffness: 0.52 })
   }),
@@ -34,7 +39,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([2, 0]),
     alphaCutoff: 0.36,
     roughness: 0.8,
-    translucency: 0.16,
+    translucency: 0.18,
     size: freeze({ minimum: freeze([0.7, 0.42]), maximum: freeze([5.4, 1.8]) }),
     wind: freeze({ amplitude: 0.15, frequency: 0.82, stiffness: 0.58 })
   }),
@@ -45,7 +50,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([3, 0]),
     alphaCutoff: 0.4,
     roughness: 0.84,
-    translucency: 0.08,
+    translucency: 0.1,
     size: freeze({ minimum: freeze([0.65, 0.45]), maximum: freeze([3.5, 1.8]) }),
     wind: freeze({ amplitude: 0.08, frequency: 0.68, stiffness: 0.84 })
   }),
@@ -56,7 +61,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([0, 1]),
     alphaCutoff: 0.4,
     roughness: 0.75,
-    translucency: 0.13,
+    translucency: 0.16,
     size: freeze({ minimum: freeze([0.8, 0.7]), maximum: freeze([4.4, 3.5]) }),
     wind: freeze({ amplitude: 0.11, frequency: 0.72, stiffness: 0.68 })
   }),
@@ -67,7 +72,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([1, 1]),
     alphaCutoff: 0.36,
     roughness: 0.8,
-    translucency: 0.16,
+    translucency: 0.18,
     size: freeze({ minimum: freeze([0.5, 1.2]), maximum: freeze([2.2, 6.8]) }),
     wind: freeze({ amplitude: 0.2, frequency: 0.56, stiffness: 0.42 })
   }),
@@ -78,7 +83,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([2, 1]),
     alphaCutoff: 0.4,
     roughness: 0.79,
-    translucency: 0.12,
+    translucency: 0.14,
     size: freeze({ minimum: freeze([0.8, 0.7]), maximum: freeze([3.8, 3.1]) }),
     wind: freeze({ amplitude: 0.09, frequency: 0.76, stiffness: 0.7 })
   }),
@@ -89,7 +94,7 @@ export const PREHISTORIC_FOLIAGE_CARD_FAMILIES = freeze([
     atlasCell: freeze([3, 1]),
     alphaCutoff: 0.38,
     roughness: 0.82,
-    translucency: 0.1,
+    translucency: 0.12,
     size: freeze({ minimum: freeze([0.45, 0.45]), maximum: freeze([2.4, 1.5]) }),
     wind: freeze({ amplitude: 0.08, frequency: 0.9, stiffness: 0.82 })
   })
@@ -169,48 +174,52 @@ function radialPlacements(archetype, count, familyId, options = {}) {
       [Math.sin(angle) * distance * 0.48, baseY + between(seed, "y", -height * 0.18, height * 0.28), Math.cos(angle) * distance * 0.48],
       [tilt + between(seed, "pitch", -0.14, 0.14), angle, between(seed, "roll", -0.22, 0.22)],
       [width * between(seed, "width", 0.72, 1.08), height * between(seed, "height", 0.72, 1.12)],
-      { mode: "frond-burst", windAmplitude: options.windAmplitude }
+      { mode: "radial-frond", windAmplitude: options.windAmplitude, tint: options.tint }
     ));
   }
   return output;
 }
 
-function canopyPlacements(archetype, count, familyId, options = {}) {
+function canopyZonePlacements(archetype, count, familyId, options = {}) {
   const output = [];
-  const layers = Math.max(1, options.layers ?? archetype.canopyLayers ?? 3);
-  const baseY = options.baseY ?? archetype.averageHeight * 0.73;
-  const width = archetype.crownRadius * (options.widthScale ?? 0.42);
-  const height = archetype.crownHeight * (options.heightScale ?? 0.38);
-  for (let index = 0; index < count; index += 1) {
-    const seed = `${archetype.id}:canopy:${options.quality ?? "near"}:${index}`;
-    const layer = index % layers;
-    const layerT = layers === 1 ? 0.5 : layer / (layers - 1);
-    const angle = index * 2.399963229728653 + between(seed, "angle", -0.18, 0.18);
-    const shell = Math.sqrt((index + 0.5) / count);
-    const radius = archetype.crownRadius * shell * (0.74 - layerT * 0.16);
-    const y = baseY + layerT * archetype.crownHeight * 0.46 + between(seed, "y", -height * 0.22, height * 0.22);
-    output.push(placement(
-      seed,
-      familyId,
-      [Math.sin(angle) * radius * 0.72, y, Math.cos(angle) * radius * 0.72],
-      [between(seed, "pitch", -0.28, 0.28), angle + Math.PI * 0.5, between(seed, "roll", -0.32, 0.32)],
-      [width * between(seed, "width", 0.68, 1.16), height * between(seed, "height", 0.7, 1.2)],
-      { mode: layer === layers - 1 ? "canopy-shell" : "branch-cluster" }
-    ));
-  }
-  const hangingCount = Math.round(count * Number(archetype.hangingFoliage ?? 0));
-  for (let index = 0; index < hangingCount; index += 1) {
-    const seed = `${archetype.id}:hanging:${options.quality ?? "near"}:${index}`;
-    const angle = index / Math.max(1, hangingCount) * Math.PI * 2 + between(seed, "angle", -0.3, 0.3);
-    output.push(placement(
-      seed,
-      "hanging-vine",
-      [Math.sin(angle) * archetype.crownRadius * 0.68, baseY - archetype.crownHeight * 0.12, Math.cos(angle) * archetype.crownRadius * 0.68],
-      [0, angle, between(seed, "roll", -0.12, 0.12)],
-      [archetype.crownRadius * 0.18, archetype.crownHeight * between(seed, "length", 0.55, 0.96)],
-      { mode: "dangling-edge", windAmplitude: 0.18 }
-    ));
-  }
+  const art = PREHISTORIC_TREE_ART_DIRECTION.canopy;
+  const baseY = options.baseY ?? archetype.averageHeight * 0.72;
+  const coreCount = Math.max(1, Math.round(count * art.coreRatio));
+  const shellCount = Math.max(1, Math.round(count * art.shellRatio));
+  const fringeCount = Math.max(0, count - coreCount - shellCount);
+
+  const addZone = (zone, zoneCount, radiusRange, widthRange, heightRange, yRange, tint, mode, family = familyId) => {
+    for (let index = 0; index < zoneCount; index += 1) {
+      const seed = `${archetype.id}:${zone}:${options.quality ?? "near"}:${index}`;
+      const angle = index * 2.399963229728653 + between(seed, "angle", -0.22, 0.22);
+      const radius = archetype.crownRadius * between(seed, "radius", radiusRange[0], radiusRange[1]);
+      const y = baseY + archetype.crownHeight * between(seed, "y", yRange[0], yRange[1]);
+      output.push(placement(
+        seed,
+        family,
+        [Math.sin(angle) * radius, y, Math.cos(angle) * radius],
+        [between(seed, "pitch", -0.32, 0.32), angle + Math.PI * 0.5, between(seed, "roll", -0.36, 0.36)],
+        [archetype.crownRadius * between(seed, "width", widthRange[0], widthRange[1]), archetype.crownHeight * between(seed, "height", heightRange[0], heightRange[1])],
+        { mode, tint, windAmplitude: zone === "fringe" ? 0.18 : undefined, metadata: { zone } }
+      ));
+    }
+  };
+
+  addZone("core", coreCount, art.coreRadius, [0.25, 0.42], [0.2, 0.34], [0.04, 0.42], art.coreTint, "canopy-core");
+  addZone("shell", shellCount, art.shellRadius, [0.32, 0.52], [0.24, 0.42], [0.12, 0.58], art.shellTint, "canopy-shell");
+
+  const wantsVines = Number(archetype.hangingFoliage ?? 0) > 0.08;
+  addZone(
+    "fringe",
+    fringeCount,
+    art.fringeRadius,
+    [0.16, 0.28],
+    [0.38, 0.72],
+    [-0.12, 0.3],
+    art.fringeTint,
+    wantsVines ? "hanging-edge" : "canopy-fringe",
+    wantsVines ? "hanging-vine" : familyId
+  );
   return output;
 }
 
@@ -237,9 +246,8 @@ function tieredPlacements(archetype, count, familyId, options = {}) {
 
 export function createTreeFoliageCardPlacements(archetype, quality = "near") {
   const familyId = foliageFamilyIdForArchetype(archetype);
-  const nearCount = Math.max(4, Math.floor(archetype.heroCardCount ?? 22));
-  const mediumCount = Math.max(3, Math.floor(archetype.mediumCardCount ?? Math.max(6, nearCount * 0.46)));
-  const count = quality === "medium" ? mediumCount : nearCount;
+  const targets = getPrehistoricTreeFoliageTargets(archetype);
+  const count = quality === "medium" ? targets.medium : targets.near;
   const token = `${archetype.shape}:${familyId}`;
   if (/palm/.test(token)) {
     return freeze(radialPlacements(archetype, count, "palm-frond", {
@@ -264,12 +272,7 @@ export function createTreeFoliageCardPlacements(archetype, quality = "near") {
   }
   if (/spire|araucaria|needle/.test(token)) return freeze(tieredPlacements(archetype, count, "needle-spray", { quality }));
   if (/horsetail|whorl/.test(token)) return freeze(tieredPlacements(archetype, count, "horsetail-whorl", { quality }));
-  return freeze(canopyPlacements(archetype, count, familyId, {
-    quality,
-    layers: archetype.canopyLayers,
-    widthScale: /ginkgo/.test(token) ? 0.36 : 0.42,
-    heightScale: /ghostwood/.test(token) ? 0.32 : 0.38
-  }));
+  return freeze(canopyZonePlacements(archetype, count, familyId, { quality }));
 }
 
 function groundCover(value) {
