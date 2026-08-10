@@ -69,87 +69,96 @@ try {
     assert.equal(metrics.speciesCount, 12, `${sceneId} species contract`);
   }
 
-  const gamePage = await context.newPage();
+  let gameplayProbe = {
+    skipped: phase === "before",
+    reason: phase === "before" ? "Historical baseline uses the fixed Full Game Seed lab; live production runtime validation is current-main only." : null
+  };
   const gameErrors = [];
-  gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.stack || error.message }));
-  gamePage.on("console", (message) => {
-    if (message.type() === "error") gameErrors.push({ type: "console", message: message.text() });
-  });
-  await gamePage.goto(`${baseUrl}/game.html`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  await gamePage.waitForFunction(
-    () => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
-    null,
-    { timeout: 180_000 }
-  );
 
-  await gamePage.keyboard.press("Space");
-  await gamePage.waitForTimeout(1200);
-  await gamePage.keyboard.down("w");
-  await gamePage.waitForTimeout(900);
-  await gamePage.keyboard.up("w");
-  await gamePage.keyboard.press("ArrowLeft");
-  await gamePage.waitForTimeout(500);
-  await gamePage.keyboard.press("Space");
-  await gamePage.waitForTimeout(900);
+  if (phase === "after") {
+    const gamePage = await context.newPage();
+    gamePage.on("pageerror", (error) => gameErrors.push({ type: "pageerror", message: error.stack || error.message }));
+    gamePage.on("console", (message) => {
+      if (message.type() === "error") gameErrors.push({ type: "console", message: message.text() });
+    });
+    await gamePage.goto(`${baseUrl}/game.html`, { waitUntil: "domcontentloaded", timeout: 120_000 });
+    await gamePage.waitForFunction(
+      () => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
+      null,
+      { timeout: 180_000 }
+    );
 
-  const gameplayProbe = await gamePage.evaluate(async () => {
-    const frameTimes = [];
-    let previous = performance.now();
-    for (let index = 0; index < 120; index += 1) {
-      await new Promise((resolve) => requestAnimationFrame((now) => {
-        frameTimes.push(now - previous);
-        previous = now;
-        resolve();
-      }));
-    }
-    const ordered = frameTimes.slice().sort((a, b) => a - b);
-    const p95 = ordered[Math.min(ordered.length - 1, Math.floor(ordered.length * 0.95))] ?? 0;
-    const host = globalThis.PrehistoricRushHost;
-    const state = host?.getState?.() ?? {};
-    return {
-      hostPresent: Boolean(host),
-      canvasPresent: Boolean(document.querySelector("canvas")),
-      canvasCount: document.querySelectorAll("canvas").length,
-      bodyText: document.body.innerText.slice(0, 1200),
-      frameTimeAverageMs: frameTimes.reduce((sum, value) => sum + value, 0) / Math.max(1, frameTimes.length),
-      frameTimeP95Ms: p95,
-      frameSamples: frameTimes.length,
-      game: {
-        status: state.game?.state?.status ?? state.game?.status ?? null,
-        distance: state.game?.state?.distance ?? state.game?.distance ?? null
-      },
-      treeFidelity: {
-        packageCount: state.treeFidelity?.packageCount ?? null,
-        counts: state.treeFidelity?.counts ?? null,
-        textureCount: state.treeFidelity?.textureCount ?? null,
-        transitioning: state.treeFidelity?.transitioning ?? null,
-        exactFrameAck: state.treeFidelity?.exactFrameAck ?? null
-      },
-      lushFoliage: {
-        overflow: state.lushFoliage?.overflow ?? null,
-        nearCards: state.lushFoliage?.nearCards ?? null,
-        mediumCards: state.lushFoliage?.mediumCards ?? null,
-        sourceCards: state.lushFoliage?.sourceCards ?? null
-      },
-      startup: {
-        readiness: state.streamingReadiness ?? null,
-        assetStartup: state.assetStartup ?? null
+    await gamePage.keyboard.press("Space");
+    await gamePage.waitForTimeout(1200);
+    await gamePage.keyboard.down("w");
+    await gamePage.waitForTimeout(900);
+    await gamePage.keyboard.up("w");
+    await gamePage.keyboard.press("ArrowLeft");
+    await gamePage.waitForTimeout(500);
+    await gamePage.keyboard.press("Space");
+    await gamePage.waitForTimeout(900);
+
+    gameplayProbe = await gamePage.evaluate(async () => {
+      const frameTimes = [];
+      let previous = performance.now();
+      for (let index = 0; index < 120; index += 1) {
+        await new Promise((resolve) => requestAnimationFrame((now) => {
+          frameTimes.push(now - previous);
+          previous = now;
+          resolve();
+        }));
       }
-    };
-  });
+      const ordered = frameTimes.slice().sort((a, b) => a - b);
+      const p95 = ordered[Math.min(ordered.length - 1, Math.floor(ordered.length * 0.95))] ?? 0;
+      const host = globalThis.PrehistoricRushHost;
+      const state = host?.getState?.() ?? {};
+      return {
+        skipped: false,
+        hostPresent: Boolean(host),
+        canvasPresent: Boolean(document.querySelector("canvas")),
+        canvasCount: document.querySelectorAll("canvas").length,
+        bodyText: document.body.innerText.slice(0, 1200),
+        frameTimeAverageMs: frameTimes.reduce((sum, value) => sum + value, 0) / Math.max(1, frameTimes.length),
+        frameTimeP95Ms: p95,
+        frameSamples: frameTimes.length,
+        game: {
+          status: state.game?.state?.status ?? state.game?.status ?? null,
+          distance: state.game?.state?.distance ?? state.game?.distance ?? null
+        },
+        treeFidelity: {
+          packageCount: state.treeFidelity?.packageCount ?? null,
+          counts: state.treeFidelity?.counts ?? null,
+          textureCount: state.treeFidelity?.textureCount ?? null,
+          transitioning: state.treeFidelity?.transitioning ?? null,
+          exactFrameAck: state.treeFidelity?.exactFrameAck ?? null
+        },
+        lushFoliage: {
+          overflow: state.lushFoliage?.overflow ?? null,
+          nearCards: state.lushFoliage?.nearCards ?? null,
+          mediumCards: state.lushFoliage?.mediumCards ?? null,
+          sourceCards: state.lushFoliage?.sourceCards ?? null
+        },
+        startup: {
+          readiness: state.streamingReadiness ?? null,
+          assetStartup: state.assetStartup ?? null
+        }
+      };
+    });
 
-  const gameDirectory = path.join(evidenceRoot, "game");
-  await mkdir(gameDirectory, { recursive: true });
-  await gamePage.screenshot({ path: path.join(gameDirectory, `production-game-${phase}.png`), fullPage: true });
-  await writeJson(path.join(gameDirectory, `gameplay-probe-${phase}.json`), gameplayProbe);
-  await writeJson(path.join(gameDirectory, `browser-errors-${phase}.json`), gameErrors);
+    const gameDirectory = path.join(evidenceRoot, "game");
+    await mkdir(gameDirectory, { recursive: true });
+    await gamePage.screenshot({ path: path.join(gameDirectory, "production-game-after.png"), fullPage: true });
+    await writeJson(path.join(gameDirectory, "gameplay-probe-after.json"), gameplayProbe);
+    await writeJson(path.join(gameDirectory, "browser-errors-after.json"), gameErrors);
 
-  assert.equal(gameplayProbe.hostPresent, true, "production game exposes PrehistoricRushHost");
-  assert.equal(gameplayProbe.canvasPresent, true, "production game renders a canvas");
-  assert.equal(gameplayProbe.treeFidelity.packageCount, 12, "production runtime admits all 12 tree Fidelity packages");
-  assert.equal(gameplayProbe.lushFoliage.overflow, 0, "target-density production foliage stays within live batch capacity");
-  assert.ok(gameplayProbe.treeFidelity.exactFrameAck, "production runtime acknowledges exact generation-bound impostor frames");
-  assert.equal(gameErrors.length, 0, "production game browser errors");
+    assert.equal(gameplayProbe.hostPresent, true, "production game exposes PrehistoricRushHost");
+    assert.equal(gameplayProbe.canvasPresent, true, "production game renders a canvas");
+    assert.equal(gameplayProbe.treeFidelity.packageCount, 12, "production runtime admits all 12 tree Fidelity packages");
+    assert.equal(gameplayProbe.lushFoliage.overflow, 0, "target-density production foliage stays within live batch capacity");
+    assert.ok(gameplayProbe.treeFidelity.exactFrameAck, "production runtime acknowledges exact generation-bound impostor frames");
+    assert.equal(gameErrors.length, 0, "production game browser errors");
+  }
+
   assert.equal(browserErrors.length, 0, "forest lab browser errors");
 
   const summary = {
