@@ -97,17 +97,31 @@ try {
       throw new Error(`Production game did not reach host-ready state under software Chromium: ${JSON.stringify(startupState)}; ${error.message}`);
     }
 
+    const readRun = () => gamePage.evaluate(() => {
+      const state = globalThis.PrehistoricRushHost?.getState?.() ?? {};
+      return structuredClone(state.game?.run ?? null);
+    });
+
     await gamePage.keyboard.press("Space");
-    await gamePage.waitForTimeout(1200);
+    await gamePage.waitForTimeout(300);
+    const startedRun = await readRun();
+
     await gamePage.keyboard.down("w");
     await gamePage.waitForTimeout(900);
     await gamePage.keyboard.up("w");
-    await gamePage.keyboard.press("ArrowLeft");
-    await gamePage.waitForTimeout(500);
-    await gamePage.keyboard.press("Space");
-    await gamePage.waitForTimeout(900);
+    const boostedRun = await readRun();
 
-    gameplayProbe = await gamePage.evaluate(async () => {
+    await gamePage.keyboard.down("ArrowLeft");
+    await gamePage.waitForTimeout(300);
+    await gamePage.keyboard.up("ArrowLeft");
+    const steeredRun = await readRun();
+
+    await gamePage.keyboard.press("Space");
+    await gamePage.waitForTimeout(120);
+    const jumpedRun = await readRun();
+    await gamePage.waitForTimeout(780);
+
+    gameplayProbe = await gamePage.evaluate(async ({ startedRun, boostedRun, steeredRun, jumpedRun }) => {
       const frameTimes = [];
       let previous = performance.now();
       for (let index = 0; index < 120; index += 1) {
@@ -121,6 +135,7 @@ try {
       const p95 = ordered[Math.min(ordered.length - 1, Math.floor(ordered.length * 0.95))] ?? 0;
       const host = globalThis.PrehistoricRushHost;
       const state = host?.getState?.() ?? {};
+      const run = state.game?.run ?? null;
       return {
         skipped: false,
         hostPresent: Boolean(host),
@@ -131,9 +146,14 @@ try {
         frameTimeP95Ms: p95,
         frameSamples: frameTimes.length,
         game: {
-          status: state.game?.state?.status ?? state.game?.status ?? null,
-          distance: state.game?.state?.distance ?? state.game?.distance ?? null
+          status: run?.status ?? null,
+          distance: run?.distance ?? null,
+          speed: run?.speed ?? null,
+          yaw: run?.yaw ?? null,
+          jumpHeight: run?.jumpHeight ?? null,
+          grounded: run?.grounded ?? null
         },
+        mechanics: { startedRun, boostedRun, steeredRun, jumpedRun },
         treeFidelity: {
           packageCount: state.treeFidelity?.packageCount ?? null,
           counts: state.treeFidelity?.counts ?? null,
@@ -152,7 +172,7 @@ try {
           assetStartup: state.assetStartup ?? null
         }
       };
-    });
+    }, { startedRun, boostedRun, steeredRun, jumpedRun });
 
     const gameDirectory = path.join(evidenceRoot, "game");
     await mkdir(gameDirectory, { recursive: true });
@@ -162,6 +182,12 @@ try {
 
     assert.equal(gameplayProbe.hostPresent, true, "production game exposes PrehistoricRushHost");
     assert.equal(gameplayProbe.canvasPresent, true, "production game renders a canvas");
+    assert.equal(gameplayProbe.mechanics.startedRun?.status, "game", "start input enters active gameplay");
+    assert.ok(gameplayProbe.mechanics.boostedRun?.distance > gameplayProbe.mechanics.startedRun?.distance, "boost interval advances run distance");
+    assert.ok(gameplayProbe.mechanics.boostedRun?.speed > gameplayProbe.mechanics.startedRun?.speed, "boost input raises player speed");
+    assert.ok(Math.abs((gameplayProbe.mechanics.steeredRun?.yaw ?? 0) - (gameplayProbe.mechanics.boostedRun?.yaw ?? 0)) > 0.01, "steer input changes player yaw");
+    assert.ok((gameplayProbe.mechanics.jumpedRun?.jumpHeight ?? 0) > 0, "jump input raises the player above the ground");
+    assert.equal(gameplayProbe.mechanics.jumpedRun?.grounded, false, "jump input enters airborne state");
     assert.equal(gameplayProbe.treeFidelity.packageCount, 12, "production runtime admits all 12 tree Fidelity packages");
     assert.equal(gameplayProbe.lushFoliage.overflow, 0, "target-density production foliage stays within live batch capacity");
     assert.ok(gameplayProbe.treeFidelity.exactFrameAck, "production runtime acknowledges exact generation-bound impostor frames");
