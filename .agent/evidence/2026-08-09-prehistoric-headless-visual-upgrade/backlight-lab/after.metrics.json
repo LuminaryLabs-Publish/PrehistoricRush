@@ -7,7 +7,7 @@
   "triangles": 9742,
   "runtimeKind": "nexus-vegetation-growth-source",
   "growthRevision": "natural-growth-v3-authored-canopy",
-  "growthDigest": "f63553ca",
+  "growthDigest": "0e16b8fe",
   "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
   "growthValidation": {
     "valid": true,
@@ -51,7 +51,7 @@
         "branchCount": 40,
         "clusterCount": 84,
         "estimatedCardCount": 168,
-        "crownCoverage": 5.955477850881585,
+        "crownCoverage": 7.5154148799759515,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -63,7 +63,7 @@
         "branchCount": 40,
         "clusterCount": 30,
         "estimatedCardCount": 30,
-        "crownCoverage": 1.1132670354390233,
+        "crownCoverage": 1.4060717725441332,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -105,7 +105,7 @@
         "branchCount": 24,
         "clusterCount": 96,
         "estimatedCardCount": 173,
-        "crownCoverage": 4.31943524569558,
+        "crownCoverage": 5.5581083445373825,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -117,7 +117,7 @@
         "branchCount": 24,
         "clusterCount": 34,
         "estimatedCardCount": 34,
-        "crownCoverage": 0.8939997824022371,
+        "crownCoverage": 1.1397252227717871,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -132,7 +132,7 @@
         "branchCount": 30,
         "clusterCount": 78,
         "estimatedCardCount": 140,
-        "crownCoverage": 5.960551068155723,
+        "crownCoverage": 7.651392105385795,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -144,7 +144,7 @@
         "branchCount": 30,
         "clusterCount": 28,
         "estimatedCardCount": 28,
-        "crownCoverage": 1.1761671924241794,
+        "crownCoverage": 1.5017634971870475,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -159,7 +159,7 @@
         "branchCount": 40,
         "clusterCount": 88,
         "estimatedCardCount": 176,
-        "crownCoverage": 6.074084122416173,
+        "crownCoverage": 7.667195626483109,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -171,7 +171,7 @@
         "branchCount": 40,
         "clusterCount": 31,
         "estimatedCardCount": 31,
-        "crownCoverage": 1.0708909111209242,
+        "crownCoverage": 1.351767095396665,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -213,7 +213,7 @@
         "branchCount": 24,
         "clusterCount": 92,
         "estimatedCardCount": 184,
-        "crownCoverage": 5.746685627280583,
+        "crownCoverage": 7.351758158206705,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -225,7 +225,7 @@
         "branchCount": 24,
         "clusterCount": 32,
         "estimatedCardCount": 32,
-        "crownCoverage": 0.9630087521383109,
+        "crownCoverage": 1.234566837758466,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -240,7 +240,7 @@
         "branchCount": 30,
         "clusterCount": 64,
         "estimatedCardCount": 128,
-        "crownCoverage": 2.969815751174579,
+        "crownCoverage": 3.742942503460327,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -252,7 +252,7 @@
         "branchCount": 30,
         "clusterCount": 22,
         "estimatedCardCount": 22,
-        "crownCoverage": 0.5257632402055527,
+        "crownCoverage": 0.6615169571093994,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -267,7 +267,7 @@
         "branchCount": 24,
         "clusterCount": 64,
         "estimatedCardCount": 128,
-        "crownCoverage": 5.3864465871319815,
+        "crownCoverage": 6.895310084475253,
         "minimumCrownCoverage": 0.42,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
@@ -279,7 +279,7 @@
         "branchCount": 24,
         "clusterCount": 22,
         "estimatedCardCount": 22,
-        "crownCoverage": 0.9847251802663359,
+        "crownCoverage": 1.2618174720783395,
         "minimumCrownCoverage": 0.24,
         "authoredCanopy": true,
         "revision": "natural-growth-v3-authored-canopy"
