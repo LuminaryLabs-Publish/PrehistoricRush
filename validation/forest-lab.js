@@ -1,7 +1,7 @@
 import { RUNTIME_URLS } from "../src/shared/runtime-versions.js";
 import { PREHISTORIC_TREE_ARCHETYPES } from "../src/shared/tree-archetype-catalog.js";
 import { FOLIAGE_ATLAS_REVISION } from "../src/shared/prehistoric-foliage-card-recipes.js";
-import { registerPrehistoricVegetationCatalog } from "../src/shared/prehistoric-vegetation-domain.js";
+import { createPrehistoricVegetationRuntime } from "../src/shared/prehistoric-vegetation-domain.js";
 import {
   PREHISTORIC_TREE_GROWTH_REVISION,
   preparePrehistoricTreeGrowthPlans,
@@ -20,14 +20,13 @@ const [NexusEngine, THREE] = await Promise.all([
 ]);
 
 function createGrowthLabRuntime() {
-  if (typeof NexusEngine.createCoreObjectDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreObjectDomain().");
-  if (typeof NexusEngine.createCoreVegetationDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreVegetationDomain().");
   if (typeof NexusEngine.createCoreComputeDomain !== "function") throw new TypeError("Pinned NexusEngine is missing createCoreComputeDomain().");
-  const engine = NexusEngine.createEngine({ kits: NexusEngine.createCoreObjectDomain({ shape: false, fidelity: false }) });
-  for (const kit of NexusEngine.createCoreVegetationDomain()) engine.installKit(kit);
-  for (const kit of NexusEngine.createCoreComputeDomain()) engine.installKit(kit);
-  const vegetationCatalog = registerPrehistoricVegetationCatalog(NexusEngine, engine);
-  return { engine, vegetationCatalog };
+  const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
+  for (const kit of NexusEngine.createCoreComputeDomain()) vegetationRuntime.engine.installKit(kit);
+  return {
+    engine: vegetationRuntime.engine,
+    vegetationCatalog: vegetationRuntime.catalog
+  };
 }
 
 const baseRuntime = createGrowthLabRuntime();
