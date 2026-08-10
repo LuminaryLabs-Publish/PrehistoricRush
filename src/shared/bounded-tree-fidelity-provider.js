@@ -147,6 +147,13 @@ export function resetTreeFidelityTransientBuildState(runtime) {
 
 export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, runtime, options = {}) {
   const prebuilt = createPrebuiltLoader(runtime);
+  const usage = runtime.prebuiltFidelityUsage ?? {
+    packageHits: 0,
+    manifestHits: 0,
+    runtimeFallbackPackages: 0,
+    runtimeFallbackManifest: 0
+  };
+  runtime.prebuiltFidelityUsage = usage;
   let fallbackProvider = null;
 
   function getFallbackProvider() {
@@ -170,34 +177,41 @@ export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, 
       runtimeFoliagePlans: "near-and-medium-authoritative"
     },
     async load(asset, context) {
-      const compiled = asset?.metadata?.kind === "manifest"
+      const isManifest = asset?.metadata?.kind === "manifest";
+      const compiled = isManifest
         ? await prebuilt.loadManifestAsset(asset)
         : await prebuilt.loadPackage(asset, context);
-      if (compiled) return compiled;
+      if (compiled) {
+        if (isManifest) usage.manifestHits += 1;
+        else usage.packageHits += 1;
+        return compiled;
+      }
 
+      if (isManifest) usage.runtimeFallbackManifest += 1;
+      else usage.runtimeFallbackPackages += 1;
       const provider = getFallbackProvider();
       const result = await provider.load(asset, context);
-      if (asset?.metadata?.kind !== "package") {
+      if (!isManifest) {
+        const transientReset = resetTreeFidelityTransientBuildState(runtime);
         return {
           ...result,
           metadata: {
             ...(result.metadata ?? {}),
             providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
+            captureFoliagePlan: "medium",
             source: "runtime-generated",
-            runtimeGeneration: true
+            runtimeGeneration: true,
+            transientReset
           }
         };
       }
-      const transientReset = resetTreeFidelityTransientBuildState(runtime);
       return {
         ...result,
         metadata: {
           ...(result.metadata ?? {}),
           providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
-          captureFoliagePlan: "medium",
           source: "runtime-generated",
-          runtimeGeneration: true,
-          transientReset
+          runtimeGeneration: true
         }
       };
     },
