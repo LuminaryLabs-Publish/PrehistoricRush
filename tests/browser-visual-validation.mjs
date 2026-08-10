@@ -4,6 +4,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 const RUN_ID = "2026-08-09-prehistoric-headless-visual-upgrade";
+const phase = process.env.PREHISTORIC_EVIDENCE_PHASE === "before" ? "before" : "after";
 const baseUrl = process.env.PREHISTORIC_BASE_URL ?? "http://127.0.0.1:4173";
 const evidenceRoot = path.resolve(process.env.PREHISTORIC_EVIDENCE_DIR ?? `.agent/evidence/${RUN_ID}`);
 const viewport = { width: 1440, height: 900 };
@@ -41,8 +42,8 @@ try {
     const metrics = await page.evaluate(async (id) => globalThis.__setForestLabScene(id), sceneId);
     const sceneDirectory = path.join(evidenceRoot, directory);
     await mkdir(sceneDirectory, { recursive: true });
-    await page.screenshot({ path: path.join(sceneDirectory, "after.png"), fullPage: true });
-    await writeJson(path.join(sceneDirectory, "after.metrics.json"), metrics);
+    await page.screenshot({ path: path.join(sceneDirectory, `${phase}.png`), fullPage: true });
+    await writeJson(path.join(sceneDirectory, `${phase}.metrics.json`), metrics);
     sceneMetrics[sceneId] = metrics;
     assert.equal(metrics.growthValidation.valid, true, `${sceneId} growth validation`);
     assert.equal(metrics.speciesCount, 12, `${sceneId} species contract`);
@@ -97,9 +98,9 @@ try {
 
   const gameDirectory = path.join(evidenceRoot, "game");
   await mkdir(gameDirectory, { recursive: true });
-  await gamePage.screenshot({ path: path.join(gameDirectory, "production-game.png"), fullPage: true });
-  await writeJson(path.join(gameDirectory, "gameplay-probe.json"), gameplayProbe);
-  await writeJson(path.join(gameDirectory, "browser-errors.json"), gameErrors);
+  await gamePage.screenshot({ path: path.join(gameDirectory, `production-game-${phase}.png`), fullPage: true });
+  await writeJson(path.join(gameDirectory, `gameplay-probe-${phase}.json`), gameplayProbe);
+  await writeJson(path.join(gameDirectory, `browser-errors-${phase}.json`), gameErrors);
 
   assert.equal(gameplayProbe.hostPresent, true, "production game exposes PrehistoricRushHost");
   assert.equal(gameplayProbe.canvasPresent, true, "production game renders a canvas");
@@ -109,6 +110,7 @@ try {
   const summary = {
     status: "PASS",
     runId: RUN_ID,
+    phase,
     viewport,
     scenes: Object.keys(sceneMetrics),
     browserErrors,
@@ -118,7 +120,7 @@ try {
       performance: "GitHub Actions Chromium is a repeatable regression proxy, not a physical MacBook Air benchmark."
     }
   };
-  await writeJson(path.join(evidenceRoot, "after", "browser-summary.json"), summary);
+  await writeJson(path.join(evidenceRoot, phase, "browser-summary.json"), summary);
   console.log(JSON.stringify(summary, null, 2));
 } finally {
   await browser.close();
