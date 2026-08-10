@@ -56,9 +56,10 @@ assert.match(computeSource, /shadingBuffer/);
 assert.match(computeSource, /allowInvalid: true/);
 assert.match(computeSource, /GENERIC_CROWN_COVERAGE_ERROR/);
 assert.match(computeSource, /getPrehistoricTreeCrownCoverageMinimum/);
-assert.match(computeSource, /natural-growth-v3-authored-canopy/);
+assert.match(computeSource, /natural-growth-v4-volumetric-canopy/);
 assert.match(computeSource, /withAuthoredFoliage/);
 assert.match(computeSource, /productAuthoredCanopy/);
+assert.match(computeSource, /volumetricCrossedCards/);
 assert.match(runtimeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(runtimeSource, /treeGrowthDigest/);
 assert.match(runtimeSource, /singleVisualAuthority: true/);
@@ -113,4 +114,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("Core skeleton growth, authored canopy admission, bounded Fidelity/Capture transients, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("Core skeleton growth, volumetric authored canopy admission, bounded Fidelity/Capture transients, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
