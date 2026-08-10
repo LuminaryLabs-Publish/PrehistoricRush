@@ -23,12 +23,16 @@ function captureAtlas(THREE) {
   return atlas;
 }
 
+function materialBucket(cluster) {
+  return Math.max(0, Math.min(3, Math.floor(Number(cluster.lightExposure ?? 0.5) * 4)));
+}
+
 function materialFactory(THREE, atlas, archetype) {
   const cache = new Map();
   return (cluster) => {
     const family = getPrehistoricFoliageCardFamily(cluster.familyId);
     if (!family) throw new RangeError(`Natural tree cluster ${cluster.id} references unknown family ${cluster.familyId}.`);
-    const bucket = Math.max(0, Math.min(3, Math.floor(Number(cluster.lightExposure ?? 0.5) * 4)));
+    const bucket = materialBucket(cluster);
     const key = `${family.id}:${bucket}`;
     if (cache.has(key)) return cache.get(key);
     const color = new THREE.Color(archetype.foliageColor);
@@ -67,6 +71,19 @@ function geometryFor(THREE, mode, cache) {
   return geometry;
 }
 
+function applyFoliageTransform(object, cluster, cardIndex, cardCount) {
+  const yawOffset = cardCount === 1 ? 0 : cardIndex / cardCount * Math.PI;
+  object.position.set(...cluster.position);
+  object.rotation.set(
+    Number(cluster.rotation?.[0] ?? 0),
+    Number(cluster.rotation?.[1] ?? 0) + yawOffset,
+    Number(cluster.rotation?.[2] ?? 0) + (cardIndex % 2 === 0 ? -1 : 1) * 0.035,
+    "YXZ"
+  );
+  const scaleJitter = 0.94 + Number(cluster.seed ?? 0.5) * 0.12;
+  object.scale.set(cluster.scale[0] * scaleJitter, cluster.scale[1] * scaleJitter, 1);
+}
+
 export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, options = {}) {
   const growthPlan = options.growthPlan;
   if (!growthPlan?.foliageClusters?.length) throw new TypeError(`Natural foliage meshes require a growth plan for ${archetype.id}.`);
@@ -78,17 +95,8 @@ export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, opti
     const cardCount = Math.max(1, Math.floor(Number(cluster.cardCount) || 1));
     for (let cardIndex = 0; cardIndex < cardCount; cardIndex += 1) {
       const mesh = new THREE.Mesh(geometryFor(THREE, cluster.mode, geometryCache), materialFor(cluster));
-      const yawOffset = cardCount === 1 ? 0 : cardIndex / cardCount * Math.PI;
       mesh.name = `${archetype.id}:natural-foliage:${cluster.id}:${cardIndex}`;
-      mesh.position.set(...cluster.position);
-      mesh.rotation.set(
-        Number(cluster.rotation?.[0] ?? 0),
-        Number(cluster.rotation?.[1] ?? 0) + yawOffset,
-        Number(cluster.rotation?.[2] ?? 0) + (cardIndex % 2 === 0 ? -1 : 1) * 0.035,
-        "YXZ"
-      );
-      const scaleJitter = 0.94 + Number(cluster.seed ?? 0.5) * 0.12;
-      mesh.scale.set(cluster.scale[0] * scaleJitter, cluster.scale[1] * scaleJitter, 1);
+      applyFoliageTransform(mesh, cluster, cardIndex, cardCount);
       mesh.castShadow = options.castShadow !== false && cluster.mode !== "hanging-edge";
       mesh.receiveShadow = options.receiveShadow !== false;
       mesh.userData.foliageCard = true;
@@ -103,6 +111,57 @@ export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, opti
     }
   }
   return cards;
+}
+
+export function attachPrehistoricTreeFoliageBatches(THREE, group, archetype, options = {}) {
+  const growthPlan = options.growthPlan;
+  if (!growthPlan?.foliageClusters?.length) throw new TypeError(`Natural foliage batches require a growth plan for ${archetype.id}.`);
+  if (!THREE?.InstancedMesh) return attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, options);
+  const atlas = options.atlas ?? captureAtlas(THREE);
+  const materialFor = materialFactory(THREE, atlas, archetype);
+  const geometryCache = new Map();
+  const buckets = new Map();
+
+  for (const cluster of growthPlan.foliageClusters) {
+    const cardCount = Math.max(1, Math.floor(Number(cluster.cardCount) || 1));
+    const geometryKey = cluster.mode === "hanging-edge" ? "hanging" : "centered";
+    const key = `${geometryKey}:${cluster.familyId}:${materialBucket(cluster)}`;
+    let bucket = buckets.get(key);
+    if (!bucket) {
+      bucket = { cluster, geometryKey, cards: [] };
+      buckets.set(key, bucket);
+    }
+    for (let cardIndex = 0; cardIndex < cardCount; cardIndex += 1) bucket.cards.push({ cluster, cardIndex, cardCount });
+  }
+
+  const batches = [];
+  const transform = new THREE.Object3D();
+  for (const [key, bucket] of buckets) {
+    const mesh = new THREE.InstancedMesh(
+      geometryFor(THREE, bucket.cluster.mode, geometryCache),
+      materialFor(bucket.cluster),
+      bucket.cards.length
+    );
+    mesh.name = `${archetype.id}:capture-foliage-batch:${key}`;
+    bucket.cards.forEach((entry, index) => {
+      applyFoliageTransform(transform, entry.cluster, entry.cardIndex, entry.cardCount);
+      transform.updateMatrix();
+      mesh.setMatrixAt(index, transform.matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.castShadow = options.castShadow !== false && bucket.geometryKey !== "hanging";
+    mesh.receiveShadow = options.receiveShadow !== false;
+    mesh.frustumCulled = false;
+    mesh.userData.foliageCard = true;
+    mesh.userData.foliageCardBatch = true;
+    mesh.userData.foliageCardCount = bucket.cards.length;
+    mesh.userData.naturalGrowth = true;
+    mesh.userData.captureOptimized = true;
+    mesh.userData.familyId = bucket.cluster.familyId;
+    group.add(mesh);
+    batches.push(mesh);
+  }
+  return batches;
 }
 
 function segmentResolution(segment) {
@@ -281,19 +340,22 @@ export function createPrehistoricNaturalTreeObject(THREE, archetype, growthPlan,
     ?? FIDELITY_CAPTURE_FOLIAGE_PLAN_RESOLVER?.(archetype, growthPlan)
     ?? growthPlan;
   if (!resolvedCapturePlan?.foliageClusters?.length) throw new TypeError(`Natural tree foliage requires a growth plan for ${archetype.id}.`);
+  const captureOptimizedFoliage = resolvedCapturePlan !== growthPlan;
   const group = new THREE.Group();
   group.name = archetype.id;
   group.userData.naturalGrowth = true;
   group.userData.growthPlanId = growthPlan.id;
   group.userData.foliageGrowthPlanId = resolvedCapturePlan.id;
-  group.userData.captureOptimizedFoliage = resolvedCapturePlan !== growthPlan;
+  group.userData.captureOptimizedFoliage = captureOptimizedFoliage;
   group.userData.artDirection = "chunky-prehistoric-canopy-v1";
   const material = barkMaterial(THREE, archetype);
   for (const segment of [...growthPlan.roots, ...growthPlan.woodSegments]) addGrowthSegment(THREE, group, archetype, segment, material);
-  attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, {
+  const foliageOptions = {
     ...options,
     growthPlan: resolvedCapturePlan
-  });
+  };
+  if (captureOptimizedFoliage) attachPrehistoricTreeFoliageBatches(THREE, group, archetype, foliageOptions);
+  else attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, foliageOptions);
   const bounds = growthPlan.bounds;
   const width = Math.max(0.1, bounds.max[0] - bounds.min[0]);
   const height = Math.max(0.1, bounds.max[1] - bounds.min[1]);
