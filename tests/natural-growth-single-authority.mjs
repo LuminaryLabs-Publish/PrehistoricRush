@@ -16,29 +16,30 @@ assert.equal(TREE_FIDELITY_PACKAGE_VERSION, "5");
 assert.equal(PREHISTORIC_TREE_ARCHETYPES.length, 12);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
 
-assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "near"), 0.27);
-assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "medium"), 0.12);
-assert.equal(getPrehistoricTreeCrownCoverageMinimum("umbrella", "near"), 0.28);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "near"), 0.34);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("radial-frond", "medium"), 0.18);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("umbrella", "near"), 0.42);
+assert.equal(getPrehistoricTreeCrownCoverageMinimum("umbrella", "medium"), 0.24);
 assert.equal(validatePrehistoricTreeCrownCoverage({
   algorithm: { kind: "radial-frond" },
   quality: "near",
-  metrics: { crownCoverage: 0.276 }
-}).valid, true, "the production Giant Fern near crown is admitted");
+  metrics: { crownCoverage: 0.35 }
+}).valid, true, "dense radial near crowns are admitted");
 assert.equal(validatePrehistoricTreeCrownCoverage({
   algorithm: { kind: "radial-frond" },
   quality: "medium",
-  metrics: { crownCoverage: 0.128 }
-}).valid, true, "the reduced Giant Fern medium crown is admitted");
+  metrics: { crownCoverage: 0.19 }
+}).valid, true, "readable radial medium crowns are admitted");
 assert.equal(validatePrehistoricTreeCrownCoverage({
   algorithm: { kind: "radial-frond" },
   quality: "near",
-  metrics: { crownCoverage: 0.269 }
+  metrics: { crownCoverage: 0.339 }
 }).valid, false, "radial near crowns below the product minimum remain rejected");
 assert.equal(validatePrehistoricTreeCrownCoverage({
   algorithm: { kind: "umbrella" },
   quality: "near",
-  metrics: { crownCoverage: 0.279 }
-}).valid, false, "dense canopy trees retain the existing minimum");
+  metrics: { crownCoverage: 0.419 }
+}).valid, false, "chunky canopy trees reject hollow crowns");
 
 const computeSource = readFileSync(new URL("../src/shared/prehistoric-tree-growth-compute.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
@@ -54,6 +55,7 @@ assert.match(computeSource, /shadingBuffer/);
 assert.match(computeSource, /allowInvalid: true/);
 assert.match(computeSource, /GENERIC_CROWN_COVERAGE_ERROR/);
 assert.match(computeSource, /getPrehistoricTreeCrownCoverageMinimum/);
+assert.match(computeSource, /natural-growth-v2-stylized-canopy/);
 assert.match(runtimeSource, /preparePrehistoricTreeGrowthPlans/);
 assert.match(runtimeSource, /treeGrowthDigest/);
 assert.match(runtimeSource, /singleVisualAuthority: true/);
@@ -72,6 +74,8 @@ assert.match(naturalGeometrySource, /new THREE\.Mesh\(/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.Sprite\(/);
 assert.match(naturalGeometrySource, /MeshPhysicalMaterial/);
 assert.match(naturalGeometrySource, /growthPlan\.foliageClusters/);
+assert.match(naturalGeometrySource, /createOrganicSegmentGeometry/);
+assert.doesNotMatch(naturalGeometrySource, /new THREE\.CylinderGeometry\(segment\.radiusEnd/);
 
 assert.match(treeLayerSource, /presentationAuthority: "object-fidelity-natural-growth"/);
 assert.match(treeLayerSource, /getPresentationRecords/);
@@ -99,4 +103,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("natural-growth capture, radial coverage policy, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("natural-growth capture, dense crown policy, organic wood, compute shading, single LOD authority, and ground-only production presentation passed");
