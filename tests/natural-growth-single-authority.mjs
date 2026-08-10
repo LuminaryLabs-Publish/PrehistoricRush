@@ -75,15 +75,19 @@ assert.match(providerSource, /growthDigest/);
 assert.match(providerSource, /computePreparedShading: true/);
 assert.match(providerSource, /singleVisualAuthority: true/);
 
-assert.match(boundedProviderSource, /object-vegetation-natural-growth-v5-bounded-transients/);
+assert.match(boundedProviderSource, /object-vegetation-natural-growth-v6-bounded-medium-capture/);
+assert.match(boundedProviderSource, /captureFoliagePlan: "medium"/);
+assert.match(boundedProviderSource, /runtimeFoliagePlans: "near-and-medium-authoritative"/);
+assert.match(boundedProviderSource, /runtime\?\.growthPlans\?\.\[archetype\.id\]\?\.medium/);
 assert.match(boundedProviderSource, /fidelity\?\.reset\?\.\(\)/);
 assert.match(boundedProviderSource, /capture\?\.reset\?\.\(\)/);
 assert.doesNotMatch(boundedProviderSource, /getSnapshot\?\.\(\)/);
 
+assert.match(naturalGeometrySource, /setPrehistoricTreeFidelityCapturePlanResolver/);
+assert.match(naturalGeometrySource, /FIDELITY_CAPTURE_FOLIAGE_PLAN_RESOLVER/);
 assert.match(naturalGeometrySource, /new THREE\.Mesh\(/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.Sprite\(/);
 assert.match(naturalGeometrySource, /MeshPhysicalMaterial/);
-assert.match(naturalGeometrySource, /growthPlan\.foliageClusters/);
 assert.match(naturalGeometrySource, /createOrganicSegmentGeometry/);
 assert.match(naturalGeometrySource, /segmentOverlap/);
 assert.doesNotMatch(naturalGeometrySource, /new THREE\.CylinderGeometry\(segment\.radiusEnd/);
@@ -114,4 +118,4 @@ assert.match(adapterSource, /singleTreeAuthority/);
 assert.match(adapterSource, /productionCanopyGroups: 0/);
 assert.match(adapterSource, /productionBranchesAndBark: 0/);
 
-console.log("Core skeleton growth, volumetric authored canopy admission, bounded Fidelity/Capture transients, organic seamless wood, compute shading, single LOD authority, and ground-only production presentation passed");
+console.log("Core skeleton growth, volumetric authored canopy, medium-only Fidelity capture foliage, bounded transients, organic seamless wood, compute shading, and single runtime LOD authority passed");
