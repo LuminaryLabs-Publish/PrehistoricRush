@@ -39,7 +39,7 @@ for (const [name, value] of Object.entries({
   assert.equal(typeof value, "function", `${name} resolves through the product module graph`);
 }
 
-assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v2-stylized-canopy");
+assert.equal(PREHISTORIC_TREE_GROWTH_REVISION, "natural-growth-v3-authored-canopy");
 assert.equal(FOLIAGE_ATLAS_REVISION, "prehistoric-foliage-cards-v3-chunky-canopy");
 assert.equal(PREHISTORIC_FOLIAGE_CARD_FAMILIES.length, 8);
 assert.equal(PREHISTORIC_GROUND_COVER_ARCHETYPES.length, 6);
@@ -52,4 +52,4 @@ assert.doesNotThrow(() => structuredClone({
   groundCover: PREHISTORIC_GROUND_COVER_ARCHETYPES
 }));
 
-console.log("natural-growth vegetation product module imports passed");
+console.log("authored-canopy natural-growth vegetation product module imports passed");
