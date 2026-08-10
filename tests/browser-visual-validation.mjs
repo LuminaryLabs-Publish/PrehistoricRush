@@ -105,6 +105,7 @@ try {
     const ordered = frameTimes.slice().sort((a, b) => a - b);
     const p95 = ordered[Math.min(ordered.length - 1, Math.floor(ordered.length * 0.95))] ?? 0;
     const host = globalThis.PrehistoricRushHost;
+    const state = host?.getState?.() ?? {};
     return {
       hostPresent: Boolean(host),
       canvasPresent: Boolean(document.querySelector("canvas")),
@@ -112,7 +113,28 @@ try {
       bodyText: document.body.innerText.slice(0, 1200),
       frameTimeAverageMs: frameTimes.reduce((sum, value) => sum + value, 0) / Math.max(1, frameTimes.length),
       frameTimeP95Ms: p95,
-      frameSamples: frameTimes.length
+      frameSamples: frameTimes.length,
+      game: {
+        status: state.game?.state?.status ?? state.game?.status ?? null,
+        distance: state.game?.state?.distance ?? state.game?.distance ?? null
+      },
+      treeFidelity: {
+        packageCount: state.treeFidelity?.packageCount ?? null,
+        counts: state.treeFidelity?.counts ?? null,
+        textureCount: state.treeFidelity?.textureCount ?? null,
+        transitioning: state.treeFidelity?.transitioning ?? null,
+        exactFrameAck: state.treeFidelity?.exactFrameAck ?? null
+      },
+      lushFoliage: {
+        overflow: state.lushFoliage?.overflow ?? null,
+        nearCards: state.lushFoliage?.nearCards ?? null,
+        mediumCards: state.lushFoliage?.mediumCards ?? null,
+        sourceCards: state.lushFoliage?.sourceCards ?? null
+      },
+      startup: {
+        readiness: state.streamingReadiness ?? null,
+        assetStartup: state.assetStartup ?? null
+      }
     };
   });
 
@@ -124,6 +146,9 @@ try {
 
   assert.equal(gameplayProbe.hostPresent, true, "production game exposes PrehistoricRushHost");
   assert.equal(gameplayProbe.canvasPresent, true, "production game renders a canvas");
+  assert.equal(gameplayProbe.treeFidelity.packageCount, 12, "production runtime admits all 12 tree Fidelity packages");
+  assert.equal(gameplayProbe.lushFoliage.overflow, 0, "target-density production foliage stays within live batch capacity");
+  assert.ok(gameplayProbe.treeFidelity.exactFrameAck, "production runtime acknowledges exact generation-bound impostor frames");
   assert.equal(gameErrors.length, 0, "production game browser errors");
   assert.equal(browserErrors.length, 0, "forest lab browser errors");
 
