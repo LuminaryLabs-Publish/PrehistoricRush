@@ -87,6 +87,14 @@ jobs:
           PREHISTORIC_BASE_URL=http://127.0.0.1:4173 PREHISTORIC_EVIDENCE_PHASE=after node tests/browser-visual-validation.mjs
           kill $CURRENT_SERVER_PID
           trap - EXIT
+      - name: Validate compiled production startup fast path
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-fast-start-http.log 2>&1 &
+          FAST_START_SERVER_PID=$!
+          trap 'kill $FAST_START_SERVER_PID || true' EXIT
+          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 node tests/prebuilt-startup-validation.mjs
+          kill $FAST_START_SERVER_PID
+          trap - EXIT
       - name: Compare before and after evidence
         run: |
           mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
@@ -189,6 +197,7 @@ jobs:
             "checks": {
               "nodeContracts": "PASS",
               "compiledTreeAssets": "PASS",
+              "compiledStartupFastPath": "PASS",
               "browserEvidence": "PASS",
               "pagesDeployment": "PASS",
               "pagesGame": "PASS",
