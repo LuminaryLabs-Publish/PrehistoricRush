@@ -86,12 +86,7 @@ function computeOpaqueFrame(context, atlas, frame, atlasWidth, atlasHeight) {
   const absoluteMinY = originY + minY;
   frame.atlasCell = [cellX, cellY];
   frame.opaqueBoundsPixels = { minX, minY, maxX, maxY, width: opaqueWidth, height: opaqueHeight };
-  frame.uvRect = [
-    absoluteMinX / atlasWidth,
-    absoluteMinY / atlasHeight,
-    opaqueWidth / atlasWidth,
-    opaqueHeight / atlasHeight
-  ];
+  frame.uvRect = [absoluteMinX / atlasWidth, absoluteMinY / atlasHeight, opaqueWidth / atlasWidth, opaqueHeight / atlasHeight];
   frame.opaqueAspect = opaqueWidth / opaqueHeight;
   frame.opaqueCoverage = opaqueWidth * opaqueHeight / Math.max(1, width * height);
   frame.groundAnchorNormalized = [
@@ -136,14 +131,14 @@ export async function hydrateTreeFidelityRuntimeImages(runtime, options = {}) {
   }
 
   let completed = 0;
-  for (const source of uniqueSources) {
+  await Promise.all(uniqueSources.map(async (source) => {
     const image = await decodeAtlasSource(source);
     const dimensions = imageDimensions(image);
     if (dimensions.width < 1 || dimensions.height < 1) throw new Error("Tree fidelity atlas image has no usable pixel data.");
     atlasImages.set(source, image);
     completed += 1;
-    options.onProgress?.(completed / Math.max(1, uniqueSources.length), `Decoding tree atlas ${completed}/${uniqueSources.length}`);
-  }
+    options.onProgress?.(completed / Math.max(1, uniqueSources.length), `Decoding tree atlases ${completed}/${uniqueSources.length}`);
+  }));
 
   let frameCount = 0;
   for (const packageValue of packageValues) {
@@ -158,7 +153,12 @@ export async function hydrateTreeFidelityRuntimeImages(runtime, options = {}) {
     }
   }
 
-  return Object.freeze({ decoded: uniqueSources.length, total: uniqueSources.length, frames: frameCount });
+  return Object.freeze({
+    decoded: uniqueSources.length,
+    total: uniqueSources.length,
+    frames: frameCount,
+    parallelDecoding: true
+  });
 }
 
 export default hydrateTreeFidelityRuntimeImages;
