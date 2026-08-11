@@ -11,7 +11,7 @@ let fidelityResetCount = 0;
 let snapshotReadCount = 0;
 
 const runtime = {
-  treeGrowthRevision: "natural-growth-v4-volumetric-canopy",
+  treeGrowthRevision: "natural-growth-v5-efficient-crossed-geometry",
   treeGrowthDigest: "growth-digest",
   foliageAtlasRevision: "prehistoric-foliage-cards-v3-chunky-canopy",
   engine: {
