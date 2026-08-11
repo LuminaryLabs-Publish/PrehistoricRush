@@ -1,4 +1,5 @@
 import { createPrehistoricFoliageAtlas } from "./prehistoric-foliage-atlas.js";
+import { createPrehistoricFoliageCardGeometry } from "./prehistoric-foliage-card-geometry.js";
 import { getPrehistoricFoliageCardFamily } from "../shared/prehistoric-foliage-card-recipes.js";
 import { PREHISTORIC_TREE_ART_DIRECTION } from "../shared/prehistoric-tree-art-direction.js";
 
@@ -65,8 +66,10 @@ function materialFactory(THREE, atlas, archetype) {
 function geometryFor(THREE, mode, cache) {
   const key = mode === "hanging-edge" ? "hanging" : "centered";
   if (cache.has(key)) return cache.get(key);
-  const geometry = new THREE.PlaneGeometry(1, 1, 1, 2);
-  if (key === "hanging") geometry.translate(0, -0.5, 0);
+  const geometry = createPrehistoricFoliageCardGeometry(THREE, {
+    planes: 2,
+    hanging: key === "hanging"
+  });
   cache.set(key, geometry);
   return geometry;
 }
@@ -106,6 +109,7 @@ export function attachPrehistoricTreeFoliageMeshes(THREE, group, archetype, opti
       mesh.userData.lightExposure = cluster.lightExposure;
       mesh.userData.shade = cluster.shade;
       mesh.userData.windScale = cluster.windScale;
+      mesh.userData.crossedGeometry = true;
       group.add(mesh);
       cards.push(mesh);
     }
@@ -157,6 +161,7 @@ export function attachPrehistoricTreeFoliageBatches(THREE, group, archetype, opt
     mesh.userData.foliageCardCount = bucket.cards.length;
     mesh.userData.naturalGrowth = true;
     mesh.userData.captureOptimized = true;
+    mesh.userData.crossedGeometry = true;
     mesh.userData.familyId = bucket.cluster.familyId;
     group.add(mesh);
     batches.push(mesh);
