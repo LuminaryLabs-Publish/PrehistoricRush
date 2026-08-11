@@ -1,0 +1,109 @@
+{
+  "schema": "prehistoric-rush.prebuilt-tree-fidelity-manifest/1",
+  "packageVersion": "5",
+  "providerRevision": "object-vegetation-natural-growth-v7-prebuilt-first",
+  "growthRevision": "natural-growth-v5-efficient-crossed-geometry",
+  "growthDigest": "3f0c6694",
+  "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
+  "speciesCount": 12,
+  "sourceCommit": "e87529331f7c932d405c4f7d05462c3d29504f70",
+  "compiledFrameSize": 128,
+  "packages": [
+    {
+      "archetypeId": "giant-fern-tree",
+      "label": "giant-fern-tree",
+      "assetId": "prehistoric-tree-fidelity:giant-fern-tree",
+      "growthDigest": "c51cf3e5",
+      "file": "giant-fern-tree.json",
+      "atlas": "giant-fern-tree.png"
+    },
+    {
+      "archetypeId": "tower-conifer",
+      "label": "tower-conifer",
+      "assetId": "prehistoric-tree-fidelity:tower-conifer",
+      "growthDigest": "fa17fd3b",
+      "file": "tower-conifer.json",
+      "atlas": "tower-conifer.png"
+    },
+    {
+      "archetypeId": "understory-cycad",
+      "label": "understory-cycad",
+      "assetId": "prehistoric-tree-fidelity:understory-cycad",
+      "growthDigest": "775ab0ea",
+      "file": "understory-cycad.json",
+      "atlas": "understory-cycad.png"
+    },
+    {
+      "archetypeId": "broad-canopy",
+      "label": "broad-canopy",
+      "assetId": "prehistoric-tree-fidelity:broad-canopy",
+      "growthDigest": "a4ca93bf",
+      "file": "broad-canopy.json",
+      "atlas": "broad-canopy.png"
+    },
+    {
+      "archetypeId": "moss-column",
+      "label": "moss-column",
+      "assetId": "prehistoric-tree-fidelity:moss-column",
+      "growthDigest": "53453ef7",
+      "file": "moss-column.json",
+      "atlas": "moss-column.png"
+    },
+    {
+      "archetypeId": "layered-araucaria",
+      "label": "layered-araucaria",
+      "assetId": "prehistoric-tree-fidelity:layered-araucaria",
+      "growthDigest": "adfa5614",
+      "file": "layered-araucaria.json",
+      "atlas": "layered-araucaria.png"
+    },
+    {
+      "archetypeId": "fan-cycad",
+      "label": "fan-cycad",
+      "assetId": "prehistoric-tree-fidelity:fan-cycad",
+      "growthDigest": "31b880f0",
+      "file": "fan-cycad.json",
+      "atlas": "fan-cycad.png"
+    },
+    {
+      "archetypeId": "ginkgo-crown-tree",
+      "label": "ginkgo-crown-tree",
+      "assetId": "prehistoric-tree-fidelity:ginkgo-crown-tree",
+      "growthDigest": "fa56a5c0",
+      "file": "ginkgo-crown-tree.json",
+      "atlas": "ginkgo-crown-tree.png"
+    },
+    {
+      "archetypeId": "marsh-horsetail-tower",
+      "label": "marsh-horsetail-tower",
+      "assetId": "prehistoric-tree-fidelity:marsh-horsetail-tower",
+      "growthDigest": "32ea3e05",
+      "file": "marsh-horsetail-tower.json",
+      "atlas": "marsh-horsetail-tower.png"
+    },
+    {
+      "archetypeId": "forked-ghostwood",
+      "label": "forked-ghostwood",
+      "assetId": "prehistoric-tree-fidelity:forked-ghostwood",
+      "growthDigest": "8f5035fd",
+      "file": "forked-ghostwood.json",
+      "atlas": "forked-ghostwood.png"
+    },
+    {
+      "archetypeId": "tall-prehistoric-palm",
+      "label": "tall-prehistoric-palm",
+      "assetId": "prehistoric-tree-fidelity:tall-prehistoric-palm",
+      "growthDigest": "c90c5c5c",
+      "file": "tall-prehistoric-palm.json",
+      "atlas": "tall-prehistoric-palm.png"
+    },
+    {
+      "archetypeId": "short-jungle-palm",
+      "label": "short-jungle-palm",
+      "assetId": "prehistoric-tree-fidelity:short-jungle-palm",
+      "growthDigest": "f5764f05",
+      "file": "short-jungle-palm.json",
+      "atlas": "short-jungle-palm.png"
+    }
+  ]
+}

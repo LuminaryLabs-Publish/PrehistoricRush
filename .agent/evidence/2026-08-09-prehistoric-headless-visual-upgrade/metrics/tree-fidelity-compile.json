@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "sourceCommit": "e87529331f7c932d405c4f7d05462c3d29504f70",
+  "compilerElapsedMs": 37869.40000000001,
+  "packageCount": 12,
+  "packageBytes": 6986189,
+  "atlasBytes": 740493,
+  "totalBytes": 7726682,
+  "compiledFrameSize": 128,
+  "growthRevision": "natural-growth-v5-efficient-crossed-geometry",
+  "growthDigest": "3f0c6694",
+  "providerRevision": "object-vegetation-natural-growth-v7-prebuilt-first",
+  "prebuiltUsageDuringCompile": {
+    "packageHits": 0,
+    "manifestHits": 0,
+    "runtimeFallbackPackages": 12,
+    "runtimeFallbackManifest": 1
+  },
+  "expectedPrebuiltMissCount": 1,
+  "browserErrors": []
+}
