@@ -1,3 +1,4 @@
+import { createPrehistoricFoliageCardGeometry } from "./prehistoric-foliage-card-geometry.js";
 import { PREHISTORIC_FOLIAGE_CARD_FAMILIES } from "../shared/prehistoric-foliage-card-recipes.js";
 import { PREHISTORIC_TREE_ARCHETYPES } from "../shared/tree-archetype-catalog.js";
 
@@ -54,11 +55,11 @@ float foliageHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.54
       )
       .replace(
         "vec4 diffuseColor = vec4( diffuse, opacity );",
-        "vec3 computedLeafColor = diffuse * vInstanceTint * mix(0.68, 1.2, vFoliageShade.x) * mix(1.0, 0.76, vFoliageShade.y);\nvec4 diffuseColor = vec4(computedLeafColor, opacity);"
+        "vec3 computedLeafColor = diffuse * vInstanceTint * mix(0.58, 1.18, vFoliageShade.x) * mix(1.0, 0.68, vFoliageShade.y);\nvec4 diffuseColor = vec4(computedLeafColor, opacity);"
       )
       .replace(
         "vec3 totalEmissiveRadiance = emissive;",
-        "vec3 totalEmissiveRadiance = emissive + diffuse * vInstanceTint * vFoliageShade.z * 0.14;"
+        "vec3 warmTransmission = diffuse * vInstanceTint * vec3(1.12, 1.18, 0.78) * clamp(vFoliageShade.z, 0.0, 1.0) * 0.24;\nvec3 totalEmissiveRadiance = emissive + warmTransmission;"
       )
       .replace(
         "#include <clipping_planes_fragment>",
@@ -66,12 +67,12 @@ float foliageHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.54
 if (foliageHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;`
       );
   };
-  material.customProgramCacheKey = () => `prehistoric-compute-foliage-${family.id}-${formId}-v2`;
+  material.customProgramCacheKey = () => `prehistoric-compute-foliage-${family.id}-${formId}-v3-crossed-direct`;
   return material;
 }
 
 function createFamilyBatch(THREE, scene, atlas, family, formId, capacity) {
-  const geometry = new THREE.PlaneGeometry(1, 1, 1, 2);
+  const geometry = createPrehistoricFoliageCardGeometry(THREE, { planes: 2 });
   addInstanceAttributes(THREE, geometry, capacity);
   const parameters = {
     name: `compute-foliage:${family.id}:${formId}`,
@@ -86,7 +87,7 @@ function createFamilyBatch(THREE, scene, atlas, family, formId, capacity) {
     roughness: family.roughness,
     metalness: 0,
     emissive: 0x102818,
-    emissiveIntensity: family.translucency * (formId === "near" ? 0.2 : 0.25),
+    emissiveIntensity: family.translucency * (formId === "near" ? 0.16 : 0.2),
     fog: true
   };
   const baseMaterial = THREE.MeshPhysicalMaterial
@@ -126,71 +127,52 @@ function treeMatrixFor(THREE, record, packageValue, target) {
   const source = sourceBounds(packageValue);
   const variation = variationFor(record);
   const ground = variation.groundPosition ?? [bounds.center[0], bounds.min[1], bounds.center[2]];
-  const position = target.position;
-  const rotation = target.rotation;
-  const quaternion = target.quaternion;
-  const scale = target.scale;
-  position.set(ground[0], ground[1], ground[2]);
-  rotation.set(
+  target.position.set(ground[0], ground[1], ground[2]);
+  target.rotation.set(
     Number(variation.leanXRadians ?? Number(variation.leanXDegrees ?? 0) * Math.PI / 180),
     Number(variation.yawRadians ?? Number(variation.yawDegrees ?? 0) * Math.PI / 180),
     Number(variation.leanZRadians ?? Number(variation.leanZDegrees ?? 0) * Math.PI / 180),
     "YXZ"
   );
-  quaternion.setFromEuler(rotation);
-  scale.set(
+  target.quaternion.setFromEuler(target.rotation);
+  target.scale.set(
     bounds.size[0] / Math.max(0.001, source.size[0]),
     bounds.size[1] / Math.max(0.001, source.size[1]),
     bounds.size[2] / Math.max(0.001, source.size[2])
   );
-  target.treeMatrix.compose(position, quaternion, scale);
+  target.treeMatrix.compose(target.position, target.quaternion, target.scale);
 }
 
-function shadingFor(form, cluster, clusterIndex) {
+function resolveShading(form, cluster, clusterIndex, target) {
   const buffer = form?.shadingBuffer ?? [];
   const offset = clusterIndex * 8;
   if (buffer.length >= offset + 8) {
-    return {
-      lightExposure: clamp(Number(buffer[offset]), 0, 1),
-      shade: clamp(Number(buffer[offset + 1]), 0, 1),
-      backlight: clamp(Number(buffer[offset + 2]), 0, 1),
-      windScale: Math.max(0, Number(buffer[offset + 3]) || 0),
-      seed: Number(buffer[offset + 4]) || 0,
-      cardCount: Math.max(1, Math.floor(Number(buffer[offset + 5]) || 1)),
-      radial: Number(buffer[offset + 6]) > 0.5,
-      hanging: Number(buffer[offset + 7]) > 0.5
-    };
+    target.lightExposure = clamp(Number(buffer[offset]), 0, 1);
+    target.shade = clamp(Number(buffer[offset + 1]), 0, 1);
+    target.backlight = clamp(Number(buffer[offset + 2]), 0, 1);
+    target.windScale = Math.max(0, Number(buffer[offset + 3]) || 0);
+    target.seed = Number(buffer[offset + 4]) || 0;
+    target.cardCount = Math.max(1, Math.floor(Number(buffer[offset + 5]) || 1));
+    target.radial = Number(buffer[offset + 6]) > 0.5;
+    target.hanging = Number(buffer[offset + 7]) > 0.5;
+    return target;
   }
-  return {
-    lightExposure: clamp(Number(cluster.lightExposure ?? 0.5), 0, 1),
-    shade: clamp(Number(cluster.shade ?? 0.5), 0, 1),
-    backlight: Math.max(0.04, 1 - Number(cluster.shade ?? 0.5) * 0.68),
-    windScale: Math.max(0, Number(cluster.windScale ?? 1)),
-    seed: Number(cluster.seed ?? 0),
-    cardCount: Math.max(1, Math.floor(Number(cluster.cardCount ?? 1))),
-    radial: cluster.mode === "radial-frond",
-    hanging: cluster.mode === "hanging-edge"
-  };
+  target.lightExposure = clamp(Number(cluster.lightExposure ?? 0.5), 0, 1);
+  target.shade = clamp(Number(cluster.shade ?? 0.5), 0, 1);
+  target.backlight = Math.max(0.04, 1 - Number(cluster.shade ?? 0.5) * 0.68);
+  target.windScale = Math.max(0, Number(cluster.windScale ?? 1));
+  target.seed = Number(cluster.seed ?? 0);
+  target.cardCount = Math.max(1, Math.floor(Number(cluster.cardCount ?? 1)));
+  target.radial = cluster.mode === "radial-frond";
+  target.hanging = cluster.mode === "hanging-edge";
+  return target;
 }
 
-function colorTint(THREE, archetype, record, shading, cardIndex) {
-  const color = new THREE.Color(archetype.foliageColor);
-  const accent = new THREE.Color(archetype.accentColor ?? archetype.foliageColor);
-  const edgeAmount = clamp(shading.lightExposure * 0.48 + (cardIndex % 3) * 0.035, 0, 0.58);
-  color.lerp(accent, edgeAmount);
-  const variationTint = variationFor(record).tint ?? [1, 1, 1];
-  return [
-    color.r * Number(variationTint[0] ?? 1),
-    color.g * Number(variationTint[1] ?? 1),
-    color.b * Number(variationTint[2] ?? 1)
-  ];
-}
-
-function setAttributes(mesh, index, fade, tint, wind, shade) {
+function setAttributes(mesh, index, fade, tint, windAmplitude, windFrequency, windPhase, windStiffness, shading) {
   mesh.geometry.getAttribute("fidelityFade").setX(index, fade);
   mesh.geometry.getAttribute("instanceTint").setXYZ(index, tint[0], tint[1], tint[2]);
-  mesh.geometry.getAttribute("foliageWind").setXYZW(index, wind.amplitude, wind.frequency, wind.phase, wind.stiffness);
-  mesh.geometry.getAttribute("foliageShade").setXYZW(index, shade.lightExposure, shade.shade, shade.backlight, shade.windScale);
+  mesh.geometry.getAttribute("foliageWind").setXYZW(index, windAmplitude, windFrequency, windPhase, windStiffness);
+  mesh.geometry.getAttribute("foliageShade").setXYZW(index, shading.lightExposure, shading.shade, shading.backlight, shading.windScale);
 }
 
 function markAttributes(mesh) {
@@ -222,6 +204,20 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     quaternion: new THREE.Quaternion(),
     scale: new THREE.Vector3()
   };
+  const shading = {
+    lightExposure: 0.5,
+    shade: 0.5,
+    backlight: 0.5,
+    windScale: 1,
+    seed: 0,
+    cardCount: 1,
+    radial: false,
+    hanging: false
+  };
+  const tint = [1, 1, 1];
+  const baseColors = PREHISTORIC_TREE_ARCHETYPES.map((archetype) => new THREE.Color(archetype.foliageColor));
+  const accentColors = PREHISTORIC_TREE_ARCHETYPES.map((archetype) => new THREE.Color(archetype.accentColor ?? archetype.foliageColor));
+  const tintColor = new THREE.Color();
   let elapsed = 0;
   const growthDigest = packages.map((entry) => entry.growth.digest).join("|");
 
@@ -237,7 +233,9 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     atlasRevision: atlas.revision,
     growthDigest,
     authority: "object-fidelity-natural-growth",
-    computePreparedShading: true
+    computePreparedShading: true,
+    crossedGeometry: true,
+    directInstanceWrites: true
   };
 
   function activatePatch() {
@@ -248,7 +246,19 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     view.activePatches = authority.view.activePatches;
   }
 
-  function appendPlanCards(buckets, entry) {
+  function resolveTint(typeIndex, record, shadingValue, cardIndex) {
+    tintColor.copy(baseColors[typeIndex]).lerp(
+      accentColors[typeIndex],
+      clamp(shadingValue.lightExposure * 0.48 + (cardIndex % 3) * 0.035, 0, 0.58)
+    );
+    const variationTint = variationFor(record).tint ?? [1, 1, 1];
+    tint[0] = tintColor.r * Number(variationTint[0] ?? 1);
+    tint[1] = tintColor.g * Number(variationTint[1] ?? 1);
+    tint[2] = tintColor.b * Number(variationTint[2] ?? 1);
+    return tint;
+  }
+
+  function appendPlanCards(entry) {
     const packageValue = packages[entry.typeIndex];
     const archetype = PREHISTORIC_TREE_ARCHETYPES[entry.typeIndex];
     const form = packageValue.growth.forms[entry.formId];
@@ -258,8 +268,13 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     plan.foliageClusters.forEach((cluster, clusterIndex) => {
       const family = familyById.get(cluster.familyId);
       if (!family) throw new Error(`Growth cluster ${cluster.id} references unknown foliage family ${cluster.familyId}.`);
-      const shading = shadingFor(form, cluster, clusterIndex);
+      resolveShading(form, cluster, clusterIndex, shading);
+      const batch = batches.get(`${cluster.familyId}:${entry.formId}`);
       for (let cardIndex = 0; cardIndex < shading.cardCount; cardIndex += 1) {
+        if (batch.count >= batch.capacity) {
+          view.overflow += 1;
+          continue;
+        }
         const yawOffset = shading.cardCount === 1 ? 0 : cardIndex / shading.cardCount * Math.PI;
         treeTransform.position.set(...cluster.position);
         treeTransform.rotation.set(
@@ -273,28 +288,29 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
         treeTransform.scale.set(cluster.scale[0] * jitter, cluster.scale[1] * jitter, 1);
         treeTransform.localMatrix.compose(treeTransform.position, treeTransform.quaternion, treeTransform.scale);
         treeTransform.worldMatrix.multiplyMatrices(treeTransform.treeMatrix, treeTransform.localMatrix);
-        const bucket = buckets.get(`${cluster.familyId}:${entry.formId}`);
-        bucket.push({
-          matrix: treeTransform.worldMatrix.toArray(),
-          fade: entry.fade,
-          tint: colorTint(THREE, archetype, entry.record, shading, cardIndex),
-          wind: {
-            amplitude: family.wind.amplitude * shading.windScale,
-            frequency: family.wind.frequency,
-            phase: shading.seed * Math.PI * 2 + cardIndex * 0.73,
-            stiffness: family.wind.stiffness
-          },
-          shade: shading
-        });
+        const index = batch.count;
+        batch.mesh.setMatrixAt(index, treeTransform.worldMatrix);
+        const resolvedTint = resolveTint(entry.typeIndex, entry.record, shading, cardIndex);
+        setAttributes(
+          batch.mesh,
+          index,
+          entry.fade,
+          resolvedTint,
+          family.wind.amplitude * shading.windScale,
+          family.wind.frequency,
+          shading.seed * Math.PI * 2 + cardIndex * 0.73,
+          family.wind.stiffness,
+          shading
+        );
+        batch.count += 1;
       }
     });
+    return archetype;
   }
 
   function update(_state, deltaTime = 1 / 60) {
     elapsed += Math.max(0, Number(deltaTime) || 0);
-    const buckets = new Map(Array.from(batches.keys()).map((key) => [key, []]));
     const records = authority.getPresentationRecords();
-    for (const entry of records) appendPlanCards(buckets, entry);
 
     view.nearCards = 0;
     view.mediumCards = 0;
@@ -303,27 +319,21 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     view.transitioning = authority.view.transitioning;
     view.activePatches = authority.view.activePatches;
     for (const family of PREHISTORIC_FOLIAGE_CARD_FAMILIES) view.counts[family.id] = { near: 0, medium: 0 };
+    for (const batch of batches.values()) batch.count = 0;
+
+    for (const entry of records) appendPlanCards(entry);
 
     for (const [key, batch] of batches) {
-      const bucket = buckets.get(key);
-      const count = Math.min(batch.capacity, bucket.length);
-      for (let index = 0; index < count; index += 1) {
-        const record = bucket[index];
-        batch.mesh.setMatrixAt(index, treeTransform.worldMatrix.fromArray(record.matrix));
-        setAttributes(batch.mesh, index, record.fade, record.tint, record.wind, record.shade);
-      }
-      batch.mesh.count = count;
+      batch.mesh.count = batch.count;
       batch.mesh.instanceMatrix.needsUpdate = true;
       markAttributes(batch.mesh);
       batch.mesh.material.userData.foliageUniforms.foliageTime.value = elapsed;
-      batch.count = count;
       const separator = key.lastIndexOf(":");
       const familyId = key.slice(0, separator);
       const formId = key.slice(separator + 1);
-      view.counts[familyId][formId] = count;
-      if (formId === "near") view.nearCards += count;
-      else view.mediumCards += count;
-      view.overflow += Math.max(0, bucket.length - count);
+      view.counts[familyId][formId] = batch.count;
+      if (formId === "near") view.nearCards += batch.count;
+      else view.mediumCards += batch.count;
     }
     return view;
   }
