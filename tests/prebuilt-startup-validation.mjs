@@ -43,9 +43,12 @@ try {
   result = await page.evaluate(() => {
     const runtime = globalThis.PrehistoricRushTreeAssetRuntime;
     const state = globalThis.PrehistoricRushHost?.getState?.() ?? {};
+    const preparations = state.startup?.assetStartup?.preparations ?? [];
+    const imagePreparation = preparations.find((entry) => entry.id === "tree-fidelity-runtime-images") ?? null;
     return {
       prebuiltUsage: structuredClone(runtime?.prebuiltFidelityUsage ?? null),
-      preparation: structuredClone(runtime?.receipt ?? null),
+      assetReceipt: structuredClone(runtime?.receipt ?? null),
+      imageReceipt: structuredClone(imagePreparation?.receipt ?? null),
       packageCount: state.treeFidelity?.packageCount ?? null,
       foliageOverflow: state.lushFoliage?.overflow ?? null,
       canvasPresent: Boolean(document.querySelector("canvas"))
@@ -62,7 +65,7 @@ assert.equal(result.prebuiltUsage?.packageHits, 12, "normal production startup l
 assert.ok((result.prebuiltUsage?.manifestHits ?? 0) >= 1, "normal production startup loads the compiled tree manifest");
 assert.equal(result.prebuiltUsage?.runtimeFallbackPackages, 0, "normal production startup performs zero runtime tree package generation");
 assert.equal(result.prebuiltUsage?.runtimeFallbackManifest, 0, "normal production startup does not fall back to a generated manifest");
-assert.equal(result.preparation?.imageReceipt?.parallelDecoding, true, "compiled tree atlases decode in parallel");
+assert.equal(result.imageReceipt?.parallelDecoding, true, "compiled tree atlases decode in parallel");
 assert.equal(result.packageCount, 12, "production renderer receives all 12 Fidelity packages");
 assert.equal(result.foliageOverflow, 0, "compiled startup preserves zero foliage overflow");
 assert.equal(result.canvasPresent, true, "compiled startup reaches the production canvas");
