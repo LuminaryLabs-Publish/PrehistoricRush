@@ -67,7 +67,7 @@ float foliageHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.54
 if (foliageHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;`
       );
   };
-  material.customProgramCacheKey = () => `prehistoric-compute-foliage-${family.id}-${formId}-v3-crossed-direct`;
+  material.customProgramCacheKey = () => `prehistoric-compute-foliage-${family.id}-${formId}-v4-crossed-layout-cache`;
   return material;
 }
 
@@ -179,6 +179,15 @@ function markAttributes(mesh) {
   for (const name of ["fidelityFade", "instanceTint", "foliageWind", "foliageShade"]) mesh.geometry.getAttribute(name).needsUpdate = true;
 }
 
+function signatureHash(records) {
+  let hash = 2166136261;
+  for (const entry of records) {
+    const token = `${entry.record?.treeId ?? "?"}:${entry.typeIndex}:${entry.formId}:${Math.round(clamp(Number(entry.fade ?? 1), 0, 1) * 63)};`;
+    for (let index = 0; index < token.length; index += 1) hash = Math.imul(hash ^ token.charCodeAt(index), 16777619);
+  }
+  return `${records.length}:${hash >>> 0}`;
+}
+
 export function createThreeLushFoliageLayer(THREE, options = {}) {
   const { scene, packages = [], atlas, authority, capacityPerFamily = 8192 } = options;
   if (!scene || !atlas || !authority?.getPresentationRecords) throw new TypeError("Lush foliage layer requires scene, foliage atlas, and Object Fidelity presentation authority.");
@@ -219,6 +228,7 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
   const accentColors = PREHISTORIC_TREE_ARCHETYPES.map((archetype) => new THREE.Color(archetype.accentColor ?? archetype.foliageColor));
   const tintColor = new THREE.Color();
   let elapsed = 0;
+  let lastLayoutSignature = null;
   const growthDigest = packages.map((entry) => entry.growth.digest).join("|");
 
   const view = {
@@ -230,12 +240,15 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     mediumCards: 0,
     transitioning: 0,
     overflow: 0,
+    layoutRebuilds: 0,
+    layoutCacheHits: 0,
     atlasRevision: atlas.revision,
     growthDigest,
     authority: "object-fidelity-natural-growth",
     computePreparedShading: true,
     crossedGeometry: true,
-    directInstanceWrites: true
+    directInstanceWrites: true,
+    stableLayoutCache: true
   };
 
   function activatePatch() {
@@ -308,16 +321,15 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
     return archetype;
   }
 
-  function update(_state, deltaTime = 1 / 60) {
-    elapsed += Math.max(0, Number(deltaTime) || 0);
-    const records = authority.getPresentationRecords();
+  function updateTimeUniforms() {
+    for (const batch of batches.values()) batch.mesh.material.userData.foliageUniforms.foliageTime.value = elapsed;
+  }
 
+  function rebuildLayout(records) {
     view.nearCards = 0;
     view.mediumCards = 0;
     view.overflow = 0;
     view.treeCount = new Set(records.map((entry) => entry.record.treeId)).size;
-    view.transitioning = authority.view.transitioning;
-    view.activePatches = authority.view.activePatches;
     for (const family of PREHISTORIC_FOLIAGE_CARD_FAMILIES) view.counts[family.id] = { near: 0, medium: 0 };
     for (const batch of batches.values()) batch.count = 0;
 
@@ -327,7 +339,6 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
       batch.mesh.count = batch.count;
       batch.mesh.instanceMatrix.needsUpdate = true;
       markAttributes(batch.mesh);
-      batch.mesh.material.userData.foliageUniforms.foliageTime.value = elapsed;
       const separator = key.lastIndexOf(":");
       const familyId = key.slice(0, separator);
       const formId = key.slice(separator + 1);
@@ -335,6 +346,23 @@ export function createThreeLushFoliageLayer(THREE, options = {}) {
       if (formId === "near") view.nearCards += batch.count;
       else view.mediumCards += batch.count;
     }
+    view.layoutRebuilds += 1;
+  }
+
+  function update(_state, deltaTime = 1 / 60) {
+    elapsed += Math.max(0, Number(deltaTime) || 0);
+    const records = authority.getPresentationRecords();
+    const layoutSignature = signatureHash(records);
+    view.transitioning = authority.view.transitioning;
+    view.activePatches = authority.view.activePatches;
+
+    if (layoutSignature !== lastLayoutSignature) {
+      rebuildLayout(records);
+      lastLayoutSignature = layoutSignature;
+    } else {
+      view.layoutCacheHits += 1;
+    }
+    updateTimeUniforms();
     return view;
   }
 
