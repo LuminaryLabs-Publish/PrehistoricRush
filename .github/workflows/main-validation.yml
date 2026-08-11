@@ -44,7 +44,7 @@ jobs:
           node-version: 22
       - name: Install browser validation dependency
         run: |
-          npm install --no-save playwright@1.61.1
+          npm install --no-save --package-lock=false playwright@1.61.1
           npx playwright install --with-deps chromium
       - name: Prepare baseline worktree
         run: |
@@ -77,7 +77,8 @@ jobs:
           git add assets/tree-fidelity .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/metrics/tree-fidelity-compile.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "compile tree fidelity assets [skip ci]"
-          git pull --rebase origin main
+          git fetch origin main
+          git rebase --autostash origin/main
           git push origin HEAD:main
       - name: Capture current main render evidence using compiled assets
         run: |
@@ -113,7 +114,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
           git commit -m "record prehistoric browser validation evidence [skip ci]"
-          git pull --rebase origin main
+          git fetch origin main
+          git rebase --autostash origin/main
           git push origin HEAD:main
 
   pages-deploy:
@@ -172,7 +174,7 @@ jobs:
         with:
           node-version: 22
       - name: Install NexusEngine-Editor Headless host
-        run: npm install --no-save "github:LuminaryLabs-Dev/NexusEngine-Editor#2c87650436c332324f6c74d87f774a152e3aa8a2"
+        run: npm install --no-save --package-lock=false "github:LuminaryLabs-Dev/NexusEngine-Editor#2c87650436c332324f6c74d87f774a152e3aa8a2"
       - name: Run final nine-stage Headless lifecycle
         env:
           PREHISTORIC_VALIDATED_SHA: ${{ github.sha }}
@@ -211,7 +213,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
           git commit -m "record prehistoric main validation pass [skip ci]"
-          git pull --rebase origin main
+          git fetch origin main
+          git rebase --autostash origin/main
           git push origin HEAD:main
 
   record-result:
@@ -252,5 +255,6 @@ jobs:
           git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "record prehistoric workflow result [skip ci]"
-          git pull --rebase origin main
+          git fetch origin main
+          git rebase --autostash origin/main
           git push origin HEAD:main
