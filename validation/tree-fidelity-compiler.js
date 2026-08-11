@@ -105,6 +105,13 @@ async function serializePackages(runtime) {
   return packages;
 }
 
+function fullyReusedPrebuilt(usage) {
+  return Number(usage?.packageHits ?? 0) === PREHISTORIC_TREE_ARCHETYPES.length
+    && Number(usage?.manifestHits ?? 0) >= 1
+    && Number(usage?.runtimeFallbackPackages ?? 0) === 0
+    && Number(usage?.runtimeFallbackManifest ?? 0) === 0;
+}
+
 try {
   const [NexusEngine, THREE] = await Promise.all([
     import(RUNTIME_URLS.nexus),
@@ -135,7 +142,9 @@ try {
       }
     }
   });
-  const packages = await serializePackages(runtime);
+  const prebuiltUsage = structuredClone(runtime.prebuiltFidelityUsage ?? null);
+  const reusedPrebuilt = fullyReusedPrebuilt(prebuiltUsage);
+  const packages = reusedPrebuilt ? [] : await serializePackages(runtime);
   const result = {
     schema: PREBUILT_TREE_FIDELITY_SCHEMA,
     packageVersion: String(TREE_FIDELITY_PACKAGE_VERSION),
@@ -145,14 +154,15 @@ try {
     foliageAtlasRevision: runtime.foliageAtlasRevision,
     speciesCount: PREHISTORIC_TREE_ARCHETYPES.length,
     compiledFrameSize: COMPILED_FRAME_SIZE,
+    reusedPrebuilt,
     elapsedMs: performance.now() - startedAt,
-    prebuiltUsage: structuredClone(runtime.prebuiltFidelityUsage ?? null),
+    prebuiltUsage,
     receipt: structuredClone(receipt),
     packages
   };
   globalThis.__PREHISTORIC_TREE_COMPILER_RESULT__ = result;
   globalThis.__PREHISTORIC_TREE_COMPILER_READY__ = true;
-  update(1, `Tree Fidelity compiler ready · ${packages.length} packages`);
+  update(1, reusedPrebuilt ? "Matching compiled tree assets reused" : `Tree Fidelity compiler ready · ${packages.length} packages`);
 } catch (error) {
   globalThis.__PREHISTORIC_TREE_COMPILER_ERROR__ = error?.stack || error?.message || String(error);
   update(0, globalThis.__PREHISTORIC_TREE_COMPILER_ERROR__);
