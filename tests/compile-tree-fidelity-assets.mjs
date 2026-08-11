@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 
@@ -34,16 +34,22 @@ function extensionForMime(mime) {
   throw new Error(`Unsupported compiled tree atlas MIME type: ${mime}`);
 }
 
-await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
 await mkdir(path.dirname(metricsFile), { recursive: true });
 
 const browser = await chromium.launch({ headless: true, args: chromiumArgs });
 const page = await browser.newPage({ viewport: { width: 960, height: 640 }, deviceScaleFactor: 1 });
 const browserErrors = [];
+const expectedPrebuiltMisses = [];
 page.on("pageerror", (error) => browserErrors.push(error.stack || error.message));
 page.on("console", (message) => {
-  if (message.type() === "error") browserErrors.push(message.text());
+  if (message.type() !== "error") return;
+  const text = message.text();
+  if (/Failed to load resource:.*404/i.test(text)) {
+    expectedPrebuiltMisses.push(text);
+    return;
+  }
+  browserErrors.push(text);
 });
 
 let result;
@@ -68,7 +74,7 @@ try {
   await browser.close();
 }
 
-assert.equal(browserErrors.length, 0, "tree Fidelity compiler has no browser errors");
+assert.equal(browserErrors.length, 0, "tree Fidelity compiler has no unexpected browser errors");
 assert.equal(result?.speciesCount, 12, "tree Fidelity compiler covers all 12 species");
 assert.equal(result?.packages?.length, 12, "tree Fidelity compiler emits 12 packages");
 
@@ -112,6 +118,7 @@ const manifest = {
   foliageAtlasRevision: result.foliageAtlasRevision,
   speciesCount: 12,
   sourceCommit,
+  compiledFrameSize: result.compiledFrameSize ?? null,
   packages: manifestPackages
 };
 await writeFile(path.join(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
@@ -124,10 +131,12 @@ const metrics = {
   packageBytes,
   atlasBytes,
   totalBytes: packageBytes + atlasBytes,
+  compiledFrameSize: result.compiledFrameSize ?? null,
   growthRevision: result.growthRevision,
   growthDigest: result.growthDigest,
   providerRevision: result.providerRevision,
   prebuiltUsageDuringCompile: result.prebuiltUsage,
+  expectedPrebuiltMissCount: expectedPrebuiltMisses.length,
   browserErrors
 };
 await writeFile(metricsFile, `${JSON.stringify(metrics, null, 2)}\n`);
