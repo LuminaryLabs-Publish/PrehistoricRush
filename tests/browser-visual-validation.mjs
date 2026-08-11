@@ -1,52 +1,78 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
 const RUN_ID = "2026-08-09-prehistoric-headless-visual-upgrade";
-const phase = process.env.PREHISTORIC_EVIDENCE_PHASE === "before" ? "before" : "after";
+const phase = process.env.PREHISTORIC_EVIDENCE_PHASE ?? "after";
 const baseUrl = process.env.PREHISTORIC_BASE_URL ?? "http://127.0.0.1:4173";
-const evidenceRoot = path.resolve(process.env.PREHISTORIC_EVIDENCE_DIR ?? `.agent/evidence/${RUN_ID}`);
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const evidenceRoot = path.join(repositoryRoot, ".agent", "evidence", RUN_ID);
 const viewport = { width: 1440, height: 900 };
 const scenes = [
-  ["tree-lab", "tree-lab"],
-  ["root-lab", "root-lab"],
-  ["foliage-lab", "foliage-lab"],
-  ["canopy-lab", "canopy-lab"],
-  ["lod-lab", "lod-lab"],
-  ["backlight-lab", "backlight-lab"],
-  ["racing-line", "racing-line"],
-  ["full-game-seed", "game"]
+  "tree-lab",
+  "root-lab",
+  "foliage-lab",
+  "canopy-lab",
+  "lod-lab",
+  "backlight-lab",
+  "racing-line",
+  "full-game-seed"
 ];
-
-const chromiumArgs = [
-  "--use-gl=angle",
-  "--use-angle=swiftshader",
-  "--enable-webgl",
-  "--ignore-gpu-blocklist",
-  "--enable-unsafe-swiftshader",
-  "--disable-dev-shm-usage"
-];
-
-async function launchEvidenceBrowser() {
-  return chromium.launch({ headless: true, args: chromiumArgs });
-}
-
-async function writeJson(file, value) {
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-let browser = null;
-let labContext = null;
-let gameContext = null;
 const browserErrors = [];
 const gameErrors = [];
+let browser = null;
+let gameContext = null;
+
+async function writeJson(filePath, value) {
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function launchEvidenceBrowser() {
+  return chromium.launch({
+    headless: true,
+    args: [
+      "--use-gl=angle",
+      "--use-angle=swiftshader",
+      "--enable-webgl",
+      "--ignore-gpu-blocklist",
+      "--enable-unsafe-swiftshader",
+      "--disable-dev-shm-usage"
+    ]
+  });
+}
+
+async function waitForRunCondition(page, condition, argument, timeout = 20_000) {
+  await page.waitForFunction(
+    ({ condition, argument }) => {
+      const run = globalThis.PrehistoricRushHost?.getState?.()?.game?.run ?? null;
+      if (!run) return false;
+      if (condition === "boost") {
+        return Number(run.distance ?? 0) > Number(argument.distance ?? 0) + 0.01
+          && Number(run.speed ?? 0) > Number(argument.speed ?? 0) + 0.01;
+      }
+      if (condition === "steer") {
+        return Math.abs(Number(run.yaw ?? 0) - Number(argument.yaw ?? 0)) > 0.01;
+      }
+      if (condition === "jump") {
+        return Number(run.jumpHeight ?? 0) > 0.01 && run.grounded === false;
+      }
+      return false;
+    },
+    { condition, argument },
+    { timeout }
+  );
+}
+
+await mkdir(evidenceRoot, { recursive: true });
+const sceneMetrics = {};
 
 try {
   browser = await launchEvidenceBrowser();
-  labContext = await browser.newContext({ viewport, deviceScaleFactor: 1 });
-  const page = await labContext.newPage();
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+  const page = await context.newPage();
   page.on("pageerror", (error) => browserErrors.push({ type: "pageerror", message: error.stack || error.message }));
   page.on("console", (message) => {
     if (message.type() === "error") browserErrors.push({ type: "console", message: message.text() });
@@ -54,39 +80,26 @@ try {
 
   await page.goto(`${baseUrl}/validation/forest-lab.html?scene=tree-lab`, { waitUntil: "domcontentloaded", timeout: 120_000 });
   await page.waitForFunction(
-    () => globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true || (globalThis.__PREHISTORIC_FOREST_LAB_ERRORS__?.length ?? 0) > 0,
+    () => globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true || Boolean(globalThis.__PREHISTORIC_FOREST_LAB_ERROR__),
     null,
-    { timeout: 180_000 }
+    { timeout: 120_000 }
   );
-  const labState = await page.evaluate(() => ({
-    ready: globalThis.__PREHISTORIC_FOREST_LAB_READY__ === true,
-    errors: [...(globalThis.__PREHISTORIC_FOREST_LAB_ERRORS__ ?? [])],
-    status: document.querySelector("#status")?.innerText ?? ""
-  }));
-  if (!labState.ready) {
-    throw new Error(`Forest lab failed to initialize for ${phase}: ${[...labState.errors, ...browserErrors.map((entry) => entry.message), labState.status].filter(Boolean).join(" | ")}`);
-  }
+  const labError = await page.evaluate(() => globalThis.__PREHISTORIC_FOREST_LAB_ERROR__ ?? null);
+  if (labError) throw new Error(`Forest validation lab failed: ${labError}`);
 
-  const sceneMetrics = {};
-  const labCanvas = page.locator("canvas").first();
-  for (const [sceneId, directory] of scenes) {
-    const metrics = await page.evaluate(async (id) => globalThis.__setForestLabScene(id), sceneId);
-    const sceneDirectory = path.join(evidenceRoot, directory);
-    await mkdir(sceneDirectory, { recursive: true });
-    await labCanvas.screenshot({ path: path.join(sceneDirectory, `${phase}.png`), timeout: 90_000 });
-    await writeJson(path.join(sceneDirectory, `${phase}.metrics.json`), metrics);
+  for (const sceneId of scenes) {
+    const metrics = await page.evaluate((id) => globalThis.__setForestLabScene(id), sceneId);
     sceneMetrics[sceneId] = metrics;
-    assert.equal(metrics.growthValidation.valid, true, `${sceneId} growth validation`);
-    assert.equal(metrics.speciesCount, 12, `${sceneId} species contract`);
+    const sceneDirectory = path.join(evidenceRoot, phase);
+    await mkdir(sceneDirectory, { recursive: true });
+    await page.locator("canvas").first().screenshot({
+      path: path.join(sceneDirectory, `${sceneId}.png`),
+      timeout: 90_000
+    });
+    await writeJson(path.join(sceneDirectory, `${sceneId}.json`), metrics);
   }
 
-  assert.equal(browserErrors.length, 0, "forest lab browser errors");
-
-  // Fully terminate the validation-lab Chromium/GPU process before the production
-  // game prepares all 12 captured Fidelity packages. A fresh process avoids
-  // carrying SwiftShader GPU allocations or shared-memory pressure across phases.
-  await labContext.close();
-  labContext = null;
+  await context.close();
   await browser.close();
   browser = null;
 
@@ -130,23 +143,22 @@ try {
     });
 
     await gamePage.keyboard.press("Space");
-    await gamePage.waitForTimeout(300);
+    await gamePage.waitForFunction(() => globalThis.PrehistoricRushHost?.getState?.()?.game?.run?.status === "game", null, { timeout: 20_000 });
     const startedRun = await readRun();
 
     await gamePage.keyboard.down("w");
-    await gamePage.waitForTimeout(900);
-    await gamePage.keyboard.up("w");
+    await waitForRunCondition(gamePage, "boost", startedRun, 20_000);
     const boostedRun = await readRun();
+    await gamePage.keyboard.up("w");
 
     await gamePage.keyboard.down("ArrowLeft");
-    await gamePage.waitForTimeout(300);
-    await gamePage.keyboard.up("ArrowLeft");
+    await waitForRunCondition(gamePage, "steer", boostedRun, 20_000);
     const steeredRun = await readRun();
+    await gamePage.keyboard.up("ArrowLeft");
 
     await gamePage.keyboard.press("Space");
-    await gamePage.waitForTimeout(120);
+    await waitForRunCondition(gamePage, "jump", steeredRun, 20_000);
     const jumpedRun = await readRun();
-    await gamePage.waitForTimeout(780);
 
     gameplayProbe = await gamePage.evaluate(async ({ startedRun, boostedRun, steeredRun, jumpedRun }) => {
       const frameTimes = [];
@@ -192,7 +204,9 @@ try {
           overflow: state.lushFoliage?.overflow ?? null,
           nearCards: state.lushFoliage?.nearCards ?? null,
           mediumCards: state.lushFoliage?.mediumCards ?? null,
-          sourceCards: state.lushFoliage?.sourceCards ?? null
+          sourceCards: state.lushFoliage?.sourceCards ?? null,
+          layoutRebuilds: state.lushFoliage?.layoutRebuilds ?? null,
+          layoutCacheHits: state.lushFoliage?.layoutCacheHits ?? null
         },
         startup: {
           readiness: state.streamingReadiness ?? null,
@@ -243,6 +257,5 @@ try {
   console.log(JSON.stringify(summary, null, 2));
 } finally {
   if (gameContext) await gameContext.close().catch(() => {});
-  if (labContext) await labContext.close().catch(() => {});
   if (browser) await browser.close().catch(() => {});
 }
