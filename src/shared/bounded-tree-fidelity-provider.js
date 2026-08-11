@@ -41,8 +41,31 @@ function normalizePrebuiltAtlasUrls(packageValue) {
   return packageValue;
 }
 
-function createPrebuiltLoader(runtime) {
+function createPrebuiltLoader(runtime, usage) {
   let manifestPromise = null;
+  const packagePromises = new Map();
+
+  function packagePromise(entry) {
+    const key = String(entry?.file ?? "");
+    if (!key || !globalThis.fetch) return Promise.resolve(null);
+    if (!packagePromises.has(key)) {
+      usage.packagePrefetches += 1;
+      packagePromises.set(key, (async () => {
+        try {
+          const response = await fetch(new URL(key, PREBUILT_TREE_FIDELITY_ROOT_URL), { cache: "force-cache" });
+          if (!response.ok) return null;
+          return normalizePrebuiltAtlasUrls(await response.json());
+        } catch {
+          return null;
+        }
+      })());
+    }
+    return packagePromises.get(key);
+  }
+
+  function primePackages(manifest) {
+    for (const entry of manifest?.packages ?? []) packagePromise(entry);
+  }
 
   async function loadManifest() {
     if (!globalThis.fetch) return null;
@@ -52,7 +75,10 @@ function createPrebuiltLoader(runtime) {
           const response = await fetch(new URL("manifest.json", PREBUILT_TREE_FIDELITY_ROOT_URL), { cache: "no-cache" });
           if (!response.ok) return null;
           const manifest = await response.json();
-          return matchesPrebuiltTreeFidelityManifest(manifest, runtime) ? manifest : null;
+          if (!matchesPrebuiltTreeFidelityManifest(manifest, runtime)) return null;
+          primePackages(manifest);
+          usage.parallelPackagePrefetch = true;
+          return manifest;
         } catch {
           return null;
         }
@@ -67,30 +93,25 @@ function createPrebuiltLoader(runtime) {
     const archetypeId = String(asset?.metadata?.archetypeId ?? "");
     const entry = manifest.packages.find((candidate) => candidate.archetypeId === archetypeId);
     if (!entry?.file) return null;
-    try {
-      context?.updateProgress?.(0.12, 1, `Loading compiled ${entry.label ?? archetypeId}`);
-      const response = await fetch(new URL(entry.file, PREBUILT_TREE_FIDELITY_ROOT_URL), { cache: "force-cache" });
-      if (!response.ok) return null;
-      const portable = normalizePrebuiltAtlasUrls(await response.json());
-      if (portable?.archetypeId !== archetypeId || portable?.growth?.digest !== entry.growthDigest) return null;
-      context?.updateProgress?.(1, 1, `${entry.label ?? archetypeId} compiled fidelity ready`);
-      return {
-        portable,
-        metadata: {
-          archetypeId,
-          speciesId: archetypeId,
-          generationId: portable.generation?.id ?? null,
-          growthDigest: portable.growth?.digest ?? null,
-          fidelityPackageId: portable.generation?.fidelityPackageId ?? null,
-          packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
-          providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
-          source: "prebuilt",
-          runtimeGeneration: false
-        }
-      };
-    } catch {
-      return null;
-    }
+    context?.updateProgress?.(0.12, 1, `Loading compiled ${entry.label ?? archetypeId}`);
+    const portable = await packagePromise(entry);
+    if (portable?.archetypeId !== archetypeId || portable?.growth?.digest !== entry.growthDigest) return null;
+    context?.updateProgress?.(1, 1, `${entry.label ?? archetypeId} compiled fidelity ready`);
+    return {
+      portable,
+      metadata: {
+        archetypeId,
+        speciesId: archetypeId,
+        generationId: portable.generation?.id ?? null,
+        growthDigest: portable.growth?.digest ?? null,
+        fidelityPackageId: portable.generation?.fidelityPackageId ?? null,
+        packageVersion: TREE_FIDELITY_PACKAGE_VERSION,
+        providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
+        source: "prebuilt",
+        runtimeGeneration: false,
+        parallelPackagePrefetch: true
+      }
+    };
   }
 
   async function loadManifestAsset(asset) {
@@ -109,6 +130,7 @@ function createPrebuiltLoader(runtime) {
         providerRevision: manifest.providerRevision,
         singleVisualAuthority: true,
         prebuilt: true,
+        parallelPackagePrefetch: true,
         archetypes: manifest.packages.map((entry) => ({
           id: entry.archetypeId,
           label: entry.label,
@@ -125,6 +147,7 @@ function createPrebuiltLoader(runtime) {
         foliageAtlasRevision: manifest.foliageAtlasRevision,
         source: "prebuilt",
         runtimeGeneration: false,
+        parallelPackagePrefetch: true,
         singleVisualAuthority: true
       }
     };
@@ -146,14 +169,16 @@ export function resetTreeFidelityTransientBuildState(runtime) {
 }
 
 export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, runtime, options = {}) {
-  const prebuilt = createPrebuiltLoader(runtime);
   const usage = runtime.prebuiltFidelityUsage ?? {
     packageHits: 0,
     manifestHits: 0,
     runtimeFallbackPackages: 0,
-    runtimeFallbackManifest: 0
+    runtimeFallbackManifest: 0,
+    packagePrefetches: 0,
+    parallelPackagePrefetch: false
   };
   runtime.prebuiltFidelityUsage = usage;
+  const prebuilt = createPrebuiltLoader(runtime, usage);
   let fallbackProvider = null;
 
   function getFallbackProvider() {
@@ -167,11 +192,12 @@ export function createBoundedVegetationTreeFidelityProvider(NexusEngine, THREE, 
 
   return {
     id: TREE_FIDELITY_PROVIDER_ID,
-    version: "7.0.0",
+    version: "7.1.0",
     metadata: {
-      purpose: "Load fingerprint-matched compiled tree Fidelity assets first; generate bounded medium-canopy captures only as a fallback.",
+      purpose: "Load fingerprint-matched compiled tree Fidelity assets first, prefetch compiled packages in parallel, and generate bounded captures only as a fallback.",
       providerRevision: BOUNDED_TREE_FIDELITY_PROVIDER_REVISION,
       assetStrategy: "prebuilt-first-runtime-fallback",
+      packageLoading: "parallel-prefetch",
       transientBuildState: "reset-after-portable-package",
       captureFoliagePlan: "medium",
       runtimeFoliagePlans: "near-and-medium-authoritative"
