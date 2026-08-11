@@ -1,6 +1,6 @@
 {
-  "validatedCommit": "bbc28f0ec8bf0f626482a1e42006c776e6acf170",
-  "workflowRunId": "31523704472",
+  "validatedCommit": "9380e89b7ad696e7d27019ed55f302d7ad4560f5",
+  "workflowRunId": "31523746040",
   "jobs": {
     "nodeContracts": "failure",
     "browserEvidence": "skipped",
