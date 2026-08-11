@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 
@@ -32,6 +32,34 @@ function extensionForMime(mime) {
   if (mime === "image/webp") return "webp";
   if (mime === "image/jpeg") return "jpg";
   throw new Error(`Unsupported compiled tree atlas MIME type: ${mime}`);
+}
+
+async function readExistingManifest() {
+  try {
+    return JSON.parse(await readFile(path.join(outputRoot, "manifest.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+async function existingAssetSizes(manifest) {
+  let packageBytes = 0;
+  let atlasBytes = 0;
+  for (const entry of manifest.packages ?? []) {
+    packageBytes += (await stat(path.join(outputRoot, entry.file))).size;
+    atlasBytes += (await stat(path.join(outputRoot, entry.atlas))).size;
+  }
+  return { packageBytes, atlasBytes };
+}
+
+function assertManifestIdentity(manifest, result) {
+  assert.equal(manifest?.schema, result.schema, "reused manifest schema matches compiler contract");
+  assert.equal(String(manifest?.packageVersion ?? ""), String(result.packageVersion), "reused manifest package version matches");
+  assert.equal(manifest?.providerRevision, result.providerRevision, "reused manifest provider revision matches");
+  assert.equal(manifest?.growthRevision, result.growthRevision, "reused manifest growth revision matches");
+  assert.equal(manifest?.growthDigest, result.growthDigest, "reused manifest growth digest matches");
+  assert.equal(manifest?.foliageAtlasRevision, result.foliageAtlasRevision, "reused manifest foliage atlas revision matches");
+  assert.equal(manifest?.packages?.length, 12, "reused manifest contains all 12 species");
 }
 
 await mkdir(outputRoot, { recursive: true });
@@ -76,62 +104,72 @@ try {
 
 assert.equal(browserErrors.length, 0, "tree Fidelity compiler has no unexpected browser errors");
 assert.equal(result?.speciesCount, 12, "tree Fidelity compiler covers all 12 species");
-assert.equal(result?.packages?.length, 12, "tree Fidelity compiler emits 12 packages");
 
-const manifestPackages = [];
-let atlasBytes = 0;
+let manifest;
 let packageBytes = 0;
-for (const entry of result.packages) {
-  const packageValue = structuredClone(entry.value);
-  const archetypeId = packageValue.archetypeId;
-  assert.ok(archetypeId, "compiled tree package has an archetype id");
-  assert.ok(packageValue.growth?.digest, `${archetypeId} compiled package has a growth digest`);
-  const source = packageValue.forms?.far?.atlas?.assetId ?? packageValue.forms?.horizon?.atlas?.assetId;
-  const atlas = decodeDataUrl(source);
-  const extension = extensionForMime(atlas.mime);
-  const atlasFile = `${archetypeId}.${extension}`;
-  await writeFile(path.join(outputRoot, atlasFile), atlas.bytes);
-  atlasBytes += atlas.bytes.length;
-  if (packageValue.forms?.far?.atlas) packageValue.forms.far.atlas.assetId = atlasFile;
-  if (packageValue.forms?.horizon?.atlas) packageValue.forms.horizon.atlas.assetId = atlasFile;
+let atlasBytes = 0;
+if (result.reusedPrebuilt) {
+  assert.equal(result.packages?.length, 0, "matching compiled assets skip package serialization");
+  manifest = await readExistingManifest();
+  assert.ok(manifest, "matching compiled assets have an existing manifest");
+  assertManifestIdentity(manifest, result);
+  ({ packageBytes, atlasBytes } = await existingAssetSizes(manifest));
+} else {
+  assert.equal(result?.packages?.length, 12, "tree Fidelity compiler emits 12 packages when the fingerprint changes");
+  const manifestPackages = [];
+  for (const entry of result.packages) {
+    const packageValue = structuredClone(entry.value);
+    const archetypeId = packageValue.archetypeId;
+    assert.ok(archetypeId, "compiled tree package has an archetype id");
+    assert.ok(packageValue.growth?.digest, `${archetypeId} compiled package has a growth digest`);
+    const source = packageValue.forms?.far?.atlas?.assetId ?? packageValue.forms?.horizon?.atlas?.assetId;
+    const atlas = decodeDataUrl(source);
+    const extension = extensionForMime(atlas.mime);
+    const atlasFile = `${archetypeId}.${extension}`;
+    await writeFile(path.join(outputRoot, atlasFile), atlas.bytes);
+    atlasBytes += atlas.bytes.length;
+    if (packageValue.forms?.far?.atlas) packageValue.forms.far.atlas.assetId = atlasFile;
+    if (packageValue.forms?.horizon?.atlas) packageValue.forms.horizon.atlas.assetId = atlasFile;
 
-  const packageFile = `${archetypeId}.json`;
-  const packageText = `${JSON.stringify(packageValue)}\n`;
-  await writeFile(path.join(outputRoot, packageFile), packageText);
-  packageBytes += Buffer.byteLength(packageText);
-  manifestPackages.push({
-    archetypeId,
-    label: archetypeId,
-    assetId: entry.assetId,
-    growthDigest: packageValue.growth.digest,
-    file: packageFile,
-    atlas: atlasFile
-  });
+    const packageFile = `${archetypeId}.json`;
+    const packageText = `${JSON.stringify(packageValue)}\n`;
+    await writeFile(path.join(outputRoot, packageFile), packageText);
+    packageBytes += Buffer.byteLength(packageText);
+    manifestPackages.push({
+      archetypeId,
+      label: archetypeId,
+      assetId: entry.assetId,
+      growthDigest: packageValue.growth.digest,
+      file: packageFile,
+      atlas: atlasFile
+    });
+  }
+
+  manifest = {
+    schema: result.schema,
+    packageVersion: result.packageVersion,
+    providerRevision: result.providerRevision,
+    growthRevision: result.growthRevision,
+    growthDigest: result.growthDigest,
+    foliageAtlasRevision: result.foliageAtlasRevision,
+    speciesCount: 12,
+    sourceCommit,
+    compiledFrameSize: result.compiledFrameSize ?? null,
+    packages: manifestPackages
+  };
+  await writeFile(path.join(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 }
-
-const manifest = {
-  schema: result.schema,
-  packageVersion: result.packageVersion,
-  providerRevision: result.providerRevision,
-  growthRevision: result.growthRevision,
-  growthDigest: result.growthDigest,
-  foliageAtlasRevision: result.foliageAtlasRevision,
-  speciesCount: 12,
-  sourceCommit,
-  compiledFrameSize: result.compiledFrameSize ?? null,
-  packages: manifestPackages
-};
-await writeFile(path.join(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 
 const metrics = {
   status: "PASS",
   sourceCommit,
   compilerElapsedMs: result.elapsedMs,
-  packageCount: manifestPackages.length,
+  reusedPrebuilt: Boolean(result.reusedPrebuilt),
+  packageCount: manifest.packages.length,
   packageBytes,
   atlasBytes,
   totalBytes: packageBytes + atlasBytes,
-  compiledFrameSize: result.compiledFrameSize ?? null,
+  compiledFrameSize: manifest.compiledFrameSize ?? result.compiledFrameSize ?? null,
   growthRevision: result.growthRevision,
   growthDigest: result.growthDigest,
   providerRevision: result.providerRevision,
