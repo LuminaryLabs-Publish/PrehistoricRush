@@ -1,7 +1,8 @@
 {
   "status": "PASS",
-  "sourceCommit": "e87529331f7c932d405c4f7d05462c3d29504f70",
-  "compilerElapsedMs": 37869.40000000001,
+  "sourceCommit": "858b953b724875d3021f5e94a9afc3ef66a8171c",
+  "compilerElapsedMs": 1361.3999999999942,
+  "reusedPrebuilt": true,
   "packageCount": 12,
   "packageBytes": 6986189,
   "atlasBytes": 740493,
@@ -11,11 +12,11 @@
   "growthDigest": "3f0c6694",
   "providerRevision": "object-vegetation-natural-growth-v7-prebuilt-first",
   "prebuiltUsageDuringCompile": {
-    "packageHits": 0,
-    "manifestHits": 0,
-    "runtimeFallbackPackages": 12,
-    "runtimeFallbackManifest": 1
+    "packageHits": 12,
+    "manifestHits": 1,
+    "runtimeFallbackPackages": 0,
+    "runtimeFallbackManifest": 0
   },
-  "expectedPrebuiltMissCount": 1,
+  "expectedPrebuiltMissCount": 0,
   "browserErrors": []
 }
