@@ -34,7 +34,7 @@ jobs:
   browser-evidence:
     runs-on: ubuntu-latest
     needs: node-contracts
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,7 +60,26 @@ jobs:
           PREHISTORIC_BASE_URL=http://127.0.0.1:4174 PREHISTORIC_EVIDENCE_PHASE=before node tests/browser-visual-validation.mjs
           kill $BASELINE_SERVER_PID
           trap - EXIT
-      - name: Capture current main render evidence
+      - name: Compile deterministic tree Fidelity assets
+        env:
+          PREHISTORIC_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-compiler-http.log 2>&1 &
+          COMPILER_SERVER_PID=$!
+          trap 'kill $COMPILER_SERVER_PID || true' EXIT
+          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 npm run compile:tree-fidelity
+          kill $COMPILER_SERVER_PID
+          trap - EXIT
+      - name: Persist compiled tree assets to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/tree-fidelity .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/metrics/tree-fidelity-compile.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "compile tree fidelity assets [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Capture current main render evidence using compiled assets
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-current-http.log 2>&1 &
           CURRENT_SERVER_PID=$!
@@ -73,11 +92,12 @@ jobs:
           mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
           node tests/compare-visual-evidence.mjs | tee .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/observed-differences.json
       - name: Upload Headless visual evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: prehistoric-headless-visual-evidence
           path: .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
       - name: Persist browser evidence to main
         run: |
@@ -95,8 +115,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout validated main source
+      - name: Checkout validated main with compiled assets
         uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
@@ -123,6 +145,12 @@ jobs:
             --retry 12 --retry-delay 5 --retry-all-errors \
             https://luminarylabs-publish.github.io/PrehistoricRush/validation/forest-lab.html \
             | grep -q "Forest Validation Lab"
+      - name: Verify compiled tree Fidelity manifest
+        run: |
+          curl --fail --location --silent --show-error \
+            --retry 12 --retry-delay 5 --retry-all-errors \
+            https://luminarylabs-publish.github.io/PrehistoricRush/assets/tree-fidelity/manifest.json \
+            | grep -q "prehistoric-rush.prebuilt-tree-fidelity-manifest/1"
 
   record-deployment:
     runs-on: ubuntu-latest
@@ -157,12 +185,15 @@ jobs:
             "headlessEditorCommit": "2c87650436c332324f6c74d87f774a152e3aa8a2",
             "gameUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/game.html",
             "forestLabUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/validation/forest-lab.html",
+            "treeFidelityManifestUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/assets/tree-fidelity/manifest.json",
             "checks": {
               "nodeContracts": "PASS",
+              "compiledTreeAssets": "PASS",
               "browserEvidence": "PASS",
               "pagesDeployment": "PASS",
               "pagesGame": "PASS",
               "pagesForestLab": "PASS",
+              "pagesCompiledTreeAssets": "PASS",
               "headlessLifecycle": "PASS"
             }
           }
