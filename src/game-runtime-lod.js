@@ -1,5 +1,11 @@
 import { createPrehistoricRushKitGraph } from "./domains/prehistoric-rush/prehistoric-rush-domain-kit.js";
-import { createPrehistoricPatchGenerator } from "./world/prehistoric-patch-generator.js";
+import {
+  PREHISTORIC_WORLD_RECIPES,
+  createPrehistoricRushWorldRuntimeConfig,
+  getPrehistoricRushWorldRecipe,
+  resolvePrehistoricRushWorldId
+} from "./domains/prehistoric-rush/world-recipes.js";
+import { createPrehistoricWorldPatchGenerator } from "./world/prehistoric-world-patch-generator.js";
 import { PREHISTORIC_TERRAIN_LOD_POLICY_INPUT } from "./world/prehistoric-terrain-lod-policy.js";
 import {
   createPrehistoricVegetationGeneratorOptions,
@@ -17,15 +23,8 @@ import {
 import { createThreePatchStreamLodAdapter } from "./render/three-patch-stream-lod-adapter.js";
 
 const CDN = RUNTIME_URLS;
-const cfg = {
-  seed: 238991,
-  chunk: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.patchSize,
-  segments: PREHISTORIC_TERRAIN_LOD_POLICY_INPUT.sourceResolution,
-  trees: 7,
-  grass: 96,
-  groundCover: 36,
-  goal: 3600
-};
+const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId(globalThis.location));
+const cfg = createPrehistoricRushWorldRuntimeConfig(worldRecipe, PREHISTORIC_TERRAIN_LOD_POLICY_INPUT);
 const STREAM = {
   activeRadius: 2,
   retainRadius: 4,
@@ -42,7 +41,7 @@ const STREAM = {
   startupTimeoutMs: 45000
 };
 const TREE_BATCH_CAPACITY = 256;
-const VEGETATION_DENSITY_POLICY = "production-patches-v1";
+const VEGETATION_DENSITY_POLICY = `world-recipe-${worldRecipe.id}-r${worldRecipe.revision}`;
 const STREAM_PRIORITY_POLICY_ID = "prehistoric-runner-forward-v1";
 const treeTypes = PREHISTORIC_TREE_TYPES;
 
@@ -176,7 +175,7 @@ function shell() {
     margin: "14px 0 0"
   });
 
-  loadingTitle.textContent = "Preparing route corridor";
+  loadingTitle.textContent = `Preparing ${worldRecipe.name}`;
   loadingLabel.textContent = "Generating terrain 0 / 21";
   loadingTrack.append(loadingFill);
   loadingCard.append(loadingTitle, loadingTrack, loadingLabel);
@@ -193,7 +192,7 @@ function shell() {
     },
     updateLoading(progress, detail) {
       loadingFill.style.width = `${Math.max(0, Math.min(1, Number(progress) || 0)) * 100}%`;
-      loadingLabel.textContent = String(detail ?? "Preparing route corridor");
+      loadingLabel.textContent = String(detail ?? `Preparing ${worldRecipe.name}`);
     },
     hideLoading() {
       loading.style.display = "none";
@@ -314,8 +313,12 @@ async function main() {
   if (!NexusEngine || !SeedModule || !CreatureModule || !BatchModule || !PatchModule || !CameraModule || !THREE || !Rapier || !RapierKit) {
     throw new Error("Required pinned runtime module failed to load.");
   }
-  if (typeof NexusEngine.selectTerrainLodLevel !== "function" || typeof NexusEngine.createCoreVegetationDomain !== "function") {
-    throw new Error("Pinned NexusEngine module does not expose terrain LOD and Object Vegetation.");
+  if (
+    typeof NexusEngine.selectTerrainLodLevel !== "function"
+    || typeof NexusEngine.createCoreVegetationDomain !== "function"
+    || typeof NexusEngine.createCoreWorldDomain !== "function"
+  ) {
+    throw new Error("Pinned NexusEngine module does not expose terrain LOD, Object Vegetation, and Core World.");
   }
   if (Rapier.init) await Rapier.init();
   if (typeof RapierKit.createRapierPhysicsProvider !== "function") {
@@ -330,7 +333,15 @@ async function main() {
     kits: createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, {
       seed: cfg.seed,
       goalDistance: cfg.goal,
+      segmentLength: worldRecipe.route.segmentLength,
+      sampleSpacing: worldRecipe.route.sampleSpacing,
+      pathHalfWidth: worldRecipe.route.pathHalfWidth,
+      vergeWidth: worldRecipe.route.vergeWidth,
       playerCreature: playerProfile.creature,
+      worldRecipes: PREHISTORIC_WORLD_RECIPES,
+      selectedWorldId: worldRecipe.id,
+      worldCellSize: cfg.chunk,
+      worldCellRadius: STREAM.activeRadius,
       terrainLod: {
         patchSize: cfg.chunk,
         sourceResolution: cfg.segments
@@ -338,12 +349,28 @@ async function main() {
     })
   });
   const game = engine.n.prehistoricRush;
+  const worldComposition = engine.n.prehistoricRushWorldComposition;
   const instanceBatches = engine.n.instancedRenderBatch;
   const patchControllers = engine.n.seededWorldPatchController;
   const cameraFollows = engine.n.cameraSmoothFollow;
   const terrainLodPolicy = engine.n.prehistoricRushTerrainLod?.getPolicy?.();
-  if (!game || !instanceBatches || !patchControllers || !cameraFollows || !terrainLodPolicy || !engine.corePhysics || !engine.coreSimulation || !engine.n.coreGraphics) {
-    throw new Error("PrehistoricRush terrain LOD composition did not install.");
+  if (
+    !game
+    || !worldComposition
+    || !instanceBatches
+    || !patchControllers
+    || !cameraFollows
+    || !terrainLodPolicy
+    || !engine.coreWorld
+    || !engine.corePhysics
+    || !engine.coreSimulation
+    || !engine.n.coreGraphics
+  ) {
+    throw new Error("PrehistoricRush world composition did not install.");
+  }
+  const selectedWorld = worldComposition.selectWorld(worldRecipe.id);
+  if (selectedWorld.selectedWorldId !== worldRecipe.id) {
+    throw new Error(`Core World selection mismatch: expected ${worldRecipe.id}, received ${selectedWorld.selectedWorldId}.`);
   }
 
   engine.corePhysics.setProvider(RapierKit.createRapierPhysicsProvider({
@@ -368,14 +395,15 @@ async function main() {
 
   const serializableGeneratorOptions = {
     config: { ...cfg, shardsPerPatch: 2 },
-    routeSamples: game.route.samples
+    routeSamples: game.route.samples,
+    worldRecipe: structuredClone(worldRecipe)
   };
   const generatorOptions = {
     ...serializableGeneratorOptions,
     ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
   };
   const timings = createPatchTimingDiagnostics();
-  const baseGenerator = createPrehistoricPatchGenerator(generatorOptions);
+  const baseGenerator = createPrehistoricWorldPatchGenerator(generatorOptions);
   const timedGenerator = (request) => {
     const startedAt = performance.now();
     try {
@@ -386,9 +414,9 @@ async function main() {
   };
   const workerState = createWorkerExecutor(PatchModule, serializableGeneratorOptions, timings);
   const controller = patchControllers.create({
-    id: "prehistoric-rush-world",
+    id: `${worldRecipe.id}:patch-stream`,
     worldSeed: String(cfg.seed),
-    generatorVersion: "prehistoric-patch-v7-production-forest",
+    generatorVersion: `prehistoric-patch-v7-${worldRecipe.id}-r${worldRecipe.revision}`,
     patchSize: cfg.chunk,
     activeRadius: STREAM.activeRadius,
     retainRadius: STREAM.retainRadius,
@@ -398,8 +426,8 @@ async function main() {
     generationBudget: STREAM.generationBudget,
     priorityPolicyId: STREAM_PRIORITY_POLICY_ID,
     priorityPolicy: runnerPatchPriority,
-    terrainSettingsHash: `segments-${terrainLodPolicy.sourceResolution}-lod-${terrainLodPolicy.revision}`,
-    vegetationSettingsHash: `trees-${cfg.trees}-grass-${cfg.grass}-ground-${cfg.groundCover}-catalog-${vegetationCatalogDigest}-foliage-${FOLIAGE_ATLAS_REVISION}-density-${VEGETATION_DENSITY_POLICY}-fidelity-${treeFidelityGenerationDigest}`,
+    terrainSettingsHash: `${worldRecipe.id}-r${worldRecipe.revision}-segments-${terrainLodPolicy.sourceResolution}-lod-${terrainLodPolicy.revision}`,
+    vegetationSettingsHash: `${worldRecipe.id}-r${worldRecipe.revision}-trees-${cfg.trees}-grass-${cfg.grass}-ground-${cfg.groundCover}-catalog-${vegetationCatalogDigest}-foliage-${FOLIAGE_ATLAS_REVISION}-density-${VEGETATION_DENSITY_POLICY}-fidelity-${treeFidelityGenerationDigest}`,
     generator: timedGenerator,
     executor: workerState.executor
   });
@@ -425,6 +453,7 @@ async function main() {
     cameraFollow,
     config: cfg,
     stream: STREAM,
+    atmosphere: worldRecipe.presentation.atmosphere,
     treeTypes: vegetationRuntime.catalog.treeTypes,
     treeFidelityPackages,
     treeBatchCapacity: TREE_BATCH_CAPACITY,
@@ -437,6 +466,7 @@ async function main() {
   const input = { left: false, right: false, boost: false };
   let worldPreparing = false;
   let startupStreamingReceipt = null;
+  let lastCoreWorldFocusCell = null;
 
   game.setPickupSampler((state) => adapter.view.pickups
     .filter((pickup) => Math.hypot(pickup.x - state.x, pickup.z - state.z) < pickup.radius + 0.4)
@@ -451,11 +481,22 @@ async function main() {
 
   function focusStreaming(state) {
     const forward = { x: Math.sin(state.yaw), z: Math.cos(state.yaw) };
-    return controller.setFocus({
+    const streamFocus = {
       position: { x: state.x + cfg.chunk * 0.5, z: state.z + cfg.chunk * 0.5 },
       velocity: { x: forward.x * state.speed, z: forward.z * state.speed },
       forward
-    });
+    };
+    const focus = controller.setFocus(streamFocus);
+    const coreFocusCell = `${focus.center.x}:${focus.center.z}`;
+    if (coreFocusCell !== lastCoreWorldFocusCell) {
+      worldComposition.syncFocus({
+        position: { x: streamFocus.position.x, y: state.y, z: streamFocus.position.z },
+        velocity: { x: streamFocus.velocity.x, y: 0, z: streamFocus.velocity.z },
+        forward: { x: forward.x, y: 0, z: forward.z }
+      });
+      lastCoreWorldFocusCell = coreFocusCell;
+    }
+    return focus;
   }
 
   function adoptEntry(action, entry, state) {
@@ -546,7 +587,7 @@ async function main() {
       if (generated >= required && simulationReady < targets.simulationPatchIds.length) {
         detail = `Preparing collision ${simulationReady} / ${targets.simulationPatchIds.length}`;
       } else if (simulationReady >= targets.simulationPatchIds.length && visualReady < targets.visualPatchIds.length) {
-        detail = `Building distant forest ${visualReady} / ${targets.visualPatchIds.length}`;
+        detail = `Building distant environment ${visualReady} / ${targets.visualPatchIds.length}`;
       } else if (collisionReady && rendererReady) {
         detail = "Ready";
       }
@@ -559,6 +600,8 @@ async function main() {
         && rendererReady
       ) {
         const receipt = Object.freeze({
+          worldId: worldRecipe.id,
+          worldRecipeRevision: worldRecipe.revision,
           simulationReady,
           simulationRequired: targets.simulationPatchIds.length,
           visualReady,
@@ -677,6 +720,9 @@ async function main() {
         presentationId: "prehistoric-rush-game",
         backend: "webgl2",
         receipt: {
+          worldId: worldRecipe.id,
+          worldRecipeRevision: worldRecipe.revision,
+          worldSeed: worldRecipe.seed,
           treeFidelityGenerationDigest,
           treeFidelityGenerationIds,
           vegetationCatalogDigest,
@@ -708,7 +754,7 @@ async function main() {
     const productionCanopies = adapter.view.productionForest?.canopyGroups ?? 0;
     const groundCover = adapter.view.groundCover?.count ?? 0;
     const timing = timings.getSnapshot(state.speed);
-    ui.status.innerHTML = `<b style="color:#ffd37a">Prehistoric Rush</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} + ${patchStats.presentationPrefetched} visual · forward ${patchStats.forwardBufferedMeters}m · p95 ${timing.patchReadyP95Seconds.toFixed(2)}s · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · leaf cards ${foliageCards} · canopy groups ${productionCanopies} · floor ${groundCover} · species ${allVegetationSpecies.length} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">${worldRecipe.name}</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} + ${patchStats.presentationPrefetched} visual · forward ${patchStats.forwardBufferedMeters}m · p95 ${timing.patchReadyP95Seconds.toFixed(2)}s · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · leaf cards ${foliageCards} · canopy groups ${productionCanopies} · floor ${groundCover} · species ${allVegetationSpecies.length} · ${workerState.worker ? "worker" : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -721,9 +767,16 @@ async function main() {
     cameraFollow,
     treeAssets: treeAssetRuntime,
     vegetation: vegetationRuntime,
+    worldRecipe,
+    worldComposition,
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
+      world: {
+        recipe: structuredClone(worldRecipe),
+        selection: worldComposition.getSelection(),
+        core: worldComposition.getCoreWorld()
+      },
       tick: engine.getLastTickCommit(),
       simulation: engine.coreSimulation.getCommittedFrame(),
       physics: engine.corePhysics.getFrame(),

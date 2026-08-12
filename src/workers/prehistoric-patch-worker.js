@@ -3,10 +3,8 @@ import {
   createPrehistoricVegetationGeneratorOptions,
   createPrehistoricVegetationRuntime
 } from "../shared/prehistoric-vegetation-domain.js";
-import {
-  collectPatchTransferables,
-  createPrehistoricPatchGenerator
-} from "../world/prehistoric-patch-generator.js";
+import { collectPatchTransferables } from "../world/prehistoric-patch-generator.js";
+import { createPrehistoricWorldPatchGenerator } from "../world/prehistoric-world-patch-generator.js";
 
 let generatePatch = null;
 let initialization = null;
@@ -14,7 +12,7 @@ let initialization = null;
 async function initialize(payload = {}) {
   const NexusEngine = await import(RUNTIME_URLS.nexus);
   const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
-  generatePatch = createPrehistoricPatchGenerator({
+  generatePatch = createPrehistoricWorldPatchGenerator({
     ...payload,
     ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
   });

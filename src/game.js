@@ -26,9 +26,9 @@ async function prepareTreeAssetsBeforeGame() {
   appRoot.innerHTML = `
     <main style="position:fixed;inset:0;display:grid;place-items:center;background:#08130d;color:#fff3c8;font:700 16px system-ui,sans-serif">
       <section style="width:min(420px,calc(100vw - 40px));text-align:center">
-        <strong style="display:block;font-size:24px;margin-bottom:12px">Preparing prehistoric forest</strong>
+        <strong style="display:block;font-size:24px;margin-bottom:12px">Preparing world assets</strong>
         <div style="height:8px;border-radius:999px;background:#ffffff1f;overflow:hidden"><div id="tree-load-fill" style="height:100%;width:0;background:#69a94d"></div></div>
-        <p id="tree-load-label" style="color:#c1cfbc">Checking tree fidelity cache…</p>
+        <p id="tree-load-label" style="color:#c1cfbc">Checking vegetation fidelity cache…</p>
       </section>
     </main>
   `;
@@ -56,7 +56,7 @@ async function prepareTreeAssetsBeforeGame() {
       priority: "required",
       onProgress(progress, detail) {
         if (fill) fill.style.width = `${Math.round(progress * 8000) / 100}%`;
-        if (label) label.textContent = detail ?? `Preparing forest assets · ${Math.round(progress * 100)}%`;
+        if (label) label.textContent = detail ?? `Preparing vegetation assets · ${Math.round(progress * 100)}%`;
       }
     }
   });
@@ -186,7 +186,10 @@ function createPauseMenuHost(root, pauseMenu) {
       button("Exit", () => {
         pauseMenu.requestExit();
         sync();
-        globalThis.location.href = "./menu.html";
+        const worldId = globalThis.PrehistoricRushHost?.worldRecipe?.id;
+        globalThis.location.href = worldId
+          ? `./menu.html?world=${encodeURIComponent(worldId)}`
+          : "./menu.html";
       })
     );
     panel.append(actions);

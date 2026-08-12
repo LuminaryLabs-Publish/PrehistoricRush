@@ -3,6 +3,7 @@ import {
   createPrehistoricRushKitGraph as createBasePrehistoricRushKitGraph
 } from "./prehistoric-rush-domain-runtime.js";
 import { createPrehistoricRushPauseMenuDomainKit } from "./pause-menu-domain-kit.js";
+import { createPrehistoricRushWorldCompositionDomainKit } from "./world-composition-domain-kit.js";
 import { createPrehistoricTerrainLodPolicy } from "../../world/prehistoric-terrain-lod-policy.js";
 
 export { createPrehistoricRushDomainKit };
@@ -36,20 +37,34 @@ function createPrehistoricTerrainLodPolicyKit(NexusEngine, config = {}) {
 }
 
 export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, config = {}) {
-  if (typeof NexusEngine?.createCorePresentationDomain !== "function") {
-    throw new TypeError("Pinned NexusEngine module is missing createCorePresentationDomain().");
+  for (const factory of [
+    "createCorePresentationDomain",
+    "createCoreWorldDomain",
+    "createUniformGridPartition",
+    "createFlatWorldSurface",
+    "createTerrainLodPolicyDescriptor"
+  ]) {
+    if (typeof NexusEngine?.[factory] !== "function") {
+      throw new TypeError(`Pinned NexusEngine module is missing ${factory}().`);
+    }
   }
-  if (typeof NexusEngine?.createTerrainLodPolicyDescriptor !== "function") {
-    throw new TypeError("Pinned NexusEngine module is missing createTerrainLodPolicyDescriptor().");
-  }
+
   const kits = createBasePrehistoricRushKitGraph(NexusEngine, NexusEngineKits, config);
   const productIndex = kits.findIndex((kit) => kit?.id === "prehistoric-rush-domain-kit");
   if (productIndex < 0) throw new Error("PrehistoricRush product domain was not composed.");
+
   return [
     ...kits.slice(0, productIndex),
+    NexusEngine.createCoreWorldDomain(config.coreWorld ?? {}),
     ...NexusEngine.createCorePresentationDomain(),
     createPrehistoricTerrainLodPolicyKit(NexusEngine, config.terrainLod ?? {}),
     kits[productIndex],
+    createPrehistoricRushWorldCompositionDomainKit(NexusEngine, {
+      recipes: config.worldRecipes,
+      selectedWorldId: config.selectedWorldId,
+      cellSize: config.worldCellSize ?? config.terrainLod?.patchSize,
+      cellRadius: config.worldCellRadius ?? 2
+    }),
     createPrehistoricRushPauseMenuDomainKit(NexusEngine),
     ...kits.slice(productIndex + 1)
   ];
