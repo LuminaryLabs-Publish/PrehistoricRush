@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "prebuiltUsage": {
+    "packageHits": 12,
+    "manifestHits": 1,
+    "runtimeFallbackPackages": 0,
+    "runtimeFallbackManifest": 0,
+    "packagePrefetches": 12,
+    "parallelPackagePrefetch": true
+  },
+  "assetReceipt": {
+    "schema": "nexusengine.core-assets.receipt/1",
+    "id": "core-assets:cab7e4ee:receipt",
+    "kind": "bundle",
+    "targetId": "prehistoric-tree-fidelity",
+    "operationId": "bundle:prehistoric-tree-fidelity:cbeba466",
+    "contentHash": "cbeba466",
+    "providerId": null,
+    "cacheKey": null,
+    "cached": false,
+    "dependencies": [],
+    "members": [
+      "core-assets:ed8335ca:receipt"
+    ],
+    "result": {
+      "assetCount": 1,
+      "dependencyBundleCount": 0
+    },
+    "metadata": {
+      "purpose": "PrehistoricRush single-authority natural-growth Object Vegetation, compute-prepared foliage, Shape, Capture, and Fidelity package.",
+      "packageVersion": "5",
+      "providerRevision": "object-vegetation-natural-growth-v7-prebuilt-first",
+      "growthRevision": "natural-growth-v5-efficient-crossed-geometry",
+      "growthDigest": "3f0c6694",
+      "foliageAtlasRevision": "prehistoric-foliage-cards-v3-chunky-canopy",
+      "vegetationDomain": "n:object:vegetation",
+      "computeDomain": "n:compute",
+      "singleVisualAuthority": true,
+      "speciesCount": 12
+    }
+  },
+  "imageReceipt": {
+    "decoded": 12,
+    "total": 12,
+    "frames": 384,
+    "parallelDecoding": true
+  },
+  "packageCount": 12,
+  "foliageOverflow": 0,
+  "canvasPresent": true,
+  "hostReadyMs": 19118.567507,
+  "maxCiHostReadyMs": 90000,
+  "errors": []
+}
