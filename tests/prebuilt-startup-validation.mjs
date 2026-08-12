@@ -43,7 +43,8 @@ try {
   result = await page.evaluate(() => {
     const runtime = globalThis.PrehistoricRushTreeAssetRuntime;
     const state = globalThis.PrehistoricRushHost?.getState?.() ?? {};
-    const preparations = state.startup?.assetStartup?.preparations ?? [];
+    const assetStartup = state.assetStartup ?? state.startup?.assetStartup ?? null;
+    const preparations = assetStartup?.preparations ?? [];
     const imagePreparation = preparations.find((entry) => entry.id === "tree-fidelity-runtime-images") ?? null;
     return {
       prebuiltUsage: structuredClone(runtime?.prebuiltFidelityUsage ?? null),
