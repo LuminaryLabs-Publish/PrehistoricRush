@@ -186,10 +186,7 @@ function createPauseMenuHost(root, pauseMenu) {
       button("Exit", () => {
         pauseMenu.requestExit();
         sync();
-        const worldId = globalThis.PrehistoricRushHost?.worldRecipe?.id;
-        globalThis.location.href = worldId
-          ? `./menu.html?world=${encodeURIComponent(worldId)}`
-          : "./menu.html";
+        globalThis.location.href = "./menu.html";
       })
     );
     panel.append(actions);
