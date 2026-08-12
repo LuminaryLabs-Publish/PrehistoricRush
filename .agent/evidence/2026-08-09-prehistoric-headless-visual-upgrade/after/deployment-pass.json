@@ -1,16 +1,20 @@
 {
   "status": "PASS",
-  "validatedCommit": "0f35372d783e19368c6c16fcc9db148f965f0cce",
-  "workflowRunId": "31426832058",
+  "validatedCommit": "712cc6914d6d3b9d03f61944fba835db50c7b1c4",
+  "workflowRunId": "31633532081",
   "headlessEditorCommit": "2c87650436c332324f6c74d87f774a152e3aa8a2",
   "gameUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/game.html",
   "forestLabUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/validation/forest-lab.html",
+  "treeFidelityManifestUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/assets/tree-fidelity/manifest.json",
   "checks": {
     "nodeContracts": "PASS",
+    "compiledTreeAssets": "PASS",
+    "compiledStartupFastPath": "PASS",
     "browserEvidence": "PASS",
     "pagesDeployment": "PASS",
     "pagesGame": "PASS",
     "pagesForestLab": "PASS",
+    "pagesCompiledTreeAssets": "PASS",
     "headlessLifecycle": "PASS"
   }
 }
