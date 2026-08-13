@@ -101,7 +101,7 @@ try {
       const host = globalThis.PrehistoricRushHost;
       host.gameplay.start();
       host.gameplay.setInput({ boost: true, steer: 0 });
-      for (let index = 0; index < 520 && host.gameplay.getState().distance < 500; index += 1) {
+      for (let index = 0; index < 1200 && host.gameplay.getState().distance < 500; index += 1) {
         host.gameplay.tick(0.05);
         host.engine.tick(0.05);
       }
