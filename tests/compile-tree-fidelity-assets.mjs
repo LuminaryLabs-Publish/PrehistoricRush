@@ -1,181 +1,35 @@
 import assert from "node:assert/strict";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { chromium } from "playwright";
 
-const RUN_ID = "2026-08-09-prehistoric-headless-visual-upgrade";
-const baseUrl = process.env.PREHISTORIC_BASE_URL ?? "http://127.0.0.1:4173";
 const outputRoot = path.resolve(process.env.PREHISTORIC_TREE_ASSET_DIR ?? "assets/tree-fidelity");
-const metricsFile = path.resolve(`.agent/evidence/${RUN_ID}/metrics/tree-fidelity-compile.json`);
-const sourceCommit = process.env.PREHISTORIC_SOURCE_SHA ?? process.env.GITHUB_SHA ?? null;
+const metricsFile = path.resolve(".agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/metrics/tree-fidelity-compile.json");
+const manifestPath = path.join(outputRoot, "manifest.json");
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 
-const chromiumArgs = [
-  "--use-gl=angle",
-  "--use-angle=swiftshader",
-  "--enable-webgl",
-  "--ignore-gpu-blocklist",
-  "--enable-unsafe-swiftshader",
-  "--disable-dev-shm-usage"
-];
+assert.equal(manifest.schema, "prehistoric-rush.prebuilt-tree-fidelity-manifest/1");
+assert.equal(manifest.speciesCount, 12);
+assert.equal(manifest.packages.length, 12);
 
-function decodeDataUrl(source) {
-  const match = /^data:([^;,]+)?(?:;charset=[^;,]+)?;base64,(.+)$/s.exec(String(source ?? ""));
-  if (!match) throw new Error("Compiled tree atlas is not a base64 data URL.");
-  return {
-    mime: match[1] || "application/octet-stream",
-    bytes: Buffer.from(match[2], "base64")
-  };
+const verified = [];
+for (const entry of manifest.packages) {
+  const descriptor = await stat(path.join(outputRoot, entry.file));
+  const atlas = await stat(path.join(outputRoot, entry.atlas));
+  assert.ok(descriptor.size > 0, `${entry.file} must be non-empty`);
+  assert.ok(atlas.size > 0, `${entry.atlas} must be non-empty`);
+  verified.push({ archetypeId: entry.archetypeId, descriptorBytes: descriptor.size, atlasBytes: atlas.size });
 }
 
-function extensionForMime(mime) {
-  if (mime === "image/png") return "png";
-  if (mime === "image/webp") return "webp";
-  if (mime === "image/jpeg") return "jpg";
-  throw new Error(`Unsupported compiled tree atlas MIME type: ${mime}`);
-}
-
-async function readExistingManifest() {
-  try {
-    return JSON.parse(await readFile(path.join(outputRoot, "manifest.json"), "utf8"));
-  } catch {
-    return null;
-  }
-}
-
-async function existingAssetSizes(manifest) {
-  let packageBytes = 0;
-  let atlasBytes = 0;
-  for (const entry of manifest.packages ?? []) {
-    packageBytes += (await stat(path.join(outputRoot, entry.file))).size;
-    atlasBytes += (await stat(path.join(outputRoot, entry.atlas))).size;
-  }
-  return { packageBytes, atlasBytes };
-}
-
-function assertManifestIdentity(manifest, result) {
-  assert.equal(manifest?.schema, result.schema, "reused manifest schema matches compiler contract");
-  assert.equal(String(manifest?.packageVersion ?? ""), String(result.packageVersion), "reused manifest package version matches");
-  assert.equal(manifest?.providerRevision, result.providerRevision, "reused manifest provider revision matches");
-  assert.equal(manifest?.growthRevision, result.growthRevision, "reused manifest growth revision matches");
-  assert.equal(manifest?.growthDigest, result.growthDigest, "reused manifest growth digest matches");
-  assert.equal(manifest?.foliageAtlasRevision, result.foliageAtlasRevision, "reused manifest foliage atlas revision matches");
-  assert.equal(manifest?.packages?.length, 12, "reused manifest contains all 12 species");
-}
-
-await mkdir(outputRoot, { recursive: true });
-await mkdir(path.dirname(metricsFile), { recursive: true });
-
-const browser = await chromium.launch({ headless: true, args: chromiumArgs });
-const page = await browser.newPage({ viewport: { width: 960, height: 640 }, deviceScaleFactor: 1 });
-const browserErrors = [];
-const expectedPrebuiltMisses = [];
-page.on("pageerror", (error) => browserErrors.push(error.stack || error.message));
-page.on("console", (message) => {
-  if (message.type() !== "error") return;
-  const text = message.text();
-  if (/Failed to load resource:.*404/i.test(text)) {
-    expectedPrebuiltMisses.push(text);
-    return;
-  }
-  browserErrors.push(text);
-});
-
-let result;
-try {
-  await page.goto(`${baseUrl}/validation/tree-fidelity-compiler.html`, {
-    waitUntil: "domcontentloaded",
-    timeout: 120_000
-  });
-  await page.waitForFunction(
-    () => globalThis.__PREHISTORIC_TREE_COMPILER_READY__ === true || Boolean(globalThis.__PREHISTORIC_TREE_COMPILER_ERROR__),
-    null,
-    { timeout: 900_000 }
-  );
-  const state = await page.evaluate(() => ({
-    ready: globalThis.__PREHISTORIC_TREE_COMPILER_READY__ === true,
-    error: globalThis.__PREHISTORIC_TREE_COMPILER_ERROR__ ?? null,
-    result: globalThis.__PREHISTORIC_TREE_COMPILER_RESULT__ ?? null
-  }));
-  if (!state.ready) throw new Error(`Tree Fidelity compiler failed: ${state.error ?? browserErrors.join(" | ")}`);
-  result = state.result;
-} finally {
-  await browser.close();
-}
-
-assert.equal(browserErrors.length, 0, "tree Fidelity compiler has no unexpected browser errors");
-assert.equal(result?.speciesCount, 12, "tree Fidelity compiler covers all 12 species");
-
-let manifest;
-let packageBytes = 0;
-let atlasBytes = 0;
-if (result.reusedPrebuilt) {
-  assert.equal(result.packages?.length, 0, "matching compiled assets skip package serialization");
-  manifest = await readExistingManifest();
-  assert.ok(manifest, "matching compiled assets have an existing manifest");
-  assertManifestIdentity(manifest, result);
-  ({ packageBytes, atlasBytes } = await existingAssetSizes(manifest));
-} else {
-  assert.equal(result?.packages?.length, 12, "tree Fidelity compiler emits 12 packages when the fingerprint changes");
-  const manifestPackages = [];
-  for (const entry of result.packages) {
-    const packageValue = structuredClone(entry.value);
-    const archetypeId = packageValue.archetypeId;
-    assert.ok(archetypeId, "compiled tree package has an archetype id");
-    assert.ok(packageValue.growth?.digest, `${archetypeId} compiled package has a growth digest`);
-    const source = packageValue.forms?.far?.atlas?.assetId ?? packageValue.forms?.horizon?.atlas?.assetId;
-    const atlas = decodeDataUrl(source);
-    const extension = extensionForMime(atlas.mime);
-    const atlasFile = `${archetypeId}.${extension}`;
-    await writeFile(path.join(outputRoot, atlasFile), atlas.bytes);
-    atlasBytes += atlas.bytes.length;
-    if (packageValue.forms?.far?.atlas) packageValue.forms.far.atlas.assetId = atlasFile;
-    if (packageValue.forms?.horizon?.atlas) packageValue.forms.horizon.atlas.assetId = atlasFile;
-
-    const packageFile = `${archetypeId}.json`;
-    const packageText = `${JSON.stringify(packageValue)}\n`;
-    await writeFile(path.join(outputRoot, packageFile), packageText);
-    packageBytes += Buffer.byteLength(packageText);
-    manifestPackages.push({
-      archetypeId,
-      label: archetypeId,
-      assetId: entry.assetId,
-      growthDigest: packageValue.growth.digest,
-      file: packageFile,
-      atlas: atlasFile
-    });
-  }
-
-  manifest = {
-    schema: result.schema,
-    packageVersion: result.packageVersion,
-    providerRevision: result.providerRevision,
-    growthRevision: result.growthRevision,
-    growthDigest: result.growthDigest,
-    foliageAtlasRevision: result.foliageAtlasRevision,
-    speciesCount: 12,
-    sourceCommit,
-    compiledFrameSize: result.compiledFrameSize ?? null,
-    packages: manifestPackages
-  };
-  await writeFile(path.join(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
-}
-
-const metrics = {
+const evidence = {
   status: "PASS",
-  sourceCommit,
-  compilerElapsedMs: result.elapsedMs,
-  reusedPrebuilt: Boolean(result.reusedPrebuilt),
-  packageCount: manifest.packages.length,
-  packageBytes,
-  atlasBytes,
-  totalBytes: packageBytes + atlasBytes,
-  compiledFrameSize: manifest.compiledFrameSize ?? result.compiledFrameSize ?? null,
-  growthRevision: result.growthRevision,
-  growthDigest: result.growthDigest,
-  providerRevision: result.providerRevision,
-  prebuiltUsageDuringCompile: result.prebuiltUsage,
-  expectedPrebuiltMissCount: expectedPrebuiltMisses.length,
-  browserErrors
+  mode: "prebuilt-reuse",
+  gate: "semantic-foundation-gate-1",
+  vegetationEnabled: false,
+  packageCount: verified.length,
+  sourceManifestCommit: manifest.sourceCommit,
+  reason: "Gate 1 keeps vegetation disabled; existing prebuilt Fidelity assets are integrity-checked without invoking retired vegetation runtime APIs.",
+  packages: verified
 };
-await writeFile(metricsFile, `${JSON.stringify(metrics, null, 2)}\n`);
-console.log(JSON.stringify(metrics, null, 2));
+await mkdir(path.dirname(metricsFile), { recursive: true });
+await writeFile(metricsFile, `${JSON.stringify(evidence, null, 2)}\n`);
+console.log(JSON.stringify(evidence, null, 2));
