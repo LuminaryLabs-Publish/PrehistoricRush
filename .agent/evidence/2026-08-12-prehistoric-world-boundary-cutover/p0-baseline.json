@@ -1,0 +1,31 @@
+{
+  "schema": "prehistoric-rush.p0-world-boundary-baseline/1",
+  "capturedFromCommit": "564a0cd0df1be99ab9355e4624b89163bbf4e9d5",
+  "validatedProductionCommit": "712cc6914d6d3b9d03f61944fba835db50c7b1c4",
+  "fixedSeed": 238991,
+  "routeSnapshot": {
+    "id": "drunk-route-generator",
+    "seed": 238991,
+    "controlPointCount": 260,
+    "sampleCount": 2072,
+    "pathHalfWidth": 3.1,
+    "vergeWidth": 3.2
+  },
+  "defaultWorld": {
+    "id": "jurassic-valley",
+    "revision": 1,
+    "seed": 238991
+  },
+  "sourceAuthorities": {
+    "routeGeneratorBlobSha": "0ed1358fd4bd44c25682a5d86058a0835b390da2",
+    "worldRecipesBlobSha": "2b61b5e693ec89150ab1f0fd943e7b2af44b3e7c",
+    "worldCompositionBlobSha": "dc4844e973783892b309ff4af11d1fabb85ffaee",
+    "representativePatchContractBlobSha": "84e2b34f6a029882e27dcbb6ccc4d562475f3ad7"
+  },
+  "existingValidation": {
+    "workflowEvidence": ".agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json",
+    "representativePatchContract": "tests/world-recipe-patch-generation.mjs",
+    "browserContract": "tests/browser-visual-validation.mjs",
+    "headlessContract": "tests/headless-editor-evidence.mjs"
+  }
+}
