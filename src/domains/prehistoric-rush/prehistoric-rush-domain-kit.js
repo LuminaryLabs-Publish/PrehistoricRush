@@ -2,6 +2,7 @@ import {
   createPrehistoricRushDomainKit,
   createPrehistoricRushKitGraph as createBasePrehistoricRushKitGraph
 } from "./prehistoric-rush-domain-runtime.js";
+import { createPrehistoricRushCourseDomainKit } from "./course-domain-kit.js";
 import { createPrehistoricRushPauseMenuDomainKit } from "./pause-menu-domain-kit.js";
 import { createPrehistoricRushWorldCompositionDomainKit } from "./world-composition-domain-kit.js";
 import { createPrehistoricTerrainLodPolicy } from "../../world/prehistoric-terrain-lod-policy.js";
@@ -59,6 +60,7 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
     ...NexusEngine.createCorePresentationDomain(),
     createPrehistoricTerrainLodPolicyKit(NexusEngine, config.terrainLod ?? {}),
     kits[productIndex],
+    createPrehistoricRushCourseDomainKit(NexusEngine, config),
     createPrehistoricRushWorldCompositionDomainKit(NexusEngine, {
       recipes: config.worldRecipes,
       selectedWorldId: config.selectedWorldId,

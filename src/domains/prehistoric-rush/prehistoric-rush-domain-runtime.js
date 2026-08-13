@@ -1,4 +1,3 @@
-import { createDrunkRouteGenerator } from "./kits/drunk-route-generator.js";
 import {
   createPlayerArticulatedPose,
   createPlayerGroundLegTargets
@@ -21,6 +20,24 @@ function cloneRunState(state) {
     collectedShardIds: [...(state?.collectedShardIds ?? [])],
     lastCollision: state?.lastCollision ? { ...state.lastCollision } : null
   };
+}
+
+function createCourseRouteFacade(resolveRoute) {
+  const getRoute = () => {
+    const route = resolveRoute();
+    if (!route) throw new Error("PrehistoricRush Course route authority is unavailable.");
+    return route;
+  };
+  return Object.freeze({
+    get id() { return getRoute().id; },
+    get controlPoints() { return getRoute().controlPoints; },
+    get samples() { return getRoute().samples; },
+    get pathHalfWidth() { return getRoute().pathHalfWidth; },
+    get vergeWidth() { return getRoute().vergeWidth; },
+    nearest: (...args) => getRoute().nearest(...args),
+    classify: (...args) => getRoute().classify(...args),
+    snapshot: () => getRoute().snapshot()
+  });
 }
 
 export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, config = {}) {
@@ -122,13 +139,6 @@ export function createPrehistoricRushKitGraph(NexusEngine, NexusEngineKits, conf
 
 export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
   const { defineDomainServiceKit, defineResource, defineEvent } = NexusEngine;
-  const route = createDrunkRouteGenerator({
-    seed: config.seed ?? 238991,
-    segmentLength: config.segmentLength ?? 18,
-    sampleSpacing: config.sampleSpacing ?? 2.5,
-    pathHalfWidth: config.pathHalfWidth ?? 3.1,
-    vergeWidth: config.vergeWidth ?? 3.2
-  });
   const multipliers = { ...DEFAULT_SURFACE_MULTIPLIERS, ...(config.surfaceMultipliers ?? {}) };
   const goalDistance = Number(config.goalDistance ?? 3600);
   const baseSpeed = Number(config.baseSpeed ?? 16);
@@ -145,6 +155,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     visualRootOffsetY: playerVisualRootOffsetY
   });
   let engineRef = null;
+  const route = createCourseRouteFacade(() => engineRef?.n?.prehistoricRushCourse?.route);
   let creatureBodyRef = null;
   let articulatedMotionRef = null;
   let playerCompositionRef = null;
@@ -375,7 +386,7 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
     apiName: "prehistoricRush",
     version: "1.0.0",
     stability: "game",
-    services: ["run", "route", "surface", "score", "outcome-policy", "player-creature", "player-character", "player-control", "player-articulation", "player-pose", "ground-leg-ik"],
+    services: ["run", "surface", "score", "outcome-policy", "player-creature", "player-character", "player-control", "player-articulation", "player-pose", "ground-leg-ik"],
     requires: [
       "n:core-creature",
       "n:core-character",
@@ -594,7 +605,9 @@ export function createPrehistoricRushDomainKit(NexusEngine, config = {}) {
         "seeded-world-patch-controller-kit",
         "camera-smooth-follow-kit"
       ],
-      nestedKits: ["drunk-route-generator", "prehistoric-rush-resolution-policy"],
+      nestedKits: ["prehistoric-rush-resolution-policy"],
+      courseAuthority: "n:prehistoric-rush:course",
+      routeCompatibilityFacade: true,
       rendererAgnosticOutcome: true,
       legacyPoseCompatible: true,
       authoritativePlayerPose: true,
