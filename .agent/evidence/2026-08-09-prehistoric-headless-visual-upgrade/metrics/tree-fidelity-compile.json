@@ -1,24 +1,71 @@
 {
   "status": "PASS",
-  "sourceCommit": "8a5140d8352288e3cda7c2e947eb8c20bd5d7490",
-  "compilerElapsedMs": 1489.5,
-  "reusedPrebuilt": true,
+  "mode": "prebuilt-reuse",
+  "gate": "semantic-foundation-gate-1",
+  "vegetationEnabled": false,
   "packageCount": 12,
-  "packageBytes": 6986189,
-  "atlasBytes": 740493,
-  "totalBytes": 7726682,
-  "compiledFrameSize": 128,
-  "growthRevision": "natural-growth-v5-efficient-crossed-geometry",
-  "growthDigest": "3f0c6694",
-  "providerRevision": "object-vegetation-natural-growth-v7-prebuilt-first",
-  "prebuiltUsageDuringCompile": {
-    "packageHits": 12,
-    "manifestHits": 1,
-    "runtimeFallbackPackages": 0,
-    "runtimeFallbackManifest": 0,
-    "packagePrefetches": 12,
-    "parallelPackagePrefetch": true
-  },
-  "expectedPrebuiltMissCount": 0,
-  "browserErrors": []
+  "sourceManifestCommit": "e87529331f7c932d405c4f7d05462c3d29504f70",
+  "reason": "Gate 1 keeps vegetation disabled; existing prebuilt Fidelity assets are integrity-checked without invoking retired vegetation runtime APIs.",
+  "packages": [
+    {
+      "archetypeId": "giant-fern-tree",
+      "descriptorBytes": 428515,
+      "atlasBytes": 52766
+    },
+    {
+      "archetypeId": "tower-conifer",
+      "descriptorBytes": 795745,
+      "atlasBytes": 27365
+    },
+    {
+      "archetypeId": "understory-cycad",
+      "descriptorBytes": 404958,
+      "atlasBytes": 64354
+    },
+    {
+      "archetypeId": "broad-canopy",
+      "descriptorBytes": 643283,
+      "atlasBytes": 116813
+    },
+    {
+      "archetypeId": "moss-column",
+      "descriptorBytes": 674720,
+      "atlasBytes": 63259
+    },
+    {
+      "archetypeId": "layered-araucaria",
+      "descriptorBytes": 791258,
+      "atlasBytes": 30213
+    },
+    {
+      "archetypeId": "fan-cycad",
+      "descriptorBytes": 422785,
+      "atlasBytes": 73602
+    },
+    {
+      "archetypeId": "ginkgo-crown-tree",
+      "descriptorBytes": 640210,
+      "atlasBytes": 91258
+    },
+    {
+      "archetypeId": "marsh-horsetail-tower",
+      "descriptorBytes": 682615,
+      "atlasBytes": 30508
+    },
+    {
+      "archetypeId": "forked-ghostwood",
+      "descriptorBytes": 650765,
+      "atlasBytes": 78431
+    },
+    {
+      "archetypeId": "tall-prehistoric-palm",
+      "descriptorBytes": 430075,
+      "atlasBytes": 48113
+    },
+    {
+      "archetypeId": "short-jungle-palm",
+      "descriptorBytes": 421260,
+      "atlasBytes": 63811
+    }
+  ]
 }
