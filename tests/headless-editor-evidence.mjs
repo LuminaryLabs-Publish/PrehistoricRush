@@ -9,7 +9,6 @@ const workspaceRoot = path.join(evidenceRoot, "headless");
 const validatedCommit = process.env.PREHISTORIC_VALIDATED_SHA ?? "unknown";
 const workflowRunId = process.env.PREHISTORIC_WORKFLOW_RUN_ID ?? "unknown";
 const pagesPass = process.env.PREHISTORIC_PAGES_PASS === "1";
-const scenes = ["tree-lab", "root-lab", "foliage-lab", "canopy-lab", "lod-lab", "backlight-lab", "racing-line", "game"];
 
 async function exists(file) {
   try { await access(file); return true; }
@@ -26,33 +25,30 @@ function evidenceFile(...parts) {
 
 async function captureManifest(phase) {
   const captures = [];
-  for (const scene of scenes) {
-    const image = evidenceFile(scene, `${phase}.png`);
-    const metrics = evidenceFile(scene, `${phase}.metrics.json`);
-    if (await exists(image)) captures.push({ id: `${scene}:${phase}`, kind: "screenshot", path: path.relative(evidenceRoot, image) });
-    if (await exists(metrics)) captures.push({ id: `${scene}:${phase}:metrics`, kind: "metrics", path: path.relative(evidenceRoot, metrics) });
-  }
-  const productionImage = evidenceFile("game", `production-game-${phase}.png`);
-  if (await exists(productionImage)) captures.push({ id: `production-game:${phase}`, kind: "screenshot", path: path.relative(evidenceRoot, productionImage) });
-  return { ok: captures.length >= 16, phase, captures };
+  const image = evidenceFile(phase, "foundation-gate.png");
+  const metrics = evidenceFile(phase, "foundation-gate.json");
+  if (await exists(image)) captures.push({ id: `foundation-gate:${phase}`, kind: "screenshot", path: path.relative(evidenceRoot, image) });
+  if (await exists(metrics)) captures.push({ id: `foundation-gate:${phase}:metrics`, kind: "metrics", path: path.relative(evidenceRoot, metrics) });
+  return { ok: captures.length >= 1, phase, captures };
 }
 
 const adapter = {
-  id: "prehistoric-rush-headless-visual-adapter",
+  id: "prehistoric-rush-foundation-gate-adapter",
   async read() {
-    const after = await json(evidenceFile("after", "browser-summary.json"));
+    const after = await json(evidenceFile("after", "foundation-gate.json"));
     return {
       ok: true,
-      scene: { id: "prehistoric-rush", validationScenes: scenes },
+      scene: { id: "prehistoric-rush-foundation-gate" },
       hierarchy: { core: "NexusEngine", product: "PrehistoricRush", renderer: "Three" },
-      assets: scenes.map((scene) => ({ id: scene, before: `${scene}/before.png`, after: `${scene}/after.png` })),
       runtime: {
         validatedCommit,
         workflowRunId,
         pagesPass,
-        browserStatus: after.status,
-        hostPresent: after.gameplayProbe.hostPresent,
-        canvasPresent: after.gameplayProbe.canvasPresent
+        nexus: after.nexus,
+        terrainAuthority: after.terrainAuthority,
+        vegetationEnabled: after.vegetationEnabled,
+        landformCount: after.landformCount,
+        traversalDistance: after.traversalDistance
       }
     };
   },
@@ -61,22 +57,21 @@ const adapter = {
   },
   async plan({ goal }) {
     return {
-      id: `${RUN_ID}:final-proof`,
+      id: `${RUN_ID}:foundation-final-proof`,
       ok: Boolean(goal),
       commands: [
-        { action: "validation.contracts.verify", target: "all-12-species" },
-        { action: "validation.determinism.verify", target: "256-seed-sweep" },
-        { action: "validation.visual.compare", target: "fixed-scenes" },
-        { action: "validation.gameplay.verify", target: "production-game" },
+        { action: "validation.determinism.verify", target: "foundation-samples" },
+        { action: "validation.continuity.verify", target: "foundation-cell-seams" },
+        { action: "validation.gameplay.verify", target: "0-500m-foundation-playthrough" },
         { action: "validation.deployment.verify", target: "github-pages-main" }
       ],
-      notes: ["Evidence-only submit: source mutation already occurred through reviewed main changes."]
+      notes: ["Gate 1 evidence only: vegetation remains disabled until Foundation terrain quality is accepted."]
     };
   },
   async validate({ issues }) {
     const required = [
-      evidenceFile("before", "browser-summary.json"),
-      evidenceFile("after", "browser-summary.json"),
+      evidenceFile("before", "foundation-gate.json"),
+      evidenceFile("after", "foundation-gate.json"),
       evidenceFile("after", "observed-differences.json")
     ];
     const missing = [];
@@ -92,27 +87,30 @@ const adapter = {
     return { ok: true, submitted: true, runId: workflowRunId, mode: "evidence-only" };
   },
   async observe() {
-    const before = await json(evidenceFile("before", "browser-summary.json"));
-    const after = await json(evidenceFile("after", "browser-summary.json"));
-    const differences = await json(evidenceFile("after", "observed-differences.json"));
     return {
       ok: true,
       status: "completed",
       runId: workflowRunId,
-      before,
-      after,
-      differences,
+      before: await json(evidenceFile("before", "foundation-gate.json")),
+      after: await json(evidenceFile("after", "foundation-gate.json")),
+      differences: await json(evidenceFile("after", "observed-differences.json")),
       pagesPass
     };
   },
   async verify({ observation }) {
+    const after = observation.after;
     const checks = [
-      ["before-browser", observation.before.status === "PASS"],
-      ["after-browser", observation.after.status === "PASS"],
-      ["forest-browser-errors", observation.after.browserErrors.length === 0],
-      ["game-browser-errors", observation.after.gameErrors.length === 0],
-      ["game-host", observation.after.gameplayProbe.hostPresent === true],
-      ["game-canvas", observation.after.gameplayProbe.canvasPresent === true],
+      ["before-evidence", observation.before.status === "PASS"],
+      ["after-evidence", after.status === "PASS"],
+      ["nexus-main", after.nexus === "main"],
+      ["foundation-authority", after.terrainAuthority === "n:world:foundation"],
+      ["vegetation-off", after.vegetationEnabled === false],
+      ["landforms", Number(after.landformCount) >= 6],
+      ["500m-traversal", Number(after.traversalDistance) >= 500],
+      ["x-seam", Number(after.seamDeltas?.x) < 0.5],
+      ["z-seam", Number(after.seamDeltas?.z) < 0.5],
+      ["page-errors", (after.pageErrors ?? []).length === 0],
+      ["console-errors", (after.consoleErrors ?? []).length === 0],
       ["observed-differences", observation.differences.status === "PASS"],
       ["pages-main", observation.pagesPass === true]
     ].map(([id, ok]) => ({ id, ok }));
@@ -123,7 +121,7 @@ const adapter = {
         validatedCommit,
         workflowRunId,
         pagesPass,
-        gameplayProbe: observation.after.gameplayProbe,
+        foundation: after,
         differences: observation.differences
       }
     };
@@ -134,13 +132,13 @@ const adapter = {
       ok: differences.status === "PASS" && pagesPass,
       structured: [
         { key: "validatedCommit", before: readBefore?.runtime?.validatedCommit ?? null, after: readAfter?.validatedCommit ?? validatedCommit },
-        { key: "treeLabFoliageCards", ...differences.treeLabFoliageCards },
-        { key: "canopyFoliageCards", ...differences.canopyFoliageCards },
-        { key: "racingLineFoliageCards", ...differences.racingLineFoliageCards }
+        { key: "terrainAuthority", before: null, after: differences.terrainAuthority ?? "n:world:foundation" },
+        { key: "traversalDistance", before: null, after: differences.traversalDistance ?? null },
+        { key: "vegetationEnabled", before: true, after: differences.vegetationEnabled ?? false }
       ],
       visual: [{ beforeCaptures: captureBefore.captures?.length ?? 0, afterCaptures: captureAfter.captures?.length ?? 0 }],
       regressions: [],
-      unverifiedClaims: ["Physical MacBook Air frame-time budget requires target hardware and is not inferred from GitHub Actions Chromium."]
+      unverifiedClaims: ["Visual prehistoric-landscape quality still requires human Gate 1 inspection; CI proves authority, determinism, continuity, and traversal only."]
     };
   }
 };
