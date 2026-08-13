@@ -3,33 +3,33 @@
   "structured": [
     {
       "key": "validatedCommit",
-      "before": "8a5140d8352288e3cda7c2e947eb8c20bd5d7490",
-      "after": "8a5140d8352288e3cda7c2e947eb8c20bd5d7490"
+      "before": "3792cf6579528f09b28df90ca19e7eb1c668063e",
+      "after": "3792cf6579528f09b28df90ca19e7eb1c668063e"
     },
     {
-      "key": "treeLabFoliageCards",
-      "before": 682,
-      "after": 1441
+      "key": "terrainAuthority",
+      "before": null,
+      "after": "n:world:foundation"
     },
     {
-      "key": "canopyFoliageCards",
-      "before": 708,
-      "after": 1038
+      "key": "traversalDistance",
+      "before": null,
+      "after": 500.3114499423303
     },
     {
-      "key": "racingLineFoliageCards",
-      "before": 810,
-      "after": 1557
+      "key": "vegetationEnabled",
+      "before": true,
+      "after": false
     }
   ],
   "visual": [
     {
-      "beforeCaptures": 16,
-      "afterCaptures": 17
+      "beforeCaptures": 2,
+      "afterCaptures": 2
     }
   ],
   "regressions": [],
   "unverifiedClaims": [
-    "Physical MacBook Air frame-time budget requires target hardware and is not inferred from GitHub Actions Chromium."
+    "Visual prehistoric-landscape quality still requires human Gate 1 inspection; CI proves authority, determinism, continuity, and traversal only."
   ]
 }

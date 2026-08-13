@@ -1,8 +1,10 @@
 {
-  "validatedCommit": "8a5140d8352288e3cda7c2e947eb8c20bd5d7490",
-  "workflowRunId": "31662429634",
+  "validatedCommit": "3792cf6579528f09b28df90ca19e7eb1c668063e",
+  "workflowRunId": "31749169403",
   "pagesPass": true,
-  "browserStatus": "PASS",
-  "hostPresent": true,
-  "canvasPresent": true
+  "nexus": "main",
+  "terrainAuthority": "n:world:foundation",
+  "vegetationEnabled": false,
+  "landformCount": 8,
+  "traversalDistance": 500.3114499423303
 }

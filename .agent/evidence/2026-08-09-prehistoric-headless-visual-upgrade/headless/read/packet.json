@@ -1,71 +1,21 @@
 {
   "ok": true,
   "scene": {
-    "id": "prehistoric-rush",
-    "validationScenes": [
-      "tree-lab",
-      "root-lab",
-      "foliage-lab",
-      "canopy-lab",
-      "lod-lab",
-      "backlight-lab",
-      "racing-line",
-      "game"
-    ]
+    "id": "prehistoric-rush-foundation-gate"
   },
   "hierarchy": {
     "core": "NexusEngine",
     "product": "PrehistoricRush",
     "renderer": "Three"
   },
-  "assets": [
-    {
-      "id": "tree-lab",
-      "before": "tree-lab/before.png",
-      "after": "tree-lab/after.png"
-    },
-    {
-      "id": "root-lab",
-      "before": "root-lab/before.png",
-      "after": "root-lab/after.png"
-    },
-    {
-      "id": "foliage-lab",
-      "before": "foliage-lab/before.png",
-      "after": "foliage-lab/after.png"
-    },
-    {
-      "id": "canopy-lab",
-      "before": "canopy-lab/before.png",
-      "after": "canopy-lab/after.png"
-    },
-    {
-      "id": "lod-lab",
-      "before": "lod-lab/before.png",
-      "after": "lod-lab/after.png"
-    },
-    {
-      "id": "backlight-lab",
-      "before": "backlight-lab/before.png",
-      "after": "backlight-lab/after.png"
-    },
-    {
-      "id": "racing-line",
-      "before": "racing-line/before.png",
-      "after": "racing-line/after.png"
-    },
-    {
-      "id": "game",
-      "before": "game/before.png",
-      "after": "game/after.png"
-    }
-  ],
   "runtime": {
-    "validatedCommit": "8a5140d8352288e3cda7c2e947eb8c20bd5d7490",
-    "workflowRunId": "31662429634",
+    "validatedCommit": "3792cf6579528f09b28df90ca19e7eb1c668063e",
+    "workflowRunId": "31749169403",
     "pagesPass": true,
-    "browserStatus": "PASS",
-    "hostPresent": true,
-    "canvasPresent": true
+    "nexus": "main",
+    "terrainAuthority": "n:world:foundation",
+    "vegetationEnabled": false,
+    "landformCount": 8,
+    "traversalDistance": 500.3114499423303
   }
 }

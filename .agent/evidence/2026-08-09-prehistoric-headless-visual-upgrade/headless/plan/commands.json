@@ -1,19 +1,15 @@
 [
   {
-    "action": "validation.contracts.verify",
-    "target": "all-12-species"
-  },
-  {
     "action": "validation.determinism.verify",
-    "target": "256-seed-sweep"
+    "target": "foundation-samples"
   },
   {
-    "action": "validation.visual.compare",
-    "target": "fixed-scenes"
+    "action": "validation.continuity.verify",
+    "target": "foundation-cell-seams"
   },
   {
     "action": "validation.gameplay.verify",
-    "target": "production-game"
+    "target": "0-500m-foundation-playthrough"
   },
   {
     "action": "validation.deployment.verify",

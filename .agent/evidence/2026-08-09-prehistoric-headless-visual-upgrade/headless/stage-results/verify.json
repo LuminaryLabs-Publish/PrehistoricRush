@@ -1,10 +1,10 @@
 {
   "stage": "verify",
   "ok": true,
-  "startedAt": "2026-08-13T03:03:11.724Z",
-  "completedAt": "2026-08-13T03:03:11.725Z",
+  "startedAt": "2026-08-13T22:22:27.096Z",
+  "completedAt": "2026-08-13T22:22:27.097Z",
   "result": {
     "ok": true,
-    "checkCount": 8
+    "checkCount": 13
   }
 }

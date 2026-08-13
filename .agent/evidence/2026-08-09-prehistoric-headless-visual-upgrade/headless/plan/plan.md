@@ -66,8 +66,7 @@ Each fixed scene uses deterministic seeds, fixed camera, fixed lighting, fixed v
 - Main remains playable and the deployed GitHub Pages game is reachable from the `main` revision.
 
 
-- validation.contracts.verify
 - validation.determinism.verify
-- validation.visual.compare
+- validation.continuity.verify
 - validation.gameplay.verify
 - validation.deployment.verify
