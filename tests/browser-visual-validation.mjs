@@ -19,6 +19,27 @@ const browser = await chromium.launch({
   args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist", "--enable-unsafe-swiftshader"]
 });
 
+async function waitForSemanticHost(page) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const state = await page.evaluate(() => ({
+      ready: Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
+      body: document.body?.innerText?.slice(0, 1200) ?? ""
+    }));
+    if (state.ready) return;
+    if (pageErrors.length || consoleErrors.length || state.body.includes("Could not start PrehistoricRush")) {
+      throw new Error([
+        "Semantic PrehistoricRush startup failed.",
+        ...pageErrors.map((value) => `pageerror: ${value}`),
+        ...consoleErrors.map((value) => `console: ${value}`),
+        `body: ${state.body}`
+      ].join("\n"));
+    }
+    await page.waitForTimeout(250);
+  }
+  const body = await page.evaluate(() => document.body?.innerText?.slice(0, 1200) ?? "");
+  throw new Error(`Semantic PrehistoricRush host did not become ready.\npageErrors=${pageErrors.join(" | ")}\nconsoleErrors=${consoleErrors.join(" | ")}\nbody=${body}`);
+}
+
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -41,7 +62,7 @@ try {
     await writeFile(evidenceFile, `${JSON.stringify(evidence, null, 2)}\n`);
     console.log(JSON.stringify(evidence, null, 2));
   } else {
-    await page.waitForFunction(() => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")), null, { timeout: 120000 });
+    await waitForSemanticHost(page);
 
     const initial = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
     assert.equal(initial.rendering.terrainAuthority, "n:world:foundation", "Rendering must consume Nexus World Foundation");
@@ -94,7 +115,7 @@ try {
     await page.screenshot({ path: screenshotFile, fullPage: true });
     const beforeReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
     await page.reload({ waitUntil: "domcontentloaded", timeout: 120000 });
-    await page.waitForFunction(() => Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")), null, { timeout: 120000 });
+    await waitForSemanticHost(page);
     const afterReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
     assert.deepEqual(afterReload, beforeReload, "same recipe/seed reload must reproduce identical Foundation elevations");
 
