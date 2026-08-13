@@ -2,19 +2,19 @@ import { RUNTIME_URLS } from "../shared/runtime-versions.js";
 
 const requiredModules = [
   ["NexusEngine", RUNTIME_URLS.nexus],
-  ["NexusEngine seed kit", RUNTIME_URLS.seedKit],
-  ["procedural creature kit", RUNTIME_URLS.creatureKit],
-  ["instanced render batch kit", RUNTIME_URLS.batchKit],
-  ["seeded world patch controller kit", RUNTIME_URLS.patchKit],
-  ["camera smooth follow kit", RUNTIME_URLS.cameraKit],
-  ["Three.js", RUNTIME_URLS.three],
-  ["Rapier", RUNTIME_URLS.rapier],
-  ["Rapier physics ProtoKit", RUNTIME_URLS.rapierKit]
+  ["NexusEngine Actor", RUNTIME_URLS.nexusActor],
+  ["NexusEngine Spatial", RUNTIME_URLS.nexusSpatial],
+  ["NexusEngine Interaction", RUNTIME_URLS.nexusInteraction],
+  ["NexusEngine Simulation", RUNTIME_URLS.nexusSimulationRuntime],
+  ["NexusEngine Motion", RUNTIME_URLS.nexusMotion],
+  ["NexusEngine Physics", RUNTIME_URLS.nexusPhysics],
+  ["NexusEngine World", RUNTIME_URLS.nexusWorld],
+  ["NexusEngine Presentation", RUNTIME_URLS.nexusPresentation],
+  ["NexusEngine Render", RUNTIME_URLS.nexusRender],
+  ["Three.js", RUNTIME_URLS.three]
 ];
 
-const results = await Promise.allSettled(
-  requiredModules.map(([, url]) => import(url))
-);
+const results = await Promise.allSettled(requiredModules.map(([, url]) => import(url)));
 const failedIndex = results.findIndex((result) => result.status === "rejected");
 
 if (failedIndex >= 0) {
@@ -27,4 +27,4 @@ if (failedIndex >= 0) {
   throw error;
 }
 
-await import("../game.js");
+await import("../game-runtime-semantic-v2.js");
