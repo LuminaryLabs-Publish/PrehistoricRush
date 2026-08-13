@@ -1,7 +1,7 @@
 import { RUNTIME_URLS } from "./shared/runtime-versions.js";
 import { getPrehistoricRushWorldRecipe, resolvePrehistoricRushWorldId } from "./domains/prehistoric-rush/world-recipes.js";
-import { createPrehistoricRushCourseDomainKit } from "./domains/prehistoric-rush/course-domain-kit.js";
 import { createPrehistoricRushCoreKits } from "./domains/prehistoric-rush/core-assembly.js";
+import { createPrehistoricRushCourseImplementation } from "./domains/prehistoric-rush/course-implementation.js";
 import { createPrehistoricRushWorldImplementation } from "./domains/prehistoric-rush/world-implementation.js";
 import { installPrehistoricRushPlayerActor } from "./domains/prehistoric-rush/player-actor-binding.js";
 import { createPrehistoricRushPlayerImplementation } from "./domains/prehistoric-rush/player-implementation.js";
@@ -33,7 +33,7 @@ const modules = { Nexus, Actor, Spatial, Interaction, Simulation, World, Present
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
 const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
-const kits = [...coreKits, ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []), rootKit, createPrehistoricRushCourseDomainKit(Nexus, { seed: worldRecipe.seed, ...worldRecipe.route })];
+const kits = [...coreKits, ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []), rootKit];
 const engine = Nexus.createEngine({ kits });
 
 if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerWorld({
@@ -46,7 +46,7 @@ if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerW
   settings: { recipeId: worldRecipe.id, recipeRevision: worldRecipe.revision }
 });
 
-const course = engine.n.prehistoricRushCourse;
+const course = createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } });
 const world = createPrehistoricRushWorldImplementation({ engine, World, recipe: worldRecipe, cellSize: 96 });
 installPrehistoricRushPlayerActor(engine);
 const player = createPrehistoricRushPlayerImplementation({ engine, course, world });
