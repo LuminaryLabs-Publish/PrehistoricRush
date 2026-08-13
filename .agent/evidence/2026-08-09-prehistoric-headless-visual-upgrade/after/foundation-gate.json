@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "mode": "semantic-foundation-gate-1",
+  "phase": "after",
   "nexus": "main",
   "terrainAuthority": "n:world:foundation",
   "vegetationEnabled": false,
@@ -17,5 +17,7 @@
     -6.184553537198227,
     -36.042605643967555,
     -0.30064562393839445
-  ]
+  ],
+  "pageErrors": [],
+  "consoleErrors": []
 }

@@ -1,19 +1,13 @@
 {
   "status": "PASS",
-  "canopyFoliageCards": {
-    "before": 708,
-    "after": 1038
+  "transition": "historical-baseline -> semantic-foundation-gate-1",
+  "nexus": "main",
+  "terrainAuthority": "n:world:foundation",
+  "landformCount": 8,
+  "traversalDistance": 500.3114499423303,
+  "seamDeltas": {
+    "x": 0.0004387082858663405,
+    "z": 0.00006379296188541161
   },
-  "treeLabFoliageCards": {
-    "before": 682,
-    "after": 1441
-  },
-  "racingLineFoliageCards": {
-    "before": 810,
-    "after": 1557
-  },
-  "currentGameplayFrameTimeP95Ms": 3149.899999999998,
-  "liveFidelityPackages": 12,
-  "liveFoliageOverflow": 0,
-  "note": "Current-main frame time is recorded as a CI regression proxy; GitHub Actions is not a physical MacBook Air benchmark."
+  "vegetationEnabled": false
 }
