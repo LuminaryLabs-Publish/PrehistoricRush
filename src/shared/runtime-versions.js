@@ -7,8 +7,19 @@ export const PROTOKITS_COMMIT = "534e249346d94351baa4cfce9f2d3cd837362920";
 export const THREE_VERSION = "0.179.1";
 export const RAPIER_VERSION = "0.15.0";
 
+export const NEXUS_SOURCE_BASE = `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_REF}/src`;
+
 export const RUNTIME_URLS = Object.freeze({
-  nexus: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_REF}/src/index.js`,
+  nexus: `${NEXUS_SOURCE_BASE}/index.js`,
+  nexusActor: `${NEXUS_SOURCE_BASE}/core-domains/actor/index.js`,
+  nexusSpatial: `${NEXUS_SOURCE_BASE}/core-domains/spatial/index.js`,
+  nexusInteraction: `${NEXUS_SOURCE_BASE}/core-domains/interaction/index.js`,
+  nexusSimulation: `${NEXUS_SOURCE_BASE}/core-domains/simulation/index.js`,
+  nexusWorld: `${NEXUS_SOURCE_BASE}/core-domains/world/index.js`,
+  nexusPresentation: `${NEXUS_SOURCE_BASE}/core-domains/presentation/index.js`,
+  nexusGraphics: `${NEXUS_SOURCE_BASE}/core-domains/presentation/subdomains/graphics/kits/graphics-kit/index.js`,
+  nexusAnimation: `${NEXUS_SOURCE_BASE}/core-domains/presentation/subdomains/animation/kits/animation-kit/index.js`,
+  nexusRender: `${NEXUS_SOURCE_BASE}/core-domains/render/index.js`,
   seedKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/foundation/seed-kit/index.js`,
   creatureKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/procedural-creatures/procedural-creature-body-kit/index.js`,
   batchKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine-Kits@${KITS_COMMIT}/kits/render-descriptors/instanced-render-batch-kit/index.js`,
