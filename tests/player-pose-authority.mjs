@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { NEXUS_COMMIT } from "../src/shared/runtime-versions.js";
+import { NEXUS_REF, RUNTIME_URLS } from "../src/shared/runtime-versions.js";
 
 const domainSource = await readFile(
   new URL("../src/domains/prehistoric-rush/prehistoric-rush-domain-runtime.js", import.meta.url),
@@ -91,16 +91,21 @@ assert.ok(
   gameSource.indexOf("engine.tick(dt);") < gameSource.indexOf("adapter.render(state, dt);"),
   "rendering observes the pose after the authoritative simulation tick"
 );
-assert.match(NEXUS_COMMIT, /^[0-9a-f]{40}$/, "the game pins NexusEngine to an immutable commit SHA");
+assert.equal(NEXUS_REF, "main", "development consumes NexusEngine main");
 assert.match(
   runtimeSource,
-  new RegExp(`NEXUS_COMMIT = "${NEXUS_COMMIT}"`),
-  "the exported runtime pin matches the runtime source"
+  /NEXUS_REF = "main"/,
+  "the exported live engine reference is main"
+);
+assert.equal(
+  RUNTIME_URLS.nexus,
+  "https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@main/src/index.js",
+  "the game loads Core Creature, Character, and Player from NexusEngine main through jsDelivr"
 );
 assert.match(
   runtimeSource,
-  /nexus:\s*`https:\/\/cdn\.jsdelivr\.net\/gh\/LuminaryLabs-Dev\/NexusEngine@\$\{NEXUS_COMMIT\}\/src\/index\.js`/,
-  "the game loads Core Creature, Character, and Player from the immutable NexusEngine pin"
+  /nexus:\s*`https:\/\/cdn\.jsdelivr\.net\/gh\/LuminaryLabs-Dev\/NexusEngine@\$\{NEXUS_REF\}\/src\/index\.js`/,
+  "the runtime URL is governed by the live NexusEngine reference"
 );
 
 console.log("player pose authority test ok");
