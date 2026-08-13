@@ -12,7 +12,7 @@
     "before": 810,
     "after": 1557
   },
-  "currentGameplayFrameTimeP95Ms": 5133.0999999999985,
+  "currentGameplayFrameTimeP95Ms": 1900,
   "liveFidelityPackages": 12,
   "liveFoliageOverflow": 0,
   "note": "Current-main frame time is recorded as a CI regression proxy; GitHub Actions is not a physical MacBook Air benchmark."
