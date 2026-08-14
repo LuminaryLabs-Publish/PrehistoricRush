@@ -1,4 +1,5 @@
 import { RUNTIME_URLS } from "./shared/runtime-versions.js";
+import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
 import { getPrehistoricRushWorldRecipe, resolvePrehistoricRushWorldId } from "./domains/prehistoric-rush/world-recipes.js";
 import { createPrehistoricRushCoreKits } from "./domains/prehistoric-rush/core-assembly.js";
 import { createPrehistoricRushCourseImplementation } from "./domains/prehistoric-rush/course-implementation.js";
@@ -9,11 +10,17 @@ import { createPrehistoricRushGameplayImplementation } from "./domains/prehistor
 import { createPrehistoricRushRenderingImplementation } from "./domains/prehistoric-rush/rendering-implementation.js";
 
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" style="position:absolute;inset:0"></div><aside style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:210px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div></aside></section>`;
+app.innerHTML = `<section style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" style="position:absolute;inset:0"></div><aside style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:230px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div></aside></section>`;
 const host = document.querySelector("#prehistoric-render-host");
 const statusNode = document.querySelector("#prehistoric-status");
+const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
+const setLoading = (progress, detail) => {
+  const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
+  statusNode.innerHTML = `${detail}<br><small>${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}</small>`;
+};
 
-const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, Presentation, Graphics, Animation, Render, THREE] = await Promise.all([
+setLoading(0.04, "Loading Nexus semantic domains");
+const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, Presentation, Graphics, Animation, Render, SeedModule, CreatureModule, THREE] = await Promise.all([
   import(RUNTIME_URLS.nexus),
   import(RUNTIME_URLS.nexusActor),
   import(RUNTIME_URLS.nexusSpatial),
@@ -26,14 +33,25 @@ const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, W
   import(RUNTIME_URLS.nexusGraphics),
   import(RUNTIME_URLS.nexusAnimation),
   import(RUNTIME_URLS.nexusRender),
+  import(RUNTIME_URLS.seedKit),
+  import(RUNTIME_URLS.creatureKit),
   import(RUNTIME_URLS.three)
 ]);
+
+setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
 const modules = { Nexus, Actor, Spatial, Interaction, Simulation, World, Presentation, Graphics, Animation, Render };
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
+const playerProfile = loadPlayerCharacterProfile();
 const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
-const kits = [...coreKits, ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []), rootKit];
+const kits = [
+  ...coreKits,
+  SeedModule.createSeedKit({ seed: worldRecipe.seed }),
+  CreatureModule.createProceduralCreatureBodyKit({ creatures: [playerProfile.creature] }),
+  ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []),
+  rootKit
+];
 const engine = Nexus.createEngine({ kits });
 
 if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerWorld({
@@ -46,23 +64,29 @@ if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerW
   settings: { recipeId: worldRecipe.id, recipeRevision: worldRecipe.revision }
 });
 
+setLoading(0.2, "Projecting Jurassic world features");
 const course = createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } });
 const world = createPrehistoricRushWorldImplementation({ engine, World, recipe: worldRecipe, cellSize: 96 });
 installPrehistoricRushPlayerActor(engine);
 const player = createPrehistoricRushPlayerImplementation({ engine, course, world });
-const gameplay = createPrehistoricRushGameplayImplementation({ player, goalDistance: worldRecipe.runtime.goalDistance });
-const rendering = createPrehistoricRushRenderingImplementation(THREE, { host, world });
-const framing = engine.n.cameraFraming.create({ id: "prehistoric-rush-player", padding: 4.8, minimumDistance: 10, maximumDistance: 18, smoothTime: 0.12 });
+const gameplay = createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance: worldRecipe.runtime.goalDistance });
+const creatureApi = engine.n.proceduralCreatureBody;
+if (!creatureApi?.get || !creatureApi?.createPose) throw new Error("Procedural raptor body service did not install.");
+const playerBody = creatureApi.get(playerProfile.creature.id);
 
-const playerVisual = new THREE.Group();
-const playerMaterial = new THREE.MeshStandardMaterial({ color: 0x8b6d43, roughness: 0.9 });
-const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.1, 2.4), playerMaterial);
-torso.position.y = 1.1;
-playerVisual.add(torso);
-const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 1.0), playerMaterial);
-head.position.set(0, 1.5, 1.5);
-playerVisual.add(head);
-rendering.scene.add(playerVisual);
+const rendering = await createPrehistoricRushRenderingImplementation(THREE, {
+  host,
+  world,
+  course,
+  gameplay,
+  creatureApi,
+  playerBody,
+  diagnosticFoundationOnly,
+  onProgress(progress, detail) {
+    setLoading(0.22 + progress * 0.74, detail);
+  }
+});
+const framing = engine.n.cameraFraming.create({ id: "prehistoric-rush-player", padding: 4.8, minimumDistance: 10, maximumDistance: 18, smoothTime: 0.12 });
 
 let left = false;
 let right = false;
@@ -101,22 +125,46 @@ function loop(now) {
   gameplay.tick(dt);
   engine.tick(dt);
   const state = gameplay.getState();
-  playerVisual.position.set(state.x, state.y + state.jumpHeight, state.z);
-  playerVisual.rotation.y = state.yaw;
-  rendering.draw(state, cameraFrame(state, dt));
-  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation terrain · vegetation OFF · ${world.landforms.length} landforms</small>`;
+  rendering.draw(state, cameraFrame(state, dt), dt);
+  const presentation = rendering.snapshot();
+  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation · ${world.landforms.length} landforms · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}</small>`;
   requestAnimationFrame(loop);
 }
 
 const initial = gameplay.getState();
-rendering.draw(initial, cameraFrame(initial, 1 / 60));
-const getState = () => ({
-  game: gameplay.snapshot(), player: player.snapshot(), world: world.snapshot(), course: course.snapshot(),
-  tick: engine.getLastTickCommit(), simulation: engine.n.simulation?.getCommittedFrame?.() ?? null,
-  rendering: rendering.snapshot(), streamingReadiness: { foundationReady: true, rendererReady: true, vegetationRequired: false },
-  treeFidelity: { disabled: true, packageCount: 0, counts: { near: 0, medium: 0, far: 0, horizon: 0 }, exactFrameAck: null },
-  lushFoliage: { disabled: true, overflow: 0, nearCards: 0, mediumCards: 0 }, vegetation: { enabled: false }, assetStartup: null,
-  versions: { nexus: "main" }
-});
-globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, worldRecipe, getState });
+rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
+const getState = () => {
+  const presentation = rendering.snapshot();
+  return {
+    game: gameplay.snapshot(),
+    player: player.snapshot(),
+    world: world.snapshot(),
+    course: course.snapshot(),
+    tick: engine.getLastTickCommit(),
+    simulation: engine.n.simulation?.getCommittedFrame?.() ?? null,
+    rendering: presentation,
+    streamingReadiness: {
+      foundationReady: true,
+      rendererReady: true,
+      vegetationRequired: !diagnosticFoundationOnly,
+      vegetationReady: diagnosticFoundationOnly || presentation.treeFidelityPackageCount === 12
+    },
+    treeFidelity: {
+      disabled: diagnosticFoundationOnly,
+      packageCount: presentation.treeFidelityPackageCount,
+      counts: presentation.treeFidelityCounts,
+      treeCount: presentation.treeCount
+    },
+    lushFoliage: {
+      disabled: diagnosticFoundationOnly,
+      grassCount: presentation.grassCount,
+      activeForestPatches: presentation.activeForestPatches
+    },
+    vegetation: { enabled: presentation.vegetationEnabled },
+    playerPresentation: presentation.playerPresentation,
+    assetStartup: { mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "prebuilt-tree-fidelity" },
+    versions: { nexus: "main" }
+  };
+};
+globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, worldRecipe, playerProfile, playerBody, getState });
 requestAnimationFrame(loop);
