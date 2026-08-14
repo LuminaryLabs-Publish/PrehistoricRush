@@ -19,6 +19,7 @@ export const RUNTIME_URLS = Object.freeze({
   nexusMotion: `${NEXUS_SOURCE_BASE}/core-domains/simulation/subdomains/motion/kits/motion-kit/index.js`,
   nexusPhysics: `${NEXUS_SOURCE_BASE}/core-domains/simulation/subdomains/physics/kits/physics-kit/index.js`,
   nexusWorld: `${NEXUS_SOURCE_BASE}/core-domains/world/index.js`,
+  nexusFoundationSampling: `${NEXUS_SOURCE_BASE}/core-domains/world/subdomains/world-foundation-domain/kits/foundation-sampling-kit/index.js`,
   nexusPresentation: `${NEXUS_SOURCE_BASE}/core-domains/presentation/index.js`,
   nexusGraphics: `${NEXUS_SOURCE_BASE}/core-domains/presentation/subdomains/graphics/kits/graphics-kit/index.js`,
   nexusAnimation: `${NEXUS_SOURCE_BASE}/core-domains/presentation/subdomains/animation/kits/animation-kit/index.js`,
