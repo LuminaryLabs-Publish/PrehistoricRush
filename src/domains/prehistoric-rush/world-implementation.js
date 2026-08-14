@@ -2,6 +2,86 @@ import { projectPrehistoricRushLandforms } from "./world-landform-projection.js"
 
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
 
+function semanticFeature(recipe, family, index, type, definition, priority = 100) {
+  return Object.freeze({
+    id: `${recipe.id}:${family}:${String(index).padStart(2, "0")}:${type}`,
+    type,
+    seed: `${recipe.seed}:${family}:${index}:${type}`,
+    priority,
+    lifecycle: "registered",
+    definition: Object.freeze(definition),
+    metadata: Object.freeze({
+      source: "prehistoric-rush-world-recipe",
+      family,
+      worldId: recipe.id,
+      recipeRevision: recipe.revision
+    })
+  });
+}
+
+function projectWorldContent(recipe) {
+  const ecology = Object.freeze([
+    semanticFeature(recipe, "ecology", 0, "biome-region", {
+      center: { x: 0, z: 650 },
+      radius: 2400,
+      edgeWidth: 260,
+      weight: 1,
+      biome: "jurassic-rainforest",
+      climateRules: { moisture: "high", temperature: "warm", canopy: "multi-layer" }
+    }, 100),
+    semanticFeature(recipe, "ecology", 1, "forest", {
+      center: { x: 0, z: 700 },
+      radius: 2200,
+      edgeWidth: 220,
+      density: 0.94,
+      communities: [
+        "giant-fern-tree", "tower-conifer", "understory-cycad", "broad-canopy",
+        "moss-column", "layered-araucaria", "fan-cycad", "ginkgo-crown-tree",
+        "marsh-horsetail-tower", "forked-ghostwood", "tall-prehistoric-palm", "short-jungle-palm"
+      ]
+    }, 110),
+    semanticFeature(recipe, "ecology", 2, "habitat-patch", {
+      center: { x: -210, z: 780 },
+      radius: 620,
+      edgeWidth: 120,
+      suitability: 0.92,
+      speciesRules: { preference: ["fern", "cycad", "moss", "horsetail"] }
+    }, 120)
+  ]);
+
+  const hydrology = Object.freeze([
+    semanticFeature(recipe, "hydrology", 0, "wetland", {
+      center: { x: 190, z: 920 },
+      radius: 360,
+      edgeWidth: 110,
+      saturation: 0.88
+    }, 130)
+  ]);
+
+  const atmosphere = Object.freeze([
+    semanticFeature(recipe, "atmosphere", 0, "fog-bank", {
+      center: { x: 0, z: 760 },
+      radius: 2100,
+      edgeWidth: 260,
+      altitude: { minimum: -80, maximum: 170 },
+      humidity: 0.92,
+      attenuation: 0.38,
+      intensity: 0.38
+    }, 140),
+    semanticFeature(recipe, "atmosphere", 1, "visibility-zone", {
+      center: { x: 0, z: 760 },
+      radius: 2400,
+      edgeWidth: 320,
+      altitude: { minimum: -100, maximum: 600 },
+      range: 1150,
+      attenuation: 0.24,
+      intensity: 0.24
+    }, 141)
+  ]);
+
+  return Object.freeze({ ecology, hydrology, atmosphere });
+}
+
 export function createPrehistoricRushWorldImplementation({ engine, World, recipe, cellSize = 96 } = {}) {
   if (!engine?.n?.world || !engine?.n?.worldFeature || !engine?.n?.worldFoundation) {
     throw new TypeError("PrehistoricRush World requires Nexus World, World Feature, and World Foundation.");
@@ -15,9 +95,16 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
   const partitionId = `${recipe.id}:foundation-grid`;
   const size = Math.max(32, Number(cellSize));
   const projectedLandforms = projectPrehistoricRushLandforms(recipe);
+  const content = projectWorldContent(recipe);
+  const projectedFeatures = Object.freeze([
+    ...projectedLandforms,
+    ...content.ecology,
+    ...content.hydrology,
+    ...content.atmosphere
+  ]);
   const featureIds = [];
 
-  for (const descriptor of projectedLandforms) {
+  for (const descriptor of projectedFeatures) {
     const registered = worldFeature.registerFeature(descriptor);
     featureIds.push(registered.id);
   }
@@ -76,6 +163,9 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
     recipe: clone(recipe),
     cellSize: size,
     landforms: clone(projectedLandforms),
+    ecology: clone(content.ecology),
+    hydrology: clone(content.hydrology),
+    atmosphere: clone(content.atmosphere),
     createCell,
     resolveCellAt(x, z) {
       const cell = createCell(x, z);
@@ -88,6 +178,9 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
       return {
         recipe: clone(recipe),
         landforms: clone(projectedLandforms),
+        ecology: clone(content.ecology),
+        hydrology: clone(content.hydrology),
+        atmosphere: clone(content.atmosphere),
         featureIds: [...featureIds],
         coreWorld: coreWorld.getWorld(recipe.id),
         featureCount: worldFeature.listFeatures().length,
