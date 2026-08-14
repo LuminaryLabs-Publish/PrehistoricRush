@@ -1,6 +1,6 @@
 {
-  "validatedCommit": "3792cf6579528f09b28df90ca19e7eb1c668063e",
-  "workflowRunId": "31749169403",
+  "validatedCommit": "6da77c9fc059b831e31543f90967b3061a037f1a",
+  "workflowRunId": "31825476924",
   "pagesPass": true,
   "foundation": {
     "status": "PASS",
@@ -22,6 +22,18 @@
       -36.042605643967555,
       -0.30064562393839445
     ],
+    "production": {
+      "terrainAuthority": "n:world:foundation",
+      "vegetationEnabled": true,
+      "treeFidelityPackageCount": 12,
+      "treeCount": 315,
+      "grassCount": 1291,
+      "playerPresentation": "procedural-skinned-raptor",
+      "ecologyFeatureCount": 3,
+      "hydrologyFeatureCount": 1,
+      "atmosphereFeatureCount": 2,
+      "shardCount": 63
+    },
     "pageErrors": [],
     "consoleErrors": []
   },
