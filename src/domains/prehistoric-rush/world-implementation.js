@@ -82,12 +82,15 @@ function projectWorldContent(recipe) {
   return Object.freeze({ ecology, hydrology, atmosphere });
 }
 
-export function createPrehistoricRushWorldImplementation({ engine, World, recipe, cellSize = 96 } = {}) {
+export function createPrehistoricRushWorldImplementation({ engine, World, FoundationSampling, recipe, cellSize = 96 } = {}) {
   if (!engine?.n?.world || !engine?.n?.worldFeature || !engine?.n?.worldFoundation) {
     throw new TypeError("PrehistoricRush World requires Nexus World, World Feature, and World Foundation.");
   }
   if (!recipe?.id) throw new TypeError("PrehistoricRush World requires a recipe.");
   if (typeof World?.createWorldCell !== "function") throw new TypeError("Nexus World createWorldCell() is required.");
+  if (typeof FoundationSampling?.sampleFoundationElevation !== "function" || typeof FoundationSampling?.sampleFoundationChannel !== "function") {
+    throw new TypeError("PrehistoricRush World requires Nexus Foundation sampling utilities.");
+  }
 
   const coreWorld = engine.n.world;
   const worldFeature = engine.n.worldFeature;
@@ -109,9 +112,6 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
     featureIds.push(registered.id);
   }
 
-  // WorldFeature handlers are fixed for this World instance after composition.
-  // Cache the sampler table and resolved cells so high-volume renderer sampling
-  // does not repeatedly clone Nexus Foundation state on every terrain vertex.
   const samplers = Object.freeze(worldFeature.getSamplers());
   const cells = new Map();
   const resolvedCells = new Map();
@@ -165,14 +165,14 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
 
   function sampleElevation(x, z) {
     const cell = createCell(x, z);
-    if (!resolvedCells.has(cell.id)) resolveCell(cell);
-    return foundation.sampleElevation(cell.id, { x: Number(x), y: 0, z: Number(z) }, samplers);
+    const resolved = resolveCell(cell);
+    return FoundationSampling.sampleFoundationElevation(resolved, { x: Number(x), y: 0, z: Number(z) }, samplers);
   }
 
   function sampleChannel(channel, x, z) {
     const cell = createCell(x, z);
-    if (!resolvedCells.has(cell.id)) resolveCell(cell);
-    return foundation.sampleChannel(cell.id, channel, { x: Number(x), y: 0, z: Number(z) }, samplers);
+    const resolved = resolveCell(cell);
+    return FoundationSampling.sampleFoundationChannel(resolved, channel, { x: Number(x), y: 0, z: Number(z) }, samplers);
   }
 
   function focus(position = {}) {
