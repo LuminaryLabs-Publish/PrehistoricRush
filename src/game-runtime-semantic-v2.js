@@ -20,7 +20,7 @@ const setLoading = (progress, detail) => {
 };
 
 setLoading(0.04, "Loading Nexus semantic domains");
-const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, Presentation, Graphics, Animation, Render, SeedModule, CreatureModule, THREE] = await Promise.all([
+const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, Presentation, Graphics, Animation, Render, CreatureModule, THREE] = await Promise.all([
   import(RUNTIME_URLS.nexus),
   import(RUNTIME_URLS.nexusActor),
   import(RUNTIME_URLS.nexusSpatial),
@@ -33,7 +33,6 @@ const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, W
   import(RUNTIME_URLS.nexusGraphics),
   import(RUNTIME_URLS.nexusAnimation),
   import(RUNTIME_URLS.nexusRender),
-  import(RUNTIME_URLS.seedKit),
   import(RUNTIME_URLS.creatureKit),
   import(RUNTIME_URLS.three)
 ]);
@@ -47,8 +46,11 @@ const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
 const kits = [
   ...coreKits,
-  SeedModule.createSeedKit({ seed: worldRecipe.seed }),
-  CreatureModule.createProceduralCreatureBodyKit({ creatures: [playerProfile.creature] }),
+  CreatureModule.createProceduralCreatureBodyKit({
+    seed: worldRecipe.seed,
+    creatures: [playerProfile.creature],
+    requires: []
+  }),
   ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []),
   rootKit
 ];
