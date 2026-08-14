@@ -10,6 +10,7 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const evidenceRoot = path.join(repositoryRoot, ".agent", "evidence", "2026-08-09-prehistoric-headless-visual-upgrade", phase);
 const evidenceFile = path.join(evidenceRoot, "foundation-gate.json");
 const screenshotFile = path.join(evidenceRoot, "foundation-gate.png");
+const productionScreenshotFile = path.join(evidenceRoot, "production-restored.png");
 const pageErrors = [];
 const consoleErrors = [];
 
@@ -19,8 +20,8 @@ const browser = await chromium.launch({
   args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist", "--enable-unsafe-swiftshader"]
 });
 
-async function waitForSemanticHost(page) {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
+async function waitForSemanticHost(page, attempts = 360) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
     const state = await page.evaluate(() => ({
       ready: Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
       body: document.body?.innerText?.slice(0, 1200) ?? ""
@@ -47,7 +48,8 @@ try {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
 
-  await page.goto(`${baseUrl}/game.html`, { waitUntil: "domcontentloaded", timeout: 120000 });
+  const initialUrl = phase === "after" ? `${baseUrl}/game.html?diagnostic=foundation` : `${baseUrl}/game.html`;
+  await page.goto(initialUrl, { waitUntil: "domcontentloaded", timeout: 120000 });
 
   if (phase === "before") {
     await page.waitForSelector("canvas", { timeout: 120000 });
@@ -66,8 +68,9 @@ try {
 
     const initial = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
     assert.equal(initial.rendering.terrainAuthority, "n:world:foundation", "Rendering must consume Nexus World Foundation");
-    assert.equal(initial.rendering.vegetationEnabled, false, "Gate 1 keeps renderer vegetation off");
-    assert.equal(initial.vegetation.enabled, false, "Gate 1 keeps vegetation off globally");
+    assert.equal(initial.rendering.diagnosticFoundationOnly, true, "Gate 1 must use explicit Foundation diagnostic mode");
+    assert.equal(initial.rendering.vegetationEnabled, false, "Foundation diagnostic keeps renderer vegetation off");
+    assert.equal(initial.vegetation.enabled, false, "Foundation diagnostic keeps vegetation off globally");
     assert.equal(initial.streamingReadiness.foundationReady, true, "Foundation must be ready before play");
     assert.ok(initial.world.landforms.length >= 6, "World recipe must project a meaningful landform set");
     assert.equal(initial.versions.nexus, "main", "browser runtime must consume Nexus main");
@@ -119,23 +122,56 @@ try {
     const afterReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
     assert.deepEqual(afterReload, beforeReload, "same recipe/seed reload must reproduce identical Foundation elevations");
 
-    assert.deepEqual(pageErrors, [], `browser page errors: ${pageErrors.join(" | ")}`);
-    assert.deepEqual(consoleErrors, [], `browser console errors: ${consoleErrors.join(" | ")}`);
+    assert.deepEqual(pageErrors, [], `Foundation diagnostic page errors: ${pageErrors.join(" | ")}`);
+    assert.deepEqual(consoleErrors, [], `Foundation diagnostic console errors: ${consoleErrors.join(" | ")}`);
+
+    pageErrors.length = 0;
+    consoleErrors.length = 0;
+    await page.goto(`${baseUrl}/game.html?production-validation=1`, { waitUntil: "domcontentloaded", timeout: 120000 });
+    await waitForSemanticHost(page, 480);
+    await page.waitForFunction(() => globalThis.PrehistoricRushHost.getState().rendering.treeCount > 0, null, { timeout: 30000 });
+    const production = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    assert.equal(production.rendering.terrainAuthority, "n:world:foundation", "Production must retain Foundation terrain authority");
+    assert.equal(production.rendering.diagnosticFoundationOnly, false, "Normal production must not use terrain-only diagnostics");
+    assert.equal(production.vegetation.enabled, true, "Normal production must restore vegetation");
+    assert.equal(production.treeFidelity.packageCount, 12, "Normal production must load all 12 Tree Fidelity species");
+    assert.ok(production.treeFidelity.treeCount > 0, "Normal production must render Foundation-positioned trees");
+    assert.ok(production.rendering.grassCount > 0, "Normal production must restore grass");
+    assert.equal(production.playerPresentation, "procedural-skinned-raptor", "Normal production must restore the skinned procedural raptor");
+    assert.ok(production.world.ecology.length >= 3, "Normal production must compose Nexus Ecology features");
+    assert.ok(production.world.hydrology.length >= 1, "Normal production must compose Nexus Hydrology features");
+    assert.ok(production.world.atmosphere.length >= 2, "Normal production must compose Nexus Atmosphere features");
+    assert.ok(production.game.pickups.total > 0, "Normal production must restore shard pickups");
+    assert.deepEqual(pageErrors, [], `Production page errors: ${pageErrors.join(" | ")}`);
+    assert.deepEqual(consoleErrors, [], `Production console errors: ${consoleErrors.join(" | ")}`);
+    await page.screenshot({ path: productionScreenshotFile, fullPage: true });
 
     const finalState = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
     const evidence = {
       status: "PASS",
       phase: "after",
-      nexus: finalState.versions.nexus,
-      terrainAuthority: finalState.rendering.terrainAuthority,
-      vegetationEnabled: finalState.vegetation.enabled,
-      landformCount: finalState.world.landforms.length,
+      nexus: initial.versions.nexus,
+      terrainAuthority: initial.rendering.terrainAuthority,
+      vegetationEnabled: initial.vegetation.enabled,
+      landformCount: initial.world.landforms.length,
       traversalDistance: traversal.distance,
       seamDeltas: {
         x: Math.abs(seamSamples.xLeft - seamSamples.xRight),
         z: Math.abs(seamSamples.zNear - seamSamples.zFar)
       },
       deterministicSamples: beforeReload,
+      production: {
+        terrainAuthority: finalState.rendering.terrainAuthority,
+        vegetationEnabled: finalState.vegetation.enabled,
+        treeFidelityPackageCount: finalState.treeFidelity.packageCount,
+        treeCount: finalState.treeFidelity.treeCount,
+        grassCount: finalState.rendering.grassCount,
+        playerPresentation: finalState.playerPresentation,
+        ecologyFeatureCount: finalState.world.ecology.length,
+        hydrologyFeatureCount: finalState.world.hydrology.length,
+        atmosphereFeatureCount: finalState.world.atmosphere.length,
+        shardCount: finalState.game.pickups.total
+      },
       pageErrors,
       consoleErrors
     };
