@@ -20,7 +20,7 @@ const setLoading = (progress, detail) => {
 };
 
 setLoading(0.04, "Loading Nexus semantic domains");
-const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, Presentation, Graphics, Animation, Render, CreatureModule, THREE] = await Promise.all([
+const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, FoundationSampling, Presentation, Graphics, Animation, Render, CreatureModule, THREE] = await Promise.all([
   import(RUNTIME_URLS.nexus),
   import(RUNTIME_URLS.nexusActor),
   import(RUNTIME_URLS.nexusSpatial),
@@ -29,6 +29,7 @@ const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, W
   import(RUNTIME_URLS.nexusMotion),
   import(RUNTIME_URLS.nexusPhysics),
   import(RUNTIME_URLS.nexusWorld),
+  import(RUNTIME_URLS.nexusFoundationSampling),
   import(RUNTIME_URLS.nexusPresentation),
   import(RUNTIME_URLS.nexusGraphics),
   import(RUNTIME_URLS.nexusAnimation),
@@ -68,7 +69,7 @@ if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerW
 
 setLoading(0.2, "Projecting Jurassic world features");
 const course = createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } });
-const world = createPrehistoricRushWorldImplementation({ engine, World, recipe: worldRecipe, cellSize: 96 });
+const world = createPrehistoricRushWorldImplementation({ engine, World, FoundationSampling, recipe: worldRecipe, cellSize: 96 });
 installPrehistoricRushPlayerActor(engine);
 const player = createPrehistoricRushPlayerImplementation({ engine, course, world });
 const gameplay = createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance: worldRecipe.runtime.goalDistance });
