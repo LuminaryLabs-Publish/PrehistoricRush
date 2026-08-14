@@ -18,6 +18,18 @@
     -36.042605643967555,
     -0.30064562393839445
   ],
+  "production": {
+    "terrainAuthority": "n:world:foundation",
+    "vegetationEnabled": true,
+    "treeFidelityPackageCount": 12,
+    "treeCount": 315,
+    "grassCount": 1291,
+    "playerPresentation": "procedural-skinned-raptor",
+    "ecologyFeatureCount": 3,
+    "hydrologyFeatureCount": 1,
+    "atmosphereFeatureCount": 2,
+    "shardCount": 63
+  },
   "pageErrors": [],
   "consoleErrors": []
 }
