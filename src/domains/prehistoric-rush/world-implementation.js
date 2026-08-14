@@ -109,10 +109,23 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
     featureIds.push(registered.id);
   }
 
+  // WorldFeature handlers are fixed for this World instance after composition.
+  // Cache the sampler table and resolved cells so high-volume renderer sampling
+  // does not repeatedly clone Nexus Foundation state on every terrain vertex.
+  const samplers = Object.freeze(worldFeature.getSamplers());
+  const cells = new Map();
+  const resolvedCells = new Map();
+
+  function cellCoordinates(x, z) {
+    return [Math.floor(Number(x) / size), Math.floor(Number(z) / size)];
+  }
+
   function createCell(x, z) {
-    const cx = Math.floor(Number(x) / size);
-    const cz = Math.floor(Number(z) / size);
-    return World.createWorldCell({
+    const [cx, cz] = cellCoordinates(x, z);
+    const cacheKey = `${cx}:${cz}`;
+    const cached = cells.get(cacheKey);
+    if (cached) return cached;
+    const cell = World.createWorldCell({
       worldId: recipe.id,
       worldSeed: String(recipe.seed),
       partitionId,
@@ -126,12 +139,19 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
       lod: 0,
       priority: 0
     });
+    cells.set(cacheKey, cell);
+    return cell;
   }
 
   function resolveCell(cell) {
-    const current = foundation.getResolvedCell(cell.id);
-    if (current) return current;
-    return worldFeature.compileCell(cell, {
+    const cached = resolvedCells.get(cell.id);
+    if (cached) return cached;
+    const existing = foundation.getResolvedCell(cell.id);
+    if (existing) {
+      resolvedCells.set(cell.id, existing);
+      return existing;
+    }
+    const resolved = worldFeature.compileCell(cell, {
       foundation,
       baseFoundation: {
         elevation: 0,
@@ -139,18 +159,20 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
         collision: { kind: "foundation-heightfield", worldId: recipe.id }
       }
     }).resolved;
+    resolvedCells.set(cell.id, resolved);
+    return resolved;
   }
 
   function sampleElevation(x, z) {
     const cell = createCell(x, z);
-    resolveCell(cell);
-    return foundation.sampleElevation(cell.id, { x: Number(x), y: 0, z: Number(z) }, worldFeature.getSamplers());
+    if (!resolvedCells.has(cell.id)) resolveCell(cell);
+    return foundation.sampleElevation(cell.id, { x: Number(x), y: 0, z: Number(z) }, samplers);
   }
 
   function sampleChannel(channel, x, z) {
     const cell = createCell(x, z);
-    resolveCell(cell);
-    return foundation.sampleChannel(cell.id, channel, { x: Number(x), y: 0, z: Number(z) }, worldFeature.getSamplers());
+    if (!resolvedCells.has(cell.id)) resolveCell(cell);
+    return foundation.sampleChannel(cell.id, channel, { x: Number(x), y: 0, z: Number(z) }, samplers);
   }
 
   function focus(position = {}) {
@@ -184,10 +206,14 @@ export function createPrehistoricRushWorldImplementation({ engine, World, recipe
         featureIds: [...featureIds],
         coreWorld: coreWorld.getWorld(recipe.id),
         featureCount: worldFeature.listFeatures().length,
+        cachedCellCount: cells.size,
+        resolvedCellCount: resolvedCells.size,
         foundation: foundation.getSnapshot?.() ?? null
       };
     },
     dispose() {
+      cells.clear();
+      resolvedCells.clear();
       for (const id of featureIds) worldFeature.unregisterFeature(id);
     }
   });
