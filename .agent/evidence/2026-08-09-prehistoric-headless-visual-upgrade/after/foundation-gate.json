@@ -2,7 +2,7 @@
   "status": "PASS",
   "phase": "after",
   "nexus": "main",
-  "nexusValidatedCommit": "efcfa5d1a40d95b6235b53aad9458ea60be881db",
+  "nexusValidatedCommit": "f030abd8f648fc3bf1ac0a359e7a421822b41b88",
   "terrainAuthority": "n:world:foundation",
   "vegetationEnabled": false,
   "landformCount": 8,
@@ -33,14 +33,21 @@
     "atmosphereFeatureCount": 2,
     "shardCount": 63,
     "performance": {
-      "browserObservedHostReadyMs": 4940.379260999998,
-      "startupMs": 4308.600000000035,
+      "browserObservedHostReadyMs": 8050.304672999999,
+      "startupMs": 4326.299999999988,
       "startupBudgetMs": 60000,
       "withinStartupBudget": true,
+      "gpuNative": {
+        "uploadedBytes": 0,
+        "readbackBytes": 0,
+        "computeDispatches": 0,
+        "renderSubmissions": 0,
+        "skippedFrames": 0
+      },
       "rendering": {
-        "playableRendererMs": 1874.9000000000233,
-        "initialTerrainMs": 900.8999999999651,
-        "treeFidelityLoadMs": 612
+        "playableRendererMs": 1880,
+        "initialTerrainMs": 900.0999999999767,
+        "treeFidelityLoadMs": 332.6000000000058
       }
     }
   },
