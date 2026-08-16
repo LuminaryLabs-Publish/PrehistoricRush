@@ -2,9 +2,18 @@ import { applyCreaturePoseDamped, createCreatureMesh } from "../../render/three-
 import { createThreeTreeFidelityLayer } from "../../render/three-tree-fidelity-layer.js";
 import { applyLushJungleAtmosphere } from "../../render/lush-jungle-atmosphere.js";
 import { PREHISTORIC_TREE_ARCHETYPES, PREHISTORIC_TREE_TYPES } from "../../shared/tree-archetype-catalog.js";
+import {
+  FOUNDATION_FOREST_GENERATION_BUDGET,
+  FOUNDATION_FOREST_RADIUS,
+  FOUNDATION_TERRAIN_ACTIVE_RADIUS,
+  FOUNDATION_TERRAIN_PATCH_SEGMENTS,
+  FOUNDATION_TERRAIN_PATCH_SIZE,
+  FOUNDATION_TERRAIN_RETAIN_RADIUS,
+  createCenteredPatchPlan,
+  selectMissingPatchBatch
+} from "./rendering-streaming-policy.js";
 
-const FOREST_PATCH_SIZE = 96;
-const FOREST_RADIUS = 2;
+const FOREST_PATCH_SIZE = FOUNDATION_TERRAIN_PATCH_SIZE;
 const TREES_PER_PATCH = 13;
 const GRASS_PER_PATCH = 52;
 const TREE_CAPACITY_PER_TYPE = 320;
@@ -50,28 +59,40 @@ async function loadTreeFidelityPackages(onProgress = () => {}) {
   if (!manifestResponse.ok) throw new Error(`Tree Fidelity manifest failed: ${manifestResponse.status}`);
   const manifest = await manifestResponse.json();
   const entries = new Map(manifest.packages.map((entry) => [entry.archetypeId, entry]));
-  const packages = [];
+  const imagePromises = new Map();
+  let completed = 0;
 
-  for (let index = 0; index < PREHISTORIC_TREE_ARCHETYPES.length; index += 1) {
-    const archetype = PREHISTORIC_TREE_ARCHETYPES[index];
+  const packages = await Promise.all(PREHISTORIC_TREE_ARCHETYPES.map(async (archetype) => {
     const entry = entries.get(archetype.id);
     if (!entry) throw new Error(`Tree Fidelity manifest is missing ${archetype.id}.`);
-    const response = await fetch(new URL(entry.file, root));
+    const packageUrl = new URL(entry.file, root);
+    const atlasUrl = new URL(entry.atlas, root);
+    if (!imagePromises.has(atlasUrl.href)) imagePromises.set(atlasUrl.href, loadImage(atlasUrl));
+    const [response, image] = await Promise.all([
+      fetch(packageUrl),
+      imagePromises.get(atlasUrl.href)
+    ]);
     if (!response.ok) throw new Error(`Tree Fidelity package ${entry.file} failed: ${response.status}`);
     const packageValue = await response.json();
-    const image = await loadImage(new URL(entry.atlas, root));
     if (packageValue.forms?.far?.atlas) packageValue.forms.far.atlas.runtimeImage = image;
     if (packageValue.forms?.horizon?.atlas) packageValue.forms.horizon.atlas.runtimeImage = image;
-    packages.push(packageValue);
-    onProgress((index + 1) / PREHISTORIC_TREE_ARCHETYPES.length, `Loading forest · ${index + 1}/${PREHISTORIC_TREE_ARCHETYPES.length} species`);
-  }
+    completed += 1;
+    onProgress(completed / PREHISTORIC_TREE_ARCHETYPES.length, `Loading forest · ${completed}/${PREHISTORIC_TREE_ARCHETYPES.length} species`);
+    return packageValue;
+  }));
+
   return packages;
 }
 
-function createTerrain(THREE, world) {
-  const geometry = new THREE.PlaneGeometry(1050, 1450, 105, 145);
+function createTerrainMaterial(THREE) {
+  return new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.97, metalness: 0 });
+}
+
+function createTerrainPatch(THREE, world, patchX, patchZ, material) {
+  const size = FOUNDATION_TERRAIN_PATCH_SIZE;
+  const geometry = new THREE.PlaneGeometry(size, size, FOUNDATION_TERRAIN_PATCH_SEGMENTS, FOUNDATION_TERRAIN_PATCH_SEGMENTS);
   geometry.rotateX(-Math.PI / 2);
-  geometry.translate(0, 0, 610);
+  geometry.translate((patchX + 0.5) * size, 0, (patchZ + 0.5) * size);
   const position = geometry.attributes.position;
   const colors = new Float32Array(position.count * 3);
   const low = new THREE.Color(0x355f2d);
@@ -94,11 +115,9 @@ function createTerrain(THREE, world) {
   }
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   geometry.computeVertexNormals();
-  const mesh = new THREE.Mesh(
-    geometry,
-    new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.97, metalness: 0 })
-  );
-  mesh.name = "prehistoric-foundation-terrain";
+  geometry.computeBoundingSphere();
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.name = `prehistoric-foundation-terrain:${patchX}:${patchZ}`;
   mesh.receiveShadow = true;
   return mesh;
 }
@@ -274,9 +293,35 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.append(renderer.domElement);
 
-  onProgress(0.08, "Resolving Nexus Foundation terrain");
-  const terrain = createTerrain(THREE, world);
-  scene.add(terrain);
+  const terrainMaterial = createTerrainMaterial(THREE);
+  const terrainPatches = new Map();
+  function ensureTerrain(state = {}) {
+    const activePlan = createCenteredPatchPlan(state, {
+      size: FOUNDATION_TERRAIN_PATCH_SIZE,
+      radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
+      prefix: "foundation-terrain"
+    });
+    const retainedIds = new Set(createCenteredPatchPlan(state, {
+      size: FOUNDATION_TERRAIN_PATCH_SIZE,
+      radius: FOUNDATION_TERRAIN_RETAIN_RADIUS,
+      prefix: "foundation-terrain"
+    }).map((entry) => entry.id));
+    for (const entry of activePlan) {
+      if (terrainPatches.has(entry.id)) continue;
+      const mesh = createTerrainPatch(THREE, world, entry.x, entry.z, terrainMaterial);
+      terrainPatches.set(entry.id, mesh);
+      scene.add(mesh);
+    }
+    for (const [id, mesh] of terrainPatches) {
+      if (retainedIds.has(id)) continue;
+      terrainPatches.delete(id);
+      scene.remove(mesh);
+      mesh.geometry?.dispose?.();
+    }
+  }
+
+  onProgress(0.08, "Resolving local Nexus Foundation terrain");
+  ensureTerrain({ x: 0, z: 0 });
 
   const hemisphere = new THREE.HemisphereLight(0xe1f2cf, 0x2c3d25, 1.5);
   const sun = new THREE.DirectionalLight(0xffdda0, 2.6);
@@ -294,7 +339,6 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let playerMesh = null;
   let shardMesh = null;
   const forestPatches = new Map();
-  let currentForestCenter = null;
   let elapsed = 0;
 
   if (!diagnosticFoundationOnly) {
@@ -338,32 +382,29 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   function ensureForest(state) {
     if (!treeFidelity || diagnosticFoundationOnly) return;
-    const centerX = Math.floor((state.x + FOREST_PATCH_SIZE * 0.5) / FOREST_PATCH_SIZE);
-    const centerZ = Math.floor((state.z + FOREST_PATCH_SIZE * 0.5) / FOREST_PATCH_SIZE);
-    const centerKey = `${centerX}:${centerZ}`;
-    if (centerKey === currentForestCenter) return;
-    currentForestCenter = centerKey;
-    const desired = new Set();
-    for (let dz = -FOREST_RADIUS; dz <= FOREST_RADIUS; dz += 1) {
-      for (let dx = -FOREST_RADIUS; dx <= FOREST_RADIUS; dx += 1) {
-        const patchX = centerX + dx;
-        const patchZ = centerZ + dz;
-        const id = `foundation-forest:${patchX}:${patchZ}`;
-        desired.add(id);
-        if (forestPatches.has(id)) continue;
-        const patch = createForestPatch(world, course.route, patchX, patchZ, world.recipe.seed);
-        forestPatches.set(id, patch);
-        treeFidelity.activatePatch(patch);
-      }
+    const plan = createCenteredPatchPlan(state, {
+      size: FOREST_PATCH_SIZE,
+      radius: FOUNDATION_FOREST_RADIUS,
+      prefix: "foundation-forest"
+    });
+    const desiredIds = new Set(plan.map((entry) => entry.id));
+    const batch = selectMissingPatchBatch(plan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
+    let changed = false;
+    for (const entry of batch) {
+      const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed);
+      forestPatches.set(entry.id, patch);
+      treeFidelity.activatePatch(patch);
+      changed = true;
     }
     const released = [];
     for (const id of forestPatches.keys()) {
-      if (desired.has(id)) continue;
+      if (desiredIds.has(id)) continue;
       forestPatches.delete(id);
       released.push(id);
+      changed = true;
     }
     if (released.length) treeFidelity.releasePatches(released);
-    flushGrass();
+    if (changed) flushGrass();
   }
 
   function updateShards() {
@@ -385,6 +426,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   function draw(state, framing, dt = 1 / 60) {
     elapsed += Math.max(0, Number(dt) || 0);
+    ensureTerrain(state);
     if (framing) {
       camera.position.set(...framing.position);
       camera.lookAt(...framing.target);
@@ -424,6 +466,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     draw,
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
+      terrainPatchCount: terrainPatches.size,
+      terrainActiveRadius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
       vegetationEnabled: !diagnosticFoundationOnly,
       diagnosticFoundationOnly,
       playerPresentation: playerMesh ? "procedural-skinned-raptor" : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
@@ -432,6 +476,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },
       grassCount: grassMesh?.count ?? 0,
       activeForestPatches: forestPatches.size,
+      forestTargetPatchCount: (FOUNDATION_FOREST_RADIUS * 2 + 1) ** 2,
+      forestGenerationBudget: FOUNDATION_FOREST_GENERATION_BUDGET,
       atmosphere: scene.fog ? "lush-jungle" : "none",
       courseVisible: Boolean(courseRibbon)
     })

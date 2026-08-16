@@ -1,0 +1,46 @@
+name: Production Startup Performance
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - ".agent/evidence/**"
+      - ".agent/runs/**"
+      - ".agent/tracker.md"
+      - ".agent/target.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prehistoric-rush-production-startup
+  cancel-in-progress: true
+
+jobs:
+  production-startup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser validation dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.61.1
+          npx playwright install --with-deps chromium
+      - name: Validate production game startup under 60 seconds
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-production-startup-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 node tests/game-startup-performance.mjs
+      - name: Upload startup metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prehistoric-production-startup
+          path: .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/metrics/game-startup-performance.json
+          if-no-files-found: warn
+          retention-days: 30

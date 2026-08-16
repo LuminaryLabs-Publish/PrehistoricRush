@@ -1,4 +1,4 @@
-import { RUNTIME_URLS } from "./shared/runtime-versions.js";
+import { NEXUS_COMMIT, RUNTIME_URLS } from "./shared/runtime-versions.js";
 import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
 import { getPrehistoricRushWorldRecipe, resolvePrehistoricRushWorldId } from "./domains/prehistoric-rush/world-recipes.js";
 import { createPrehistoricRushCoreKits } from "./domains/prehistoric-rush/core-assembly.js";
@@ -9,6 +9,7 @@ import { createPrehistoricRushPlayerImplementation } from "./domains/prehistoric
 import { createPrehistoricRushGameplayImplementation } from "./domains/prehistoric-rush/gameplay-implementation.js";
 import { createPrehistoricRushRenderingImplementation } from "./domains/prehistoric-rush/rendering-implementation.js";
 
+const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
 app.innerHTML = `<section style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" style="position:absolute;inset:0"></div><aside style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:230px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div></aside></section>`;
 const host = document.querySelector("#prehistoric-render-host");
@@ -20,7 +21,7 @@ const setLoading = (progress, detail) => {
 };
 
 setLoading(0.04, "Loading Nexus semantic domains");
-const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, FoundationSampling, Presentation, Graphics, Animation, Render, CreatureModule, THREE] = await Promise.all([
+const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, FoundationSampling, Presentation, Graphics, Animation, Render, Compute, CreatureModule, THREE] = await Promise.all([
   import(RUNTIME_URLS.nexus),
   import(RUNTIME_URLS.nexusActor),
   import(RUNTIME_URLS.nexusSpatial),
@@ -34,9 +35,39 @@ const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, W
   import(RUNTIME_URLS.nexusGraphics),
   import(RUNTIME_URLS.nexusAnimation),
   import(RUNTIME_URLS.nexusRender),
+  import(RUNTIME_URLS.nexusCompute),
   import(RUNTIME_URLS.creatureKit),
   import(RUNTIME_URLS.three)
 ]);
+if (typeof Compute.createComputeHost !== "function" || typeof Compute.createJavaScriptComputeProvider !== "function") {
+  throw new Error("Nexus Compute Host is unavailable from NexusEngine/main.");
+}
+
+const computeProviders = [Compute.createJavaScriptComputeProvider({
+  id: "prehistoric-rush-javascript-compute",
+  priority: 10
+})];
+let webgpuAdapter = null;
+if (globalThis.navigator?.gpu && typeof Compute.createWebGPUComputeProvider === "function") {
+  try {
+    webgpuAdapter = await globalThis.navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+    if (webgpuAdapter) {
+      computeProviders.unshift(Compute.createWebGPUComputeProvider({
+        id: "prehistoric-rush-webgpu-compute",
+        adapter: webgpuAdapter,
+        priority: 100,
+        awaitCompletion: false
+      }));
+    }
+  } catch {
+    webgpuAdapter = null;
+  }
+}
+const computeHost = Compute.createComputeHost({ id: "prehistoric-rush-compute-host", providers: computeProviders });
+const computeSelection = computeHost.selectProvider({
+  preferredBackends: ["webgpu", "javascript"],
+  allowFallback: true
+});
 
 setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
@@ -130,12 +161,13 @@ function loop(now) {
   const state = gameplay.getState();
   rendering.draw(state, cameraFrame(state, dt), dt);
   const presentation = rendering.snapshot();
-  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation · ${world.landforms.length} landforms · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}</small>`;
+  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation · ${world.landforms.length} landforms · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}</small>`;
   requestAnimationFrame(loop);
 }
 
 const initial = gameplay.getState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
+const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
   const presentation = rendering.snapshot();
   return {
@@ -146,11 +178,25 @@ const getState = () => {
     tick: engine.getLastTickCommit(),
     simulation: engine.n.simulation?.getCommittedFrame?.() ?? null,
     rendering: presentation,
+    compute: {
+      selected: computeSelection,
+      providers: computeHost.listProviders(),
+      webgpuAdapterReady: Boolean(webgpuAdapter)
+    },
+    performance: {
+      startupMs,
+      startupBudgetMs: 60000,
+      withinStartupBudget: startupMs < 60000
+    },
     streamingReadiness: {
       foundationReady: true,
-      rendererReady: true,
+      rendererReady: presentation.terrainPatchCount >= 9,
+      terrainPatchCount: presentation.terrainPatchCount,
       vegetationRequired: !diagnosticFoundationOnly,
-      vegetationReady: diagnosticFoundationOnly || presentation.treeFidelityPackageCount === 12
+      vegetationReady: diagnosticFoundationOnly || presentation.treeFidelityPackageCount === 12,
+      backgroundForestPending: diagnosticFoundationOnly
+        ? 0
+        : Math.max(0, presentation.forestTargetPatchCount - presentation.activeForestPatches)
     },
     treeFidelity: {
       disabled: diagnosticFoundationOnly,
@@ -166,8 +212,8 @@ const getState = () => {
     vegetation: { enabled: presentation.vegetationEnabled },
     playerPresentation: presentation.playerPresentation,
     assetStartup: { mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "prebuilt-tree-fidelity" },
-    versions: { nexus: "main" }
+    versions: { nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
   };
 };
-globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, worldRecipe, playerProfile, playerBody, getState });
+globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, getState });
 requestAnimationFrame(loop);
