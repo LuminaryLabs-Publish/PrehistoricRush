@@ -11,6 +11,7 @@ import {
   createPrehistoricVegetationGeneratorOptions,
   createPrehistoricVegetationRuntime
 } from "./shared/prehistoric-vegetation-domain.js";
+import { evaluatePlayableStartup } from "./shared/prehistoric-compute-streaming.js";
 import { FOLIAGE_ATLAS_REVISION } from "./shared/prehistoric-foliage-card-recipes.js";
 import { loadPlayerCharacterProfile } from "./shared/player-character-store.js";
 import { PREHISTORIC_TREE_TYPES } from "./shared/tree-fidelity-assets.js";
@@ -40,6 +41,7 @@ const STREAM = {
   startupVisualRows: 4,
   startupTimeoutMs: 45000
 };
+const STARTUP_PLAYABLE_PATCH_COUNT = (STREAM.startupSimulationRadius * 2 + 1) ** 2;
 const TREE_BATCH_CAPACITY = 256;
 const VEGETATION_DENSITY_POLICY = `world-recipe-${worldRecipe.id}-r${worldRecipe.revision}`;
 const STREAM_PRIORITY_POLICY_ID = "prehistoric-runner-forward-v1";
@@ -176,7 +178,7 @@ function shell() {
   });
 
   loadingTitle.textContent = `Preparing ${worldRecipe.name}`;
-  loadingLabel.textContent = "Generating terrain 0 / 21";
+  loadingLabel.textContent = `Generating playable terrain 0 / ${STARTUP_PLAYABLE_PATCH_COUNT}`;
   loadingTrack.append(loadingFill);
   loadingCard.append(loadingTitle, loadingTrack, loadingLabel);
   loading.append(loadingCard);
@@ -202,31 +204,55 @@ function shell() {
 
 function createWorkerExecutor(PatchModule, serializableGeneratorOptions, timings) {
   if (typeof Worker !== "function" || typeof PatchModule.createMessageWorkerExecutor !== "function") {
-    return { executor: null, worker: null };
+    return { executor: null, worker: null, workers: [], count: 0, backend: "main-thread-fallback" };
   }
+  const hardwareConcurrency = Math.max(2, Number(globalThis.navigator?.hardwareConcurrency ?? 2));
+  const workerCount = Math.max(1, Math.min(3, STREAM.startupGenerationBudget, hardwareConcurrency - 1));
+  const slots = [];
   try {
-    const worker = new Worker(new URL("./workers/prehistoric-patch-worker.js", import.meta.url), { type: "module" });
-    worker.postMessage({ type: "init-patch-worker", payload: serializableGeneratorOptions });
-    const baseExecutor = PatchModule.createMessageWorkerExecutor(worker);
+    for (let index = 0; index < workerCount; index += 1) {
+      const worker = new Worker(new URL("./workers/prehistoric-patch-worker.js", import.meta.url), { type: "module" });
+      worker.postMessage({ type: "init-patch-worker", payload: serializableGeneratorOptions });
+      slots.push({
+        worker,
+        executor: PatchModule.createMessageWorkerExecutor(worker),
+        inflight: 0,
+        index
+      });
+    }
     return {
-      worker,
+      worker: slots[0]?.worker ?? null,
+      workers: slots.map((slot) => slot.worker),
+      count: slots.length,
+      backend: "nexus-compute-host/javascript-worker",
       executor: Object.freeze({
         async run(request) {
+          const slot = slots.reduce((best, candidate) =>
+            candidate.inflight < best.inflight ? candidate : best, slots[0]);
+          slot.inflight += 1;
           const startedAt = performance.now();
           try {
-            return await baseExecutor.run(request);
+            return await slot.executor.run(request);
           } finally {
+            slot.inflight -= 1;
             timings.recordGeneration(performance.now() - startedAt);
           }
         },
         dispose() {
-          baseExecutor.dispose?.();
+          for (const slot of slots) {
+            slot.executor.dispose?.();
+            slot.worker.terminate?.();
+          }
         }
       })
     };
   } catch (error) {
-    console.warn("patch worker unavailable; using deferred synchronous generation", error);
-    return { executor: null, worker: null };
+    for (const slot of slots) {
+      slot.executor.dispose?.();
+      slot.worker.terminate?.();
+    }
+    console.warn("patch worker pool unavailable; using deferred synchronous generation", error);
+    return { executor: null, worker: null, workers: [], count: 0, backend: "main-thread-fallback" };
   }
 }
 
@@ -416,7 +442,7 @@ async function main() {
   const controller = patchControllers.create({
     id: `${worldRecipe.id}:patch-stream`,
     worldSeed: String(cfg.seed),
-    generatorVersion: `prehistoric-patch-v7-${worldRecipe.id}-r${worldRecipe.revision}`,
+    generatorVersion: `prehistoric-patch-v8-compute-${worldRecipe.id}-r${worldRecipe.revision}`,
     patchSize: cfg.chunk,
     activeRadius: STREAM.activeRadius,
     retainRadius: STREAM.retainRadius,
@@ -520,8 +546,8 @@ async function main() {
       if (promoted) adoptEntry(adapter.promotePrefetchPatch, promoted, state);
     }
 
-    const generationConcurrency = workerState.worker
-      ? Number(options.generationBudget ?? STREAM.generationBudget)
+    const generationConcurrency = workerState.count > 0
+      ? Math.min(workerState.count, Number(options.generationBudget ?? STREAM.generationBudget))
       : 1;
     const availableGenerationSlots = Math.max(0, generationConcurrency - controller.getStats().inflight);
     if (availableGenerationSlots > 0) {
@@ -572,45 +598,54 @@ async function main() {
 
       const activePatchIds = new Set(controller.getActivePatchIds());
       const simulationReady = targets.simulationPatchIds.filter((patchId) => activePatchIds.has(patchId)).length;
+      const simulationGenerated = targets.simulationPatchIds.filter((patchId) => controller.hasPatch(patchId)).length;
       const forward = controller.getForwardReadiness({ patchIds: targets.visualPatchIds });
       const visualReady = forward.ready;
-      const generated = targets.simulationPatchIds.filter((patchId) => controller.hasPatch(patchId)).length + forward.generated;
       const collisionReady = targets.simulationPatchIds.every((patchId) => adapter.ownership.activePatches.has(patchId));
-      const rendererReady = [...targets.simulationPatchIds, ...targets.visualPatchIds]
-        .every((patchId) => adapter.isVisualPatchActive(patchId));
-      const required = targets.simulationPatchIds.length + targets.visualPatchIds.length;
-      const ready = simulationReady + visualReady;
-      const progress = ready / required;
+      const rendererReady = targets.simulationPatchIds.every((patchId) => adapter.isVisualPatchActive(patchId));
+      const readiness = evaluatePlayableStartup({
+        simulationRequired: targets.simulationPatchIds.length,
+        simulationGenerated,
+        simulationReady,
+        visualRequired: targets.visualPatchIds.length,
+        visualReady,
+        collisionReady,
+        rendererReady
+      });
       const forwardBufferedMeters = Math.floor(visualReady / 3) * cfg.chunk;
 
-      let detail = `Generating terrain ${generated} / ${required}`;
-      if (generated >= required && simulationReady < targets.simulationPatchIds.length) {
-        detail = `Preparing collision ${simulationReady} / ${targets.simulationPatchIds.length}`;
-      } else if (simulationReady >= targets.simulationPatchIds.length && visualReady < targets.visualPatchIds.length) {
-        detail = `Building distant environment ${visualReady} / ${targets.visualPatchIds.length}`;
-      } else if (collisionReady && rendererReady) {
-        detail = "Ready";
+      let detail = `Generating playable terrain ${simulationGenerated} / ${targets.simulationPatchIds.length}`;
+      if (simulationGenerated >= targets.simulationPatchIds.length && simulationReady < targets.simulationPatchIds.length) {
+        detail = `Activating playable terrain ${simulationReady} / ${targets.simulationPatchIds.length}`;
+      } else if (simulationReady >= targets.simulationPatchIds.length && !collisionReady) {
+        detail = "Preparing playable collision";
+      } else if (collisionReady && !rendererReady) {
+        detail = "Preparing playable renderer";
+      } else if (readiness.playableReady) {
+        detail = "Ready — distant environment will stream in background";
       }
-      ui.updateLoading(progress, detail);
+      ui.updateLoading(readiness.progress, detail);
 
-      if (
-        simulationReady === targets.simulationPatchIds.length
-        && visualReady === targets.visualPatchIds.length
-        && collisionReady
-        && rendererReady
-      ) {
+      if (readiness.playableReady) {
         const receipt = Object.freeze({
           worldId: worldRecipe.id,
           worldRecipeRevision: worldRecipe.revision,
+          playableReady: true,
+          simulationGenerated,
           simulationReady,
           simulationRequired: targets.simulationPatchIds.length,
           visualReady,
           visualRequired: targets.visualPatchIds.length,
+          backgroundVisualPending: readiness.backgroundVisualPending,
           forwardBufferedMeters,
           collisionReady,
           rendererReady,
           simulationPatchIds: targets.simulationPatchIds,
           visualPatchIds: targets.visualPatchIds,
+          workerCount: workerState.count,
+          computeBackend: workerState.backend,
+          nexusValidatedCommit: NEXUS_COMMIT,
+          startupMs: performance.now() - startedAt,
           timing: timings.getSnapshot(state.speed)
         });
         ui.hideLoading();
@@ -619,7 +654,7 @@ async function main() {
 
       if (performance.now() - startedAt > STREAM.startupTimeoutMs) {
         throw new Error(
-          `Route corridor preparation timed out: simulation ${simulationReady}/${targets.simulationPatchIds.length}, visual ${visualReady}/${targets.visualPatchIds.length}.`
+          `Playable world preparation timed out: simulation ${simulationReady}/${targets.simulationPatchIds.length}, visual background ${visualReady}/${targets.visualPatchIds.length}.`
         );
       }
       await nextFrame();
@@ -708,12 +743,12 @@ async function main() {
       }
       if (
         !startupStreamingReceipt
+        || !startupStreamingReceipt.playableReady
         || startupStreamingReceipt.simulationReady !== startupStreamingReceipt.simulationRequired
-        || startupStreamingReceipt.visualReady !== startupStreamingReceipt.visualRequired
         || !startupStreamingReceipt.collisionReady
         || !startupStreamingReceipt.rendererReady
       ) {
-        throw new Error("The playable frame was presented before the route corridor was ready.");
+        throw new Error("The playable frame was presented before the local simulation ring was ready.");
       }
       treeAssetRuntime.startup.presentFirstFrame({
         frameId: `prehistoric-rush:frame:${engine.clock?.frame ?? 1}`,
@@ -754,7 +789,7 @@ async function main() {
     const productionCanopies = adapter.view.productionForest?.canopyGroups ?? 0;
     const groundCover = adapter.view.groundCover?.count ?? 0;
     const timing = timings.getSnapshot(state.speed);
-    ui.status.innerHTML = `<b style="color:#ffd37a">${worldRecipe.name}</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} + ${patchStats.presentationPrefetched} visual · forward ${patchStats.forwardBufferedMeters}m · p95 ${timing.patchReadyP95Seconds.toFixed(2)}s · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · leaf cards ${foliageCards} · canopy groups ${productionCanopies} · floor ${groundCover} · species ${allVegetationSpecies.length} · ${workerState.worker ? "worker" : "fallback"}</small>`;
+    ui.status.innerHTML = `<b style="color:#ffd37a">${worldRecipe.name}</b><br>${state.status}<div style="height:7px;background:#ffffff22;margin:8px 0"><div style="height:100%;width:${(progress * 100).toFixed(1)}%;background:#84d778"></div></div>${Math.floor(state.distance)}m / ${cfg.goal}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region} × ${state.surfaceMultiplier.toFixed(2)}<br><small>tick ${engine.getLastTickCommit()?.revision ?? 0} · patches ${patchStats.active}/${patchStats.desiredActive} + ${patchStats.presentationPrefetched} visual · forward ${patchStats.forwardBufferedMeters}m · p95 ${timing.patchReadyP95Seconds.toFixed(2)}s · terrain ${lod.counts.near}/${lod.counts.medium}/${lod.counts.far} · trees ${treeLod.near}/${treeLod.medium}/${treeLod.far}/${treeLod.horizon} · leaf cards ${foliageCards} · canopy groups ${productionCanopies} · floor ${groundCover} · species ${allVegetationSpecies.length} · ${workerState.count > 0 ? `${workerState.count}× Compute Worker` : "fallback"}</small>`;
     ui.button.textContent = state.status === "game" ? "Jump" : state.status === "run-over" ? "Retry" : state.status === "win" ? "Run Again" : "Start Rush";
     requestAnimationFrame(loop);
   }
@@ -769,6 +804,11 @@ async function main() {
     vegetation: vegetationRuntime,
     worldRecipe,
     worldComposition,
+    compute: {
+      backend: workerState.backend,
+      workerCount: workerState.count,
+      nexusValidatedCommit: NEXUS_COMMIT
+    },
     versions: { nexus: NEXUS_COMMIT, kits: KITS_COMMIT, protokits: PROTOKITS_COMMIT },
     getState: () => ({
       game: game.snapshot(),
@@ -780,6 +820,11 @@ async function main() {
       tick: engine.getLastTickCommit(),
       simulation: engine.coreSimulation.getCommittedFrame(),
       physics: engine.corePhysics.getFrame(),
+      compute: {
+        backend: workerState.backend,
+        workerCount: workerState.count,
+        nexusValidatedCommit: NEXUS_COMMIT
+      },
       patchStreaming: controller.getSnapshot(),
       streamingReadiness: startupStreamingReceipt,
       patchTiming: timings.getSnapshot(game.getState().speed),
@@ -809,7 +854,7 @@ async function main() {
       jungleAtmosphere: structuredClone(adapter.view.jungleAtmosphere),
       treeFidelityGenerationDigest,
       assetStartup: treeAssetRuntime?.startup?.getDescriptor?.() ?? null,
-      renderer: "three-patch-quadtree-two-tier-streaming-v17"
+      renderer: "three-patch-quadtree-two-tier-streaming-v18-compute"
     })
   };
   requestAnimationFrame(loop);

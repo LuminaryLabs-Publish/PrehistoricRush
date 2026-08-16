@@ -14,7 +14,8 @@ const steps = [
   ["P0 world boundary", "tests/p0-world-boundary-baseline.mjs", "node", ["tests/p0-world-boundary-baseline.mjs"]],
   ["P1 course boundary", "tests/course-domain-boundary.mjs", "node", ["tests/course-domain-boundary.mjs"]],
   ["world recipe composition", "tests/world-recipe-composition.mjs", "node", ["tests/world-recipe-composition.mjs"]],
-  ["resolution policy", "tests/prehistoric-rush-resolution-policy.mjs", "node", ["tests/prehistoric-rush-resolution-policy.mjs"]]
+  ["resolution policy", "tests/prehistoric-rush-resolution-policy.mjs", "node", ["tests/prehistoric-rush-resolution-policy.mjs"]],
+  ["Compute streaming contract", "tests/compute-streaming-contract.mjs", "node", ["tests/compute-streaming-contract.mjs"]]
 ];
 
 for (const [name, file, command, args] of steps) {
