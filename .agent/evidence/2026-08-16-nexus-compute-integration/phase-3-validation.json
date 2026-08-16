@@ -1,0 +1,80 @@
+{
+  "schema": "prehistoric-rush.nexus-compute-phase-3-validation/1",
+  "recordedAt": "2026-08-16T22:00:38Z",
+  "relationship": {
+    "nexusRef": "main",
+    "nexusValidatedSha": "efcfa5d1a40d95b6235b53aad9458ea60be881db",
+    "prehistoricValidatedSourceSha": "e3e8395c35b8fe0ba8b0a9bc85a9fb28f66abb01",
+    "prehistoricMainParentAtRecord": "cb617d1c7f832928abea70db0d155b82de2b58b8"
+  },
+  "validation": {
+    "nexusComputeRunId": 31970152411,
+    "prehistoricStartupRunId": 31974946968,
+    "prehistoricMainValidationRunId": 31974946954,
+    "prehistoricPagesRunId": 31974946955,
+    "nexusCompute": "PASS",
+    "nodeContracts": "PASS",
+    "browserEvidence": "PASS",
+    "compiledStartupFastPath": "PASS",
+    "pagesDeployment": "PASS",
+    "pagesSmoke": "PASS",
+    "headlessLifecycle": "PASS"
+  },
+  "performance": {
+    "startupBudgetMs": 60000,
+    "runtimeStartupMs": 4308.600000000035,
+    "browserObservedHostReadyMs": 4940.379260999998,
+    "playableRendererMs": 1874.9000000000233,
+    "initialTerrainMs": 900.8999999999651,
+    "treeFidelityLoadMs": 612,
+    "terrainPatchCountAtPlayable": 9,
+    "withinStartupBudget": true
+  },
+  "productionRichness": {
+    "treeFidelityPackageCount": 12,
+    "treeCount": 315,
+    "grassCount": 1291,
+    "activeForestPatches": 25,
+    "forestTargetPatchCount": 25,
+    "playerPresentation": "procedural-skinned-raptor",
+    "ecologyFeatureCount": 3,
+    "hydrologyFeatureCount": 1,
+    "atmosphereFeatureCount": 2,
+    "shardCount": 63,
+    "pageErrors": 0,
+    "consoleErrors": 0
+  },
+  "determinism": {
+    "terrainAuthority": "n:world:foundation",
+    "landformCount": 8,
+    "traversalDistanceMeters": 500.3114499423303,
+    "xSeamDelta": 0.0004387082858663405,
+    "zSeamDelta": 0.00006379296188541161
+  },
+  "execution": {
+    "computePreference": ["webgpu", "javascript-worker", "javascript"],
+    "ciSelectedBackend": "javascript",
+    "ciWebgpuAdapterReady": false,
+    "renderBackend": "three-webgl2"
+  },
+  "knownIssues": [
+    {
+      "id": "compute-render-zero-copy",
+      "owner": "Nexus Compute/Render interop + PrehistoricRush render provider",
+      "status": "DOCUMENTED",
+      "detail": "PrehistoricRush production rendering is still Three/WebGL2. WebGPU Compute can be preferred when available, but GPU-resident Compute outputs cannot be handed directly to the WebGL2 renderer without a readback/copy. A true zero-copy path requires a compatible WebGPU Render provider/resource interop boundary."
+    },
+    {
+      "id": "target-macbook-air-benchmark",
+      "owner": "PrehistoricRush production validation",
+      "status": "PENDING_TARGET_HARDWARE",
+      "detail": "GitHub CI validates the 60 second contract at approximately 4.31 seconds runtime startup / 4.94 seconds browser-observed startup, but this environment is not the target MacBook Air. The exact target-hardware measurement remains to be captured on that device."
+    },
+    {
+      "id": "nexus-global-proof-gate",
+      "owner": "Nexus physics proof metadata",
+      "status": "PRE_EXISTING",
+      "detail": "The Nexus-wide core catalog gate still stops at n:physics:constraints is not proven. Dedicated Nexus Compute validation is green and this blocker predates the Compute expansion."
+    }
+  ]
+}
