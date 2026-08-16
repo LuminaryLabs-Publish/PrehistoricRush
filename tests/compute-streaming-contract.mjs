@@ -12,7 +12,7 @@ import {
 } from "../src/shared/prehistoric-compute-streaming.js";
 
 assert.equal(NEXUS_REF, "main", "PrehistoricRush intentionally follows mutable NexusEngine/main");
-assert.equal(NEXUS_COMMIT, "efcfa5d1a40d95b6235b53aad9458ea60be881db", "validation records exact Nexus Compute baseline");
+assert.equal(NEXUS_COMMIT, "f030abd8f648fc3bf1ac0a359e7a421822b41b88", "validation records exact Nexus Compute baseline");
 assert.ok(RUNTIME_URLS.nexusCompute.endsWith("/core-domains/compute/index.js"));
 for (const [name, url] of Object.entries(RUNTIME_URLS)) {
   if (!String(url).includes("NexusEngine@")) continue;
