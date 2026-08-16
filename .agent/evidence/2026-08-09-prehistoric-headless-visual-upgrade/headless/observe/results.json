@@ -1,7 +1,7 @@
 {
   "ok": true,
   "status": "completed",
-  "runId": "31970232214",
+  "runId": "31974946954",
   "before": {
     "status": "PASS",
     "phase": "before",
@@ -13,6 +13,7 @@
     "status": "PASS",
     "phase": "after",
     "nexus": "main",
+    "nexusValidatedCommit": "efcfa5d1a40d95b6235b53aad9458ea60be881db",
     "terrainAuthority": "n:world:foundation",
     "vegetationEnabled": false,
     "landformCount": 8,
@@ -35,11 +36,24 @@
       "treeFidelityPackageCount": 12,
       "treeCount": 315,
       "grassCount": 1291,
+      "activeForestPatches": 25,
+      "forestTargetPatchCount": 25,
       "playerPresentation": "procedural-skinned-raptor",
       "ecologyFeatureCount": 3,
       "hydrologyFeatureCount": 1,
       "atmosphereFeatureCount": 2,
-      "shardCount": 63
+      "shardCount": 63,
+      "performance": {
+        "browserObservedHostReadyMs": 4940.379260999998,
+        "startupMs": 4308.600000000035,
+        "startupBudgetMs": 60000,
+        "withinStartupBudget": true,
+        "rendering": {
+          "playableRendererMs": 1874.9000000000233,
+          "initialTerrainMs": 900.8999999999651,
+          "treeFidelityLoadMs": 612
+        }
+      }
     },
     "pageErrors": [],
     "consoleErrors": []

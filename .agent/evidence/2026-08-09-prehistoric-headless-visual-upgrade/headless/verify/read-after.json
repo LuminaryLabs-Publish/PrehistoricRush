@@ -1,11 +1,12 @@
 {
-  "validatedCommit": "41a5dd4feab8bceb0ef20d0bfeb20d536a3ab21c",
-  "workflowRunId": "31970232214",
+  "validatedCommit": "e3e8395c35b8fe0ba8b0a9bc85a9fb28f66abb01",
+  "workflowRunId": "31974946954",
   "pagesPass": true,
   "foundation": {
     "status": "PASS",
     "phase": "after",
     "nexus": "main",
+    "nexusValidatedCommit": "efcfa5d1a40d95b6235b53aad9458ea60be881db",
     "terrainAuthority": "n:world:foundation",
     "vegetationEnabled": false,
     "landformCount": 8,
@@ -28,11 +29,24 @@
       "treeFidelityPackageCount": 12,
       "treeCount": 315,
       "grassCount": 1291,
+      "activeForestPatches": 25,
+      "forestTargetPatchCount": 25,
       "playerPresentation": "procedural-skinned-raptor",
       "ecologyFeatureCount": 3,
       "hydrologyFeatureCount": 1,
       "atmosphereFeatureCount": 2,
-      "shardCount": 63
+      "shardCount": 63,
+      "performance": {
+        "browserObservedHostReadyMs": 4940.379260999998,
+        "startupMs": 4308.600000000035,
+        "startupBudgetMs": 60000,
+        "withinStartupBudget": true,
+        "rendering": {
+          "playableRendererMs": 1874.9000000000233,
+          "initialTerrainMs": 900.8999999999651,
+          "treeFidelityLoadMs": 612
+        }
+      }
     },
     "pageErrors": [],
     "consoleErrors": []
