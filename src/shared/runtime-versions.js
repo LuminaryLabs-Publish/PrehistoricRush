@@ -1,6 +1,6 @@
 export const NEXUS_REF = "main";
 // Mutable development target. NEXUS_COMMIT records the exact NexusEngine main SHA used by the latest validated integration pass.
-export const NEXUS_COMMIT = "252e1f1f5b2160d643bebe4ce9df3481acd50414";
+export const NEXUS_COMMIT = "efcfa5d1a40d95b6235b53aad9458ea60be881db";
 export const KITS_COMMIT = "9fd5b10053135e278c84b8b1591aece5cc641da1";
 export const PATCH_KIT_COMMIT = "6bcda82797ab7ba2929262fc9bb13eac3f9d3749";
 export const PROTOKITS_COMMIT = "534e249346d94351baa4cfce9f2d3cd837362920";
