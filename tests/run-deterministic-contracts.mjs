@@ -19,7 +19,8 @@ const steps = [
   ["resolution policy", "tests/prehistoric-rush-resolution-policy.mjs", "node", ["tests/prehistoric-rush-resolution-policy.mjs"]],
   ["Compute streaming contract", "tests/compute-streaming-contract.mjs", "node", ["tests/compute-streaming-contract.mjs"]],
   ["rendering streaming policy", "tests/rendering-streaming-policy.mjs", "node", ["tests/rendering-streaming-policy.mjs"]],
-  ["GPU-native world layer", "tests/gpu-native-world-layer-contract.mjs", "node", ["tests/gpu-native-world-layer-contract.mjs"]]
+  ["GPU-native world layer", "tests/gpu-native-world-layer-contract.mjs", "node", ["tests/gpu-native-world-layer-contract.mjs"]],
+  ["GPU-native product integration", "tests/gpu-native-product-integration.mjs", "node", ["tests/gpu-native-product-integration.mjs"]]
 ];
 
 for (const [name, file, command, args] of steps) {
