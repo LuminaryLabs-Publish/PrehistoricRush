@@ -31,7 +31,12 @@ try {
   assert.ok(wallClockStartupMs < 60000, `browser wall-clock startup must complete under 60 seconds, observed ${wallClockStartupMs}ms`);
   assert.equal(state.streamingReadiness.foundationReady, true, "Foundation must be ready at playable entry");
   assert.equal(state.streamingReadiness.rendererReady, true, "local terrain ring must be ready at playable entry");
-  assert.equal(state.streamingReadiness.vegetationReady, true, "tree fidelity packages must be admitted at playable entry");
+  assert.equal(state.streamingReadiness.vegetationRequired, true, "production keeps rich vegetation enabled");
+  assert.ok(
+    ["loading", "ready"].includes(state.rendering.treeFidelityStatus),
+    `Tree Fidelity must be loading or ready at playable entry, received ${state.rendering.treeFidelityStatus}`
+  );
+  assert.equal(state.rendering.treeFidelityError, null, "background Tree Fidelity must not fail during playable startup");
   assert.ok(state.rendering.terrainPatchCount >= 9, "playable terrain uses the local 3x3 Foundation ring");
   assert.ok(state.rendering.terrainPatchCount <= 25, "startup must not recreate the old full-world terrain mesh");
   assert.equal(state.versions.nexus, "main", "production intentionally follows NexusEngine/main");
@@ -46,8 +51,11 @@ try {
     wallClockStartupMs,
     startupBudgetMs: 60000,
     terrainPatchCount: state.rendering.terrainPatchCount,
+    treeFidelityStatus: state.rendering.treeFidelityStatus,
+    vegetationReadyAtPlayable: state.streamingReadiness.vegetationReady,
     activeForestPatches: state.rendering.activeForestPatches,
     backgroundForestPending: state.streamingReadiness.backgroundForestPending,
+    rendererPerformance: state.rendering.performance,
     computeBackend: state.compute.selected.backend,
     computeProviders: state.compute.providers.map((provider) => ({ id: provider.id, family: provider.family, backend: provider.backend })),
     webgpuAdapterReady: state.compute.webgpuAdapterReady,
