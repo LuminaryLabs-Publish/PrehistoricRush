@@ -33,8 +33,8 @@
     "atmosphereFeatureCount": 2,
     "shardCount": 63,
     "performance": {
-      "browserObservedHostReadyMs": 13482.887068000004,
-      "startupMs": 4293,
+      "browserObservedHostReadyMs": 12864.384413000003,
+      "startupMs": 4424.1999999999825,
       "startupBudgetMs": 60000,
       "withinStartupBudget": true,
       "gpuNative": {
@@ -45,9 +45,9 @@
         "skippedFrames": 0
       },
       "rendering": {
-        "playableRendererMs": 1851.4000000000233,
-        "initialTerrainMs": 884.0999999999767,
-        "treeFidelityLoadMs": 717.3000000000466
+        "playableRendererMs": 1937.8999999999942,
+        "initialTerrainMs": 919.6000000000058,
+        "treeFidelityLoadMs": 754.5
       }
     }
   },
