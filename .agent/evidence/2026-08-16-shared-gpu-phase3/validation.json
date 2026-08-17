@@ -1,0 +1,88 @@
+{
+  "schema": "prehistoric-rush.shared-gpu-phase-3-validation/1",
+  "recordedAt": "2026-08-17T00:02:20Z",
+  "ownership": {
+    "hostGpu": "shared GPU environment, device identity/lifecycle, resource identity/usage/residency/lifetime, synchronization and recovery",
+    "compute": "parallel generation, WGSL compute, bindings and dispatch",
+    "render": "presentation interpretation, WebGPU render pipeline, bindings, pass and draw",
+    "world": "semantic terrain/ecology/cell meaning"
+  },
+  "relationship": {
+    "nexusRef": "main",
+    "nexusValidatedSha": "f030abd8f648fc3bf1ac0a359e7a421822b41b88",
+    "prehistoricGpuProductSourceSha": "87fe44a106a3be39d22eb4ff3068226cc43fc8a2",
+    "prehistoricValidatedHeadBeforeRecord": "d00392d9e5aa87e521b04b756583ba37f9686b5a"
+  },
+  "enginePhases": {
+    "hostGpuPhase1Sha": "a9ce7467c99a36cd00ba8196a6071bddc46dd12f",
+    "sharedComputeRenderPhase2Sha": "f030abd8f648fc3bf1ac0a359e7a421822b41b88",
+    "sharedComputeRenderValidationRunId": 31979521457,
+    "status": "PASS"
+  },
+  "productPhase": {
+    "validationRunId": 31980607286,
+    "status": "PASS",
+    "implemented": [
+      "mutable NexusEngine/main relationship with exact validated SHA record",
+      "shared n:host:gpu device for WebGPU Compute and Render",
+      "GPU-resident Foundation heightfield input for the production GPU layer",
+      "GPU ground-cover generation",
+      "GPU visibility culling",
+      "GPU LOD scaling",
+      "GPU compacted visible-instance storage",
+      "GPU indirect draw arguments",
+      "Nexus WebGPU Render consumption of the same Host GPU resource IDs",
+      "zero GPU-to-CPU readback in the GPU-native ground-cover path",
+      "WebGL2/CPU fallback when WebGPU is unavailable",
+      "production startup, forest richness, deployment and headless validation"
+    ],
+    "injectedProductContract": {
+      "sharedDeviceId": "product-shared-device",
+      "zeroCopy": true,
+      "gpuCulling": true,
+      "gpuLod": true,
+      "indirectDraw": true,
+      "gpuReadbackBytes": 0,
+      "computeDispatches": 4,
+      "renderSubmissions": 1,
+      "status": "PASS"
+    },
+    "fallbackBrowserEvidence": {
+      "runtimeStartupMs": 4326.299999999814,
+      "browserObservedHostReadyMs": 8054.992175000001,
+      "startupBudgetMs": 60000,
+      "withinStartupBudget": true,
+      "terrainPatchCount": 9,
+      "treeFidelityPackageCount": 12,
+      "treeCount": 315,
+      "grassCount": 1291,
+      "activeForestPatches": 25,
+      "forestTargetPatchCount": 25,
+      "traversalDistanceMeters": 500.3114499423303,
+      "pageErrors": 0,
+      "consoleErrors": 0
+    }
+  },
+  "remaining": [
+    {
+      "id": "full-scene-webgpu-migration",
+      "status": "NOT_COMPLETE",
+      "detail": "The shared GPU infrastructure and first production GPU-native dense visual layer are implemented, but the complete Three/WebGL scene is not yet migrated. Terrain presentation and Tree Fidelity still use the validated Three/WebGL2 presentation path."
+    },
+    {
+      "id": "cross-canvas-depth-integration",
+      "status": "NOT_COMPLETE",
+      "detail": "The GPU-native ground-cover layer and the existing Three/WebGL2 presentation use separate canvases, so they do not share one depth buffer. A full Nexus WebGPU scene migration is required for unified depth-correct terrain, trees, player, course and effects."
+    },
+    {
+      "id": "target-macbook-air-benchmark",
+      "status": "PENDING_TARGET_HARDWARE",
+      "detail": "CI is comfortably under the 60 second startup contract, but the exact target MacBook Air measurement still requires that physical device."
+    },
+    {
+      "id": "nexus-global-proof-gate",
+      "status": "PRE_EXISTING",
+      "detail": "The unrelated Nexus-wide n:physics:constraints proof blocker remains outside this shared-GPU work; dedicated Host GPU and Shared GPU Compute/Render validations are green."
+    }
+  ]
+}
