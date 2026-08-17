@@ -230,8 +230,8 @@ struct Params { treeCount:u32, speciesCount:u32, slotCapacity:u32, slotCount:u32
   let index=id.x; if(index>=params.treeCount){return;} let tree=inputTrees[index];
   let dx=tree.centerRadius.x-params.playerX; let dz=tree.centerRadius.z-params.playerZ; let distance=sqrt(dx*dx+dz*dz); if(distance>params.maxDistance){return;}
   let typeIndex=min(params.speciesCount-1u,u32(max(0.0,tree.tintType.w))); let lod=select(1u,0u,distance<params.nearDistance); let slot=typeIndex*2u+lod; let base=slot*4u;
-  let outputIndex=atomicAdd(&args[base+1u],1u); if(outputIndex>=params.slotCapacity){return;} let target=slot*params.slotCapacity+outputIndex;
-  visibleTrees[target]=TreeInstance(tree.m0,tree.m1,tree.m2,tree.m3,vec4<f32>(tree.tintType.xyz,1.0));
+  let outputIndex=atomicAdd(&args[base+1u],1u); if(outputIndex>=params.slotCapacity){return;} let outputSlotIndex=slot*params.slotCapacity+outputIndex;
+  visibleTrees[outputSlotIndex]=TreeInstance(tree.m0,tree.m1,tree.m2,tree.m3,vec4<f32>(tree.tintType.xyz,1.0));
 }`;
 
 const COMMON_CAMERA = `struct Camera { viewProjection:mat4x4<f32>, cameraPosition:vec4<f32>, fog:vec4<f32> }; @group(0) @binding(0) var<uniform> camera:Camera;`;
