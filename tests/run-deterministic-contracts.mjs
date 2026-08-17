@@ -24,7 +24,8 @@ const steps = [
   ["portable dense visual composition", "tests/dense-visual-contribution-contract.mjs", "node", ["tests/dense-visual-contribution-contract.mjs"]],
   ["unified GPU world", "tests/unified-gpu-world-contract.mjs", "node", ["tests/unified-gpu-world-contract.mjs"]],
   ["GPU-native world layer regression", "tests/gpu-native-world-layer-contract.mjs", "node", ["tests/gpu-native-world-layer-contract.mjs"]],
-  ["GPU-native product integration regression", "tests/gpu-native-product-integration.mjs", "node", ["tests/gpu-native-product-integration.mjs"]]
+  ["GPU-native product integration regression", "tests/gpu-native-product-integration.mjs", "node", ["tests/gpu-native-product-integration.mjs"]],
+  ["visual fidelity contract", "tests/visual-fidelity-contract.mjs", "node", ["tests/visual-fidelity-contract.mjs"]]
 ];
 
 for (const [name, file, command, args] of steps) {

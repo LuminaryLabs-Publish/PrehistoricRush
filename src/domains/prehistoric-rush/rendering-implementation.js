@@ -1,7 +1,13 @@
 import { applyCreaturePoseDamped, createCreatureMesh } from "../../render/three-procedural-creature.js";
 import { createThreeTreeFidelityLayer } from "../../render/three-tree-fidelity-layer.js";
 import { applyLushJungleAtmosphere } from "../../render/lush-jungle-atmosphere.js";
+import { createThreeCinematicFidelityLayer } from "../../render/three-cinematic-fidelity-layer.js";
+import { createThreeCinematicGroundLayer } from "../../render/three-cinematic-ground-layer.js";
 import { PREHISTORIC_TREE_ARCHETYPES, PREHISTORIC_TREE_TYPES } from "../../shared/tree-archetype-catalog.js";
+import {
+  createAdaptivePixelRatioController,
+  resolvePrehistoricVisualQuality
+} from "../../shared/prehistoric-visual-quality.js";
 import {
   FOUNDATION_FOREST_GENERATION_BUDGET,
   FOUNDATION_FOREST_RADIUS,
@@ -14,10 +20,8 @@ import {
 } from "./rendering-streaming-policy.js";
 
 const FOREST_PATCH_SIZE = FOUNDATION_TERRAIN_PATCH_SIZE;
-const TREES_PER_PATCH = 13;
-const GRASS_PER_PATCH = 52;
 const TREE_CAPACITY_PER_TYPE = 320;
-const GRASS_CAPACITY = 5200;
+const GRASS_CAPACITY = 7600;
 
 function hashText(value) {
   let hash = 2166136261;
@@ -85,7 +89,83 @@ async function loadTreeFidelityPackages(onProgress = () => {}) {
 }
 
 function createTerrainMaterial(THREE) {
-  return new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.97, metalness: 0 });
+  const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.91,
+    metalness: 0,
+    clearcoat: 0.06,
+    clearcoatRoughness: 0.82,
+    sheen: 0.08,
+    sheenRoughness: 0.88,
+    sheenColor: new THREE.Color(0x69845d)
+  });
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec3 vPrehistoricWorldPosition;\nvarying vec3 vPrehistoricWorldNormal;"
+      )
+      .replace(
+        "#include <worldpos_vertex>",
+        "#include <worldpos_vertex>\nvPrehistoricWorldPosition = worldPosition.xyz;\nvPrehistoricWorldNormal = normalize(mat3(modelMatrix) * objectNormal);"
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>
+varying vec3 vPrehistoricWorldPosition;
+varying vec3 vPrehistoricWorldNormal;
+float prehistoricHash(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453123); }
+float prehistoricNoise(vec3 p) {
+  vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(prehistoricHash(i), prehistoricHash(i + vec3(1,0,0)), f.x), mix(prehistoricHash(i + vec3(0,1,0)), prehistoricHash(i + vec3(1,1,0)), f.x), f.y), mix(mix(prehistoricHash(i + vec3(0,0,1)), prehistoricHash(i + vec3(1,0,1)), f.x), mix(prehistoricHash(i + vec3(0,1,1)), prehistoricHash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+float prehistoricFbm(vec3 p) {
+  float n = prehistoricNoise(p) * 0.58; p = p * 2.03 + 7.1;
+  n += prehistoricNoise(p) * 0.28; p = p * 2.11 - 4.2;
+  return n + prehistoricNoise(p) * 0.14;
+}
+float prehistoricTriplanar(vec3 p, vec3 n) {
+  vec3 weights = pow(abs(n), vec3(4.0));
+  weights /= max(0.001, weights.x + weights.y + weights.z);
+  float xy = prehistoricFbm(vec3(p.xy, 1.7));
+  float yz = prehistoricFbm(vec3(p.yz, 3.1));
+  float xz = prehistoricFbm(vec3(p.xz, 5.3));
+  return xy * weights.z + yz * weights.x + xz * weights.y;
+}`
+      )
+      .replace(
+        "vec4 diffuseColor = vec4( diffuse, opacity );",
+        `vec3 worldNormal = normalize(vPrehistoricWorldNormal);
+float slope = 1.0 - clamp(worldNormal.y, 0.0, 1.0);
+float macroNoise = prehistoricFbm(vPrehistoricWorldPosition * 0.035);
+float detailNoise = prehistoricTriplanar(vPrehistoricWorldPosition * 0.38, worldNormal);
+vec3 routeColor = vec3(0.54, 0.38, 0.20);
+vec3 mossColor = vec3(0.18, 0.39, 0.15);
+vec3 rockColor = vec3(0.31, 0.34, 0.29);
+float routeSignal = smoothstep(0.42, 0.62, diffuse.r) * smoothstep(0.16, 0.42, diffuse.g) * (1.0 - smoothstep(0.34, 0.52, diffuse.g));
+float moss = smoothstep(0.44, 0.72, macroNoise) * (1.0 - slope) * (1.0 - routeSignal);
+float rock = smoothstep(0.28, 0.72, slope + detailNoise * 0.22);
+vec3 layeredSurface = diffuse;
+layeredSurface = mix(layeredSurface, mossColor * mix(0.78, 1.18, detailNoise), moss * 0.46);
+layeredSurface = mix(layeredSurface, rockColor * mix(0.78, 1.12, detailNoise), rock * 0.52);
+layeredSurface = mix(layeredSurface, routeColor * mix(0.82, 1.16, detailNoise), routeSignal * 0.78);
+layeredSurface *= mix(0.88, 1.13, macroNoise);
+vec4 diffuseColor = vec4(layeredSurface, opacity);`
+      )
+      .replace(
+        "float roughnessFactor = roughness;",
+        "float roughnessFactor = clamp(roughness + prehistoricFbm(vPrehistoricWorldPosition * 0.5) * 0.16 - 0.08, 0.58, 1.0);"
+      )
+      .replace(
+        "#include <normal_fragment_maps>",
+        `#include <normal_fragment_maps>
+vec3 prehistoricDetailGradient = vec3(dFdx(detailNoise), dFdy(detailNoise), 0.0);
+normal = normalize(normal + prehistoricDetailGradient * mix(0.1, 0.28, slope));`
+      );
+  };
+  material.customProgramCacheKey = () => "prehistoric-triplanar-height-blended-terrain-v1";
+  return material;
 }
 
 function createTerrainPatch(THREE, world, patchX, patchZ, material) {
@@ -125,6 +205,7 @@ function createTerrainPatch(THREE, world, patchX, patchZ, material) {
 function createCourseRibbon(THREE, world, route) {
   const samples = route.samples.filter((_, index) => index % 4 === 0);
   const positions = [];
+  const uvs = [];
   const indices = [];
   for (let index = 0; index < samples.length; index += 1) {
     const point = samples[index];
@@ -142,6 +223,7 @@ function createCourseRibbon(THREE, world, route) {
     const rightZ = point.z - nz * halfWidth;
     positions.push(leftX, world.sampleElevation(leftX, leftZ) + 0.055, leftZ);
     positions.push(rightX, world.sampleElevation(rightX, rightZ) + 0.055, rightZ);
+    uvs.push(0, index / Math.max(1, samples.length - 1), 1, index / Math.max(1, samples.length - 1));
     if (index < samples.length - 1) {
       const base = index * 2;
       indices.push(base, base + 2, base + 1, base + 1, base + 2, base + 3);
@@ -150,8 +232,28 @@ function createCourseRibbon(THREE, world, route) {
   const geometry = new THREE.BufferGeometry();
   geometry.setIndex(indices);
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
   geometry.computeVertexNormals();
-  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0x79562f, roughness: 1 }));
+  const material = new THREE.MeshPhysicalMaterial({ color: 0x8b6538, roughness: 0.94, metalness: 0, clearcoat: 0.035, clearcoatRoughness: 0.82 });
+  material.defines = { ...(material.defines ?? {}), USE_UV: "" };
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", "#include <common>\nfloat trailHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}")
+      .replace(
+        "vec4 diffuseColor = vec4( diffuse, opacity );",
+        `float trailGrain = trailHash(floor(vUv * vec2(72.0, 420.0)));
+float wornCenter = 1.0 - smoothstep(0.08, 0.48, abs(vUv.x - 0.5));
+float edgeSoil = smoothstep(0.22, 0.5, abs(vUv.x - 0.5));
+vec3 packedClay = vec3(0.56, 0.39, 0.21) * mix(0.82, 1.14, trailGrain);
+vec3 looseSoil = vec3(0.38, 0.28, 0.17) * mix(0.82, 1.1, trailGrain);
+vec3 trailColor = mix(looseSoil, packedClay, wornCenter * 0.72);
+trailColor = mix(trailColor, vec3(0.29, 0.37, 0.18), edgeSoil * 0.2);
+vec4 diffuseColor = vec4(trailColor, opacity);`
+      )
+      .replace("float roughnessFactor = roughness;", "float roughnessFactor = clamp(roughness - wornCenter * 0.09 + trailGrain * 0.08, 0.7, 1.0);");
+  };
+  material.customProgramCacheKey = () => "prehistoric-layered-dirt-trail-v1";
+  const mesh = new THREE.Mesh(geometry, material);
   mesh.name = "prehistoric-course-ribbon";
   mesh.receiveShadow = true;
   return mesh;
@@ -177,19 +279,21 @@ function createGrassLayer(THREE, scene) {
   return mesh;
 }
 
-function createForestPatch(world, route, patchX, patchZ, worldSeed) {
+function createForestPatch(world, route, patchX, patchZ, worldSeed, qualityProfile) {
   const id = `foundation-forest:${patchX}:${patchZ}`;
   const minX = patchX * FOREST_PATCH_SIZE - FOREST_PATCH_SIZE * 0.5;
   const minZ = patchZ * FOREST_PATCH_SIZE - FOREST_PATCH_SIZE * 0.5;
   const trees = PREHISTORIC_TREE_ARCHETYPES.map(() => ({ trunks: [], crowns: [] }));
   const grass = [];
+  const treesPerPatch = Math.max(8, Math.round(22 * Number(qualityProfile?.treeDensity ?? 1)));
+  const grassPerPatch = Math.max(30, Math.round(104 * Number(qualityProfile?.groundDensity ?? 1)));
 
-  for (let index = 0; index < TREES_PER_PATCH; index += 1) {
+  for (let index = 0; index < treesPerPatch; index += 1) {
     const seed = `${worldSeed}:${id}:tree:${index}`;
     const x = minX + unit(seed, "x") * FOREST_PATCH_SIZE;
     const z = minZ + unit(seed, "z") * FOREST_PATCH_SIZE;
     const nearest = route.nearest(x, z, 0, route.samples.length);
-    if (nearest.distance < nearest.width + 6.5) continue;
+    if (nearest.distance < nearest.width + 5.25) continue;
     const typeIndex = Math.min(PREHISTORIC_TREE_ARCHETYPES.length - 1, Math.floor(unit(seed, "species") * PREHISTORIC_TREE_ARCHETYPES.length));
     const archetype = PREHISTORIC_TREE_ARCHETYPES[typeIndex];
     const y = world.sampleElevation(x, z);
@@ -234,7 +338,7 @@ function createForestPatch(world, route, patchX, patchZ, worldSeed) {
     });
   }
 
-  for (let index = 0; index < GRASS_PER_PATCH; index += 1) {
+  for (let index = 0; index < grassPerPatch; index += 1) {
     const seed = `${worldSeed}:${id}:grass:${index}`;
     const x = minX + unit(seed, "x") * FOREST_PATCH_SIZE;
     const z = minZ + unit(seed, "z") * FOREST_PATCH_SIZE;
@@ -261,11 +365,12 @@ function createShardLayer(THREE, scene, capacity = 160) {
 export async function createPrehistoricRushRenderingImplementation(THREE, { host, world, course, gameplay, creatureApi = null, playerBody = null, diagnosticFoundationOnly = false, onProgress = () => {} } = {}) {
   if (!host || !world) throw new TypeError("Rendering requires host and World implementation.");
   const renderStartedAt = performance.now();
+  const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 1400);
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, 2));
+  const adaptivePixelRatio = createAdaptivePixelRatioController(renderer, qualityProfile, globalThis);
   renderer.setClearAlpha(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -305,12 +410,26 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   const sun = new THREE.DirectionalLight(0xffdda0, 2.6);
   sun.position.set(-30, 55, -20);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(qualityProfile.shadowMapSize, qualityProfile.shadowMapSize);
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 190;
+  sun.shadow.camera.left = -qualityProfile.shadowRadius;
+  sun.shadow.camera.right = qualityProfile.shadowRadius;
+  sun.shadow.camera.top = qualityProfile.shadowRadius;
+  sun.shadow.camera.bottom = -qualityProfile.shadowRadius;
+  sun.shadow.bias = -0.0003;
+  sun.shadow.normalBias = 0.035;
+  sun.shadow.radius = qualityProfile.id === "performance" ? 1 : 2;
+  sun.shadow.camera.updateProjectionMatrix();
   scene.add(hemisphere, sun, sun.target);
-  const atmosphere = applyLushJungleAtmosphere(THREE, scene, renderer, { fogDensity: diagnosticFoundationOnly ? 0.0018 : 0.0062 });
+  const atmosphere = applyLushJungleAtmosphere(THREE, scene, renderer, {
+    fogDensity: diagnosticFoundationOnly ? 0.0018 : 0.0062,
+    shadowMapSize: qualityProfile.shadowMapSize,
+    shadowRadius: qualityProfile.shadowRadius,
+    exposure: qualityProfile.id === "cinematic" ? 1.04 : 1.08
+  });
   const fallbackBackground = atmosphere.background;
+  const cinematicFidelity = diagnosticFoundationOnly ? null : createThreeCinematicFidelityLayer(THREE, { scene, camera, renderer, profile: qualityProfile, sun });
 
   let courseRibbon = null;
   let treeFidelity = null;
@@ -318,6 +437,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   let treeFidelityError = null;
   let treeFidelityLoadMs = 0;
   let grassMesh = null;
+  let cinematicGround = null;
   let playerMesh = null;
   let shardMesh = null;
   const forestPatches = new Map();
@@ -325,7 +445,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
 
   function applyDenseWorldVisibility() {
     for (const mesh of terrainPatches.values()) mesh.visible = !denseWorldGPUActive;
-    if (grassMesh) grassMesh.visible = !denseWorldGPUActive;
+    if (grassMesh) grassMesh.visible = !denseWorldGPUActive && !cinematicGround;
+    cinematicGround?.setVisible(!denseWorldGPUActive);
+    cinematicFidelity?.setVisible(!denseWorldGPUActive);
     scene.traverse((object) => {
       if (String(object?.name ?? "").startsWith("prehistoric-tree-fidelity-")) object.visible = !denseWorldGPUActive;
     });
@@ -347,6 +469,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     if (playerBody) { playerMesh = createCreatureMesh(THREE, playerBody); playerMesh.name = "prehistoric-rush-procedural-raptor"; scene.add(playerMesh); }
     shardMesh = createShardLayer(THREE, scene);
     grassMesh = createGrassLayer(THREE, scene);
+    cinematicGround = createThreeCinematicGroundLayer(THREE, { scene, camera, profile: qualityProfile });
+    grassMesh.visible = false;
   }
 
   const treeLoadStartedAt = performance.now();
@@ -388,9 +512,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     const batch = selectMissingPatchBatch(plan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
     let changed = false;
     for (const entry of batch) {
-      const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed);
+      const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed, qualityProfile);
       forestPatches.set(entry.id, patch);
       treeFidelity.activatePatch(patch);
+      cinematicGround?.activatePatch(patch);
       changed = true;
     }
     const released = [];
@@ -400,7 +525,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       released.push(id);
       changed = true;
     }
-    if (released.length) treeFidelity.releasePatches(released);
+    if (released.length) {
+      treeFidelity.releasePatches(released);
+      cinematicGround?.releasePatches(released);
+    }
     if (changed) {
       denseVisualRevision += 1;
       flushGrass();
@@ -436,6 +564,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
         }
       }
       treeFidelity?.update(state, dt);
+      cinematicGround?.update(state, dt);
       updateShards();
       if (grassMesh) grassMesh.rotation.y = Math.sin(elapsed * 0.11) * 0.002;
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
@@ -443,7 +572,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     if (denseWorldGPUActive) applyDenseWorldVisibility();
     sun.position.set(state.x - 30, state.y + 55, state.z - 24);
     sun.target.position.set(state.x, state.y, state.z);
-    renderer.render(scene, camera);
+    adaptivePixelRatio.update(dt);
+    cinematicFidelity?.update(state, dt);
+    if (cinematicFidelity) cinematicFidelity.render(scene);
+    else renderer.render(scene, camera);
   }
 
   function getDenseWorldPresentation() {
@@ -470,7 +602,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · rich forest streaming");
 
   return Object.freeze({
-    scene, camera, renderer, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
+    scene, camera, renderer, qualityProfile, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
     whenRichPresentationReady() { return richPresentationReady; },
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
@@ -490,6 +622,11 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       forestTargetPatchCount: (FOUNDATION_FOREST_RADIUS * 2 + 1) ** 2,
       forestGenerationBudget: FOUNDATION_FOREST_GENERATION_BUDGET,
       atmosphere: scene.fog ? "lush-jungle" : "none",
+      visualQuality: qualityProfile.id,
+      rendererPreference: qualityProfile.rendererPreference,
+      adaptiveResolution: adaptivePixelRatio.getSnapshot(),
+      cinematicFidelity: cinematicFidelity?.view ?? null,
+      cinematicGround: cinematicGround ? { ...cinematicGround.view } : null,
       courseVisible: Boolean(courseRibbon),
       performance: { playableRendererMs, initialTerrainMs, treeFidelityLoadMs }
     })

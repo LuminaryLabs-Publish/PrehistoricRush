@@ -155,17 +155,84 @@ function addInstanceAttributes(THREE, geometry, capacity, withFrames = false) {
   return geometry;
 }
 
-function patchMeshMaterial(material) {
+function patchMeshMaterial(material, formId) {
+  const uniforms = {
+    treeTime: { value: 0 },
+    treeWindStrength: { value: formId === "near" ? 1 : 0.72 }
+  };
+  material.userData.treeFidelityUniforms = uniforms;
   material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nattribute float fidelityFade;\nattribute vec3 instanceTint;\nvarying float vFidelityFade;\nvarying vec3 vInstanceTint;")
-      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvFidelityFade = fidelityFade;\nvInstanceTint = instanceTint;");
+      .replace(
+        "#include <common>",
+        "#include <common>\nattribute float fidelityFade;\nattribute vec3 instanceTint;\nuniform float treeTime;\nuniform float treeWindStrength;\nvarying float vFidelityFade;\nvarying vec3 vInstanceTint;\nvarying vec3 vTreeLocalPosition;\nvarying vec3 vTreeLocalNormal;\nvarying float vTreeBaseAO;"
+      )
+      .replace(
+        "#include <begin_vertex>",
+        `vec3 transformed = vec3(position);
+vFidelityFade = fidelityFade;
+vInstanceTint = instanceTint;
+vTreeLocalPosition = position;
+vTreeLocalNormal = normalize(objectNormal);
+vTreeBaseAO = mix(0.58, 1.0, smoothstep(0.0, 3.6, position.y));
+float treeHeightWeight = smoothstep(0.4, 15.0, max(0.0, position.y));
+float treePhase = instanceMatrix[3].x * 0.019 + instanceMatrix[3].z * 0.023;
+float trunkSway = sin(treeTime * 0.31 + treePhase) * 0.055 * treeWindStrength * treeHeightWeight;
+float branchFlutter = sin(treeTime * 1.47 + dot(position, vec3(0.37, 0.19, 0.29)) + treePhase) * 0.018 * treeWindStrength * treeHeightWeight;
+transformed.x += trunkSway + branchFlutter;
+transformed.z += trunkSway * 0.34 - branchFlutter * 0.58;`
+      );
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nvarying float vFidelityFade;\nvarying vec3 vInstanceTint;\nfloat fidelityHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}")
+      .replace(
+        "#include <common>",
+        `#include <common>
+varying float vFidelityFade;
+varying vec3 vInstanceTint;
+varying vec3 vTreeLocalPosition;
+varying vec3 vTreeLocalNormal;
+varying float vTreeBaseAO;
+float fidelityHash(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+float treeNoise(vec3 p){return fract(sin(dot(floor(p),vec3(127.1,311.7,74.7)))*43758.5453);}
+float treeTriplanar(vec3 p, vec3 n) {
+  vec3 weights = pow(abs(n), vec3(4.0)); weights /= max(0.001, weights.x + weights.y + weights.z);
+  float xy = treeNoise(vec3(p.xy, 1.7));
+  float yz = treeNoise(vec3(p.yz, 3.1));
+  float xz = treeNoise(vec3(p.xz, 5.3));
+  return xy * weights.z + yz * weights.x + xz * weights.y;
+}`
+      )
       .replace("vec4 diffuseColor = vec4( diffuse, opacity );", "vec4 diffuseColor = vec4( diffuse * vInstanceTint, opacity );")
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
+float foliageMask = smoothstep(0.015, 0.11, diffuseColor.g - max(diffuseColor.r, diffuseColor.b));
+float barkGrain = treeTriplanar(vTreeLocalPosition * vec3(2.8, 0.42, 2.8), normalize(vTreeLocalNormal));
+float barkRidges = sin(vTreeLocalPosition.y * 8.5 + barkGrain * 7.0) * 0.5 + 0.5;
+vec3 barkTint = diffuseColor.rgb * mix(0.68, 1.18, barkGrain * 0.58 + barkRidges * 0.42);
+float moss = smoothstep(0.56, 0.82, treeTriplanar(vTreeLocalPosition * 0.31 + 4.7, normalize(vTreeLocalNormal))) * (1.0 - smoothstep(1.5, 9.0, vTreeLocalPosition.y));
+barkTint = mix(barkTint, barkTint * vec3(0.48, 0.88, 0.46), moss * 0.62);
+vec3 leafTint = diffuseColor.rgb * mix(0.76, 1.18, treeTriplanar(vTreeLocalPosition * 0.62, normalize(vTreeLocalNormal)));
+diffuseColor.rgb = mix(barkTint, leafTint, foliageMask) * mix(vTreeBaseAO, 1.0, foliageMask * 0.45);`
+      )
+      .replace(
+        "#include <normal_fragment_maps>",
+        `#include <normal_fragment_maps>
+float barkSurface = treeTriplanar(vTreeLocalPosition * vec3(3.4, 0.58, 3.4), normalize(vTreeLocalNormal));
+vec3 barkGradient = vec3(dFdx(barkSurface), dFdy(barkSurface), 0.0);
+normal = normalize(normal + barkGradient * (1.0 - foliageMask) * 0.22);`
+      )
+      .replace(
+        "float roughnessFactor = roughness;",
+        "float roughnessFactor = clamp(roughness + (barkGrain - 0.5) * (1.0 - foliageMask) * 0.22, 0.55, 1.0);"
+      )
+      .replace(
+        "vec3 totalEmissiveRadiance = emissive;",
+        "vec3 leafTransmission = diffuseColor.rgb * vec3(1.08, 1.2, 0.72) * foliageMask * 0.12;\nvec3 totalEmissiveRadiance = emissive + leafTransmission;"
+      )
       .replace("#include <clipping_planes_fragment>", "#include <clipping_planes_fragment>\nif (fidelityHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;");
   };
-  material.customProgramCacheKey = () => "prehistoric-natural-tree-mesh-fidelity-v3";
+  material.customProgramCacheKey = () => `prehistoric-natural-tree-triplanar-fidelity-v5-${formId}`;
   return material;
 }
 
@@ -293,7 +360,7 @@ function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
     metalness: 0,
     clearcoat: 0.025,
     clearcoatRoughness: 0.9
-  }));
+  }), formId);
   const mesh = new THREE.InstancedMesh(geometry, material, capacity);
   mesh.name = `prehistoric-tree-fidelity-${packageValue.archetypeId}-${formId}`;
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -429,6 +496,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const generationDigest = generationIds.join("|");
   const growthDigests = packages.map((entry) => entry.growth?.digest).filter(Boolean);
   const growthDigest = growthDigests.join("|");
+  let elapsed = 0;
   let presentationRecords = [];
   const view = {
     enabled: true,
@@ -503,6 +571,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   }
 
   function update(_state, deltaTime = 1 / 60) {
+    elapsed += Math.max(0, Number(deltaTime) || 0);
     const perType = layers.map(() => ({ near: [], medium: [], far: [], horizon: [] }));
     const seen = new Set();
     const frameBindings = [];
@@ -583,6 +652,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
         }
         mesh.count = count;
         mesh.instanceMatrix.needsUpdate = true;
+        if (mesh.material.userData.treeFidelityUniforms) mesh.material.userData.treeFidelityUniforms.treeTime.value = elapsed;
         markAttributes(mesh, ["fidelityFade", "instanceTint"]);
         layer.counts[formId] = count;
         view.counts[formId] += count;

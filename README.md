@@ -71,3 +71,18 @@ PrehistoricRushHost.getState()
 ## Current limitation
 
 The runner is playable but still uses product-side temporary logic for segment streaming, collision, and flock motion. Those should be cut over according to `kit-cutover-inventory.json` so PrehistoricRush becomes only a scene/data/renderer shell.
+
+## Visual quality
+
+The production renderer now defaults to the high-fidelity Three.js path on capable desktop devices. It includes layered procedural terrain and trail materials, tree bark/leaf shading, foliage transmission, multi-frequency wind, streamed forest-floor detail, adaptive resolution, clouded sky, canopy light shafts, contact AO, bloom, sharpening, and filmic grading.
+
+Quality can be selected explicitly:
+
+```txt
+game.html?quality=performance
+game.html?quality=balanced
+game.html?quality=high
+game.html?quality=cinematic
+```
+
+`renderer=webgpu` explicitly selects the unified GPU path; high and cinematic modes otherwise retain the richer WebGL2 presentation.

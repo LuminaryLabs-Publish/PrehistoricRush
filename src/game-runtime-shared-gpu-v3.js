@@ -17,7 +17,9 @@ let gpuScene = null;
 let gpuUpgradeError = null;
 let gpuFrame = 0;
 
-if (globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) {
+const rendererPreference = baseHost.rendering?.qualityProfile?.rendererPreference ?? "webgl2";
+
+if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) {
   try {
     const [Host, Compute, Graphics, Render] = await Promise.all([
       import(VALIDATED_RUNTIME_URLS.nexusHost),
@@ -69,6 +71,7 @@ if (globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) 
       computeHost,
       frameExecutor,
       rendering: baseHost.rendering,
+      qualityProfile: baseHost.rendering.qualityProfile,
       contributions
     });
 

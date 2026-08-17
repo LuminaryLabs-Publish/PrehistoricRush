@@ -20,11 +20,13 @@ export function applyLushJungleAtmosphere(THREE, scene, renderer, options = {}) 
   if (sun) {
     sun.color.set(options.sunColor ?? 0xffdda0);
     sun.intensity = Number(options.sunIntensity ?? 3.05);
-    sun.shadow.mapSize.set(3072, 3072);
-    sun.shadow.camera.left = -72;
-    sun.shadow.camera.right = 72;
-    sun.shadow.camera.top = 72;
-    sun.shadow.camera.bottom = -72;
+    const shadowMapSize = Math.max(512, Number(options.shadowMapSize ?? 3072));
+    const shadowRadius = Math.max(24, Number(options.shadowRadius ?? 72));
+    sun.shadow.mapSize.set(shadowMapSize, shadowMapSize);
+    sun.shadow.camera.left = -shadowRadius;
+    sun.shadow.camera.right = shadowRadius;
+    sun.shadow.camera.top = shadowRadius;
+    sun.shadow.camera.bottom = -shadowRadius;
     sun.shadow.normalBias = 0.045;
     sun.shadow.camera.updateProjectionMatrix();
   }
