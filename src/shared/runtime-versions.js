@@ -8,6 +8,7 @@ export const THREE_VERSION = "0.179.1";
 export const RAPIER_VERSION = "0.15.0";
 
 export const NEXUS_SOURCE_BASE = `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_REF}/src`;
+export const NEXUS_VALIDATED_SOURCE_BASE = `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src`;
 
 export const RUNTIME_URLS = Object.freeze({
   nexus: `${NEXUS_SOURCE_BASE}/index.js`,
@@ -35,4 +36,12 @@ export const RUNTIME_URLS = Object.freeze({
   rapier: `https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@${RAPIER_VERSION}/rapier.es.js`,
   rapierKit: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/index.js`,
   articulatedRapierProvider: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/articulated-provider.js`
+});
+
+// Shared-GPU v3 uses exact source modules for a reproducible validation pass while NEXUS_REF continues tracking mutable main for the broader development runtime.
+export const VALIDATED_RUNTIME_URLS = Object.freeze({
+  nexusHost: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/host/index.js`,
+  nexusCompute: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/compute/index.js`,
+  nexusGraphics: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/presentation/graphics/kits/graphics-kit/index.js`,
+  nexusRender: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/render/index.js`
 });

@@ -1,4 +1,4 @@
-import { NEXUS_COMMIT, RUNTIME_URLS } from "./shared/runtime-versions.js";
+import { NEXUS_COMMIT, VALIDATED_RUNTIME_URLS } from "./shared/runtime-versions.js";
 import { createPrehistoricRushDenseVisualContributions } from "./domains/prehistoric-rush/dense-world-visual-contributions.js";
 import { createPrehistoricRushGPUWorldScene } from "./domains/prehistoric-rush/gpu-native-world-scene.js";
 
@@ -21,12 +21,12 @@ let gpuFrame = 0;
 if (globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) {
   try {
     const [Host, Compute, Graphics, Render] = await Promise.all([
-      import(RUNTIME_URLS.nexusHost),
-      import(RUNTIME_URLS.nexusCompute),
-      import(RUNTIME_URLS.nexusGraphics),
-      import(RUNTIME_URLS.nexusRender)
+      import(VALIDATED_RUNTIME_URLS.nexusHost),
+      import(VALIDATED_RUNTIME_URLS.nexusCompute),
+      import(VALIDATED_RUNTIME_URLS.nexusGraphics),
+      import(VALIDATED_RUNTIME_URLS.nexusRender)
     ]);
-    if (typeof Host.createGPUHost !== "function" || typeof Host.createWebGPUHostProvider !== "function") throw new Error("Nexus Host GPU capability is unavailable from NexusEngine/main.");
+    if (typeof Host.createGPUHost !== "function" || typeof Host.createWebGPUHostProvider !== "function") throw new Error("Nexus Host GPU capability is unavailable from validated NexusEngine/main.");
     if (typeof Compute.createWebGPUComputeProvider !== "function" || typeof Compute.createComputeHost !== "function") throw new Error("Nexus shared WebGPU Compute provider is unavailable.");
     if (typeof Graphics.defineVisualContribution !== "function" || typeof Graphics.composeVisualContributions !== "function") throw new Error("Nexus portable VisualContribution capability is unavailable.");
     if (typeof Render.createWebGPUFrameExecutor !== "function") throw new Error("Nexus unified WebGPU frame executor is unavailable.");
