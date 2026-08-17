@@ -1,7 +1,7 @@
 {
   "ok": true,
   "status": "completed",
-  "runId": "31993534592",
+  "runId": "31993852302",
   "before": {
     "status": "PASS",
     "phase": "before",
@@ -44,8 +44,8 @@
       "atmosphereFeatureCount": 2,
       "shardCount": 63,
       "performance": {
-        "browserObservedHostReadyMs": 7923.456678000002,
-        "startupMs": 4326.700000000012,
+        "browserObservedHostReadyMs": 13482.887068000004,
+        "startupMs": 4293,
         "startupBudgetMs": 60000,
         "withinStartupBudget": true,
         "gpuNative": {
@@ -56,9 +56,9 @@
           "skippedFrames": 0
         },
         "rendering": {
-          "playableRendererMs": 1813.2999999999884,
-          "initialTerrainMs": 834.1000000000349,
-          "treeFidelityLoadMs": 327
+          "playableRendererMs": 1851.4000000000233,
+          "initialTerrainMs": 884.0999999999767,
+          "treeFidelityLoadMs": 717.3000000000466
         }
       }
     },
