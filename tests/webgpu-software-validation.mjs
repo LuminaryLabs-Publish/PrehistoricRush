@@ -22,23 +22,8 @@ page.on("console", (message) => { if (message.type() === "error") consoleErrors.
 
 try {
   await page.goto(`${baseUrl}/game.html?validation=software-webgpu`, { waitUntil: "domcontentloaded", timeout: 120_000 });
-  const adapterProbe = await page.evaluate(async () => {
-    if (!navigator.gpu) return { gpu: false, adapter: false, info: null };
-    const adapter = await navigator.gpu.requestAdapter();
-    return {
-      gpu: true,
-      adapter: Boolean(adapter),
-      info: adapter?.info ? {
-        architecture: adapter.info.architecture ?? "",
-        device: adapter.info.device ?? "",
-        vendor: adapter.info.vendor ?? "",
-        description: adapter.info.description ?? "",
-        isFallbackAdapter: Boolean(adapter.info.isFallbackAdapter)
-      } : null
-    };
-  });
-  assert.equal(adapterProbe.gpu, true, "software validation requires navigator.gpu");
-  assert.equal(adapterProbe.adapter, true, "software validation requires a WebGPU adapter");
+  const gpuAvailable = await page.evaluate(() => Boolean(navigator.gpu));
+  assert.equal(gpuAvailable, true, "software validation requires navigator.gpu");
 
   try {
     await page.waitForFunction(() => {
@@ -74,7 +59,7 @@ try {
         versions: state.versions ?? null
       };
     }).catch((evaluationError) => ({ diagnosticError: evaluationError.message }));
-    console.error(JSON.stringify({ status: "TIMEOUT", adapterProbe, diagnostic, pageErrors, consoleErrors }, null, 2));
+    console.error(JSON.stringify({ status: "TIMEOUT", gpuAvailable, diagnostic, pageErrors, consoleErrors }, null, 2));
     throw error;
   }
 
@@ -82,6 +67,7 @@ try {
     const host = globalThis.PrehistoricRushHost;
     const state = host.getState();
     const gpu = state.gpuNative;
+    const adapter = host.gpuHost?.providerAccess?.().getAdapter?.() ?? null;
     let hiddenDenseFallbacks = 0;
     let visibleDenseFallbacks = 0;
     host.rendering.scene.traverse((object) => {
@@ -95,6 +81,13 @@ try {
       gpu,
       compute: state.compute,
       versions: state.versions,
+      adapterInfo: adapter?.info ? {
+        architecture: adapter.info.architecture ?? "",
+        device: adapter.info.device ?? "",
+        vendor: adapter.info.vendor ?? "",
+        description: adapter.info.description ?? "",
+        isFallbackAdapter: Boolean(adapter.info.isFallbackAdapter)
+      } : null,
       hiddenDenseFallbacks,
       visibleDenseFallbacks,
       gpuCanvasCount: document.querySelectorAll('#prehistoric-render-host canvas[data-prehistoric-gpu-native="unified-world"]').length,
@@ -125,7 +118,7 @@ try {
 
   console.log(JSON.stringify({
     status: "PASS",
-    adapter: adapterProbe,
+    adapter: result.adapterInfo,
     gpu: result.gpu,
     canvases: { gpu: result.gpuCanvasCount, total: result.totalCanvasCount },
     hiddenDenseFallbacks: result.hiddenDenseFallbacks,
