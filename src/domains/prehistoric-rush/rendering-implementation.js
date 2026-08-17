@@ -223,19 +223,13 @@ function createForestPatch(world, route, patchX, patchZ, worldSeed) {
     trees[typeIndex].trunks.push({
       id: `${treeId}:trunk`,
       matrix: scaleTranslationMatrix(radius, height, radius, x, y + height * 0.5, z, yawRadians),
-      bounds: {
-        min: [x - radius - leanMargin, y, z - radius - leanMargin],
-        max: [x + radius + leanMargin, y + height, z + radius + leanMargin]
-      },
+      bounds: { min: [x - radius - leanMargin, y, z - radius - leanMargin], max: [x + radius + leanMargin, y + height, z + radius + leanMargin] },
       metadata
     });
     trees[typeIndex].crowns.push({
       id: `${treeId}:crown`,
       matrix: scaleTranslationMatrix(crownRadius, crownHeight, crownRadius, x, crownY, z, yawRadians),
-      bounds: {
-        min: [x - crownRadius, crownY - crownHeight * 0.5, z - crownRadius],
-        max: [x + crownRadius, crownY + crownHeight * 0.5, z + crownRadius]
-      },
+      bounds: { min: [x - crownRadius, crownY - crownHeight * 0.5, z - crownRadius], max: [x + crownRadius, crownY + crownHeight * 0.5, z + crownRadius] },
       metadata
     });
   }
@@ -249,21 +243,14 @@ function createForestPatch(world, route, patchX, patchZ, worldSeed) {
     const y = world.sampleElevation(x, z);
     const height = 0.35 + unit(seed, "height") * 1.15;
     const width = 0.45 + unit(seed, "width") * 0.75;
-    grass.push({
-      id: `${id}:grass:${index}`,
-      matrix: scaleTranslationMatrix(width, height, width, x, y, z, unit(seed, "yaw") * Math.PI * 2)
-    });
+    grass.push({ id: `${id}:grass:${index}`, matrix: scaleTranslationMatrix(width, height, width, x, y, z, unit(seed, "yaw") * Math.PI * 2) });
   }
 
   return { id, x: patchX, z: patchZ, trees, grass };
 }
 
 function createShardLayer(THREE, scene, capacity = 160) {
-  const mesh = new THREE.InstancedMesh(
-    new THREE.OctahedronGeometry(0.34),
-    new THREE.MeshStandardMaterial({ color: 0x8fe8ff, emissive: 0x43d4ff, emissiveIntensity: 1.15, roughness: 0.35 }),
-    capacity
-  );
+  const mesh = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.34), new THREE.MeshStandardMaterial({ color: 0x8fe8ff, emissive: 0x43d4ff, emissiveIntensity: 1.15, roughness: 0.35 }), capacity);
   mesh.name = "prehistoric-shards";
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mesh.castShadow = false;
@@ -271,45 +258,33 @@ function createShardLayer(THREE, scene, capacity = 160) {
   return mesh;
 }
 
-export async function createPrehistoricRushRenderingImplementation(THREE, {
-  host,
-  world,
-  course,
-  gameplay,
-  creatureApi = null,
-  playerBody = null,
-  diagnosticFoundationOnly = false,
-  onProgress = () => {}
-} = {}) {
+export async function createPrehistoricRushRenderingImplementation(THREE, { host, world, course, gameplay, creatureApi = null, playerBody = null, diagnosticFoundationOnly = false, onProgress = () => {} } = {}) {
   if (!host || !world) throw new TypeError("Rendering requires host and World implementation.");
   const renderStartedAt = performance.now();
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 1400);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio || 1, 2));
+  renderer.setClearAlpha(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   host.append(renderer.domElement);
 
+  let denseWorldGPUActive = false;
+  let denseVisualRevision = 0;
+  let treeFidelityPackages = null;
   const terrainMaterial = createTerrainMaterial(THREE);
   const terrainPatches = new Map();
   function ensureTerrain(state = {}) {
-    const activePlan = createCenteredPatchPlan(state, {
-      size: FOUNDATION_TERRAIN_PATCH_SIZE,
-      radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
-      prefix: "foundation-terrain"
-    });
-    const retainedIds = new Set(createCenteredPatchPlan(state, {
-      size: FOUNDATION_TERRAIN_PATCH_SIZE,
-      radius: FOUNDATION_TERRAIN_RETAIN_RADIUS,
-      prefix: "foundation-terrain"
-    }).map((entry) => entry.id));
+    const activePlan = createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS, prefix: "foundation-terrain" });
+    const retainedIds = new Set(createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_RETAIN_RADIUS, prefix: "foundation-terrain" }).map((entry) => entry.id));
     for (const entry of activePlan) {
       if (terrainPatches.has(entry.id)) continue;
       const mesh = createTerrainPatch(THREE, world, entry.x, entry.z, terrainMaterial);
+      mesh.visible = !denseWorldGPUActive;
       terrainPatches.set(entry.id, mesh);
       scene.add(mesh);
     }
@@ -334,7 +309,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 190;
   scene.add(hemisphere, sun, sun.target);
-  applyLushJungleAtmosphere(THREE, scene, renderer, { fogDensity: diagnosticFoundationOnly ? 0.0018 : 0.0062 });
+  const atmosphere = applyLushJungleAtmosphere(THREE, scene, renderer, { fogDensity: diagnosticFoundationOnly ? 0.0018 : 0.0062 });
+  const fallbackBackground = atmosphere.background;
 
   let courseRibbon = null;
   let treeFidelity = null;
@@ -347,17 +323,28 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   const forestPatches = new Map();
   let elapsed = 0;
 
+  function applyDenseWorldVisibility() {
+    for (const mesh of terrainPatches.values()) mesh.visible = !denseWorldGPUActive;
+    if (grassMesh) grassMesh.visible = !denseWorldGPUActive;
+    scene.traverse((object) => {
+      if (String(object?.name ?? "").startsWith("prehistoric-tree-fidelity-")) object.visible = !denseWorldGPUActive;
+    });
+    renderer.domElement.style.position = "absolute";
+    renderer.domElement.style.inset = "0";
+    renderer.domElement.style.zIndex = denseWorldGPUActive ? "2" : "1";
+    if (denseWorldGPUActive) {
+      scene.background = null;
+      renderer.setClearAlpha(0);
+    } else {
+      scene.background = fallbackBackground;
+      renderer.setClearAlpha(1);
+    }
+  }
+
   if (!diagnosticFoundationOnly) {
     onProgress(0.16, "Restoring course and player presentation");
-    if (course?.route) {
-      courseRibbon = createCourseRibbon(THREE, world, course.route);
-      scene.add(courseRibbon);
-    }
-    if (playerBody) {
-      playerMesh = createCreatureMesh(THREE, playerBody);
-      playerMesh.name = "prehistoric-rush-procedural-raptor";
-      scene.add(playerMesh);
-    }
+    if (course?.route) { courseRibbon = createCourseRibbon(THREE, world, course.route); scene.add(courseRibbon); }
+    if (playerBody) { playerMesh = createCreatureMesh(THREE, playerBody); playerMesh.name = "prehistoric-rush-procedural-raptor"; scene.add(playerMesh); }
     shardMesh = createShardLayer(THREE, scene);
     grassMesh = createGrassLayer(THREE, scene);
   }
@@ -367,24 +354,16 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     ? Promise.resolve(null)
     : loadTreeFidelityPackages((progress, detail) => onProgress(0.22 + progress * 0.66, detail))
       .then((packages) => {
-        treeFidelity = createThreeTreeFidelityLayer(THREE, {
-          scene,
-          camera,
-          renderer,
-          treeTypes: PREHISTORIC_TREE_TYPES,
-          packages,
-          capacity: TREE_CAPACITY_PER_TYPE
-        });
+        treeFidelityPackages = packages;
+        treeFidelity = createThreeTreeFidelityLayer(THREE, { scene, camera, renderer, treeTypes: PREHISTORIC_TREE_TYPES, packages, capacity: TREE_CAPACITY_PER_TYPE });
         treeFidelityStatus = "ready";
         treeFidelityLoadMs = performance.now() - treeLoadStartedAt;
+        denseVisualRevision += 1;
+        applyDenseWorldVisibility();
         onProgress(1, "Rich prehistoric forest ready");
         return treeFidelity;
       })
-      .catch((error) => {
-        treeFidelityStatus = "error";
-        treeFidelityError = error instanceof Error ? error : new Error(String(error));
-        throw treeFidelityError;
-      });
+      .catch((error) => { treeFidelityStatus = "error"; treeFidelityError = error instanceof Error ? error : new Error(String(error)); throw treeFidelityError; });
   richPresentationReady.catch(() => {});
 
   const matrix = new THREE.Matrix4();
@@ -404,11 +383,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   function ensureForest(state) {
     if (!treeFidelity || diagnosticFoundationOnly) return;
-    const plan = createCenteredPatchPlan(state, {
-      size: FOREST_PATCH_SIZE,
-      radius: FOUNDATION_FOREST_RADIUS,
-      prefix: "foundation-forest"
-    });
+    const plan = createCenteredPatchPlan(state, { size: FOREST_PATCH_SIZE, radius: FOUNDATION_FOREST_RADIUS, prefix: "foundation-forest" });
     const desiredIds = new Set(plan.map((entry) => entry.id));
     const batch = selectMissingPatchBatch(plan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
     let changed = false;
@@ -426,7 +401,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       changed = true;
     }
     if (released.length) treeFidelity.releasePatches(released);
-    if (changed) flushGrass();
+    if (changed) {
+      denseVisualRevision += 1;
+      flushGrass();
+    }
   }
 
   function updateShards() {
@@ -435,11 +413,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     const count = Math.min(shardMesh.instanceMatrix.count || 160, pickups.length);
     for (let index = 0; index < count; index += 1) {
       const pickup = pickups[index];
-      matrix.compose(
-        new THREE.Vector3(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z),
-        new THREE.Quaternion().setFromEuler(new THREE.Euler(0, elapsed * 0.8 + index * 0.11, 0)),
-        new THREE.Vector3(1, 1, 1)
-      );
+      matrix.compose(new THREE.Vector3(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, elapsed * 0.8 + index * 0.11, 0)), new THREE.Vector3(1, 1, 1));
       shardMesh.setMatrixAt(index, matrix);
     }
     shardMesh.count = count;
@@ -450,23 +424,14 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     if (treeFidelityError) throw treeFidelityError;
     elapsed += Math.max(0, Number(dt) || 0);
     ensureTerrain(state);
-    if (framing) {
-      camera.position.set(...framing.position);
-      camera.lookAt(...framing.target);
-    }
+    if (framing) { camera.position.set(...framing.position); camera.lookAt(...framing.target); }
     if (!diagnosticFoundationOnly) {
       ensureForest(state);
       if (playerMesh) {
         playerMesh.position.set(state.x, state.y + state.jumpHeight + 0.05, state.z);
         playerMesh.rotation.y = state.yaw;
         if (creatureApi?.createPose) {
-          const pose = creatureApi.createPose(playerBody.id, {
-            speed: state.speed,
-            time: elapsed,
-            turn: 0,
-            jump: Math.min(1, state.jumpHeight / 2),
-            resistance: 1 - Number(state.surfaceMultiplier ?? 1)
-          });
+          const pose = creatureApi.createPose(playerBody.id, { speed: state.speed, time: elapsed, turn: 0, jump: Math.min(1, state.jumpHeight / 2), resistance: 1 - Number(state.surfaceMultiplier ?? 1) });
           applyCreaturePoseDamped(playerMesh, pose, dt, 18);
         }
       }
@@ -475,28 +440,45 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       if (grassMesh) grassMesh.rotation.y = Math.sin(elapsed * 0.11) * 0.002;
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
     }
+    if (denseWorldGPUActive) applyDenseWorldVisibility();
     sun.position.set(state.x - 30, state.y + 55, state.z - 24);
     sun.target.position.set(state.x, state.y, state.z);
     renderer.render(scene, camera);
+  }
+
+  function getDenseWorldPresentation() {
+    let treeCount = 0;
+    for (const patch of forestPatches.values()) for (const treeSet of patch.trees) treeCount += Math.min(treeSet.trunks.length, treeSet.crowns.length);
+    return Object.freeze({
+      revision: denseVisualRevision,
+      terrainPatchCount: terrainPatches.size,
+      forestPatchCount: forestPatches.size,
+      treePackageCount: treeFidelityPackages?.length ?? 0,
+      treeCount,
+      treePackages: treeFidelityPackages ?? [],
+      forestPatches: [...forestPatches.values()]
+    });
+  }
+
+  function setDenseWorldGPUActive(active) {
+    denseWorldGPUActive = Boolean(active);
+    applyDenseWorldVisibility();
+    return denseWorldGPUActive;
   }
 
   const playableRendererMs = performance.now() - renderStartedAt;
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · rich forest streaming");
 
   return Object.freeze({
-    scene,
-    camera,
-    renderer,
-    draw,
-    whenRichPresentationReady() {
-      return richPresentationReady;
-    },
+    scene, camera, renderer, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
+    whenRichPresentationReady() { return richPresentationReady; },
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
       terrainPatchCount: terrainPatches.size,
       terrainActiveRadius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
       vegetationEnabled: !diagnosticFoundationOnly,
       diagnosticFoundationOnly,
+      denseWorldPresentation: denseWorldGPUActive ? "nexus-webgpu" : "three-webgl2",
       playerPresentation: playerMesh ? "procedural-skinned-raptor" : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
@@ -509,11 +491,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       forestGenerationBudget: FOUNDATION_FOREST_GENERATION_BUDGET,
       atmosphere: scene.fog ? "lush-jungle" : "none",
       courseVisible: Boolean(courseRibbon),
-      performance: {
-        playableRendererMs,
-        initialTerrainMs,
-        treeFidelityLoadMs
-      }
+      performance: { playableRendererMs, initialTerrainMs, treeFidelityLoadMs }
     })
   });
 }

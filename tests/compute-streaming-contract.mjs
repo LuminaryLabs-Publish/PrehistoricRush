@@ -12,7 +12,7 @@ import {
 } from "../src/shared/prehistoric-compute-streaming.js";
 
 assert.equal(NEXUS_REF, "main", "PrehistoricRush intentionally follows mutable NexusEngine/main");
-assert.equal(NEXUS_COMMIT, "f030abd8f648fc3bf1ac0a359e7a421822b41b88", "validation records exact Nexus Compute baseline");
+assert.equal(NEXUS_COMMIT, "4d550be678b721a435495b7b8b7196c294cbc561", "validation records exact unified Nexus WebGPU baseline");
 assert.ok(RUNTIME_URLS.nexusCompute.endsWith("/core-domains/compute/index.js"));
 for (const [name, url] of Object.entries(RUNTIME_URLS)) {
   if (!String(url).includes("NexusEngine@")) continue;
@@ -31,27 +31,11 @@ const result = await provider.executeGraph(execution);
 assert.strictEqual(result.outputs.patch, patch, "large patch output is not defensively duplicated before postMessage transfer");
 assert.equal(result.metadata.transferableOutput, true);
 
-const playable = evaluatePlayableStartup({
-  simulationRequired: 9,
-  simulationGenerated: 9,
-  simulationReady: 9,
-  visualRequired: 12,
-  visualReady: 0,
-  collisionReady: true,
-  rendererReady: true
-});
+const playable = evaluatePlayableStartup({ simulationRequired: 9, simulationGenerated: 9, simulationReady: 9, visualRequired: 12, visualReady: 0, collisionReady: true, rendererReady: true });
 assert.equal(playable.playableReady, true, "distant presentation prefetch must not block gameplay");
 assert.equal(playable.backgroundVisualPending, 12);
 
-const blocked = evaluatePlayableStartup({
-  simulationRequired: 9,
-  simulationGenerated: 9,
-  simulationReady: 9,
-  visualRequired: 12,
-  visualReady: 12,
-  collisionReady: true,
-  rendererReady: false
-});
+const blocked = evaluatePlayableStartup({ simulationRequired: 9, simulationGenerated: 9, simulationReady: 9, visualRequired: 12, visualReady: 12, collisionReady: true, rendererReady: false });
 assert.equal(blocked.playableReady, false, "the playable simulation ring must be rendered before entry");
 
 console.log("PrehistoricRush Compute streaming contract passed.");

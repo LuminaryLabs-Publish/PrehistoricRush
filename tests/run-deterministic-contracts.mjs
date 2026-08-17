@@ -12,15 +12,19 @@ const steps = [
   ["semantic Rendering syntax", "src/domains/prehistoric-rush/rendering-implementation.js", "node", ["--check", "src/domains/prehistoric-rush/rendering-implementation.js"]],
   ["semantic runtime syntax", "src/game-runtime-semantic-v2.js", "node", ["--check", "src/game-runtime-semantic-v2.js"]],
   ["shared GPU runtime syntax", "src/game-runtime-shared-gpu-v3.js", "node", ["--check", "src/game-runtime-shared-gpu-v3.js"]],
-  ["GPU-native ground-cover syntax", "src/domains/prehistoric-rush/gpu-native-ground-cover.js", "node", ["--check", "src/domains/prehistoric-rush/gpu-native-ground-cover.js"]],
+  ["portable dense contribution syntax", "src/domains/prehistoric-rush/dense-world-visual-contributions.js", "node", ["--check", "src/domains/prehistoric-rush/dense-world-visual-contributions.js"]],
+  ["unified GPU world syntax", "src/domains/prehistoric-rush/gpu-native-world-scene.js", "node", ["--check", "src/domains/prehistoric-rush/gpu-native-world-scene.js"]],
+  ["GPU-native ground-cover regression syntax", "src/domains/prehistoric-rush/gpu-native-ground-cover.js", "node", ["--check", "src/domains/prehistoric-rush/gpu-native-ground-cover.js"]],
   ["P0 world boundary", "tests/p0-world-boundary-baseline.mjs", "node", ["tests/p0-world-boundary-baseline.mjs"]],
   ["P1 course boundary", "tests/course-domain-boundary.mjs", "node", ["tests/course-domain-boundary.mjs"]],
   ["world recipe composition", "tests/world-recipe-composition.mjs", "node", ["tests/world-recipe-composition.mjs"]],
   ["resolution policy", "tests/prehistoric-rush-resolution-policy.mjs", "node", ["tests/prehistoric-rush-resolution-policy.mjs"]],
   ["Compute streaming contract", "tests/compute-streaming-contract.mjs", "node", ["tests/compute-streaming-contract.mjs"]],
   ["rendering streaming policy", "tests/rendering-streaming-policy.mjs", "node", ["tests/rendering-streaming-policy.mjs"]],
-  ["GPU-native world layer", "tests/gpu-native-world-layer-contract.mjs", "node", ["tests/gpu-native-world-layer-contract.mjs"]],
-  ["GPU-native product integration", "tests/gpu-native-product-integration.mjs", "node", ["tests/gpu-native-product-integration.mjs"]]
+  ["portable dense visual composition", "tests/dense-visual-contribution-contract.mjs", "node", ["tests/dense-visual-contribution-contract.mjs"]],
+  ["unified GPU world", "tests/unified-gpu-world-contract.mjs", "node", ["tests/unified-gpu-world-contract.mjs"]],
+  ["GPU-native world layer regression", "tests/gpu-native-world-layer-contract.mjs", "node", ["tests/gpu-native-world-layer-contract.mjs"]],
+  ["GPU-native product integration regression", "tests/gpu-native-product-integration.mjs", "node", ["tests/gpu-native-product-integration.mjs"]]
 ];
 
 for (const [name, file, command, args] of steps) {
