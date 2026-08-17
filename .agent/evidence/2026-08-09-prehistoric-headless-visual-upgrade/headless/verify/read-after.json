@@ -1,6 +1,6 @@
 {
-  "validatedCommit": "0a96cbb3fede860aeec39b3a83d1a056d80e386b",
-  "workflowRunId": "31980378055",
+  "validatedCommit": "87fe44a106a3be39d22eb4ff3068226cc43fc8a2",
+  "workflowRunId": "31980607286",
   "pagesPass": true,
   "foundation": {
     "status": "PASS",
@@ -37,8 +37,8 @@
       "atmosphereFeatureCount": 2,
       "shardCount": 63,
       "performance": {
-        "browserObservedHostReadyMs": 8050.304672999999,
-        "startupMs": 4326.299999999988,
+        "browserObservedHostReadyMs": 8559.378375999997,
+        "startupMs": 4357.100000000006,
         "startupBudgetMs": 60000,
         "withinStartupBudget": true,
         "gpuNative": {
@@ -49,9 +49,9 @@
           "skippedFrames": 0
         },
         "rendering": {
-          "playableRendererMs": 1880,
-          "initialTerrainMs": 900.0999999999767,
-          "treeFidelityLoadMs": 332.6000000000058
+          "playableRendererMs": 1869.3000000000175,
+          "initialTerrainMs": 903,
+          "treeFidelityLoadMs": 341.3999999999942
         }
       }
     },
