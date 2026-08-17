@@ -3,8 +3,8 @@
   "structured": [
     {
       "key": "validatedCommit",
-      "before": "945ed40b3aa55167b4cba0ef4cc4cd8db6965cec",
-      "after": "945ed40b3aa55167b4cba0ef4cc4cd8db6965cec"
+      "before": "d4caf7c753366f86318896ac9ca61423281e6d0a",
+      "after": "d4caf7c753366f86318896ac9ca61423281e6d0a"
     },
     {
       "key": "terrainAuthority",
