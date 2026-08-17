@@ -25,30 +25,58 @@ try {
   const adapterProbe = await page.evaluate(async () => {
     if (!navigator.gpu) return { gpu: false, adapter: false, info: null };
     const adapter = await navigator.gpu.requestAdapter();
-    return { gpu: true, adapter: Boolean(adapter), info: adapter?.info ? { architecture: adapter.info.architecture ?? "", device: adapter.info.device ?? "", vendor: adapter.info.vendor ?? "", description: adapter.info.description ?? "", isFallbackAdapter: Boolean(adapter.info.isFallbackAdapter) } : null };
+    return {
+      gpu: true,
+      adapter: Boolean(adapter),
+      info: adapter?.info ? {
+        architecture: adapter.info.architecture ?? "",
+        device: adapter.info.device ?? "",
+        vendor: adapter.info.vendor ?? "",
+        description: adapter.info.description ?? "",
+        isFallbackAdapter: Boolean(adapter.info.isFallbackAdapter)
+      } : null
+    };
   });
   assert.equal(adapterProbe.gpu, true, "software validation requires navigator.gpu");
   assert.equal(adapterProbe.adapter, true, "software validation requires a WebGPU adapter");
 
-  await page.waitForFunction(() => {
-    const state = globalThis.PrehistoricRushHost?.getState?.();
-    const gpu = state?.gpuNative;
-    return Boolean(
-      gpu?.active
-      && gpu.sharedDepth
-      && gpu.singleCanvas
-      && gpu.singleFrameSubmission
-      && gpu.zeroCopy
-      && gpu.gpuCulling
-      && gpu.gpuLod
-      && gpu.indirectDraw
-      && gpu.treeSpeciesCount >= 12
-      && gpu.treeCount > 0
-      && gpu.passCount >= 26
-      && gpu.computeDispatches > 0
-      && gpu.renderSubmissions > 0
-    );
-  }, { timeout: 120_000 });
+  try {
+    await page.waitForFunction(() => {
+      const state = globalThis.PrehistoricRushHost?.getState?.();
+      const gpu = state?.gpuNative;
+      return Boolean(
+        gpu?.active
+        && gpu.sharedDepth
+        && gpu.singleCanvas
+        && gpu.singleFrameSubmission
+        && gpu.zeroCopy
+        && gpu.gpuCulling
+        && gpu.gpuLod
+        && gpu.indirectDraw
+        && gpu.treeSpeciesCount >= 12
+        && gpu.treeCount > 0
+        && gpu.passCount >= 26
+        && gpu.computeDispatches > 0
+        && gpu.renderSubmissions > 0
+      );
+    }, undefined, { timeout: 120_000, polling: 250 });
+  } catch (error) {
+    const diagnostic = await page.evaluate(() => {
+      const host = globalThis.PrehistoricRushHost;
+      if (!host?.getState) return { hostReady: false };
+      const state = host.getState();
+      return {
+        hostReady: true,
+        gpuNative: state.gpuNative ?? null,
+        compute: state.compute ?? null,
+        rendering: state.rendering ?? null,
+        streamingReadiness: state.streamingReadiness ?? null,
+        versions: state.versions ?? null
+      };
+    }).catch((evaluationError) => ({ diagnosticError: evaluationError.message }));
+    console.error(JSON.stringify({ status: "TIMEOUT", adapterProbe, diagnostic, pageErrors, consoleErrors }, null, 2));
+    throw error;
+  }
 
   const result = await page.evaluate(() => {
     const host = globalThis.PrehistoricRushHost;
@@ -95,7 +123,15 @@ try {
   assert.deepEqual(pageErrors, []);
   assert.deepEqual(consoleErrors, []);
 
-  console.log(JSON.stringify({ status: "PASS", adapter: adapterProbe, gpu: result.gpu, canvases: { gpu: result.gpuCanvasCount, total: result.totalCanvasCount }, hiddenDenseFallbacks: result.hiddenDenseFallbacks, pageErrors, consoleErrors }, null, 2));
+  console.log(JSON.stringify({
+    status: "PASS",
+    adapter: adapterProbe,
+    gpu: result.gpu,
+    canvases: { gpu: result.gpuCanvasCount, total: result.totalCanvasCount },
+    hiddenDenseFallbacks: result.hiddenDenseFallbacks,
+    pageErrors,
+    consoleErrors
+  }, null, 2));
 } finally {
   await browser.close();
 }
