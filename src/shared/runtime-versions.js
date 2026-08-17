@@ -1,5 +1,4 @@
 export const NEXUS_REF = "main";
-// Mutable development target. NEXUS_COMMIT records the exact NexusEngine main SHA used by the latest validated integration pass.
 export const NEXUS_COMMIT = "4d550be678b721a435495b7b8b7196c294cbc561";
 export const KITS_COMMIT = "9fd5b10053135e278c84b8b1591aece5cc641da1";
 export const PATCH_KIT_COMMIT = "6bcda82797ab7ba2929262fc9bb13eac3f9d3749";
@@ -9,11 +8,12 @@ export const RAPIER_VERSION = "0.15.0";
 
 export const NEXUS_SOURCE_BASE = `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_REF}/src`;
 export const NEXUS_VALIDATED_SOURCE_BASE = `https://cdn.jsdelivr.net/gh/LuminaryLabs-Dev/NexusEngine@${NEXUS_COMMIT}/src`;
+const NEXUS_COMPUTE_BOOTSTRAP_URL = new URL("./nexus-compute-bootstrap.js", import.meta.url).href;
 
 export const RUNTIME_URLS = Object.freeze({
   nexus: `${NEXUS_SOURCE_BASE}/index.js`,
   nexusHost: `${NEXUS_SOURCE_BASE}/core-domains/host/index.js`,
-  nexusCompute: `${NEXUS_SOURCE_BASE}/core-domains/compute/index.js`,
+  nexusCompute: NEXUS_COMPUTE_BOOTSTRAP_URL,
   nexusActor: `${NEXUS_SOURCE_BASE}/core-domains/actor/index.js`,
   nexusSpatial: `${NEXUS_SOURCE_BASE}/core-domains/spatial/index.js`,
   nexusInteraction: `${NEXUS_SOURCE_BASE}/core-domains/interaction/index.js`,
@@ -38,7 +38,6 @@ export const RUNTIME_URLS = Object.freeze({
   articulatedRapierProvider: `https://cdn.jsdelivr.net/gh/LuminaryLabs-Agents/NexusEngine-ProtoKits@${PROTOKITS_COMMIT}/protokits/rapier-physics-domain-kit/articulated-provider.js`
 });
 
-// Shared-GPU v3 uses exact source modules for a reproducible validation pass while NEXUS_REF continues tracking mutable main for the broader development runtime.
 export const VALIDATED_RUNTIME_URLS = Object.freeze({
   nexusHost: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/host/index.js`,
   nexusCompute: `${NEXUS_VALIDATED_SOURCE_BASE}/core-domains/compute/index.js`,

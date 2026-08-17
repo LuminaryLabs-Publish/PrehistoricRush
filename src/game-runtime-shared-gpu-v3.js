@@ -7,7 +7,6 @@ await import("./game-runtime-semantic-v2.js");
 const baseHost = globalThis.PrehistoricRushHost;
 if (!baseHost) throw new Error("PrehistoricRush semantic runtime did not publish its host before the unified GPU upgrade.");
 
-// Do not expose a half-upgraded host to validation or product consumers.
 globalThis.PrehistoricRushHost = null;
 
 let gpuHost = null;
@@ -50,7 +49,9 @@ if (globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) 
     computeSelection = computeHost.selectProvider({ preferredBackends: ["webgpu", "javascript"], allowFallback: true });
     frameExecutor = Render.createWebGPUFrameExecutor({ id: "prehistoric-rush:webgpu-world-frame", gpuHost, gpu: globalThis.navigator.gpu, awaitCompletion: true });
 
+    await baseHost.rendering.whenRichPresentationReady?.();
     const denseState = baseHost.rendering.getDenseWorldPresentation();
+    if (denseState.treePackageCount !== 12) throw new Error(`Unified GPU handoff requires all 12 Tree Fidelity packages; received ${denseState.treePackageCount}.`);
     const contributions = createPrehistoricRushDenseVisualContributions({
       defineVisualContribution: Graphics.defineVisualContribution,
       composeVisualContributions: Graphics.composeVisualContributions,
@@ -71,7 +72,9 @@ if (globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) 
       contributions
     });
 
+    const gpuReady = gpuScene.snapshot();
     if (gpuHost.getDeviceDescriptor()?.id !== deviceDescriptor.id) throw new Error("Compute/Render GPU Host device identity changed during unified world startup.");
+    if (gpuReady.treeSpeciesCount !== 12 || gpuReady.treeCount < 1 || gpuReady.passCount < 26) throw new Error("Unified GPU scene did not reach full Tree Fidelity readiness before presentation handoff.");
     baseHost.computeHost?.dispose?.();
     baseHost.rendering.setDenseWorldGPUActive(true);
 

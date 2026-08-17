@@ -13,7 +13,7 @@ import {
 
 assert.equal(NEXUS_REF, "main", "PrehistoricRush intentionally follows mutable NexusEngine/main");
 assert.equal(NEXUS_COMMIT, "4d550be678b721a435495b7b8b7196c294cbc561", "validation records exact unified Nexus WebGPU baseline");
-assert.ok(RUNTIME_URLS.nexusCompute.endsWith("/core-domains/compute/index.js"));
+assert.ok(RUNTIME_URLS.nexusCompute.endsWith("/src/shared/nexus-compute-bootstrap.js"), "semantic bootstrap must not acquire a second WebGPU device");
 for (const [name, url] of Object.entries(RUNTIME_URLS)) {
   if (!String(url).includes("NexusEngine@")) continue;
   assert.equal(String(url).includes("/subdomains/"), false, `${name} must use semantic Nexus paths`);
