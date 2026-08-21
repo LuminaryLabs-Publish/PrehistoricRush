@@ -23,8 +23,8 @@
     "terrainAuthority": "n:world:foundation",
     "vegetationEnabled": true,
     "treeFidelityPackageCount": 12,
-    "treeCount": 315,
-    "grassCount": 1291,
+    "treeCount": 415,
+    "grassCount": 1864,
     "activeForestPatches": 25,
     "forestTargetPatchCount": 25,
     "playerPresentation": "procedural-skinned-raptor",
@@ -33,8 +33,8 @@
     "atmosphereFeatureCount": 2,
     "shardCount": 63,
     "performance": {
-      "browserObservedHostReadyMs": 11320.464969999997,
-      "startupMs": 4391.100000000006,
+      "browserObservedHostReadyMs": 19887.282051999995,
+      "startupMs": 4834,
       "startupBudgetMs": 60000,
       "withinStartupBudget": true,
       "gpuNative": {
@@ -45,9 +45,9 @@
         "skippedFrames": 0
       },
       "rendering": {
-        "playableRendererMs": 1914.3999999999942,
-        "initialTerrainMs": 938.9000000000233,
-        "treeFidelityLoadMs": 799.6000000000058
+        "playableRendererMs": 1962.2000000000116,
+        "initialTerrainMs": 964.9000000000233,
+        "treeFidelityLoadMs": 1421.6999999999825
       }
     }
   },
