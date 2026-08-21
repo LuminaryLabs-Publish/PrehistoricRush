@@ -1,11 +1,11 @@
 {
-  "validatedCommit": "20c6f48bcc0fb00b6d2d342d04dfe3103914df14",
-  "workflowRunId": "32530881940",
+  "validatedCommit": "a8675946e41f64ccd0eeab244301e82dee10bff0",
+  "workflowRunId": "32532594870",
   "jobs": {
     "nodeContracts": "success",
-    "browserEvidence": "failure",
-    "pagesDeploy": "skipped",
-    "pagesSmoke": "skipped",
-    "headlessLifecycle": "skipped"
+    "browserEvidence": "cancelled",
+    "pagesDeploy": "cancelled",
+    "pagesSmoke": "cancelled",
+    "headlessLifecycle": "cancelled"
   }
 }
