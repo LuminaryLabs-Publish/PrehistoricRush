@@ -227,12 +227,14 @@ normal = normalize(normal + barkGradient * (1.0 - foliageMask) * 0.22);`
         "float roughnessFactor = clamp(roughness + (barkGrain - 0.5) * (1.0 - foliageMask) * 0.22, 0.55, 1.0);"
       )
       .replace(
-        "vec3 totalEmissiveRadiance = emissive;",
-        "vec3 leafTransmission = diffuseColor.rgb * vec3(1.08, 1.2, 0.72) * foliageMask * 0.12;\nvec3 totalEmissiveRadiance = emissive + leafTransmission;"
+        "#include <emissivemap_fragment>",
+        `#include <emissivemap_fragment>
+vec3 leafTransmission = diffuseColor.rgb * vec3(1.08, 1.2, 0.72) * foliageMask * 0.12;
+totalEmissiveRadiance += leafTransmission;`
       )
       .replace("#include <clipping_planes_fragment>", "#include <clipping_planes_fragment>\nif (fidelityHash(gl_FragCoord.xy) > clamp(vFidelityFade, 0.0, 1.0)) discard;");
   };
-  material.customProgramCacheKey = () => `prehistoric-natural-tree-triplanar-fidelity-v5-${formId}`;
+  material.customProgramCacheKey = () => `prehistoric-natural-tree-triplanar-fidelity-v6-${formId}`;
   return material;
 }
 
