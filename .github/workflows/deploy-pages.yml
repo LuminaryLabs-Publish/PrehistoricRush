@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           rm -rf _site
-          mkdir -p _site/src _site/scenes
+          mkdir -p _site/src _site/scenes _site/assets/menu
           cp index.html menu.html charactercreator.html game.html _site/
           cp .nojekyll _site/.nojekyll
           cp game-scenes.json _site/game-scenes.json
@@ -42,6 +42,7 @@ jobs:
           cp kit-cutover-inventory.json _site/kit-cutover-inventory.json
           cp -R src/* _site/src/
           cp scenes/*.json _site/scenes/
+          cp -R assets/menu/* _site/assets/menu/
           find _site -maxdepth 6 -type f -print
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
