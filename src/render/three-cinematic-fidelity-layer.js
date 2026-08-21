@@ -141,12 +141,12 @@ function createPostProcess(THREE, renderer, camera, profile) {
         float viewZ = (cameraNear * cameraFar) / ((cameraFar - cameraNear) * depth - cameraFar);
         return clamp((-viewZ - cameraNear) / (cameraFar - cameraNear), 0.0, 1.0);
       }
-      float luminance(vec3 color) { return dot(color, vec3(0.2126, 0.7152, 0.0722)); }
+      float prehistoricLuminance(vec3 color) { return dot(color, vec3(0.2126, 0.7152, 0.0722)); }
       float hash21(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
       vec3 grade(vec3 color) {
         color = max(vec3(0.0), color - 0.004);
         color = (color * (6.2 * color + 0.5)) / (color * (6.2 * color + 1.7) + 0.06);
-        float luma = luminance(color);
+        float luma = prehistoricLuminance(color);
         color = mix(vec3(luma), color, 1.09);
         color *= vec3(1.025, 1.015, 0.975);
         return clamp(color, 0.0, 1.0);
@@ -178,7 +178,7 @@ function createPostProcess(THREE, renderer, camera, profile) {
         bloomOffsets[4]=vec2(3.5,3.5); bloomOffsets[5]=vec2(-3.5,3.5); bloomOffsets[6]=vec2(3.5,-3.5); bloomOffsets[7]=vec2(-3.5,-3.5);
         for (int index = 0; index < 8; index++) {
           vec3 sampleColor = texture2D(sceneColor, vUv + bloomOffsets[index] * texel).rgb;
-          bloom += sampleColor * smoothstep(0.69, 1.02, luminance(sampleColor));
+          bloom += sampleColor * smoothstep(0.69, 1.02, prehistoricLuminance(sampleColor));
         }
         vec3 color = sharpened * ao + bloom * (bloomStrength / 8.0);
         float vignette = 1.0 - smoothstep(0.32, 0.78, length(vUv - 0.5)) * 0.16;
