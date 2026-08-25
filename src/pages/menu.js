@@ -255,25 +255,30 @@ function renderWorldSelection() {
 }
 
 async function startShowcase() {
-  const [NexusEngine, CreatureModule, THREE] = await Promise.all([
+  const motionDomainUrl = RUNTIME_URLS.nexusMotion.replace("/kits/motion-kit/index.js", "/index.js");
+  const [NexusEngine, ActorModule, MotionModule, CreatureModule, THREE] = await Promise.all([
     import(RUNTIME_URLS.nexus),
+    import(RUNTIME_URLS.nexusActor),
+    import(motionDomainUrl),
     import(RUNTIME_URLS.creatureKit),
     import(RUNTIME_URLS.three)
   ]);
   const required = [
-    NexusEngine?.createRealtimeGame,
-    NexusEngine?.createCoreCreatureDomain,
-    NexusEngine?.createCoreCharacterDomain,
-    NexusEngine?.createCoreMotionDomain,
+    NexusEngine?.createEngine,
+    ActorModule?.createActorRegistryKit,
+    ActorModule?.createCreatureKit,
+    ActorModule?.createCharacterKit,
+    MotionModule?.createMotionDomain,
     CreatureModule?.createProceduralCreatureBodyKit,
     THREE?.WebGLRenderer
   ];
   if (required.some((entry) => typeof entry !== "function")) throw new Error("Menu character modules did not load.");
 
-  const engine = NexusEngine.createRealtimeGame({ kits: [
-    ...NexusEngine.createCoreCreatureDomain(),
-    ...NexusEngine.createCoreCharacterDomain(),
-    ...NexusEngine.createCoreMotionDomain(),
+  const engine = NexusEngine.createEngine({ kits: [
+    ActorModule.createActorRegistryKit(),
+    ActorModule.createCreatureKit(),
+    ActorModule.createCharacterKit(),
+    ...MotionModule.createMotionDomain(),
     CreatureModule.createProceduralCreatureBodyKit({
       seed: activeProfile.creature.seed,
       creatures: [activeProfile.creature],
