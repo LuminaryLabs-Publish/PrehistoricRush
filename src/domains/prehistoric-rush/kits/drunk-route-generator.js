@@ -12,6 +12,9 @@ export function createDrunkRouteGenerator(config = {}) {
   const controlPoints = [];
   const samples = [];
   let heading = 0;
+  let samplesMonotonicZ = false;
+  let fullSearchCalls = 0;
+  let fullSearchVisits = 0;
 
   function random(index, salt = 0) {
     let h = Math.imul((index + 1) | 0, 374761393) ^ Math.imul((seed + salt) | 0, 668265263);
@@ -58,20 +61,82 @@ export function createDrunkRouteGenerator(config = {}) {
       const steps = Math.max(2, Math.ceil(segmentLength / sampleSpacing));
       for (let step = 0; step < steps; step += 1) samples.push(catmull(p0, p1, p2, p3, step / steps));
     }
+    samplesMonotonicZ = true;
+    for (let index = 1; index < samples.length; index += 1) {
+      if (samples[index].z < samples[index - 1].z) {
+        samplesMonotonicZ = false;
+        break;
+      }
+    }
   }
 
-  function nearest(x, z, hintIndex = 0, radius = 120) {
-    const start = Math.max(0, hintIndex - radius);
-    const end = Math.min(samples.length - 1, hintIndex + radius);
-    let bestIndex = start;
+  function fullNearestIndex(x, z) {
+    fullSearchCalls += 1;
+    if (!samplesMonotonicZ) {
+      let bestIndex = 0;
+      let bestDistanceSq = Infinity;
+      for (let index = 0; index < samples.length; index += 1) {
+        fullSearchVisits += 1;
+        const dx = x - samples[index].x;
+        const dz = z - samples[index].z;
+        const distanceSq = dx * dx + dz * dz;
+        if (distanceSq < bestDistanceSq) {
+          bestDistanceSq = distanceSq;
+          bestIndex = index;
+        }
+      }
+      return { bestIndex, bestDistanceSq };
+    }
+
+    let low = 0;
+    let high = samples.length;
+    while (low < high) {
+      const middle = (low + high) >> 1;
+      if (samples[middle].z < z) low = middle + 1;
+      else high = middle;
+    }
+
+    let left = low - 1;
+    let right = low;
+    let bestIndex = Math.max(0, Math.min(samples.length - 1, low));
     let bestDistanceSq = Infinity;
-    for (let index = start; index <= end; index += 1) {
+    while (left >= 0 || right < samples.length) {
+      const leftDz = left >= 0 ? Math.abs(z - samples[left].z) : Infinity;
+      const rightDz = right < samples.length ? Math.abs(samples[right].z - z) : Infinity;
+      const nearestPossibleDz = Math.min(leftDz, rightDz);
+      if (nearestPossibleDz * nearestPossibleDz > bestDistanceSq) break;
+
+      const index = leftDz <= rightDz ? left-- : right++;
+      fullSearchVisits += 1;
       const dx = x - samples[index].x;
       const dz = z - samples[index].z;
       const distanceSq = dx * dx + dz * dz;
       if (distanceSq < bestDistanceSq) {
         bestDistanceSq = distanceSq;
         bestIndex = index;
+      }
+    }
+    return { bestIndex, bestDistanceSq };
+  }
+
+  function nearest(x, z, hintIndex = 0, radius = 120) {
+    let bestIndex;
+    let bestDistanceSq;
+    if (radius >= samples.length - 1) {
+      ({ bestIndex, bestDistanceSq } = fullNearestIndex(x, z));
+    } else {
+      const start = Math.max(0, hintIndex - radius);
+      const end = Math.min(samples.length - 1, hintIndex + radius);
+      bestIndex = start;
+      bestDistanceSq = Infinity;
+      for (let index = start; index <= end; index += 1) {
+        const dx = x - samples[index].x;
+        const dz = z - samples[index].z;
+        const distanceSq = dx * dx + dz * dz;
+        if (distanceSq < bestDistanceSq) {
+          bestDistanceSq = distanceSq;
+          bestIndex = index;
+        }
       }
     }
     const current = samples[bestIndex];
@@ -105,6 +170,18 @@ export function createDrunkRouteGenerator(config = {}) {
     vergeWidth,
     nearest,
     classify,
-    snapshot: () => ({ id: "drunk-route-generator", seed, controlPointCount: controlPoints.length, sampleCount: samples.length, pathHalfWidth, vergeWidth })
+    snapshot: () => ({
+      id: "drunk-route-generator",
+      seed,
+      controlPointCount: controlPoints.length,
+      sampleCount: samples.length,
+      pathHalfWidth,
+      vergeWidth,
+      search: {
+        monotonicZ: samplesMonotonicZ,
+        fullSearchCalls,
+        fullSearchVisits
+      }
+    })
   });
 }
