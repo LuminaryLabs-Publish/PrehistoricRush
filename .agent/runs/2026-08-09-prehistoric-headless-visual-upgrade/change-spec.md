@@ -22,7 +22,7 @@
 - `validation/forest-lab.html` / `validation/forest-lab.js` — deterministic real-pipeline render scenes.
 - `tests/headless-visual-contract.mjs` — deterministic product contract checks.
 - `tests/browser-visual-validation.mjs` — Playwright screenshot/runtime evidence.
-- `.github/workflows/main-validation.yml` — main-branch tests + browser evidence artifact.
+- `.github/workflows/deploy.yml` — main-branch tests + browser evidence artifact and Pages deployment.
 - `package.json` — include new deterministic test.
 
 ## Direct target changes

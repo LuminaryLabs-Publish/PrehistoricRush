@@ -23,4 +23,4 @@ player movement
 | Terrain and forest patch presentation | `rendering-implementation.js` |
 | Browser evidence | `tests/browser-visual-validation.mjs` |
 | Headless evidence | `tests/headless-editor-evidence.mjs` |
-| Deployment | `.github/workflows/main-validation.yml` |
+| Deployment | `.github/workflows/deploy.yml` |

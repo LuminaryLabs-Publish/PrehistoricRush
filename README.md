@@ -31,7 +31,7 @@ The race scene contains:
 
 ## Deployment
 
-`.github/workflows/main-validation.yml` is the only Pages deployment workflow. It validates `main`, captures browser framebuffer evidence, stages the validated site, deploys GitHub Pages, smoke-tests the deployed URLs, and runs the pinned NexusEngine-Editor Headless lifecycle.
+`.github/workflows/deploy.yml` is the only Pages deployment workflow. It validates `main`, captures browser framebuffer evidence, stages the validated site, deploys GitHub Pages, smoke-tests the deployed URLs, and runs the pinned NexusEngine-Editor Headless lifecycle.
 
 Evidence-only commits under `.agent/evidence/**` do not retrigger the validation workflow.
 
