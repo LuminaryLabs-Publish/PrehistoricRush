@@ -9,6 +9,10 @@
     "requiredEvidence": [
       "before/foundation-gate.json",
       "after/foundation-gate.json",
+      "after/race-before.png",
+      "after/race-after.png",
+      "after/world-before.png",
+      "after/world-after-movement.png",
       "after/observed-differences.json"
     ],
     "pagesPass": true

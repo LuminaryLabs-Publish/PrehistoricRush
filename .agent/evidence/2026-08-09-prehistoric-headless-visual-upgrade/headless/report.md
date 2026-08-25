@@ -1,69 +1,56 @@
 # Headless Editor Run Report
 
 Run: 2026-08-09-prehistoric-headless-visual-upgrade
-Goal: # PrehistoricRush Headless Visual Upgrade Target
+Goal: # PrehistoricRush Playable Race and Streamed-World Verification Target
 
-Run: `2026-08-09-prehistoric-headless-visual-upgrade`
+Run: `2026-08-25-prehistoric-race-world-update-verification`
 
 ## Goal
 
-Upgrade the production forest to a chunky stylized prehistoric canopy while preserving deterministic NexusEngine ownership, route readability, collision clarity, streaming stability, and playable performance.
+Verify the actual `game.html` race: the selected dinosaur is visible and controllable, the procedural track and camera are live, Nexus World focus updates during traversal, streamed terrain and forest patches remain valid, and the deployed page matches the validated source.
 
 ## Architectural constraints
 
-- Reuse NexusEngine Object Vegetation, Tree, Foliage, Compute, Shape, Fidelity, Capture, Placement, and Graphics semantics.
-- Keep authored species, visual tuning, route rules, and gameplay composition in PrehistoricRush.
-- Do not create a second tree engine or a parallel Fidelity system.
-- Keep tree collision trunk-authoritative; decorative roots/buttresses must not silently expand lethal collision.
-- Validate source changes through the real production modules and reproducible browser scenes.
+- Keep Nexus World, Course, Player, Camera, HUD, and Renderer as the existing authorities.
+- Do not create a second world manager or parallel track system.
+- Keep the character-selection card out of the race scene.
+- Validate source changes through deterministic tests, browser framebuffer evidence, Pages smoke, and NexusEngine-Editor Headless.
 
-## Visual target
+## Race target
 
-- Dense upper canopy with reduced empty sky and overlapping crowns.
-- Bold readable species silhouettes at 26-31 m/s.
-- Organic trunks with visible taper, curvature, base flare, and grounded roots.
-- Stylized bark with broad stable variation rather than noisy photoreal detail.
-- Foliage with dark interior mass, readable midtones, and warm edge transmission.
-- Near detail high; medium preserves mass; far/horizon preserve species identity without obvious popping.
-- Track corridor remains immediately readable at maximum boost.
+- `game.html` shows the dinosaur, procedural track, scenery, HUD, and camera framing.
+- Input advances the character and changes the camera state.
+- World focus changes after crossing a streaming cell.
+- Terrain and forest patch IDs remain valid and unique.
+- No terrain streaming holes are reported.
 
 ## Quantitative acceptance
 
-- 12/12 tree archetypes produce valid deterministic near and medium growth plans.
-- Near foliage targets: 64-96 authored placements depending on species.
-- Medium foliage target: approximately 35% of near density, never below 22 placements for the current 12 species.
-- Non-radial near crown coverage minimum: 0.42.
-- Non-radial medium crown coverage minimum: 0.24.
-- Radial-frond near crown coverage minimum: 0.34.
-- Radial-frond medium crown coverage minimum: 0.18.
-- Near minimum foliage clusters: radial 18, non-radial 28.
-- Medium minimum foliage clusters: radial 10, non-radial 14.
-- Deterministic seed validation reports zero identity mismatches, invalid growth plans, malformed placement data, or non-finite bounds.
-- Normal target-density browser runs report zero foliage batch overflow.
-- Browser validation reports zero page errors, shader errors, or unhandled exceptions.
-- Production `game.html` boots, exposes `PrehistoricRushHost`, renders a canvas, starts a run, and remains responsive during representative input.
+- deterministic world-update contract passes;
+- world focus cell changes during traversal;
+- terrain ring contains nine unique patches;
+- active forest patch set is non-empty;
+- streaming-hole count is zero;
+- browser reports zero page and console errors;
+- race screenshots include before and after movement;
+- Pages smoke and Headless lifecycle pass.
 
 ## Required visual evidence
 
-Fixed scenes:
+```text
+world-before.png
+race-before.png
+race-after.png
+world-after-movement.png
+```
 
-1. Tree Lab
-2. Root Lab
-3. Foliage Lab
-4. Canopy Lab
-5. LOD Lab
-6. Backlight Lab
-7. Racing-Line Lab
-8. Full Game Seed
-
-Each fixed scene uses deterministic seeds, fixed camera, fixed lighting, fixed viewport, and the real Nexus/Three tree-growth path.
+The older forest visual labs remain historical evidence and are not deleted.
 
 ## Definition of done
 
-- All 12 species pass structure, foliage, material, near, medium, far, horizon, and screenshot checks.
-- Forest composition, route readability, placement/collision, determinism, streaming, browser startup, and batch capacity pass.
+- World recipe, focus, patch movement, route readability, determinism, streaming, browser startup, and race composition pass.
 - Before/after evidence is retained by the Headless/CI workflow.
-- The final ledger contains only `PASS` or explicitly documented external hardware exclusions.
+- The final ledger contains only `PASS`, `BLOCKED`, or explicitly documented external hardware exclusions.
 - Main remains playable and the deployed GitHub Pages game is reachable from the `main` revision.
 
 

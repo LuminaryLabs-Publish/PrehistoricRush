@@ -3,8 +3,8 @@
   "structured": [
     {
       "key": "validatedCommit",
-      "before": "0f94e5c8a0bef2476314be3aebe5f0913350648f",
-      "after": "0f94e5c8a0bef2476314be3aebe5f0913350648f"
+      "before": "33d69bfb4074148d97da716fea4b4e98cfb77708",
+      "after": "33d69bfb4074148d97da716fea4b4e98cfb77708"
     },
     {
       "key": "terrainAuthority",
@@ -25,7 +25,7 @@
   "visual": [
     {
       "beforeCaptures": 2,
-      "afterCaptures": 2
+      "afterCaptures": 6
     }
   ],
   "regressions": [],

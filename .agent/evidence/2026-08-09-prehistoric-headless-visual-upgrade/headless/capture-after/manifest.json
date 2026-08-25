@@ -11,6 +11,26 @@
       "id": "foundation-gate:after:metrics",
       "kind": "metrics",
       "path": "after/foundation-gate.json"
+    },
+    {
+      "id": "race-before",
+      "kind": "screenshot",
+      "path": "after/race-before.png"
+    },
+    {
+      "id": "race-after",
+      "kind": "screenshot",
+      "path": "after/race-after.png"
+    },
+    {
+      "id": "world-before",
+      "kind": "screenshot",
+      "path": "after/world-before.png"
+    },
+    {
+      "id": "world-after-movement",
+      "kind": "screenshot",
+      "path": "after/world-after-movement.png"
     }
   ]
 }
