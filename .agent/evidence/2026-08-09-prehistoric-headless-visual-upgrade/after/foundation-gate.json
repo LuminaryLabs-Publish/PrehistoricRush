@@ -33,8 +33,8 @@
     "atmosphereFeatureCount": 2,
     "shardCount": 63,
     "performance": {
-      "browserObservedHostReadyMs": 19887.282051999995,
-      "startupMs": 4834,
+      "browserObservedHostReadyMs": 17294.147042000004,
+      "startupMs": 3633.0999999999767,
       "startupBudgetMs": 60000,
       "withinStartupBudget": true,
       "gpuNative": {
@@ -45,11 +45,156 @@
         "skippedFrames": 0
       },
       "rendering": {
-        "playableRendererMs": 1962.2000000000116,
-        "initialTerrainMs": 964.9000000000233,
-        "treeFidelityLoadMs": 1421.6999999999825
+        "playableRendererMs": 1424,
+        "initialTerrainMs": 662.1000000000349,
+        "treeFidelityLoadMs": 489.4000000000233
       }
     }
+  },
+  "race": {
+    "before": {
+      "distance": 19.63043527196253,
+      "playerPresentation": "procedural-skinned-raptor",
+      "courseVisible": true,
+      "camera": {
+        "x": 0,
+        "y": -37.5607208454298,
+        "z": 2.8933020161748364
+      }
+    },
+    "after": {
+      "distance": 13.37650315856937,
+      "playerPresentation": "procedural-skinned-raptor",
+      "courseVisible": true,
+      "camera": {
+        "x": 7.358846984954259,
+        "y": -36.20156590317719,
+        "z": 0.08098408802828616
+      }
+    },
+    "screenshots": [
+      "race-before.png",
+      "race-after.png"
+    ],
+    "characterCardPresent": false,
+    "movementObserved": true,
+    "cameraFollowObserved": true
+  },
+  "worldUpdate": {
+    "before": {
+      "worldId": "jurassic-valley",
+      "worldRevision": 1,
+      "focusCell": "0:0",
+      "focusUpdateCount": 1,
+      "terrainPatchIds": [
+        "foundation-terrain:-1:-1",
+        "foundation-terrain:-1:0",
+        "foundation-terrain:-1:1",
+        "foundation-terrain:0:-1",
+        "foundation-terrain:0:0",
+        "foundation-terrain:0:1",
+        "foundation-terrain:1:-1",
+        "foundation-terrain:1:0",
+        "foundation-terrain:1:1"
+      ],
+      "activeForestPatchIds": [
+        "foundation-forest:-1:-1",
+        "foundation-forest:-1:-2",
+        "foundation-forest:-1:0",
+        "foundation-forest:-1:1",
+        "foundation-forest:-1:2",
+        "foundation-forest:-2:-1",
+        "foundation-forest:-2:-2",
+        "foundation-forest:-2:0",
+        "foundation-forest:-2:1",
+        "foundation-forest:-2:2",
+        "foundation-forest:0:-1",
+        "foundation-forest:0:-2",
+        "foundation-forest:0:0",
+        "foundation-forest:0:1",
+        "foundation-forest:0:2",
+        "foundation-forest:1:-1",
+        "foundation-forest:1:-2",
+        "foundation-forest:1:0",
+        "foundation-forest:1:1",
+        "foundation-forest:1:2",
+        "foundation-forest:2:-1",
+        "foundation-forest:2:-2",
+        "foundation-forest:2:0",
+        "foundation-forest:2:1",
+        "foundation-forest:2:2"
+      ],
+      "streamingHoleCount": 0
+    },
+    "after": {
+      "worldId": "jurassic-valley",
+      "worldRevision": 1,
+      "focusCell": "-1:0",
+      "focusUpdateCount": 2,
+      "terrainPatchIds": [
+        "foundation-terrain:-1:-1",
+        "foundation-terrain:-1:0",
+        "foundation-terrain:-1:1",
+        "foundation-terrain:-2:-1",
+        "foundation-terrain:-2:0",
+        "foundation-terrain:-2:1",
+        "foundation-terrain:0:-1",
+        "foundation-terrain:0:0",
+        "foundation-terrain:0:1",
+        "foundation-terrain:1:-1",
+        "foundation-terrain:1:0",
+        "foundation-terrain:1:1"
+      ],
+      "activeForestPatchIds": [
+        "foundation-forest:-1:-1",
+        "foundation-forest:-1:-2",
+        "foundation-forest:-1:0",
+        "foundation-forest:-1:1",
+        "foundation-forest:-1:2",
+        "foundation-forest:-2:-1",
+        "foundation-forest:-2:-2",
+        "foundation-forest:-2:0",
+        "foundation-forest:-2:1",
+        "foundation-forest:-2:2",
+        "foundation-forest:-3:-1",
+        "foundation-forest:-3:-2",
+        "foundation-forest:-3:0",
+        "foundation-forest:-3:1",
+        "foundation-forest:-3:2",
+        "foundation-forest:0:-1",
+        "foundation-forest:0:-2",
+        "foundation-forest:0:0",
+        "foundation-forest:0:1",
+        "foundation-forest:0:2",
+        "foundation-forest:1:-1",
+        "foundation-forest:1:-2",
+        "foundation-forest:1:0",
+        "foundation-forest:1:1",
+        "foundation-forest:1:2"
+      ],
+      "streamingHoleCount": 0,
+      "playerWorldPosition": {
+        "x": -7.395539463776397,
+        "y": -45.25875311850757,
+        "z": 10.11456103206714,
+        "yaw": -1.1625750000000101,
+        "speed": 27.744374887202806,
+        "verticalVelocity": 0,
+        "jumpHeight": 0,
+        "grounded": true,
+        "distance": 13.37650315856937,
+        "routeIndex": 13,
+        "routeProgress": 0.006277160791887977,
+        "region": "path",
+        "surfaceMultiplier": 1
+      }
+    },
+    "screenshots": [
+      "world-before.png",
+      "world-after-movement.png"
+    ],
+    "focusChanged": true,
+    "noStreamingHoles": true
   },
   "pageErrors": [],
   "consoleErrors": []
