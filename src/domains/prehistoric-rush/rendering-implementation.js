@@ -23,6 +23,10 @@ const FOREST_PATCH_SIZE = FOUNDATION_TERRAIN_PATCH_SIZE;
 const TREE_CAPACITY_PER_TYPE = 320;
 const GRASS_CAPACITY = 7600;
 
+function streamingCellKey(position = {}, size = FOUNDATION_TERRAIN_PATCH_SIZE) {
+  return `${Math.floor(Number(position.x ?? 0) / size)}:${Math.floor(Number(position.z ?? 0) / size)}`;
+}
+
 function hashText(value) {
   let hash = 2166136261;
   for (const character of String(value)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
@@ -380,25 +384,36 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
 
   let denseWorldGPUActive = false;
   let denseVisualRevision = 0;
+  let densePresentationDirty = true;
+  let cachedDensePresentation = null;
   let treeFidelityPackages = null;
   const terrainMaterial = createTerrainMaterial(THREE);
   const terrainPatches = new Map();
+  let terrainPlanKey = null;
   function ensureTerrain(state = {}) {
+    const nextKey = streamingCellKey(state, FOUNDATION_TERRAIN_PATCH_SIZE);
+    if (nextKey === terrainPlanKey) return false;
+    terrainPlanKey = nextKey;
     const activePlan = createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS, prefix: "foundation-terrain" });
     const retainedIds = new Set(createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_RETAIN_RADIUS, prefix: "foundation-terrain" }).map((entry) => entry.id));
+    let changed = false;
     for (const entry of activePlan) {
       if (terrainPatches.has(entry.id)) continue;
       const mesh = createTerrainPatch(THREE, world, entry.x, entry.z, terrainMaterial);
       mesh.visible = !denseWorldGPUActive;
       terrainPatches.set(entry.id, mesh);
       scene.add(mesh);
+      changed = true;
     }
     for (const [id, mesh] of terrainPatches) {
       if (retainedIds.has(id)) continue;
       terrainPatches.delete(id);
       scene.remove(mesh);
       mesh.geometry?.dispose?.();
+      changed = true;
     }
+    if (changed) densePresentationDirty = true;
+    return changed;
   }
 
   onProgress(0.08, "Resolving local Nexus Foundation terrain");
@@ -441,6 +456,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   let playerMesh = null;
   let shardMesh = null;
   const forestPatches = new Map();
+  let forestPlanKey = null;
+  let forestPlan = [];
+  let forestDesiredIds = new Set();
   let elapsed = 0;
 
   function applyDenseWorldVisibility() {
@@ -483,6 +501,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
         treeFidelityStatus = "ready";
         treeFidelityLoadMs = performance.now() - treeLoadStartedAt;
         denseVisualRevision += 1;
+        densePresentationDirty = true;
         applyDenseWorldVisibility();
         onProgress(1, "Rich prehistoric forest ready");
         return treeFidelity;
@@ -491,6 +510,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   richPresentationReady.catch(() => {});
 
   const matrix = new THREE.Matrix4();
+  const shardPosition = new THREE.Vector3();
+  const shardRotation = new THREE.Quaternion();
+  const shardScale = new THREE.Vector3(1, 1, 1);
+  const shardUp = new THREE.Vector3(0, 1, 0);
   function flushGrass() {
     if (!grassMesh) return;
     let index = 0;
@@ -506,42 +529,54 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   }
 
   function ensureForest(state) {
-    if (!treeFidelity || diagnosticFoundationOnly) return;
-    const plan = createCenteredPatchPlan(state, { size: FOREST_PATCH_SIZE, radius: FOUNDATION_FOREST_RADIUS, prefix: "foundation-forest" });
-    const desiredIds = new Set(plan.map((entry) => entry.id));
-    const batch = selectMissingPatchBatch(plan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
+    if (!treeFidelity || diagnosticFoundationOnly) return false;
+    const nextKey = streamingCellKey(state, FOREST_PATCH_SIZE);
     let changed = false;
-    for (const entry of batch) {
-      const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed, qualityProfile);
-      forestPatches.set(entry.id, patch);
-      treeFidelity.activatePatch(patch);
-      cinematicGround?.activatePatch(patch);
-      changed = true;
+    if (nextKey !== forestPlanKey) {
+      forestPlanKey = nextKey;
+      forestPlan = createCenteredPatchPlan(state, { size: FOREST_PATCH_SIZE, radius: FOUNDATION_FOREST_RADIUS, prefix: "foundation-forest" });
+      forestDesiredIds = new Set(forestPlan.map((entry) => entry.id));
+      const released = [];
+      for (const id of forestPatches.keys()) {
+        if (forestDesiredIds.has(id)) continue;
+        forestPatches.delete(id);
+        released.push(id);
+        changed = true;
+      }
+      if (released.length) {
+        treeFidelity.releasePatches(released);
+        cinematicGround?.releasePatches(released);
+      }
     }
-    const released = [];
-    for (const id of forestPatches.keys()) {
-      if (desiredIds.has(id)) continue;
-      forestPatches.delete(id);
-      released.push(id);
-      changed = true;
+
+    if (forestPatches.size < forestPlan.length) {
+      const batch = selectMissingPatchBatch(forestPlan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
+      for (const entry of batch) {
+        const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed, qualityProfile);
+        forestPatches.set(entry.id, patch);
+        treeFidelity.activatePatch(patch);
+        cinematicGround?.activatePatch(patch);
+        changed = true;
+      }
     }
-    if (released.length) {
-      treeFidelity.releasePatches(released);
-      cinematicGround?.releasePatches(released);
-    }
+
     if (changed) {
       denseVisualRevision += 1;
+      densePresentationDirty = true;
       flushGrass();
     }
+    return changed;
   }
 
   function updateShards() {
-    if (!shardMesh || !gameplay?.getPickups) return;
-    const pickups = gameplay.getPickups();
+    if (!shardMesh) return;
+    const pickups = gameplay?.getActivePickups?.() ?? gameplay?.getPickups?.() ?? [];
     const count = Math.min(shardMesh.instanceMatrix.count || 160, pickups.length);
     for (let index = 0; index < count; index += 1) {
       const pickup = pickups[index];
-      matrix.compose(new THREE.Vector3(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, elapsed * 0.8 + index * 0.11, 0)), new THREE.Vector3(1, 1, 1));
+      shardPosition.set(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z);
+      shardRotation.setFromAxisAngle(shardUp, elapsed * 0.8 + index * 0.11);
+      matrix.compose(shardPosition, shardRotation, shardScale);
       shardMesh.setMatrixAt(index, matrix);
     }
     shardMesh.count = count;
@@ -551,7 +586,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   function draw(state, framing, dt = 1 / 60) {
     if (treeFidelityError) throw treeFidelityError;
     elapsed += Math.max(0, Number(dt) || 0);
-    ensureTerrain(state);
+    if (!denseWorldGPUActive) ensureTerrain(state);
     if (framing) { camera.position.set(...framing.position); camera.lookAt(...framing.target); }
     if (!diagnosticFoundationOnly) {
       ensureForest(state);
@@ -563,25 +598,35 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
           applyCreaturePoseDamped(playerMesh, pose, dt, 18);
         }
       }
-      treeFidelity?.update(state, dt);
-      cinematicGround?.update(state, dt);
+      if (!denseWorldGPUActive) {
+        treeFidelity?.update(state, dt);
+        cinematicGround?.update(state, dt);
+        if (grassMesh) grassMesh.rotation.y = Math.sin(elapsed * 0.11) * 0.002;
+      }
       updateShards();
-      if (grassMesh) grassMesh.rotation.y = Math.sin(elapsed * 0.11) * 0.002;
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
     }
-    if (denseWorldGPUActive) applyDenseWorldVisibility();
     sun.position.set(state.x - 30, state.y + 55, state.z - 24);
     sun.target.position.set(state.x, state.y, state.z);
     adaptivePixelRatio.update(dt);
+    if (denseWorldGPUActive) {
+      renderer.render(scene, camera);
+      return;
+    }
     cinematicFidelity?.update(state, dt);
     if (cinematicFidelity) cinematicFidelity.render(scene);
     else renderer.render(scene, camera);
   }
 
+  function getDenseWorldRevision() {
+    return denseVisualRevision;
+  }
+
   function getDenseWorldPresentation() {
+    if (!densePresentationDirty && cachedDensePresentation) return cachedDensePresentation;
     let treeCount = 0;
     for (const patch of forestPatches.values()) for (const treeSet of patch.trees) treeCount += Math.min(treeSet.trunks.length, treeSet.crowns.length);
-    return Object.freeze({
+    cachedDensePresentation = Object.freeze({
       revision: denseVisualRevision,
       terrainPatchCount: terrainPatches.size,
       forestPatchCount: forestPatches.size,
@@ -590,10 +635,14 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       treePackages: treeFidelityPackages ?? [],
       forestPatches: [...forestPatches.values()]
     });
+    densePresentationDirty = false;
+    return cachedDensePresentation;
   }
 
   function setDenseWorldGPUActive(active) {
-    denseWorldGPUActive = Boolean(active);
+    const next = Boolean(active);
+    if (next === denseWorldGPUActive) return denseWorldGPUActive;
+    denseWorldGPUActive = next;
     applyDenseWorldVisibility();
     return denseWorldGPUActive;
   }
@@ -602,7 +651,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · rich forest streaming");
 
   return Object.freeze({
-    scene, camera, renderer, qualityProfile, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
+    scene, camera, renderer, qualityProfile, draw, getDenseWorldRevision, getDenseWorldPresentation, setDenseWorldGPUActive,
     whenRichPresentationReady() { return richPresentationReady; },
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
@@ -615,7 +664,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
-      treeCount: treeFidelity?.view?.treeCount ?? 0,
+      treeCount: denseWorldGPUActive ? getDenseWorldPresentation().treeCount : treeFidelity?.view?.treeCount ?? 0,
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },
       grassCount: grassMesh?.count ?? 0,
       activeForestPatches: forestPatches.size,

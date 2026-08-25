@@ -6,6 +6,7 @@ await import("./game-runtime-semantic-v2.js");
 
 const baseHost = globalThis.PrehistoricRushHost;
 if (!baseHost) throw new Error("PrehistoricRush semantic runtime did not publish its host before the unified GPU upgrade.");
+if (typeof baseHost.onFrame !== "function") throw new Error("PrehistoricRush semantic runtime does not expose unified frame coordination.");
 
 globalThis.PrehistoricRushHost = null;
 
@@ -16,8 +17,23 @@ let frameExecutor = null;
 let gpuScene = null;
 let gpuUpgradeError = null;
 let gpuFrame = 0;
+let unsubscribeFrame = null;
 
 const rendererPreference = baseHost.rendering?.qualityProfile?.rendererPreference ?? "webgl2";
+
+function disposeGPUScene({ restoreDenseWorld = true } = {}) {
+  unsubscribeFrame?.();
+  unsubscribeFrame = null;
+  if (restoreDenseWorld) baseHost.rendering.setDenseWorldGPUActive?.(false);
+  gpuScene?.dispose?.();
+  frameExecutor?.dispose?.();
+  gpuHost?.dispose?.();
+  gpuScene = null;
+  frameExecutor = null;
+  gpuHost = null;
+  computeHost = baseHost.computeHost;
+  computeSelection = baseHost.getState().compute.selected;
+}
 
 if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) {
   try {
@@ -81,36 +97,22 @@ if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.ren
     baseHost.computeHost?.dispose?.();
     baseHost.rendering.setDenseWorldGPUActive(true);
 
-    const scheduleGPUFrame = () => {
+    unsubscribeFrame = baseHost.onFrame((state, camera, _dt, _now, sequence) => {
       if (!gpuScene) return;
-      const snapshot = gpuScene.snapshot();
-      if (!snapshot.active) {
-        baseHost.rendering.setDenseWorldGPUActive(false);
-        gpuScene.dispose();
-        gpuScene = null;
-        frameExecutor?.dispose?.();
-        gpuHost?.dispose?.();
-        frameExecutor = null;
-        gpuHost = null;
-        return;
+      gpuScene.scheduleFrame({
+        state: { x: state.x, z: state.z, time: state.elapsed },
+        camera
+      });
+      gpuFrame = sequence;
+      if (sequence % 60 === 0) {
+        const health = gpuScene.snapshot();
+        if (!health.active) disposeGPUScene();
       }
-      gpuScene.scheduleFrame({ state: baseHost.gameplay.getState(), camera: baseHost.rendering.camera });
-      gpuFrame += 1;
-      requestAnimationFrame(scheduleGPUFrame);
-    };
-    requestAnimationFrame(scheduleGPUFrame);
+    });
     addEventListener("resize", () => gpuScene?.resize?.());
   } catch (error) {
     gpuUpgradeError = error instanceof Error ? error : new Error(String(error));
-    baseHost.rendering.setDenseWorldGPUActive?.(false);
-    gpuScene?.dispose?.();
-    frameExecutor?.dispose?.();
-    gpuHost?.dispose?.();
-    gpuScene = null;
-    frameExecutor = null;
-    gpuHost = null;
-    computeHost = baseHost.computeHost;
-    computeSelection = baseHost.getState().compute.selected;
+    disposeGPUScene();
     console.warn(`PrehistoricRush unified Nexus WebGPU world unavailable; retaining validated WebGL fallback: ${gpuUpgradeError.message}`);
   }
 }
