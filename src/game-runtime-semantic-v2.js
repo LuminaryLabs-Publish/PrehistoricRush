@@ -9,12 +9,16 @@ import { createPrehistoricRushPlayerImplementation } from "./domains/prehistoric
 import { createPrehistoricRushGameplayImplementation } from "./domains/prehistoric-rush/gameplay-implementation.js";
 import { createPrehistoricRushRenderingImplementation } from "./domains/prehistoric-rush/rendering-implementation.js";
 import { resolvePlayableRacerProfile } from "./racers/racer-catalog.js";
+import { createRacerCharacterProfile, getRacerRosterDetails } from "./racers/racer-roster.js";
+import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selection-store.js";
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:230px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" data-race-status="true" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div></aside></section>`;
+app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;left:18px;top:18px;z-index:4;padding:13px 15px;border:1px solid #f4dfaa32;border-radius:16px;background:#07100bd9;box-shadow:0 18px 45px #0008;min-width:min(360px,calc(100vw - 36px));pointer-events:none;backdrop-filter:blur(12px)"><div style="display:flex;align-items:center;justify-content:space-between;gap:16px"><strong style="color:#ffd37a;letter-spacing:.08em;text-transform:uppercase">Prehistoric Rush</strong><span id="prehistoric-racer-badge" style="font-size:10px;font-weight:900;text-transform:uppercase"></span></div><div id="prehistoric-status" data-race-status="true" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-ability" style="margin-top:9px;padding-top:8px;border-top:1px solid #ffffff18;font-size:10px;font-weight:850;letter-spacing:.04em;text-transform:uppercase"></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump · E ability</div></section>`;
 const host = document.querySelector("#prehistoric-render-host");
 const statusNode = document.querySelector("#prehistoric-status");
+const racerBadge = document.querySelector("#prehistoric-racer-badge");
+const abilityNode = document.querySelector("#prehistoric-ability");
 const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
@@ -61,9 +65,13 @@ setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
 const modules = { Nexus, Actor, Spatial, Interaction, Simulation, World, Presentation, Graphics, Animation, Render };
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
-const requestedRacerId = new URLSearchParams(globalThis.location?.search ?? "").get("racer");
-const racerProfile = resolvePlayableRacerProfile(requestedRacerId ?? undefined);
-const playerProfile = loadPlayerCharacterProfile();
+const requestedRacerId = loadSelectedRacerId(globalThis.location);
+const racerProfile = resolvePlayableRacerProfile(requestedRacerId);
+saveSelectedRacerId(racerProfile.id);
+const rosterDetails = getRacerRosterDetails(racerProfile.id);
+const playerProfile = createRacerCharacterProfile(racerProfile, loadPlayerCharacterProfile());
+racerBadge.textContent = racerProfile.displayName;
+racerBadge.style.color = rosterDetails.accent;
 const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
 const kits = [
@@ -97,6 +105,7 @@ if (!playerBody) throw new Error(`Procedural racer body is unavailable: ${player
 const racerPresentation = Object.freeze({
   racerId: racerProfile.id,
   bodyDescriptor: playerBody,
+  accent: rosterDetails.accent,
   ...racerProfile.presentation
 });
 
@@ -192,6 +201,10 @@ function updateHud(now, state) {
   lastHudAt = now;
   const presentation = rendering.snapshot();
   statusNode.textContent = `${racerProfile.displayName} · ${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s · ${state.region} · Nexus Foundation · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute${diagnosticFoundationOnly ? " · diagnostic terrain only" : ` · ${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
+  const stamina = Math.max(0, Math.round(Number(state.stamina ?? 0)));
+  const abilityState = state.abilityStatus === "cooldown" ? `${Number(state.abilityCooldown ?? 0).toFixed(1)}s cooldown` : state.abilityStatus;
+  abilityNode.textContent = `E · ${rosterDetails.activeName} · ${abilityState} · stamina ${stamina} · passive ${rosterDetails.passiveName}`;
+  abilityNode.style.color = state.abilityStatus === "ready" ? rosterDetails.accent : "#c8c3a9";
 }
 
 function updateAutomationDataset(state) {

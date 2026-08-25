@@ -17,6 +17,7 @@ const steps = [
   ["unified GPU world syntax", "src/domains/prehistoric-rush/gpu-native-world-scene.js", "node", ["--check", "src/domains/prehistoric-rush/gpu-native-world-scene.js"]],
   ["GPU-native ground-cover regression syntax", "src/domains/prehistoric-rush/gpu-native-ground-cover.js", "node", ["--check", "src/domains/prehistoric-rush/gpu-native-ground-cover.js"]],
   ["racer profile contract", "tests/racer-profile-contract.mjs", "node", ["tests/racer-profile-contract.mjs"]],
+  ["twelve racer roster", "tests/twelve-racer-roster.mjs", "node", ["tests/twelve-racer-roster.mjs"]],
   ["Velociraptor controller parity", "tests/racer-controller-parity.mjs", "node", ["tests/racer-controller-parity.mjs"]],
   ["racer controller determinism", "tests/racer-controller-determinism.mjs", "node", ["tests/racer-controller-determinism.mjs"]],
   ["racer runtime integration", "tests/racer-runtime-integration.mjs", "node", ["tests/racer-runtime-integration.mjs"]],

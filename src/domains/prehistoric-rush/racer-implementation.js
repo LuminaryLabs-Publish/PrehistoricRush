@@ -9,6 +9,7 @@ const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(valu
 function normalizeModifiers(input = {}) {
   return {
     speedMultiplier: Math.max(0, finite(input.speedMultiplier, 1)),
+    accelerationMultiplier: Math.max(0, finite(input.accelerationMultiplier, 1)),
     turnMultiplier: Math.max(0, finite(input.turnMultiplier, 1)),
     gravityMultiplier: Math.max(0, finite(input.gravityMultiplier, 1)),
     jumpImpulseMultiplier: Math.max(0, finite(input.jumpImpulseMultiplier, 1))
@@ -20,6 +21,7 @@ function combineModifiers(left, right) {
   const b = normalizeModifiers(right);
   return {
     speedMultiplier: a.speedMultiplier * b.speedMultiplier,
+    accelerationMultiplier: a.accelerationMultiplier * b.accelerationMultiplier,
     turnMultiplier: a.turnMultiplier * b.turnMultiplier,
     gravityMultiplier: a.gravityMultiplier * b.gravityMultiplier,
     jumpImpulseMultiplier: a.jumpImpulseMultiplier * b.jumpImpulseMultiplier
@@ -71,6 +73,7 @@ export function createPrehistoricRushRacerImplementation({
     abilityStatus: activeDefinition ? "ready" : "unavailable",
     abilityElapsed: 0,
     abilityCooldown: 0,
+    abilityEffect: null,
     passiveId: racerProfile.abilities.passive,
     lastLandingImpact: 0,
     landingRecoveryMultiplier: 1
@@ -97,6 +100,7 @@ export function createPrehistoricRushRacerImplementation({
   function syncAbilityState() {
     state.abilityElapsed = activeAbility?.elapsed ?? 0;
     state.abilityCooldown = abilityCooldown;
+    state.abilityEffect = activeAbility?.effect ?? null;
     state.abilityStatus = activeAbility
       ? "active"
       : abilityCooldown > 0
@@ -151,11 +155,19 @@ export function createPrehistoricRushRacerImplementation({
     const staminaCost = Math.max(0, finite(activation.staminaCost, 0));
     if (state.stamina < staminaCost) return;
     state.stamina -= staminaCost;
+    state.speed = Math.min(movement.boostSpeed * 1.25, state.speed + Math.max(0, finite(activation.speedImpulse, 0)));
+    state.yaw += finite(activation.yawImpulse, 0);
+    const verticalImpulse = Math.max(0, finite(activation.verticalImpulse, 0));
+    if (verticalImpulse > 0) {
+      state.verticalVelocity = Math.max(state.verticalVelocity, verticalImpulse);
+      state.grounded = false;
+    }
     activeAbility = {
       id: activeDefinition.id,
       elapsed: 0,
       duration: Math.max(0, finite(activation.duration, 0)),
       cooldown: Math.max(0, finite(activation.cooldown, 0)),
+      effect: activation.effect == null ? activeDefinition.id : String(activation.effect),
       payload: activation.payload ?? null
     };
     syncAbilityState();
@@ -203,7 +215,7 @@ export function createPrehistoricRushRacerImplementation({
     const desiredSpeed = (intent.boost ? movement.boostSpeed : movement.maximumSpeed)
       * state.surfaceMultiplier
       * modifiers.speedMultiplier;
-    state.speed += (desiredSpeed - state.speed) * Math.min(1, dt * movement.accelerationResponse);
+    state.speed += (desiredSpeed - state.speed) * Math.min(1, dt * movement.accelerationResponse * modifiers.accelerationMultiplier);
 
     const wasGrounded = state.grounded;
     if (intent.jump && state.grounded && modifiers.jumpImpulseMultiplier > 0) {
@@ -223,6 +235,7 @@ export function createPrehistoricRushRacerImplementation({
           impactSpeed: landingImpact
         }) ?? {};
         state.landingRecoveryMultiplier = Math.max(0, finite(landing.recoveryMultiplier, 1));
+        state.speed = Math.min(movement.boostSpeed * 1.25, state.speed + Math.max(0, finite(landing.speedBoost, 0)));
       }
     }
 

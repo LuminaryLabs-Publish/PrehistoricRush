@@ -4,7 +4,7 @@ export const TRICERATOPS_RACER_PROFILE = defineRacerProfile({
   id: "triceratops",
   displayName: "Triceratops",
   racingIdentity: "Heavy line-holder that preserves pace through rough ground and commits to a charge.",
-  availability: "controller-proof",
+  availability: "playable",
   ratings: { speed: "normal", handling: "low", weight: "high", stamina: "high", skill: "normal" },
   movement: {
     baseSpeed: 13.5,

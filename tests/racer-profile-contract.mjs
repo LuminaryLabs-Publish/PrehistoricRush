@@ -13,10 +13,10 @@ import { normalizeRacerIntent } from "../src/racers/racer-intent.js";
 import { RACER_PROFILE_SCHEMA_VERSION, defineRacerProfile } from "../src/racers/racer-profile.js";
 
 const profiles = listRacerProfiles();
-assert.deepEqual(profiles.map((profile) => profile.id), ["velociraptor", "triceratops"]);
+assert.deepEqual(profiles.map((profile) => profile.id), ["tyrannosaurus-rex", "velociraptor", "triceratops", "stegosaurus", "spinosaurus", "ankylosaurus", "pachycephalosaurus", "carnotaurus", "gallimimus", "therizinosaurus", "brachiosaurus", "pteranodon"]);
 assert.equal(getRacerProfile("velociraptor").availability, "playable");
-assert.equal(getRacerProfile("triceratops").availability, "controller-proof");
-assert.equal(resolvePlayableRacerProfile("triceratops").id, "velociraptor", "non-live body profiles cannot enter the production route");
+assert.equal(getRacerProfile("triceratops").availability, "playable");
+assert.equal(resolvePlayableRacerProfile("triceratops").id, "triceratops");
 assert.throws(() => getRacerProfile("unknown"), /Unknown racer profile/);
 
 for (const profile of profiles) {
@@ -43,11 +43,11 @@ assert.deepEqual(normalizeRacerIntent({ steer: 4, boost: 1, jump: 0, ability: "y
 assert.ok(Object.isFrozen(normalizeRacerIntent()));
 assert.deepEqual(
   DEFAULT_RACER_BEHAVIOR_REGISTRY.listAbilities().map((entry) => entry.id),
-  ["vine-swing", "charge-ram"]
+  ["vine-swing", "charge-ram", "roar-shockwave", "tail-sweep", "water-rush", "tail-slam", "headbutt-redirect", "sprint-burst", "momentum-run", "claw-vault", "ground-stomp", "glide-dive"]
 );
 assert.deepEqual(
   DEFAULT_RACER_BEHAVIOR_REGISTRY.listPassives().map((entry) => entry.id),
-  ["agile-landing", "line-holder"]
+  ["agile-landing", "line-holder", "heavy-momentum", "wide-stability", "amphibious", "armored-recovery", "impact-boost", "fast-acceleration", "momentum-conservation", "long-reach", "long-stride", "air-control"]
 );
 
 assert.throws(

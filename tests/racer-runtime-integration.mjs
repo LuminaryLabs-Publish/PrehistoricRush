@@ -9,7 +9,8 @@ const [runtime, rendering, gameplay, core, compatibility] = await Promise.all([
   readFile(new URL("../src/domains/prehistoric-rush/player-implementation.js", import.meta.url), "utf8")
 ]);
 
-assert.match(runtime, /resolvePlayableRacerProfile\(requestedRacerId \?\? undefined\)/, "runtime resolves one playable RacerProfile");
+assert.match(runtime, /loadSelectedRacerId\(globalThis\.location\)/, "runtime resolves persisted roster selection");
+assert.match(runtime, /resolvePlayableRacerProfile\(requestedRacerId\)/, "runtime resolves one playable RacerProfile");
 assert.match(runtime, /installPrehistoricRushPlayerActor\(engine, \{ profile: racerProfile \}\)/, "actor binding receives the RacerProfile");
 assert.match(runtime, /createPrehistoricRushPlayerImplementation\(\{ engine, course, world, profile: racerProfile \}\)/, "controller receives the RacerProfile");
 assert.match(runtime, /racerPresentation, diagnosticFoundationOnly/, "renderer receives the racer presentation descriptor");

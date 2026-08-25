@@ -14,14 +14,14 @@ The product repo should stay thin. Reusable behavior should move into NexusEngin
 
 ## Playable result
 
-The character-selection page is `menu.html`. Its card is used only to choose the dinosaur and start a run.
+The character-selection page is `menu.html`. All twelve racers run continuously on the live oval selection circuit. Choosing a racer updates the selected character, signature move, passive, persisted selection, and race URL without despawning the other eleven menu racers.
 
 The actual race is `game.html`, and it is the primary result validated and deployed to GitHub Pages.
 
 The race scene contains:
 
 - a procedural prehistoric track;
-- the selected dinosaur running on the track;
+- the selected racer running on the track with profile-owned movement, stamina, camera, active ability, passive, and procedural presentation;
 - steering, boost, jump, and restart input;
 - camera follow;
 - race HUD;
@@ -64,9 +64,17 @@ Controls:
 ```txt
 A / Left Arrow  = move left
 D / Right Arrow = move right
-Space / Up      = jump / start / retry
+W / Up Arrow    = boost
+Space           = jump / start / retry
 Enter           = start
+E               = active racer ability
 ```
+
+## Live roster
+
+The playable roster is Tyrannosaurus rex, Velociraptor, Triceratops, Stegosaurus, Spinosaurus, Ankylosaurus, Pachycephalosaurus, Carnotaurus, Gallimimus, Therizinosaurus, Brachiosaurus, and Pteranodon.
+
+Every racer uses the same normalized controller intent (`steer`, `boost`, `jump`, `ability`) and owns one active ability plus one passive trait through an immutable `RacerProfile`. Speed uses the shared low / normal / high rating model. Stamina may limit ability timing, but never disables movement or steering.
 
 Debug surface:
 
@@ -106,7 +114,7 @@ PrehistoricRushHost.getState()
 
 ## Current limitation
 
-The runner remains product-owned in a few gameplay and presentation areas. The current validation boundary does not claim physical Mac performance from CI software rendering; it proves deterministic behavior, browser behavior, deployment, and Headless evidence.
+The current procedural body service uses a shared topology with racer-specific proportions, scale, color, camera, pose, and gameplay tuning. Production-quality species-specific body plans remain a separate art/rigging phase. The current validation boundary does not claim physical Mac performance from CI software rendering; it proves deterministic behavior, browser behavior, deployment, and Headless evidence.
 
 ## Visual quality
 

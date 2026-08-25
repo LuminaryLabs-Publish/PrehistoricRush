@@ -65,6 +65,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     run.abilityStatus = playerState.abilityStatus ?? "unavailable";
     run.abilityElapsed = playerState.abilityElapsed ?? 0;
     run.abilityCooldown = playerState.abilityCooldown ?? 0;
+    run.abilityEffect = playerState.abilityEffect ?? null;
     run.passiveId = playerState.passiveId ?? null;
     run.lastLandingImpact = playerState.lastLandingImpact ?? 0;
     run.landingRecoveryMultiplier = playerState.landingRecoveryMultiplier ?? 1;

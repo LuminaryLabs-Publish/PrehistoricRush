@@ -380,6 +380,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
         bodyDescriptor: racerPresentation.bodyDescriptor ?? playerBody,
         meshName: String(racerPresentation.meshName ?? "prehistoric-rush-procedural-racer"),
         snapshotName: String(racerPresentation.snapshotName ?? "procedural-skinned-racer"),
+        accent: String(racerPresentation.accent ?? "#ffd66e"),
         rootOffsetY: Number(racerPresentation.rootOffsetY ?? 0.05),
         poseSharpness: Number(racerPresentation.poseSharpness ?? 18),
         turnScale: Number(racerPresentation.turnScale ?? 0.32),
@@ -473,6 +474,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let grassMesh = null;
   let cinematicGround = null;
   let playerMesh = null;
+  let abilityPulse = null;
   let shardMesh = null;
   const forestPatches = new Map();
   let elapsed = 0;
@@ -504,6 +506,14 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       playerMesh = createCreatureMesh(THREE, racerBody);
       playerMesh.name = resolvedRacerPresentation.meshName;
       scene.add(playerMesh);
+      abilityPulse = new THREE.Mesh(
+        new THREE.RingGeometry(0.7, 0.82, 48),
+        new THREE.MeshBasicMaterial({ color: resolvedRacerPresentation.accent, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })
+      );
+      abilityPulse.name = `${resolvedRacerPresentation.racerId}-ability-pulse`;
+      abilityPulse.rotation.x = -Math.PI / 2;
+      abilityPulse.visible = false;
+      scene.add(abilityPulse);
     }
     shardMesh = createShardLayer(THREE, scene);
     grassMesh = createGrassLayer(THREE, scene);
@@ -608,6 +618,14 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
           applyCreaturePoseDamped(playerMesh, pose, dt, resolvedRacerPresentation.poseSharpness);
         }
       }
+      if (abilityPulse) {
+        const active = state.abilityStatus === "active";
+        const progress = active ? Math.min(1, Number(state.abilityElapsed ?? 0) / 1.35) : 0;
+        abilityPulse.visible = active;
+        abilityPulse.position.set(state.x, state.y + 0.09, state.z);
+        abilityPulse.scale.setScalar(1 + progress * 4.2);
+        abilityPulse.material.opacity = active ? Math.max(0.12, 0.82 * (1 - progress)) : 0;
+      }
       treeFidelity?.update(state, dt);
       cinematicGround?.update(state, dt);
       updateShards();
@@ -660,6 +678,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       denseWorldPresentation: denseWorldGPUActive ? "nexus-webgpu" : "three-webgl2",
       racerId: resolvedRacerPresentation?.racerId ?? null,
       playerPresentation: playerMesh ? resolvedRacerPresentation.snapshotName : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
+      abilityEffectVisible: Boolean(abilityPulse?.visible),
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
