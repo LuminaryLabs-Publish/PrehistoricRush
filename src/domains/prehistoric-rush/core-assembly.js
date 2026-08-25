@@ -18,7 +18,7 @@ export function createPrehistoricRushCoreKits(modules) {
     Actor.createPlayerKit(),
     Spatial.createSpatialKit(),
     Interaction.createInteractionKit(),
-    Interaction.createInputKit({ actions: { jump: {}, boost: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
+    Interaction.createInputKit({ actions: { jump: {}, boost: {}, ability: {}, start: {}, retry: {} }, bindings: { steer: { kind: "axis" } } }),
     Simulation.createSimulationKit({ resolution: true }),
     Simulation.createMotionKit(),
     Simulation.createPhysicsKit(),

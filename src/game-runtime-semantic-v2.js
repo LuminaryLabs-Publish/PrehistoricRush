@@ -8,6 +8,7 @@ import { installPrehistoricRushPlayerActor } from "./domains/prehistoric-rush/pl
 import { createPrehistoricRushPlayerImplementation } from "./domains/prehistoric-rush/player-implementation.js";
 import { createPrehistoricRushGameplayImplementation } from "./domains/prehistoric-rush/gameplay-implementation.js";
 import { createPrehistoricRushRenderingImplementation } from "./domains/prehistoric-rush/rendering-implementation.js";
+import { resolvePlayableRacerProfile } from "./racers/racer-catalog.js";
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
@@ -60,6 +61,8 @@ setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
 const modules = { Nexus, Actor, Spatial, Interaction, Simulation, World, Presentation, Graphics, Animation, Render };
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
+const requestedRacerId = new URLSearchParams(globalThis.location?.search ?? "").get("racer");
+const racerProfile = resolvePlayableRacerProfile(requestedRacerId ?? undefined);
 const playerProfile = loadPlayerCharacterProfile();
 const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
@@ -84,18 +87,31 @@ if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerW
 setLoading(0.2, "Projecting Jurassic world features");
 const course = createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } });
 const world = createPrehistoricRushWorldImplementation({ engine, World, FoundationSampling, recipe: worldRecipe, cellSize: 96 });
-installPrehistoricRushPlayerActor(engine);
-const player = createPrehistoricRushPlayerImplementation({ engine, course, world });
+installPrehistoricRushPlayerActor(engine, { profile: racerProfile });
+const player = createPrehistoricRushPlayerImplementation({ engine, course, world, profile: racerProfile });
 const gameplay = createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance: worldRecipe.runtime.goalDistance });
 const creatureApi = engine.n.proceduralCreatureBody;
-if (!creatureApi?.get || !creatureApi?.createPose) throw new Error("Procedural raptor body service did not install.");
+if (!creatureApi?.get || !creatureApi?.createPose) throw new Error("Procedural racer body service did not install.");
 const playerBody = creatureApi.get(playerProfile.creature.id);
+if (!playerBody) throw new Error(`Procedural racer body is unavailable: ${playerProfile.creature.id}.`);
+const racerPresentation = Object.freeze({
+  racerId: racerProfile.id,
+  bodyDescriptor: playerBody,
+  ...racerProfile.presentation
+});
 
 const rendering = await createPrehistoricRushRenderingImplementation(THREE, {
-  host, world, course, gameplay, creatureApi, playerBody, diagnosticFoundationOnly,
+  host, world, course, gameplay, creatureApi, racerPresentation, diagnosticFoundationOnly,
   onProgress(progress, detail) { setLoading(0.22 + progress * 0.74, detail); }
 });
-const framing = engine.n.cameraFraming.create({ id: "prehistoric-rush-player", padding: 4.8, minimumDistance: 10, maximumDistance: 18, smoothTime: 0.12 });
+const framing = engine.n.cameraFraming.create({
+  id: `prehistoric-rush-${racerProfile.id}`,
+  padding: racerProfile.camera.padding,
+  minimumDistance: racerProfile.camera.minimumDistance,
+  maximumDistance: racerProfile.camera.maximumDistance,
+  smoothTime: racerProfile.camera.smoothTime
+});
+document.body.dataset.racerId = racerProfile.id;
 
 let left = false;
 let right = false;
@@ -110,11 +126,12 @@ const addFrameHook = (hook) => {
 };
 
 addEventListener("keydown", (event) => {
-  if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space"].includes(event.code)) event.preventDefault();
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space", "KeyE"].includes(event.code)) event.preventDefault();
   if (["KeyA", "ArrowLeft"].includes(event.code)) left = true;
   if (["KeyD", "ArrowRight"].includes(event.code)) right = true;
   if (["KeyW", "ArrowUp"].includes(event.code)) boost = true;
   if (event.code === "Space") gameplay.setInput({ jump: true });
+  if (event.code === "KeyE") gameplay.setInput({ ability: true });
   if (event.code === "Enter") gameplay.start();
 });
 addEventListener("keyup", (event) => {
@@ -137,16 +154,23 @@ const subjectBounds = { min: [0, 0, 0], max: [0, 0, 0] };
 const cameraRequest = {
   subjectBounds,
   viewport: { width: innerWidth, height: innerHeight },
-  camera: { projection: "perspective", verticalFov: 62, preferredDirection: [0, 0.5, -1] },
+  camera: {
+    projection: "perspective",
+    verticalFov: racerProfile.camera.verticalFov,
+    preferredDirection: [...racerProfile.camera.preferredDirection]
+  },
   deltaTime: 1 / 60
 };
 function cameraFrame(state, dt) {
-  subjectBounds.min[0] = state.x - 1.6;
+  const lookAhead = Number(state.speed ?? 0) * racerProfile.camera.lookAheadSeconds;
+  const centerX = state.x + Math.sin(state.yaw) * lookAhead;
+  const centerZ = state.z + Math.cos(state.yaw) * lookAhead;
+  subjectBounds.min[0] = centerX - racerProfile.camera.halfWidth;
   subjectBounds.min[1] = state.y;
-  subjectBounds.min[2] = state.z - 1.6;
-  subjectBounds.max[0] = state.x + 1.6;
-  subjectBounds.max[1] = state.y + 2.4;
-  subjectBounds.max[2] = state.z + 1.6;
+  subjectBounds.min[2] = centerZ - racerProfile.camera.halfDepth;
+  subjectBounds.max[0] = centerX + racerProfile.camera.halfWidth;
+  subjectBounds.max[1] = state.y + racerProfile.camera.height;
+  subjectBounds.max[2] = centerZ + racerProfile.camera.halfDepth;
   cameraRequest.viewport.width = innerWidth;
   cameraRequest.viewport.height = innerHeight;
   cameraRequest.camera.preferredDirection[0] = -Math.sin(state.yaw);
@@ -167,7 +191,7 @@ function updateHud(now, state) {
   if (now - lastHudAt < HUD_INTERVAL_MS) return;
   lastHudAt = now;
   const presentation = rendering.snapshot();
-  statusNode.textContent = `${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s · ${state.region} · Nexus Foundation · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute${diagnosticFoundationOnly ? " · diagnostic terrain only" : ` · ${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
+  statusNode.textContent = `${racerProfile.displayName} · ${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s · ${state.region} · Nexus Foundation · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute${diagnosticFoundationOnly ? " · diagnostic terrain only" : ` · ${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
 }
 
 function updateAutomationDataset(state) {
@@ -220,6 +244,13 @@ const getState = () => {
   const coreWorld = worldState.coreWorld ?? {};
   const playerSnapshot = player.snapshot();
   return {
+    racer: {
+      id: racerProfile.id,
+      displayName: racerProfile.displayName,
+      activeAbility: racerProfile.abilities.active,
+      passiveAbility: racerProfile.abilities.passive,
+      availability: racerProfile.availability
+    },
     game: gameplay.snapshot(),
     player: playerSnapshot,
     world: worldState,
@@ -257,5 +288,19 @@ const getState = () => {
     versions: { nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
   };
 };
-globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, addFrameHook, getState });
+globalThis.PrehistoricRushHost = Object.freeze({
+  engine,
+  course,
+  world,
+  player,
+  gameplay,
+  rendering,
+  computeHost,
+  worldRecipe,
+  racerProfile,
+  playerProfile,
+  playerBody,
+  addFrameHook,
+  getState
+});
 requestAnimationFrame(loop);

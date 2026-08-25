@@ -35,7 +35,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
   const pickups = createRoutePickups(course, world);
   const collected = new Set();
   const activePickups = pickups.slice();
-  const input = { steer: 0, boost: false, jump: false };
+  const input = { steer: 0, boost: false, jump: false, ability: false };
   const run = {
     runId: 0,
     status: "game",
@@ -59,6 +59,15 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     run.routeProgress = playerState.routeProgress;
     run.region = playerState.region;
     run.surfaceMultiplier = playerState.surfaceMultiplier;
+    run.steer = playerState.steer ?? 0;
+    run.stamina = playerState.stamina ?? null;
+    run.abilityId = playerState.abilityId ?? null;
+    run.abilityStatus = playerState.abilityStatus ?? "unavailable";
+    run.abilityElapsed = playerState.abilityElapsed ?? 0;
+    run.abilityCooldown = playerState.abilityCooldown ?? 0;
+    run.passiveId = playerState.passiveId ?? null;
+    run.lastLandingImpact = playerState.lastLandingImpact ?? 0;
+    run.landingRecoveryMultiplier = playerState.landingRecoveryMultiplier ?? 1;
   }
 
   function resetRun(status = "game") {
@@ -80,6 +89,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     if (next.steer !== undefined) input.steer = Number(next.steer) || 0;
     if (next.boost !== undefined) input.boost = Boolean(next.boost);
     if (next.jump !== undefined) input.jump = Boolean(next.jump);
+    if (next.ability !== undefined) input.ability = Boolean(next.ability);
     return input;
   }
 
@@ -107,6 +117,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     if (run.status !== "game") return run;
     const nextPlayer = player.tick(dt, input);
     input.jump = false;
+    input.ability = false;
     collectNearby(nextPlayer);
     copyPlayerState(nextPlayer);
     run.elapsed += Number(dt || 0);

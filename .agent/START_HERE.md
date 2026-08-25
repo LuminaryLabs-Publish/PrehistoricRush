@@ -38,3 +38,13 @@ Make streamed-world updates observable and verifiable without creating a second 
 ## Claim boundary
 
 The current race, player, camera, HUD, terrain, vegetation, and browser evidence paths exist. World-focus traversal proof, fresh screenshot review, deployed-origin proof, and physical target-hardware performance remain validation requirements.
+
+## Racer controller note
+
+The active Player export now delegates to the shared data-driven racer controller documented in:
+
+```txt
+.agent/runs/2026-08-25-racer-controller-foundation/README.md
+```
+
+Keep gameplay `RacerProfile` data separate from the cosmetic procedural character profile. Do not mark another racer `playable` until its body, rig, collision, pose, and camera presentation pass the live route.

@@ -16,6 +16,17 @@ The product repo should stay thin. It should own the browser shell, scene manife
 
 This run documents and verifies **PrehistoricRush playable race and streamed-world verification**.
 
+## Racer controller foundation
+
+The compatibility-first racer controller implementation and its validation record are documented here:
+
+```txt
+.agent/runs/2026-08-25-racer-controller-foundation/README.md
+.agent/runs/2026-08-25-racer-controller-foundation/validation.md
+```
+
+Velociraptor remains the only production-playable body. Triceratops is a controller-only extension proof until its procedural body, rig, collision, and presentation are validated.
+
 The active route is now:
 
 ```txt

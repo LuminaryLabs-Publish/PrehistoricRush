@@ -362,8 +362,42 @@ function createShardLayer(THREE, scene, capacity = 160) {
   return mesh;
 }
 
-export async function createPrehistoricRushRenderingImplementation(THREE, { host, world, course, gameplay, creatureApi = null, playerBody = null, diagnosticFoundationOnly = false, onProgress = () => {} } = {}) {
+export async function createPrehistoricRushRenderingImplementation(THREE, {
+  host,
+  world,
+  course,
+  gameplay,
+  creatureApi = null,
+  racerPresentation = null,
+  playerBody = null,
+  diagnosticFoundationOnly = false,
+  onProgress = () => {}
+} = {}) {
   if (!host || !world) throw new TypeError("Rendering requires host and World implementation.");
+  const resolvedRacerPresentation = racerPresentation
+    ? {
+        racerId: String(racerPresentation.racerId ?? "racer"),
+        bodyDescriptor: racerPresentation.bodyDescriptor ?? playerBody,
+        meshName: String(racerPresentation.meshName ?? "prehistoric-rush-procedural-racer"),
+        snapshotName: String(racerPresentation.snapshotName ?? "procedural-skinned-racer"),
+        rootOffsetY: Number(racerPresentation.rootOffsetY ?? 0.05),
+        poseSharpness: Number(racerPresentation.poseSharpness ?? 18),
+        turnScale: Number(racerPresentation.turnScale ?? 0.32),
+        jumpNormalization: Math.max(0.01, Number(racerPresentation.jumpNormalization ?? 2))
+      }
+    : playerBody
+      ? {
+          racerId: "velociraptor",
+          bodyDescriptor: playerBody,
+          meshName: "prehistoric-rush-procedural-raptor",
+          snapshotName: "procedural-skinned-raptor",
+          rootOffsetY: 0.05,
+          poseSharpness: 18,
+          turnScale: 0.32,
+          jumpNormalization: 2
+        }
+      : null;
+  const racerBody = resolvedRacerPresentation?.bodyDescriptor ?? null;
   const renderStartedAt = performance.now();
   const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis);
   const scene = new THREE.Scene();
@@ -466,7 +500,11 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
   if (!diagnosticFoundationOnly) {
     onProgress(0.16, "Restoring course and player presentation");
     if (course?.route) { courseRibbon = createCourseRibbon(THREE, world, course.route); scene.add(courseRibbon); }
-    if (playerBody) { playerMesh = createCreatureMesh(THREE, playerBody); playerMesh.name = "prehistoric-rush-procedural-raptor"; scene.add(playerMesh); }
+    if (racerBody) {
+      playerMesh = createCreatureMesh(THREE, racerBody);
+      playerMesh.name = resolvedRacerPresentation.meshName;
+      scene.add(playerMesh);
+    }
     shardMesh = createShardLayer(THREE, scene);
     grassMesh = createGrassLayer(THREE, scene);
     cinematicGround = createThreeCinematicGroundLayer(THREE, { scene, camera, profile: qualityProfile });
@@ -556,11 +594,18 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     if (!diagnosticFoundationOnly) {
       ensureForest(state);
       if (playerMesh) {
-        playerMesh.position.set(state.x, state.y + state.jumpHeight + 0.05, state.z);
+        playerMesh.position.set(state.x, state.y + state.jumpHeight + resolvedRacerPresentation.rootOffsetY, state.z);
         playerMesh.rotation.y = state.yaw;
         if (creatureApi?.createPose) {
-          const pose = creatureApi.createPose(playerBody.id, { speed: state.speed, time: elapsed, turn: 0, jump: Math.min(1, state.jumpHeight / 2), resistance: 1 - Number(state.surfaceMultiplier ?? 1) });
-          applyCreaturePoseDamped(playerMesh, pose, dt, 18);
+          const turn = Math.max(-1, Math.min(1, Number(state.steer ?? 0))) * resolvedRacerPresentation.turnScale;
+          const pose = creatureApi.createPose(racerBody.id, {
+            speed: state.speed,
+            time: elapsed,
+            turn,
+            jump: Math.min(1, state.jumpHeight / resolvedRacerPresentation.jumpNormalization),
+            resistance: 1 - Number(state.surfaceMultiplier ?? 1)
+          });
+          applyCreaturePoseDamped(playerMesh, pose, dt, resolvedRacerPresentation.poseSharpness);
         }
       }
       treeFidelity?.update(state, dt);
@@ -613,7 +658,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       vegetationEnabled: !diagnosticFoundationOnly,
       diagnosticFoundationOnly,
       denseWorldPresentation: denseWorldGPUActive ? "nexus-webgpu" : "three-webgl2",
-      playerPresentation: playerMesh ? "procedural-skinned-raptor" : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
+      racerId: resolvedRacerPresentation?.racerId ?? null,
+      playerPresentation: playerMesh ? resolvedRacerPresentation.snapshotName : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
