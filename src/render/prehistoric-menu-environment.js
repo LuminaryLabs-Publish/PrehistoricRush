@@ -98,7 +98,8 @@ export function getMenuEnvironmentPerformanceEstimate() {
     + MENU_ENVIRONMENT_COUNTS.grassBlades
     + MENU_ENVIRONMENT_COUNTS.broadleafPlants * MENU_ENVIRONMENT_COUNTS.leavesPerPlant
     + Object.values(MENU_ENVIRONMENT_COUNTS.clouds).reduce((sum, count) => sum + count, 0);
-  return Object.freeze({ drawCalls: 27, renderedTriangles, renderedInstances, sharedGeometries: 13, sharedMaterials: 17 });
+  const nonInstancedMeshes = 2 + MENU_TRACK_SPEC.lanes + (MENU_TRACK_SPEC.lanes + 1) + MENU_TRACK_SPEC.lanes;
+  return Object.freeze({ drawCalls: 27, renderedTriangles, renderedInstances: renderedInstances + nonInstancedMeshes, sharedGeometries: 13, sharedMaterials: 17 });
 }
 
 export function sampleMenuTrackLane(lane, distance) {

@@ -59,7 +59,7 @@ assert.equal(MENU_ENVIRONMENT_BUDGET.maximumRenderedTriangles, 100000);
 const performance = getMenuEnvironmentPerformanceEstimate();
 assert.ok(performance.drawCalls <= MENU_ENVIRONMENT_BUDGET.maximumDrawCalls);
 assert.ok(performance.renderedTriangles <= MENU_ENVIRONMENT_BUDGET.maximumRenderedTriangles);
-assert.ok(performance.renderedInstances >= 900, "The environment should consolidate a dense instanced scene.");
+assert.equal(performance.renderedInstances, 1007, "The estimate must include instanced copies and single meshes.");
 
 assert.equal(SOFT_PLASTIC_PROFILE.metalness, 0);
 assert.ok(SOFT_PLASTIC_PROFILE.roughness >= 0.48 && SOFT_PLASTIC_PROFILE.roughness <= 0.72);
