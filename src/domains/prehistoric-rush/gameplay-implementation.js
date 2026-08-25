@@ -33,51 +33,85 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
   if (!player?.tick) throw new TypeError("Gameplay requires the PrehistoricRush Player implementation.");
   if (!course?.route || !world?.sampleElevation) throw new TypeError("Gameplay pickups require Course and World implementations.");
   const pickups = createRoutePickups(course, world);
-  let input = { steer: 0, boost: false, jump: false };
-  let collected = new Set();
-  let run = null;
+  const collected = new Set();
+  const activePickups = pickups.slice();
+  const input = { steer: 0, boost: false, jump: false };
+  const run = {
+    runId: 0,
+    status: "game",
+    elapsed: 0,
+    shards: 0,
+    collectedShardIds: []
+  };
+  let pickupRevision = 0;
+
+  function copyPlayerState(playerState) {
+    run.x = playerState.x;
+    run.y = playerState.y;
+    run.z = playerState.z;
+    run.yaw = playerState.yaw;
+    run.speed = playerState.speed;
+    run.verticalVelocity = playerState.verticalVelocity;
+    run.jumpHeight = playerState.jumpHeight;
+    run.grounded = playerState.grounded;
+    run.distance = playerState.distance;
+    run.routeIndex = playerState.routeIndex;
+    run.routeProgress = playerState.routeProgress;
+    run.region = playerState.region;
+    run.surfaceMultiplier = playerState.surfaceMultiplier;
+  }
 
   function resetRun(status = "game") {
     const playerState = player.reset();
-    collected = new Set();
-    run = {
-      runId: Number(run?.runId ?? 0) + 1,
-      status,
-      elapsed: 0,
-      shards: 0,
-      collectedShardIds: [],
-      ...playerState
-    };
+    collected.clear();
+    activePickups.length = 0;
+    activePickups.push(...pickups);
+    pickupRevision += 1;
+    run.runId += 1;
+    run.status = status;
+    run.elapsed = 0;
+    run.shards = 0;
+    run.collectedShardIds = [];
+    copyPlayerState(playerState);
     return clone(run);
   }
 
   function setInput(next = {}) {
-    input = { ...input, ...next };
-    return clone(input);
+    if (next.steer !== undefined) input.steer = Number(next.steer) || 0;
+    if (next.boost !== undefined) input.boost = Boolean(next.boost);
+    if (next.jump !== undefined) input.jump = Boolean(next.jump);
+    return input;
   }
 
   function collectNearby(nextPlayer) {
-    for (const pickup of pickups) {
-      if (collected.has(pickup.id)) continue;
-      if (Math.hypot(pickup.x - nextPlayer.x, pickup.z - nextPlayer.z) > pickup.radius) continue;
+    let changed = false;
+    for (let index = activePickups.length - 1; index >= 0; index -= 1) {
+      const pickup = activePickups[index];
+      const routeDelta = Math.abs(Number(pickup.routeIndex) - Number(nextPlayer.routeIndex));
+      if (routeDelta > 240) continue;
+      const dx = pickup.x - nextPlayer.x;
+      const dz = pickup.z - nextPlayer.z;
+      if (dx * dx + dz * dz > pickup.radius * pickup.radius) continue;
       collected.add(pickup.id);
+      activePickups.splice(index, 1);
+      changed = true;
+    }
+    if (changed) {
+      pickupRevision += 1;
+      run.shards = collected.size;
+      run.collectedShardIds = [...collected];
     }
   }
 
   function tick(dt) {
-    if (!run || run.status !== "game") return clone(run);
+    if (run.status !== "game") return run;
     const nextPlayer = player.tick(dt, input);
     input.jump = false;
     collectNearby(nextPlayer);
-    run = {
-      ...run,
-      ...nextPlayer,
-      elapsed: Number(run.elapsed ?? 0) + Number(dt || 0),
-      shards: collected.size,
-      collectedShardIds: [...collected]
-    };
+    copyPlayerState(nextPlayer);
+    run.elapsed += Number(dt || 0);
     if (run.distance >= goalDistance) run.status = "win";
-    return clone(run);
+    return run;
   }
 
   resetRun("game");
@@ -85,13 +119,18 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     start: () => resetRun("game"),
     setInput,
     tick,
+    readState: () => run,
+    readInput: () => input,
+    readPickups: () => activePickups,
+    getPickupRevision: () => pickupRevision,
     getState: () => clone(run),
-    getPickups: () => pickups.filter((pickup) => !collected.has(pickup.id)).map(clone),
+    getPickups: () => activePickups,
+    snapshotPickups: () => activePickups.map(clone),
     snapshot: () => ({
       run: clone(run),
       input: clone(input),
       goalDistance: Number(goalDistance),
-      pickups: { total: pickups.length, remaining: pickups.length - collected.size, collected: collected.size }
+      pickups: { total: pickups.length, remaining: activePickups.length, collected: collected.size, revision: pickupRevision }
     })
   });
 }
