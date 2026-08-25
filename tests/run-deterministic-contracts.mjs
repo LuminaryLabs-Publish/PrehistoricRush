@@ -21,6 +21,7 @@ const steps = [
   ["Velociraptor controller parity", "tests/racer-controller-parity.mjs", "node", ["tests/racer-controller-parity.mjs"]],
   ["racer controller determinism", "tests/racer-controller-determinism.mjs", "node", ["tests/racer-controller-determinism.mjs"]],
   ["racer runtime integration", "tests/racer-runtime-integration.mjs", "node", ["tests/racer-runtime-integration.mjs"]],
+  ["menu environment", "tests/menu-environment-contract.mjs", "node", ["tests/menu-environment-contract.mjs"]],
   ["P0 world boundary", "tests/p0-world-boundary-baseline.mjs", "node", ["tests/p0-world-boundary-baseline.mjs"]],
   ["P1 course boundary", "tests/course-domain-boundary.mjs", "node", ["tests/course-domain-boundary.mjs"]],
   ["world recipe composition", "tests/world-recipe-composition.mjs", "node", ["tests/world-recipe-composition.mjs"]],
