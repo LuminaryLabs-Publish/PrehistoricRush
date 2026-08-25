@@ -608,6 +608,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
       terrainPatchCount: terrainPatches.size,
+      terrainPatchIds: [...terrainPatches.keys()].sort(),
       terrainActiveRadius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
       vegetationEnabled: !diagnosticFoundationOnly,
       diagnosticFoundationOnly,
