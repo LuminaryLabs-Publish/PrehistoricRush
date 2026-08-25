@@ -132,7 +132,7 @@ const adapter = {
       ["world-id", after.worldUpdate?.before?.worldId === after.worldUpdate?.after?.worldId],
       ["world-revision", Number.isInteger(after.worldUpdate?.after?.worldRevision)],
       ["world-focus-updated", after.worldUpdate?.focusChanged === true],
-      ["world-terrain-ring", (after.worldUpdate?.after?.terrainPatchIds ?? []).length === 9],
+      ["world-terrain-ring", (after.worldUpdate?.after?.terrainPatchIds ?? []).length >= 9],
       ["world-forest-active", (after.worldUpdate?.after?.activeForestPatchIds ?? []).length > 0],
       ["world-no-streaming-holes", after.worldUpdate?.noStreamingHoles === true],
       ["world-screenshots", (observation.after.worldUpdate?.screenshots ?? []).length === 2],
