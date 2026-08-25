@@ -28,8 +28,7 @@ function centeredBounds(state = {}) {
   return Object.freeze({ centerX, centerZ, key: `${centerX}:${centerZ}`, minX: minPatchX * FOUNDATION_TERRAIN_PATCH_SIZE, minZ: minPatchZ * FOUNDATION_TERRAIN_PATCH_SIZE, span });
 }
 
-function buildHeightfield(world, state = {}) {
-  const bounds = centeredBounds(state);
+function buildHeightfield(world, bounds) {
   const step = bounds.span / (GRID_SIZE - 1);
   const heights = new Float32Array(GRID_SIZE * GRID_SIZE);
   for (let zIndex = 0; zIndex < GRID_SIZE; zIndex += 1) {
@@ -322,6 +321,7 @@ export async function createPrehistoricRushGPUWorldScene({ hostElement, world, r
   });
   let heightfield = null, heightfieldKey = null, treeRevision = -1, treeSpeciesCount = 0, treeCount = 0, framePending = false, disposed = false, lastError = null;
   let uploadedBytes = 0, computeDispatches = 0, renderSubmissions = 0, frameSequence = 0, skippedFrames = 0, passCount = 0;
+  let heightfieldBuilds = 0, heightfieldSameCellSkips = 0;
   const geometryResources = [];
 
   function resize() {
@@ -341,9 +341,15 @@ export async function createPrehistoricRushGPUWorldScene({ hostElement, world, r
   }
 
   async function ensureHeightfield(state) {
-    const next = buildHeightfield(world, state);
-    if (heightfieldKey === next.bounds.key) return false;
-    heightfield = next; heightfieldKey = next.bounds.key;
+    const bounds = centeredBounds(state);
+    if (heightfieldKey === bounds.key) {
+      heightfieldSameCellSkips += 1;
+      return false;
+    }
+    const next = buildHeightfield(world, bounds);
+    heightfieldBuilds += 1;
+    heightfield = next;
+    heightfieldKey = bounds.key;
     const params = terrainParams(next);
     await gpuHost.ensureResource({ id: ids.terrainHeights, type: "buffer", byteLength: next.heights.byteLength, usage: ["storage", "copy-dst"] }, next.heights);
     await gpuHost.ensureResource({ id: ids.terrainParams, type: "buffer", byteLength: params.byteLength, usage: ["uniform", "copy-dst"] }, params);
@@ -456,7 +462,7 @@ export async function createPrehistoricRushGPUWorldScene({ hostElement, world, r
   }
 
   function snapshot() {
-    return Object.freeze({ active: !disposed && !lastError, backend: "webgpu", mode: "unified-dense-world", quality: quality.id, sharedDeviceId: gpuHost.getDeviceDescriptor()?.id ?? null, contributionIds: Object.freeze([...contributionIds]), terrainAuthority: "n:world:foundation", terrainPatchCount: TERRAIN_PATCH_COUNT, treeCount, treeSpeciesCount, treeLOD: "gpu-near-medium", grassLogicalCount: GRASS_CAPACITY, sharedDepth: true, singleCanvas: true, singleFrameSubmission: true, gpuCulling: true, gpuLod: true, indirectDraw: true, zeroCopy: true, passCount, computeDispatches, renderSubmissions, frameSequence, skippedFrames, uploadedBytes, gpuReadbackBytes: 0, resourceCount: gpuHost.listResources().length, error: lastError?.message ?? null });
+    return Object.freeze({ active: !disposed && !lastError, backend: "webgpu", mode: "unified-dense-world", quality: quality.id, sharedDeviceId: gpuHost.getDeviceDescriptor()?.id ?? null, contributionIds: Object.freeze([...contributionIds]), terrainAuthority: "n:world:foundation", terrainPatchCount: TERRAIN_PATCH_COUNT, treeCount, treeSpeciesCount, treeLOD: "gpu-near-medium", grassLogicalCount: GRASS_CAPACITY, sharedDepth: true, singleCanvas: true, singleFrameSubmission: true, gpuCulling: true, gpuLod: true, indirectDraw: true, zeroCopy: true, passCount, computeDispatches, renderSubmissions, frameSequence, skippedFrames, uploadedBytes, gpuReadbackBytes: 0, resourceCount: gpuHost.listResources().length, terrainHeightfieldBuilds: heightfieldBuilds, terrainSameCellSkips: heightfieldSameCellSkips, error: lastError?.message ?? null });
   }
 
   return Object.freeze({ active: true, canvas, scheduleFrame, resize, snapshot, dispose() { disposed = true; canvas.remove(); for (const resource of gpuHost.listResources()) if (String(resource.id).startsWith(PREFIX)) { try { gpuHost.evictResource(resource.id); } catch {} } } });
