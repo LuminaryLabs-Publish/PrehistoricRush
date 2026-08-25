@@ -4,6 +4,7 @@ import {
   FOUNDATION_FOREST_RADIUS,
   FOUNDATION_TERRAIN_ACTIVE_RADIUS,
   FOUNDATION_TERRAIN_PATCH_SIZE,
+  FOUNDATION_TERRAIN_RETAIN_RADIUS,
   createCenteredPatchPlan,
   selectMissingPatchBatch
 } from "../src/domains/prehistoric-rush/rendering-streaming-policy.js";
@@ -31,13 +32,15 @@ const forestAdvanced = createCenteredPatchPlan(advanced, {
   prefix: "foundation-forest"
 });
 
-assert.equal(terrainStart.length, 9, "initial world focus must resolve a complete 3x3 terrain ring");
-assert.equal(terrainAdvanced.length, 9, "advanced world focus must resolve a complete 3x3 terrain ring");
+const terrainTargetCount = (FOUNDATION_TERRAIN_ACTIVE_RADIUS * 2 + 1) ** 2;
+assert.equal(terrainStart.length, terrainTargetCount, "initial world focus must resolve the complete terrain working set");
+assert.equal(terrainAdvanced.length, terrainTargetCount, "advanced world focus must resolve the complete terrain working set");
 assert.notDeepEqual(terrainAdvanced.map((entry) => entry.id), terrainStart.map((entry) => entry.id), "world focus movement must change the active terrain plan");
-assert.equal(new Set(terrainAdvanced.map((entry) => entry.id)).size, 9, "advanced terrain plan must not duplicate patches");
+assert.equal(new Set(terrainAdvanced.map((entry) => entry.id)).size, terrainTargetCount, "advanced terrain plan must not duplicate patches");
 assert.equal(forestStart.length, 25, "initial world focus must resolve the complete 5x5 forest target");
 assert.equal(forestAdvanced.length, 25, "advanced world focus must resolve the complete 5x5 forest target");
 assert.notDeepEqual(forestAdvanced.map((entry) => entry.id), forestStart.map((entry) => entry.id), "world focus movement must change the forest plan");
+assert.ok(FOUNDATION_TERRAIN_RETAIN_RADIUS > FOUNDATION_TERRAIN_ACTIVE_RADIUS, "terrain must retain a safety ring outside the active working set");
 
 const firstBatch = selectMissingPatchBatch(forestStart, [], FOUNDATION_FOREST_GENERATION_BUDGET);
 const secondBatch = selectMissingPatchBatch(forestStart, firstBatch.map((entry) => entry.id), FOUNDATION_FOREST_GENERATION_BUDGET);
@@ -50,10 +53,25 @@ const repeatedTerrain = createCenteredPatchPlan(advanced, {
   radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
   prefix: "foundation-terrain"
 });
-assert.deepEqual(repeatedTerrain, terrainAdvanced, "same world focus must reproduce the same terrain plan");
+assert.strictEqual(repeatedTerrain, terrainAdvanced, "same streaming cell must reuse its cached plan instead of rebuilding it");
+
+const nearBoundaryIdle = createCenteredPatchPlan({ x: 40, z: 70, yaw: 0, speed: 0 }, {
+  size: FOUNDATION_TERRAIN_PATCH_SIZE,
+  radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
+  prefix: "predictive-terrain"
+});
+const nearBoundaryRunning = createCenteredPatchPlan({ x: 40, z: 70, yaw: 0, speed: 26 }, {
+  size: FOUNDATION_TERRAIN_PATCH_SIZE,
+  radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
+  prefix: "predictive-terrain"
+});
+assert.notStrictEqual(nearBoundaryRunning, nearBoundaryIdle, "running focus must preload the next streaming cell before the player reaches the boundary");
+assert.ok(nearBoundaryRunning.some((entry) => entry.z > Math.max(...nearBoundaryIdle.map((entry) => entry.z))), "predictive terrain must extend the working set in the travel direction");
+
 console.log("world update verification: ok", {
-  terrainStart: terrainStart.map((entry) => entry.id),
-  terrainAdvanced: terrainAdvanced.map((entry) => entry.id),
+  terrainTargetCount,
+  activeRadius: FOUNDATION_TERRAIN_ACTIVE_RADIUS,
+  retainRadius: FOUNDATION_TERRAIN_RETAIN_RADIUS,
   forestTarget: forestAdvanced.length,
   generationBudget: FOUNDATION_FOREST_GENERATION_BUDGET
 });
