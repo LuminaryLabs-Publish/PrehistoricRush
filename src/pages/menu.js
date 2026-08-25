@@ -256,9 +256,10 @@ function renderWorldSelection() {
 
 async function startShowcase() {
   const motionDomainUrl = RUNTIME_URLS.nexusMotion.replace("/kits/motion-kit/index.js", "/index.js");
-  const [NexusEngine, ActorModule, MotionModule, CreatureModule, THREE] = await Promise.all([
+  const [NexusEngine, ActorModule, SimulationModule, MotionModule, CreatureModule, THREE] = await Promise.all([
     import(RUNTIME_URLS.nexus),
     import(RUNTIME_URLS.nexusActor),
+    import(RUNTIME_URLS.nexusSimulationRuntime),
     import(motionDomainUrl),
     import(RUNTIME_URLS.creatureKit),
     import(RUNTIME_URLS.three)
@@ -268,6 +269,7 @@ async function startShowcase() {
     ActorModule?.createActorRegistryKit,
     ActorModule?.createCreatureKit,
     ActorModule?.createCharacterKit,
+    SimulationModule?.createSimulationKit,
     MotionModule?.createMotionDomain,
     CreatureModule?.createProceduralCreatureBodyKit,
     THREE?.WebGLRenderer
@@ -278,6 +280,7 @@ async function startShowcase() {
     ActorModule.createActorRegistryKit(),
     ActorModule.createCreatureKit(),
     ActorModule.createCharacterKit(),
+    SimulationModule.createSimulationKit({ resolution: true }),
     ...MotionModule.createMotionDomain(),
     CreatureModule.createProceduralCreatureBodyKit({
       seed: activeProfile.creature.seed,
@@ -475,7 +478,9 @@ startShowcase().catch((error) => {
   console.error(error);
   sceneStatus.textContent = "Circuit load failed";
   document.body.dataset.menuStatus = "error";
+  document.body.dataset.menuError = String(error?.message ?? error);
   preview.replaceChildren();
+  menuError.textContent = `The live circuit could not start: ${error?.message ?? error}`;
   menuError.dataset.visible = "true";
 });
 addEventListener("beforeunload", () => disposeShowcase(), { once: true });
