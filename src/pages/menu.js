@@ -255,9 +255,8 @@ function renderWorldSelection() {
 }
 
 async function startShowcase() {
-  const [NexusEngine, SeedModule, CreatureModule, THREE] = await Promise.all([
+  const [NexusEngine, CreatureModule, THREE] = await Promise.all([
     import(RUNTIME_URLS.nexus),
-    import(RUNTIME_URLS.seedKit),
     import(RUNTIME_URLS.creatureKit),
     import(RUNTIME_URLS.three)
   ]);
@@ -266,7 +265,6 @@ async function startShowcase() {
     NexusEngine?.createCoreCreatureDomain,
     NexusEngine?.createCoreCharacterDomain,
     NexusEngine?.createCoreMotionDomain,
-    SeedModule?.createSeedKit,
     CreatureModule?.createProceduralCreatureBodyKit,
     THREE?.WebGLRenderer
   ];
@@ -276,8 +274,11 @@ async function startShowcase() {
     ...NexusEngine.createCoreCreatureDomain(),
     ...NexusEngine.createCoreCharacterDomain(),
     ...NexusEngine.createCoreMotionDomain(),
-    SeedModule.createSeedKit({ seed: activeProfile.creature.seed }),
-    CreatureModule.createProceduralCreatureBodyKit({ creatures: [activeProfile.creature] })
+    CreatureModule.createProceduralCreatureBodyKit({
+      seed: activeProfile.creature.seed,
+      creatures: [activeProfile.creature],
+      requires: []
+    })
   ] });
   const creatureApi = engine.n.proceduralCreatureBody;
   if (!creatureApi) throw new Error("Procedural character service did not install.");
