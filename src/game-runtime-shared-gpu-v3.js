@@ -1,6 +1,7 @@
 import { NEXUS_COMMIT, VALIDATED_RUNTIME_URLS } from "./shared/runtime-versions.js";
 import { createPrehistoricRushDenseVisualContributions } from "./domains/prehistoric-rush/dense-world-visual-contributions.js";
 import { createPrehistoricRushGPUWorldScene } from "./domains/prehistoric-rush/gpu-native-world-scene.js";
+import { setFoundationTerrainStreamingOwner } from "./domains/prehistoric-rush/rendering-streaming-policy.js";
 
 await import("./game-runtime-semantic-v2.js");
 
@@ -21,6 +22,7 @@ const rendererPreference = baseHost.rendering?.qualityProfile?.rendererPreferenc
 function disableGPUScene() {
   removeGPUFrameHook?.();
   removeGPUFrameHook = null;
+  setFoundationTerrainStreamingOwner("webgl2");
   baseHost.rendering.setDenseWorldGPUActive?.(false);
   gpuScene?.dispose?.();
   frameExecutor?.dispose?.();
@@ -68,6 +70,8 @@ if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.ren
     if (gpuHost.getDeviceDescriptor()?.id !== deviceDescriptor.id) throw new Error("Compute/Render GPU Host device identity changed during unified world startup.");
     if (gpuReady.treeSpeciesCount !== 12 || gpuReady.treeCount < 1 || gpuReady.passCount < 26) throw new Error("Unified GPU scene did not reach full Tree Fidelity readiness before presentation handoff.");
     baseHost.computeHost?.dispose?.();
+    const terrainAnchor = baseHost.gameplay.readState?.() ?? baseHost.gameplay.getState?.() ?? { x: 0, z: 0 };
+    setFoundationTerrainStreamingOwner("webgpu", terrainAnchor);
     baseHost.rendering.setDenseWorldGPUActive(true);
 
     removeGPUFrameHook = baseHost.addFrameHook(({ state, camera }) => {
