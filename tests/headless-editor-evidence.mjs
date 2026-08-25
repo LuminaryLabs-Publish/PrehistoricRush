@@ -29,10 +29,14 @@ async function captureManifest(phase) {
   const metrics = evidenceFile(phase, "foundation-gate.json");
   const raceBefore = evidenceFile(phase, "race-before.png");
   const raceAfter = evidenceFile(phase, "race-after.png");
+  const worldBefore = evidenceFile(phase, "world-before.png");
+  const worldAfter = evidenceFile(phase, "world-after-movement.png");
   if (await exists(image)) captures.push({ id: `foundation-gate:${phase}`, kind: "screenshot", path: path.relative(evidenceRoot, image) });
   if (await exists(metrics)) captures.push({ id: `foundation-gate:${phase}:metrics`, kind: "metrics", path: path.relative(evidenceRoot, metrics) });
   if (await exists(raceBefore)) captures.push({ id: "race-before", kind: "screenshot", path: path.relative(evidenceRoot, raceBefore) });
   if (await exists(raceAfter)) captures.push({ id: "race-after", kind: "screenshot", path: path.relative(evidenceRoot, raceAfter) });
+  if (await exists(worldBefore)) captures.push({ id: "world-before", kind: "screenshot", path: path.relative(evidenceRoot, worldBefore) });
+  if (await exists(worldAfter)) captures.push({ id: "world-after-movement", kind: "screenshot", path: path.relative(evidenceRoot, worldAfter) });
   return { ok: captures.length >= 1, phase, captures };
 }
 
@@ -78,6 +82,8 @@ const adapter = {
       evidenceFile("after", "foundation-gate.json"),
       evidenceFile("after", "race-before.png"),
       evidenceFile("after", "race-after.png"),
+      evidenceFile("after", "world-before.png"),
+      evidenceFile("after", "world-after-movement.png"),
       evidenceFile("after", "observed-differences.json")
     ];
     const missing = [];
@@ -123,6 +129,13 @@ const adapter = {
       ["race-camera-follow", after.race?.cameraFollowObserved === true],
       ["race-card-absent", after.race?.characterCardPresent === false],
       ["race-screenshots", (observation.after.race?.screenshots ?? []).length === 2],
+      ["world-id", after.worldUpdate?.before?.worldId === after.worldUpdate?.after?.worldId],
+      ["world-revision", Number.isInteger(after.worldUpdate?.after?.worldRevision)],
+      ["world-focus-updated", after.worldUpdate?.focusChanged === true],
+      ["world-terrain-ring", (after.worldUpdate?.after?.terrainPatchIds ?? []).length === 9],
+      ["world-forest-active", (after.worldUpdate?.after?.activeForestPatchIds ?? []).length > 0],
+      ["world-no-streaming-holes", after.worldUpdate?.noStreamingHoles === true],
+      ["world-screenshots", (observation.after.worldUpdate?.screenshots ?? []).length === 2],
       ["observed-differences", observation.differences.status === "PASS"],
       ["pages-main", observation.pagesPass === true]
     ].map(([id, ok]) => ({ id, ok }));

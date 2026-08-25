@@ -8,25 +8,27 @@ This folder stores automation-authored repo analysis, tracker entries, kit regis
 
 The product repo should stay thin. It should own the browser shell, scene manifests, theme/config data, renderer bootstrap, adapter bindings, debug host exposure, repo-local composition bridges, and repo-local smoke fixtures while reusable behavior moves into NexusEngine core kits or ProtoKits.
 
-## Latest documented run
+## Current active run
 
 ```txt
-.agent/trackers/2026-07-08T00-49-44-04-00/project-breakdown.md
+.agent/runs/2026-08-25-prehistoric-race-world-update-verification/
 ```
 
-This run corrects the active route and tightens the next implementation slice into **PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate**.
+This run documents and verifies **PrehistoricRush playable race and streamed-world verification**.
 
 The active route is now:
 
 ```txt
-index.html
-  -> src/runtime.mjs
-  -> src/game.js
-  -> dino/domain-runtime scaffold
-  -> src/runtime-terrain-v6.mjs
+menu.html
+  -> game.html
+  -> src/pages/game.js
+  -> src/game-runtime-semantic-v2.js
+  -> Nexus World + Course + Player + Renderer
+  -> streamed terrain and forest patches
+  -> framebuffer and Headless Editor evidence
 ```
 
-The important change is that `src/game.js` now installs a repo-local domain runtime and dino domain scaffold before importing the legacy visual runtime. The dino form, pose, and material domain kits exist, but the live runner still manually creates and animates the raptor inside `src/runtime-terrain-v6.mjs`. The next pass should bridge live runner movement into `runner.moved`, let `dino-pose-domain-kit` emit real pose snapshots, and add manifest/action/contact/scene-dispatch fixtures without changing visible gameplay first.
+The character-selection card remains menu-only. The race page is the authoritative playable result. World-update proof must show that player traversal changes Nexus World focus, updates local patch plans, retains the terrain ring and forest patches, and produces no streaming holes.
 
 ## Kit registry
 
@@ -34,7 +36,7 @@ The important change is that `src/game.js` now installs a repo-local domain runt
 .agent/kit-registry.json
 ```
 
-The registry tracks current core-kit targets, the live Rapier ProtoKit dependency, the repo-local domain runtime kits, the dino domain kits, the missing `run-movement-kit`, existing ProtoKit families to consume first, service ownership, blockers, and the next dino-domain bridge plus runtime-authority fixture gate.
+The registry is historical kit ownership data. The active verification authority is now the playable race and streamed-world evidence run linked above.
 
 ## Prior documented runs
 
@@ -67,31 +69,19 @@ The registry tracks current core-kit targets, the live Rapier ProtoKit dependenc
 
 ## Current highest-value direction
 
-Run the `PrehistoricRush Dino Domain Bridge + Runtime Authority Fixture Gate`:
+Run the `PrehistoricRush Playable Race + Streamed World Verification Gate`:
 
 ```txt
-preserve index.html
-preserve src/runtime.mjs
-preserve current visible Three.js/Rapier behavior
-preserve current PrehistoricRushHost.getState()
-make active route documentation canonical: runtime.mjs -> game.js -> dino scaffold -> runtime-terrain-v6
-load manifests before runtime setup
-emit ManifestLoadStatus and ManifestDriftReport
-normalize fail -> run-over through explicit SceneAliasCatalog
-adapt runner-tuning.json into RuntimeRunnerTuning with inline values as fallback only
-add RuntimeSourceSnapshot, SpawnBudgetSource, and WinThresholdSource
-add ActionFrame records for start, retry, run-again, menu, left, right, boost, jump, and future touch
-add ActionAcceptanceMatrix with stable accepted/rejected reasons
-add RunnerSourceState snapshots and RunnerStepResult records
-emit runner.moved from the live movement step
-connect runner.moved to dino-pose-domain-kit as the first real domain bridge
-surface dino form, pose, and material snapshots in PrehistoricRushComposition and PrehistoricRushHost diagnostics
-add RunnerEvent journal entries for movement, jump, boost, terrain rebuild, pickup, impact, goal, and scene requests
-add ContactEvent records for hazard-hit, shard-pickup, and distance-goal
-add SceneDispatchResult records for run-over and win
-expand PrehistoricRushHost with getDiagnostics(), getSnapshot(), getReplayJournal(), dispatch(actionFrame), runSmoke(name), and runReplayParitySmoke()
-add DOM-free smoke fixtures for manifest load, tuning drift, fail alias, start, retry, jump accepted/rejected, hazard run-over, shard pickup, distance win, dino pose bridge, and replay parity
-emit RunMovementPromotionReport after fixture parity defines the shared run-movement-kit surface
+preserve menu.html as selection-only
+make game.html the primary playable result
+preserve current Nexus World, Course, Player, Camera, HUD, and Renderer ownership
+update Nexus World focus when traversal crosses a world cell
+expose world revision, focus cell, terrain patch IDs, forest patch IDs, and streaming-hole count
+verify seeded terrain/forest patch plans before and after movement
+capture world-before, race-before, race-after, and world-after-movement framebuffers
+verify character visibility, course visibility, movement, camera follow, HUD, and card absence
+run the pinned NexusEngine-Editor nine-stage Headless lifecycle
+verify Pages deployment and the deployed game URL
 ```
 
-Do not add new visible content first. Make route authority, manifest authority, scene alias authority, dino domain bridge events, ActionFrame intake, ActionResult/RunnerStepResult/ContactEvent/SceneDispatchResult records, replayable intent, host diagnostics, fixture coverage, and the run-movement promotion boundary explicit first. Then improve route readability, hazard clarity, pickup clarity, camera polish, terrain density, raptor animation, and flock visuals through config-driven services.
+Do not add a parallel world manager or redesign the visible race first. Keep the change limited to world-update authority, diagnostics, evidence, documentation, and deployment validation.

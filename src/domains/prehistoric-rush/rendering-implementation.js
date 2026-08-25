@@ -584,6 +584,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
     return Object.freeze({
       revision: denseVisualRevision,
       terrainPatchCount: terrainPatches.size,
+      terrainPatchIds: [...terrainPatches.keys()].sort(),
       forestPatchCount: forestPatches.size,
       treePackageCount: treeFidelityPackages?.length ?? 0,
       treeCount,
@@ -619,6 +620,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, { host
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },
       grassCount: grassMesh?.count ?? 0,
       activeForestPatches: forestPatches.size,
+      activeForestPatchIds: [...forestPatches.keys()].sort(),
       forestTargetPatchCount: (FOUNDATION_FOREST_RADIUS * 2 + 1) ** 2,
       forestGenerationBudget: FOUNDATION_FOREST_GENERATION_BUDGET,
       atmosphere: scene.fog ? "lush-jungle" : "none",

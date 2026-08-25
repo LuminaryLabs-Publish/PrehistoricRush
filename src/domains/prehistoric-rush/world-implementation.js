@@ -115,6 +115,8 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
   const samplers = Object.freeze(worldFeature.getSamplers());
   const cells = new Map();
   const resolvedCells = new Map();
+  let focusUpdateCount = 0;
+  let lastFocus = { x: 0, y: 0, z: 0 };
 
   function cellCoordinates(x, z) {
     return [Math.floor(Number(x) / size), Math.floor(Number(z) / size)];
@@ -176,7 +178,13 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
   }
 
   function focus(position = {}) {
-    coreWorld.setFocus(recipe.id, { position: clone(position) });
+    lastFocus = {
+      x: Number(position.x ?? 0),
+      y: Number(position.y ?? 0),
+      z: Number(position.z ?? 0)
+    };
+    focusUpdateCount += 1;
+    coreWorld.setFocus(recipe.id, { position: clone(lastFocus) });
     return coreWorld.updateWorld(recipe.id);
   }
 
@@ -204,6 +212,8 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
         hydrology: clone(content.hydrology),
         atmosphere: clone(content.atmosphere),
         featureIds: [...featureIds],
+        focus: clone(lastFocus),
+        focusUpdateCount,
         coreWorld: coreWorld.getWorld(recipe.id),
         featureCount: worldFeature.listFeatures().length,
         cachedCellCount: cells.size,

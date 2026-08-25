@@ -11,6 +11,8 @@ const evidenceRoot = path.join(repositoryRoot, ".agent", "evidence", "2026-08-09
 const evidenceFile = path.join(evidenceRoot, "foundation-gate.json");
 const screenshotFile = path.join(evidenceRoot, "foundation-gate.png");
 const productionScreenshotFile = path.join(evidenceRoot, "production-restored.png");
+const worldBeforeScreenshotFile = path.join(evidenceRoot, "world-before.png");
+const worldAfterScreenshotFile = path.join(evidenceRoot, "world-after-movement.png");
 const raceBeforeScreenshotFile = path.join(evidenceRoot, "race-before.png");
 const raceAfterScreenshotFile = path.join(evidenceRoot, "race-after.png");
 const PRODUCTION_STARTUP_BUDGET_MS = 60000;
@@ -150,24 +152,41 @@ try {
         && state.streamingReadiness.backgroundForestPending === 0;
     }, null, { timeout: 60000 });
     const raceBefore = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const worldBefore = raceBefore.worldUpdate;
+    assert.equal(worldBefore.worldId, raceBefore.world.recipe.id, "World update diagnostics must identify the selected world.");
+    assert.equal(worldBefore.worldRevision, raceBefore.world.recipe.revision, "World update diagnostics must identify the recipe revision.");
+    assert.equal(worldBefore.terrainPatchIds.length, 9, "Race must begin with a complete active terrain ring.");
+    assert.equal(worldBefore.streamingHoleCount, 0, "Race must begin without terrain streaming holes.");
     assert.equal(raceBefore.playerPresentation, "procedural-skinned-raptor", "Race must render the selected character.");
     assert.equal(raceBefore.rendering.courseVisible, true, "Race must render the procedural course.");
     assert.equal(await page.locator('[data-race-screen="true"]').count(), 1, "Race screen must be present.");
     assert.equal(await page.locator('[data-race-hud="true"]').count(), 1, "Race HUD must be present.");
     assert.equal(await page.locator('[aria-label*="classification tablet"]').count(), 0, "Character selection card must not appear during the race.");
+    await page.screenshot({ path: worldBeforeScreenshotFile, fullPage: true });
     await page.screenshot({ path: raceBeforeScreenshotFile, fullPage: true });
 
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.body.dataset.raceStatus === "game", null, { timeout: 15000 });
     const started = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    await page.keyboard.down("ArrowUp");
     await page.keyboard.down("ArrowRight");
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(5000);
+    await page.keyboard.up("ArrowUp");
     await page.keyboard.up("ArrowRight");
     const raceAfter = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const worldAfter = raceAfter.worldUpdate;
     assert.ok(raceAfter.game.run.distance > started.game.run.distance, "Character must move along the track after input.");
+    assert.ok(worldAfter.focusUpdateCount > worldBefore.focusUpdateCount, "World focus must update after the character crosses a streaming cell.");
+    assert.notEqual(worldAfter.focusCell, worldBefore.focusCell, "World focus cell must change during traversal.");
+    assert.equal(worldAfter.terrainPatchIds.length, 9, "Moving race must retain a complete active terrain ring.");
+    assert.equal(new Set(worldAfter.terrainPatchIds).size, worldAfter.terrainPatchIds.length, "Moving race terrain patches must remain unique.");
+    assert.ok(worldAfter.activeForestPatchIds.length > 0, "Moving race must retain active forest patches.");
+    assert.equal(worldAfter.streamingHoleCount, 0, "Moving race must not expose terrain streaming holes.");
+    assert.ok(Math.abs(worldAfter.playerWorldPosition.z - raceAfter.game.run.z) < 0.001, "World diagnostics must track the player world position.");
     assert.notDeepEqual(raceAfter.camera, started.camera, "Camera must follow the moving character.");
     assert.equal(raceAfter.playerPresentation, "procedural-skinned-raptor", "Moving race must retain the selected character.");
     assert.equal(raceAfter.rendering.courseVisible, true, "Moving race must retain the procedural course.");
+    await page.screenshot({ path: worldAfterScreenshotFile, fullPage: true });
     await page.screenshot({ path: raceAfterScreenshotFile, fullPage: true });
 
     const production = raceAfter;
@@ -241,6 +260,30 @@ try {
         characterCardPresent: false,
         movementObserved: raceAfter.game.run.distance > started.game.run.distance,
         cameraFollowObserved: JSON.stringify(raceAfter.camera) !== JSON.stringify(started.camera)
+      },
+      worldUpdate: {
+        before: {
+          worldId: worldBefore.worldId,
+          worldRevision: worldBefore.worldRevision,
+          focusCell: worldBefore.focusCell,
+          focusUpdateCount: worldBefore.focusUpdateCount,
+          terrainPatchIds: worldBefore.terrainPatchIds,
+          activeForestPatchIds: worldBefore.activeForestPatchIds,
+          streamingHoleCount: worldBefore.streamingHoleCount
+        },
+        after: {
+          worldId: worldAfter.worldId,
+          worldRevision: worldAfter.worldRevision,
+          focusCell: worldAfter.focusCell,
+          focusUpdateCount: worldAfter.focusUpdateCount,
+          terrainPatchIds: worldAfter.terrainPatchIds,
+          activeForestPatchIds: worldAfter.activeForestPatchIds,
+          streamingHoleCount: worldAfter.streamingHoleCount,
+          playerWorldPosition: worldAfter.playerWorldPosition
+        },
+        screenshots: ["world-before.png", "world-after-movement.png"],
+        focusChanged: worldAfter.focusCell !== worldBefore.focusCell,
+        noStreamingHoles: worldAfter.streamingHoleCount === 0
       },
       pageErrors,
       consoleErrors

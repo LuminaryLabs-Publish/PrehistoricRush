@@ -30,6 +30,8 @@ jobs:
           node-version: 22
       - name: Run deterministic contracts
         run: npm test
+      - name: Run world update verification
+        run: npm run test:world-update
 
   browser-evidence:
     runs-on: ubuntu-latest

@@ -1,66 +1,40 @@
-# START HERE: PrehistoricRush Natural Tree Growth Convergence
+# START HERE: PrehistoricRush Race and Streamed-World Verification
 
-**Last aligned:** `2026-07-18T14-40-12-04-00`  
+**Last aligned:** `2026-08-25`
 **Repository:** `LuminaryLabs-Publish/PrehistoricRush`  
 **Branch:** `main`  
-**Prior repo-local documentation head:** `b734e087e4d70315285fc3ef29b1788c487945b6`  
-**Reviewed runtime head:** `3c8175991939632cc9e4029f4554fbebf360f9f5`  
-**Status:** `natural-tree-growth-compute-capture-fidelity-convergence-authority-audited`
+**Reviewed runtime:** `src/game-runtime-semantic-v2.js`
+**Status:** `playable-race-streamed-world-verification`
 
 ## Summary
 
-PrehistoricRush was selected as the only runtime-ahead eligible Publish repository. Four new runtime commits install Core Compute, prepare validated near/medium natural-growth plans for all 12 tree archetypes, publish packed branch/foliage/shading buffers and add a growth-plan-driven Three.js source builder.
-
-The active fidelity provider still creates its source subject with `createPrehistoricTreeObject(THREE, archetype)`. It does not consume `runtime.growthPlans` or call `createPrehistoricNaturalTreeObject()`. Growth revision metadata therefore exists without generation-bound proof that Object Shape, Core Capture, Object Fidelity and the presented tree use that growth plan.
+The current product result is `game.html`: a selected dinosaur runs on a procedural prehistoric track. The renderer already maintains local terrain and forest patch plans, but the verification boundary must also prove that Nexus World focus updates as the player crosses streaming cells.
 
 ## Intent
 
-Make compute-prepared growth plans the explicit source authority for natural tree geometry, captures and fidelity packages.
+Make streamed-world updates observable and verifiable without creating a second world manager.
 
 ## Checklist
 
-- [x] Compare all 11 Publish repositories with central tracking.
-- [x] Exclude Cavalry of Rome.
-- [x] Select and modify only PrehistoricRush.
-- [x] Reconcile four runtime commits.
-- [x] Identify the complete interaction loop, domains, kits and offered services.
-- [x] Expand the implemented census from 99 to 103 surfaces.
-- [x] Add the `2026-07-18T14-40-12-04-00` tracker and audit family.
-- [x] Document the prepared-but-unconsumed natural growth source.
-- [ ] Bind accepted growth-plan identity to source geometry and captures.
-- [ ] Add deterministic, browser, artifact and Pages growth fixtures.
+- [x] Make `game.html` the primary playable result.
+- [x] Keep the character card limited to selection.
+- [x] Add the deterministic world-update contract.
+- [x] Add world and race framebuffer capture requirements.
+- [x] Update the active route and deployment documentation.
+- [ ] Verify Nexus World focus updates during traversal in CI.
+- [ ] Verify terrain/forest patch continuity and no streaming holes in CI.
+- [ ] Complete Pages and Headless Editor proof for the current source SHA.
 
 ## Read this pass first
 
 ```txt
-.agent/trackers/2026-07-18T14-40-12-04-00/project-breakdown.md
-.agent/turn-ledger/2026-07-18T14-40-12-04-00.md
-.agent/architecture-audit/2026-07-18T14-40-12-04-00-natural-tree-growth-compute-capture-dsk-map.md
-.agent/render-audit/2026-07-18T14-40-12-04-00-natural-growth-capture-fidelity-convergence.md
-.agent/gameplay-audit/2026-07-18T14-40-12-04-00-natural-growth-startup-gameplay-loop.md
-.agent/interaction-audit/2026-07-18T14-40-12-04-00-tree-growth-command-result-map.md
-.agent/tree-growth-system-audit/2026-07-18T14-40-12-04-00-compute-prepared-source-unconsumed.md
-.agent/deploy-audit/2026-07-18T14-40-12-04-00-natural-growth-browser-pages-gate.md
-.agent/central-sync-audit/2026-07-18T14-40-12-04-00-runtime-ahead-natural-growth-reconciliation.md
-.agent/validation.md
-```
-
-## Required authority
-
-`prehistoric-rush-natural-tree-growth-compute-capture-fidelity-convergence-authority-domain`
-
-## Census
-
-```txt
-implemented named surfaces: 103
-new implemented surfaces: 4
-proposed growth-convergence surfaces: 20
-retained proposed collision-convergence surfaces: 20
-retained proposed production-forest retirement surfaces: 20
-retained proposed startup recovery surfaces: 20
-retained proposed foliage convergence surfaces: 20
+.agent/runs/2026-08-25-prehistoric-race-world-update-verification/change-spec.md
+.agent/runs/2026-08-25-prehistoric-race-world-update-verification/implementation-graph.md
+.agent/runs/2026-08-25-prehistoric-race-world-update-verification/validation.md
+.agent/target.md
+.agent/runs/2026-08-09-prehistoric-headless-visual-upgrade/report.md (historical)
 ```
 
 ## Claim boundary
 
-Core Compute registration/execution, growth-plan validation, buffer packing, growth revision metadata and the natural geometry builder are implemented. Active provider consumption, growth-bound captures, visible parity, performance, browser parity and deployed-origin proof are not claimed.
+The current race, player, camera, HUD, terrain, vegetation, and browser evidence paths exist. World-focus traversal proof, fresh screenshot review, deployed-origin proof, and physical target-hardware performance remain validation requirements.

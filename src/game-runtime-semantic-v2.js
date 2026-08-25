@@ -151,6 +151,7 @@ function cameraFrame(state, dt) {
 }
 
 world.focus({ x: 0, y: 0, z: 0 });
+let worldFocusCell = "0:0";
 let last = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
@@ -159,6 +160,11 @@ function loop(now) {
   gameplay.tick(dt);
   engine.tick(dt);
   const state = gameplay.getState();
+  const nextWorldFocusCell = `${Math.floor(state.x / world.cellSize)}:${Math.floor(state.z / world.cellSize)}`;
+  if (nextWorldFocusCell !== worldFocusCell) {
+    world.focus({ x: state.x, y: state.y, z: state.z });
+    worldFocusCell = nextWorldFocusCell;
+  }
   document.body.dataset.raceStatus = state.status;
   document.body.dataset.raceDistance = String(state.distance);
   rendering.draw(state, cameraFrame(state, dt), dt);
@@ -172,10 +178,12 @@ rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
 const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
   const presentation = rendering.snapshot();
+  const worldState = world.snapshot();
+  const coreWorld = worldState.coreWorld ?? {};
   return {
     game: gameplay.snapshot(),
     player: player.snapshot(),
-    world: world.snapshot(),
+    world: worldState,
     course: course.snapshot(),
     tick: engine.getLastTickCommit(),
     simulation: engine.n.simulation?.getCommittedFrame?.() ?? null,
@@ -199,6 +207,17 @@ const getState = () => {
       backgroundForestPending: diagnosticFoundationOnly
         ? 0
         : Math.max(0, presentation.forestTargetPatchCount - presentation.activeForestPatches)
+    },
+    worldUpdate: {
+      worldId: worldState.recipe.id,
+      worldRevision: worldState.recipe.revision,
+      focus: worldState.focus ?? coreWorld.focus ?? null,
+      focusCell: worldFocusCell,
+      focusUpdateCount: worldState.focusUpdateCount ?? 0,
+      terrainPatchIds: presentation.terrainPatchIds,
+      activeForestPatchIds: presentation.activeForestPatchIds,
+      streamingHoleCount: Math.max(0, 9 - presentation.terrainPatchCount),
+      playerWorldPosition: player.snapshot()
     },
     treeFidelity: {
       disabled: diagnosticFoundationOnly,
