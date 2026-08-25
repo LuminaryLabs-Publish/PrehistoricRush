@@ -17,7 +17,7 @@ const statusNode = document.querySelector("#prehistoric-status");
 const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
-  statusNode.innerHTML = `${detail}<br><small>${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}</small>`;
+  statusNode.textContent = `${detail} · ${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}`;
 };
 
 setLoading(0.04, "Loading Nexus semantic domains");
@@ -43,31 +43,18 @@ if (typeof Compute.createComputeHost !== "function" || typeof Compute.createJava
   throw new Error("Nexus Compute Host is unavailable from NexusEngine/main.");
 }
 
-const computeProviders = [Compute.createJavaScriptComputeProvider({
-  id: "prehistoric-rush-javascript-compute",
-  priority: 10
-})];
+const computeProviders = [Compute.createJavaScriptComputeProvider({ id: "prehistoric-rush-javascript-compute", priority: 10 })];
 let webgpuAdapter = null;
 if (globalThis.navigator?.gpu && typeof Compute.createWebGPUComputeProvider === "function") {
   try {
     webgpuAdapter = await globalThis.navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
-    if (webgpuAdapter) {
-      computeProviders.unshift(Compute.createWebGPUComputeProvider({
-        id: "prehistoric-rush-webgpu-compute",
-        adapter: webgpuAdapter,
-        priority: 100,
-        awaitCompletion: false
-      }));
-    }
+    if (webgpuAdapter) computeProviders.unshift(Compute.createWebGPUComputeProvider({ id: "prehistoric-rush-webgpu-compute", adapter: webgpuAdapter, priority: 100, awaitCompletion: false }));
   } catch {
     webgpuAdapter = null;
   }
 }
 const computeHost = Compute.createComputeHost({ id: "prehistoric-rush-compute-host", providers: computeProviders });
-const computeSelection = computeHost.selectProvider({
-  preferredBackends: ["webgpu", "javascript"],
-  allowFallback: true
-});
+const computeSelection = computeHost.selectProvider({ preferredBackends: ["webgpu", "javascript"], allowFallback: true });
 
 setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
@@ -78,11 +65,7 @@ const coreKits = createPrehistoricRushCoreKits(modules);
 const rootKit = coreKits.pop();
 const kits = [
   ...coreKits,
-  CreatureModule.createProceduralCreatureBodyKit({
-    seed: worldRecipe.seed,
-    creatures: [playerProfile.creature],
-    requires: []
-  }),
+  CreatureModule.createProceduralCreatureBodyKit({ seed: worldRecipe.seed, creatures: [playerProfile.creature], requires: [] }),
   ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []),
   rootKit
 ];
@@ -109,22 +92,23 @@ if (!creatureApi?.get || !creatureApi?.createPose) throw new Error("Procedural r
 const playerBody = creatureApi.get(playerProfile.creature.id);
 
 const rendering = await createPrehistoricRushRenderingImplementation(THREE, {
-  host,
-  world,
-  course,
-  gameplay,
-  creatureApi,
-  playerBody,
-  diagnosticFoundationOnly,
-  onProgress(progress, detail) {
-    setLoading(0.22 + progress * 0.74, detail);
-  }
+  host, world, course, gameplay, creatureApi, playerBody, diagnosticFoundationOnly,
+  onProgress(progress, detail) { setLoading(0.22 + progress * 0.74, detail); }
 });
 const framing = engine.n.cameraFraming.create({ id: "prehistoric-rush-player", padding: 4.8, minimumDistance: 10, maximumDistance: 18, smoothTime: 0.12 });
 
 let left = false;
 let right = false;
 let boost = false;
+let lastSteer = 0;
+let lastBoost = false;
+const frameHooks = new Set();
+const addFrameHook = (hook) => {
+  if (typeof hook !== "function") throw new TypeError("Frame hook must be a function.");
+  frameHooks.add(hook);
+  return () => frameHooks.delete(hook);
+};
+
 addEventListener("keydown", (event) => {
   if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space"].includes(event.code)) event.preventDefault();
   if (["KeyA", "ArrowLeft"].includes(event.code)) left = true;
@@ -138,75 +122,120 @@ addEventListener("keyup", (event) => {
   if (["KeyD", "ArrowRight"].includes(event.code)) right = false;
   if (["KeyW", "ArrowUp"].includes(event.code)) boost = false;
 });
-addEventListener("blur", () => { left = false; right = false; boost = false; gameplay.setInput({ steer: 0, boost: false }); });
-addEventListener("resize", () => { rendering.camera.aspect = innerWidth / innerHeight; rendering.camera.updateProjectionMatrix(); rendering.renderer.setSize(innerWidth, innerHeight); });
+addEventListener("blur", () => {
+  left = false; right = false; boost = false;
+  lastSteer = 0; lastBoost = false;
+  gameplay.setInput({ steer: 0, boost: false });
+});
+addEventListener("resize", () => {
+  rendering.camera.aspect = innerWidth / innerHeight;
+  rendering.camera.updateProjectionMatrix();
+  rendering.renderer.setSize(innerWidth, innerHeight);
+});
 
+const subjectBounds = { min: [0, 0, 0], max: [0, 0, 0] };
+const cameraRequest = {
+  subjectBounds,
+  viewport: { width: innerWidth, height: innerHeight },
+  camera: { projection: "perspective", verticalFov: 62, preferredDirection: [0, 0.5, -1] },
+  deltaTime: 1 / 60
+};
 function cameraFrame(state, dt) {
-  return framing.update({
-    subjectBounds: { min: [state.x - 1.6, state.y, state.z - 1.6], max: [state.x + 1.6, state.y + 2.4, state.z + 1.6] },
-    viewport: { width: innerWidth, height: innerHeight },
-    camera: { projection: "perspective", verticalFov: 62, preferredDirection: [-Math.sin(state.yaw), 0.5, -Math.cos(state.yaw)] },
-    deltaTime: dt
-  });
+  subjectBounds.min[0] = state.x - 1.6;
+  subjectBounds.min[1] = state.y;
+  subjectBounds.min[2] = state.z - 1.6;
+  subjectBounds.max[0] = state.x + 1.6;
+  subjectBounds.max[1] = state.y + 2.4;
+  subjectBounds.max[2] = state.z + 1.6;
+  cameraRequest.viewport.width = innerWidth;
+  cameraRequest.viewport.height = innerHeight;
+  cameraRequest.camera.preferredDirection[0] = -Math.sin(state.yaw);
+  cameraRequest.camera.preferredDirection[2] = -Math.cos(state.yaw);
+  cameraRequest.deltaTime = dt;
+  return framing.update(cameraRequest);
 }
 
 world.focus({ x: 0, y: 0, z: 0 });
 let worldFocusCell = "0:0";
 let last = performance.now();
+let lastHudAt = -Infinity;
+let lastDatasetStatus = "";
+let lastDatasetDistanceBucket = -1;
+const HUD_INTERVAL_MS = 200;
+
+function updateHud(now, state) {
+  if (now - lastHudAt < HUD_INTERVAL_MS) return;
+  lastHudAt = now;
+  const presentation = rendering.snapshot();
+  statusNode.textContent = `${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s · ${state.region} · Nexus Foundation · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute${diagnosticFoundationOnly ? " · diagnostic terrain only" : ` · ${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
+}
+
+function updateAutomationDataset(state) {
+  const distanceBucket = Math.floor(state.distance);
+  if (state.status !== lastDatasetStatus) {
+    document.body.dataset.raceStatus = state.status;
+    lastDatasetStatus = state.status;
+  }
+  if (distanceBucket !== lastDatasetDistanceBucket) {
+    document.body.dataset.raceDistance = String(state.distance);
+    lastDatasetDistanceBucket = distanceBucket;
+  }
+}
+
 function loop(now) {
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
   last = now;
-  gameplay.setInput({ steer: (left ? 1 : 0) - (right ? 1 : 0), boost });
+  const steer = (left ? 1 : 0) - (right ? 1 : 0);
+  if (steer !== lastSteer || boost !== lastBoost) {
+    gameplay.setInput({ steer, boost });
+    lastSteer = steer;
+    lastBoost = boost;
+  }
   gameplay.tick(dt);
   engine.tick(dt);
-  const state = gameplay.getState();
+  const state = gameplay.readState();
   const nextWorldFocusCell = `${Math.floor(state.x / world.cellSize)}:${Math.floor(state.z / world.cellSize)}`;
   if (nextWorldFocusCell !== worldFocusCell) {
     world.focus({ x: state.x, y: state.y, z: state.z });
     worldFocusCell = nextWorldFocusCell;
   }
-  document.body.dataset.raceStatus = state.status;
-  document.body.dataset.raceDistance = String(state.distance);
+  updateAutomationDataset(state);
   rendering.draw(state, cameraFrame(state, dt), dt);
-  const presentation = rendering.snapshot();
-  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation · ${world.landforms.length} landforms · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}</small>`;
+  for (const hook of frameHooks) {
+    try { hook({ now, dt, state, camera: rendering.camera }); }
+    catch (error) { console.warn("PrehistoricRush frame hook failed:", error); }
+  }
+  updateHud(now, state);
   requestAnimationFrame(loop);
 }
 
-const initial = gameplay.getState();
+const initial = gameplay.readState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
+updateAutomationDataset(initial);
+updateHud(performance.now(), initial);
 const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
   const presentation = rendering.snapshot();
   const worldState = world.snapshot();
   const coreWorld = worldState.coreWorld ?? {};
+  const playerSnapshot = player.snapshot();
   return {
     game: gameplay.snapshot(),
-    player: player.snapshot(),
+    player: playerSnapshot,
     world: worldState,
     course: course.snapshot(),
     tick: engine.getLastTickCommit(),
     simulation: engine.n.simulation?.getCommittedFrame?.() ?? null,
     rendering: presentation,
-    compute: {
-      selected: computeSelection,
-      providers: computeHost.listProviders(),
-      webgpuAdapterReady: Boolean(webgpuAdapter)
-    },
-    performance: {
-      startupMs,
-      startupBudgetMs: 60000,
-      withinStartupBudget: startupMs < 60000
-    },
+    compute: { selected: computeSelection, providers: computeHost.listProviders(), webgpuAdapterReady: Boolean(webgpuAdapter) },
+    performance: { startupMs, startupBudgetMs: 60000, withinStartupBudget: startupMs < 60000 },
     streamingReadiness: {
       foundationReady: true,
       rendererReady: presentation.terrainPatchCount >= 9,
       terrainPatchCount: presentation.terrainPatchCount,
       vegetationRequired: !diagnosticFoundationOnly,
       vegetationReady: diagnosticFoundationOnly || presentation.treeFidelityPackageCount === 12,
-      backgroundForestPending: diagnosticFoundationOnly
-        ? 0
-        : Math.max(0, presentation.forestTargetPatchCount - presentation.activeForestPatches)
+      backgroundForestPending: diagnosticFoundationOnly ? 0 : Math.max(0, presentation.forestTargetPatchCount - presentation.activeForestPatches)
     },
     worldUpdate: {
       worldId: worldState.recipe.id,
@@ -217,29 +246,16 @@ const getState = () => {
       terrainPatchIds: presentation.terrainPatchIds,
       activeForestPatchIds: presentation.activeForestPatchIds,
       streamingHoleCount: Math.max(0, 9 - presentation.terrainPatchCount),
-      playerWorldPosition: player.snapshot()
+      playerWorldPosition: playerSnapshot
     },
-    treeFidelity: {
-      disabled: diagnosticFoundationOnly,
-      packageCount: presentation.treeFidelityPackageCount,
-      counts: presentation.treeFidelityCounts,
-      treeCount: presentation.treeCount
-    },
-    lushFoliage: {
-      disabled: diagnosticFoundationOnly,
-      grassCount: presentation.grassCount,
-      activeForestPatches: presentation.activeForestPatches
-    },
+    treeFidelity: { disabled: diagnosticFoundationOnly, packageCount: presentation.treeFidelityPackageCount, counts: presentation.treeFidelityCounts, treeCount: presentation.treeCount },
+    lushFoliage: { disabled: diagnosticFoundationOnly, grassCount: presentation.grassCount, activeForestPatches: presentation.activeForestPatches },
     vegetation: { enabled: presentation.vegetationEnabled },
     playerPresentation: presentation.playerPresentation,
-    camera: {
-      x: rendering.camera.position.x,
-      y: rendering.camera.position.y,
-      z: rendering.camera.position.z
-    },
+    camera: { x: rendering.camera.position.x, y: rendering.camera.position.y, z: rendering.camera.position.z },
     assetStartup: { mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "prebuilt-tree-fidelity" },
     versions: { nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
   };
 };
-globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, getState });
+globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, addFrameHook, getState });
 requestAnimationFrame(loop);
