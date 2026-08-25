@@ -9,10 +9,32 @@ const PLAN_CACHE_LIMIT = 128;
 const DEFAULT_LOOKAHEAD_SECONDS = 1.5;
 const MAX_LOOKAHEAD_PATCH_FRACTION = 0.75;
 const planCache = new Map();
+let foundationTerrainOwner = "webgl2";
+let foundationTerrainAnchor = null;
 
 function finiteNumber(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
+}
+
+function normalizeTerrainAnchor(position = {}) {
+  return Object.freeze({
+    x: finiteNumber(position.x),
+    z: finiteNumber(position.z),
+    yaw: finiteNumber(position.yaw),
+    speed: Math.max(0, finiteNumber(position.speed)),
+    streamingLookaheadSeconds: Math.max(0, finiteNumber(position.streamingLookaheadSeconds, DEFAULT_LOOKAHEAD_SECONDS))
+  });
+}
+
+export function setFoundationTerrainStreamingOwner(owner = "webgl2", position = null) {
+  foundationTerrainOwner = owner === "webgpu" ? "webgpu" : "webgl2";
+  foundationTerrainAnchor = foundationTerrainOwner === "webgpu" ? normalizeTerrainAnchor(position ?? {}) : null;
+  return Object.freeze({ owner: foundationTerrainOwner, anchor: foundationTerrainAnchor });
+}
+
+export function getFoundationTerrainStreamingOwner() {
+  return Object.freeze({ owner: foundationTerrainOwner, anchor: foundationTerrainAnchor });
 }
 
 function streamingFocus(position = {}, size) {
@@ -41,7 +63,10 @@ export function createCenteredPatchPlan(position = {}, options = {}) {
   const size = Math.max(1, Number(options.size ?? FOUNDATION_TERRAIN_PATCH_SIZE));
   const radius = Math.max(0, Math.floor(Number(options.radius ?? 0)));
   const prefix = String(options.prefix ?? "patch");
-  const focus = streamingFocus(position, size);
+  const planPosition = prefix === "foundation-terrain" && foundationTerrainOwner === "webgpu" && foundationTerrainAnchor
+    ? foundationTerrainAnchor
+    : position;
+  const focus = streamingFocus(planPosition, size);
   const centerX = Math.floor(focus.x / size);
   const centerZ = Math.floor(focus.z / size);
   const cacheKey = `${prefix}:${size}:${radius}:${centerX}:${centerZ}`;
