@@ -1,3 +1,63 @@
+function nowMs() {
+  return globalThis.performance?.now?.() ?? Date.now();
+}
+
+function installShadowUpdateGate(renderer, sun, options = {}) {
+  if (!renderer?.shadowMap || !sun || typeof renderer.render !== "function") return null;
+  renderer.userData ??= {};
+  if (renderer.userData.prehistoricShadowUpdateGate) return renderer.userData.prehistoricShadowUpdateGate;
+
+  const movementThreshold = Math.max(1, Number(options.shadowUpdateDistance ?? 24));
+  const maximumIntervalMs = Math.max(250, Number(options.shadowUpdateIntervalMs ?? 1250));
+  const movementThresholdSq = movementThreshold * movementThreshold;
+  const originalRender = renderer.render.bind(renderer);
+  let lastX = Number(sun.position?.x ?? 0);
+  let lastY = Number(sun.position?.y ?? 0);
+  let lastZ = Number(sun.position?.z ?? 0);
+  let lastUpdateAt = nowMs();
+  let requestedUpdates = 1;
+
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
+
+  const gate = {
+    request() {
+      renderer.shadowMap.needsUpdate = true;
+      lastX = Number(sun.position?.x ?? 0);
+      lastY = Number(sun.position?.y ?? 0);
+      lastZ = Number(sun.position?.z ?? 0);
+      lastUpdateAt = nowMs();
+      requestedUpdates += 1;
+    },
+    snapshot() {
+      return Object.freeze({
+        mode: "threshold",
+        autoUpdate: renderer.shadowMap.autoUpdate,
+        movementThreshold,
+        maximumIntervalMs,
+        requestedUpdates
+      });
+    }
+  };
+
+  renderer.render = function prehistoricShadowGatedRender(...args) {
+    const x = Number(sun.position?.x ?? 0);
+    const y = Number(sun.position?.y ?? 0);
+    const z = Number(sun.position?.z ?? 0);
+    const dx = x - lastX;
+    const dy = y - lastY;
+    const dz = z - lastZ;
+    const currentTime = nowMs();
+    const movedEnough = dx * dx + dy * dy + dz * dz >= movementThresholdSq;
+    const intervalElapsed = currentTime - lastUpdateAt >= maximumIntervalMs;
+    if (!renderer.shadowMap.needsUpdate && (movedEnough || intervalElapsed)) gate.request();
+    return originalRender(...args);
+  };
+
+  renderer.userData.prehistoricShadowUpdateGate = gate;
+  return gate;
+}
+
 export function applyLushJungleAtmosphere(THREE, scene, renderer, options = {}) {
   if (!scene || !renderer) throw new TypeError("Lush jungle atmosphere requires scene and renderer.");
   const background = new THREE.Color(options.background ?? 0x8eb8a0);
@@ -31,6 +91,8 @@ export function applyLushJungleAtmosphere(THREE, scene, renderer, options = {}) 
     sun.shadow.camera.updateProjectionMatrix();
   }
 
+  const shadowUpdateGate = installShadowUpdateGate(renderer, sun, options);
+
   const fill = new THREE.DirectionalLight(options.fillColor ?? 0x9fc9c7, Number(options.fillIntensity ?? 0.42));
   fill.name = "prehistoric-jungle-fill";
   fill.position.set(34, 24, 18);
@@ -41,7 +103,7 @@ export function applyLushJungleAtmosphere(THREE, scene, renderer, options = {}) 
   canopyBounce.name = "prehistoric-canopy-bounce";
   scene.add(canopyBounce);
 
-  return Object.freeze({ background, fogColor, hemisphere, sun, fill, canopyBounce });
+  return Object.freeze({ background, fogColor, hemisphere, sun, fill, canopyBounce, shadowUpdateGate });
 }
 
 export default applyLushJungleAtmosphere;
