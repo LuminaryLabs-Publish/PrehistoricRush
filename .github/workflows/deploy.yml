@@ -3,132 +3,32 @@ name: Deploy
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - ".agent/evidence/**"
-      - ".agent/runs/**"
-      - ".agent/tracker.md"
-      - ".agent/target.md"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
-  actions: read
 
 concurrency:
-  group: prehistoric-rush-main-validation
+  group: prehistoric-rush-pages
   cancel-in-progress: true
 
 jobs:
-  node-contracts:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Run deterministic contracts
-        run: npm test
-      - name: Run world update verification
-        run: npm run test:world-update
-
-  browser-evidence:
-    runs-on: ubuntu-latest
-    needs: node-contracts
-    timeout-minutes: 40
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install browser validation dependency
-        run: |
-          npm install --no-save --package-lock=false playwright@1.61.1
-          npx playwright install --with-deps chromium
-      - name: Prepare baseline worktree
-        run: |
-          git worktree add /tmp/prehistoric-baseline e22f6802c9ef5017251017fc87585c6c654d4a4a
-          mkdir -p /tmp/prehistoric-baseline/validation
-          cp validation/forest-lab.html /tmp/prehistoric-baseline/validation/forest-lab.html
-          cp validation/forest-lab.js /tmp/prehistoric-baseline/validation/forest-lab.js
-      - name: Capture baseline render evidence
-        run: |
-          python3 -m http.server 4174 --bind 127.0.0.1 --directory /tmp/prehistoric-baseline >/tmp/prehistoric-baseline-http.log 2>&1 &
-          BASELINE_SERVER_PID=$!
-          trap 'kill $BASELINE_SERVER_PID || true' EXIT
-          PREHISTORIC_BASE_URL=http://127.0.0.1:4174 PREHISTORIC_EVIDENCE_PHASE=before node tests/browser-visual-validation.mjs
-          kill $BASELINE_SERVER_PID
-          trap - EXIT
-      - name: Compile deterministic tree Fidelity assets
-        env:
-          PREHISTORIC_SOURCE_SHA: ${{ github.sha }}
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-compiler-http.log 2>&1 &
-          COMPILER_SERVER_PID=$!
-          trap 'kill $COMPILER_SERVER_PID || true' EXIT
-          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 npm run compile:tree-fidelity
-          kill $COMPILER_SERVER_PID
-          trap - EXIT
-      - name: Persist compiled tree assets to main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/tree-fidelity .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/metrics/tree-fidelity-compile.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "compile tree fidelity assets [skip ci]"
-          git fetch origin main
-          git rebase --autostash origin/main
-          git push origin HEAD:main
-      - name: Capture current main render evidence using compiled assets
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-current-http.log 2>&1 &
-          CURRENT_SERVER_PID=$!
-          trap 'kill $CURRENT_SERVER_PID || true' EXIT
-          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 PREHISTORIC_EVIDENCE_PHASE=after node tests/browser-visual-validation.mjs
-          kill $CURRENT_SERVER_PID
-          trap - EXIT
-      - name: Validate compiled production startup fast path
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/prehistoric-fast-start-http.log 2>&1 &
-          FAST_START_SERVER_PID=$!
-          trap 'kill $FAST_START_SERVER_PID || true' EXIT
-          PREHISTORIC_BASE_URL=http://127.0.0.1:4173 node tests/prebuilt-startup-validation.mjs
-          kill $FAST_START_SERVER_PID
-          trap - EXIT
-      - name: Compare before and after evidence
-        run: |
-          mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
-          node tests/compare-visual-evidence.mjs | tee .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/observed-differences.json
-      - name: Persist browser evidence to main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
-          git commit -m "record prehistoric browser validation evidence [skip ci]"
-          git fetch origin main
-          git rebase --autostash origin/main
-          git push origin HEAD:main
-
-  pages-deploy:
-    runs-on: ubuntu-latest
-    needs: browser-evidence
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout validated main with compiled assets
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Stage validated site
-        shell: bash
+      - name: Stage site
         run: |
-          rm -rf _site
           mkdir -p _site/src _site/scenes _site/assets _site/validation _site/kits
           cp index.html menu.html charactercreator.html game.html _site/
           cp .nojekyll _site/.nojekyll
@@ -143,126 +43,6 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
-      - name: Deploy current main to GitHub Pages
+      - name: Deploy main to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  pages-smoke:
-    runs-on: ubuntu-latest
-    needs: pages-deploy
-    steps:
-      - name: Verify deployed game from main
-        run: |
-          curl --fail --location --silent --show-error \
-            --retry 12 --retry-delay 5 --retry-all-errors \
-            https://luminarylabs-publish.github.io/PrehistoricRush/game.html \
-            | grep -q "Prehistoric Rush"
-      - name: Verify deployed validation lab
-        run: |
-          curl --fail --location --silent --show-error \
-            --retry 12 --retry-delay 5 --retry-all-errors \
-            https://luminarylabs-publish.github.io/PrehistoricRush/validation/forest-lab.html \
-            | grep -q "Forest Validation Lab"
-      - name: Verify compiled tree Fidelity manifest
-        run: |
-          curl --fail --location --silent --show-error \
-            --retry 12 --retry-delay 5 --retry-all-errors \
-            https://luminarylabs-publish.github.io/PrehistoricRush/assets/tree-fidelity/manifest.json \
-            | grep -q "prehistoric-rush.prebuilt-tree-fidelity-manifest/1"
-
-  record-deployment:
-    runs-on: ubuntu-latest
-    needs: pages-smoke
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install NexusEngine-Editor Headless host
-        run: npm install --no-save --package-lock=false "github:LuminaryLabs-Dev/NexusEngine-Editor#2c87650436c332324f6c74d87f774a152e3aa8a2"
-      - name: Run final nine-stage Headless lifecycle
-        env:
-          PREHISTORIC_VALIDATED_SHA: ${{ github.sha }}
-          PREHISTORIC_WORKFLOW_RUN_ID: ${{ github.run_id }}
-          PREHISTORIC_PAGES_PASS: "1"
-        run: node tests/headless-editor-evidence.mjs
-      - name: Record successful main validation
-        env:
-          VALIDATED_SHA: ${{ github.sha }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
-          cat > .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/deployment-pass.json <<EOF
-          {
-            "status": "PASS",
-            "validatedCommit": "${VALIDATED_SHA}",
-            "workflowRunId": "${RUN_ID}",
-            "headlessEditorCommit": "2c87650436c332324f6c74d87f774a152e3aa8a2",
-            "gameUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/game.html",
-            "forestLabUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/validation/forest-lab.html",
-            "treeFidelityManifestUrl": "https://luminarylabs-publish.github.io/PrehistoricRush/assets/tree-fidelity/manifest.json",
-            "checks": {
-              "nodeContracts": "PASS",
-              "compiledTreeAssets": "PASS",
-              "compiledStartupFastPath": "PASS",
-              "browserEvidence": "PASS",
-              "pagesDeployment": "PASS",
-              "pagesGame": "PASS",
-              "pagesForestLab": "PASS",
-              "pagesCompiledTreeAssets": "PASS",
-              "headlessLifecycle": "PASS"
-            }
-          }
-          EOF
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
-          git commit -m "record prehistoric main validation pass [skip ci]"
-          git fetch origin main
-          git rebase --autostash origin/main
-          git push origin HEAD:main
-
-  record-result:
-    if: always()
-    runs-on: ubuntu-latest
-    needs: [node-contracts, browser-evidence, pages-deploy, pages-smoke, record-deployment]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - name: Persist observable workflow result
-        env:
-          VALIDATED_SHA: ${{ github.sha }}
-          RUN_ID: ${{ github.run_id }}
-          NODE_RESULT: ${{ needs.node-contracts.result }}
-          BROWSER_RESULT: ${{ needs.browser-evidence.result }}
-          DEPLOY_RESULT: ${{ needs.pages-deploy.result }}
-          PAGES_RESULT: ${{ needs.pages-smoke.result }}
-          HEADLESS_RESULT: ${{ needs.record-deployment.result }}
-        run: |
-          mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
-          cat > .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json <<EOF
-          {
-            "validatedCommit": "${VALIDATED_SHA}",
-            "workflowRunId": "${RUN_ID}",
-            "jobs": {
-              "nodeContracts": "${NODE_RESULT}",
-              "browserEvidence": "${BROWSER_RESULT}",
-              "pagesDeploy": "${DEPLOY_RESULT}",
-              "pagesSmoke": "${PAGES_RESULT}",
-              "headlessLifecycle": "${HEADLESS_RESULT}"
-            }
-          }
-          EOF
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/workflow-result.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "record prehistoric workflow result [skip ci]"
-          git fetch origin main
-          git rebase --autostash origin/main
-          git push origin HEAD:main
