@@ -19,36 +19,34 @@ export function createPrehistoricRushPlayerImplementation({ engine, course, worl
     return clone(state);
   }
 
-  function tickFrame(dtInput, input = {}) {
+  function tick(dtInput, input = {}) {
     const dt = Math.max(0, Math.min(0.05, Number(dtInput) || 0));
     frame += 1;
-    state.yaw += Number(input.steer ?? 0) * turnRate * dt;
-    const nearest = course.route.nearest(state.x, state.z, state.routeIndex, 120);
-    state.routeIndex = nearest.index;
-    state.routeProgress = nearest.progress;
-    state.region = course.route.classify(nearest.distance, nearest.width);
-    const targetMultiplier = multipliers[state.region] ?? multipliers.forest;
-    state.surfaceMultiplier += (targetMultiplier - state.surfaceMultiplier) * (1 - Math.exp(-4.8 * dt));
-    const desiredSpeed = (input.boost ? boostSpeed : maxSpeed) * state.surfaceMultiplier;
-    state.speed += (desiredSpeed - state.speed) * Math.min(1, dt * 2.6);
-    if (input.jump && state.grounded) { state.verticalVelocity = jumpImpulse; state.grounded = false; }
-    state.verticalVelocity -= gravity * dt;
-    state.jumpHeight = Math.max(0, state.jumpHeight + state.verticalVelocity * dt);
-    if (state.jumpHeight === 0) { state.verticalVelocity = 0; state.grounded = true; }
-    const dx = Math.sin(state.yaw) * state.speed * dt;
-    const dz = Math.cos(state.yaw) * state.speed * dt;
-    state.x += dx;
-    state.z += dz;
-    state.distance += Math.hypot(dx, dz);
-    state.y = world.sampleElevation(state.x, state.z);
-    engine.n.motion.submitIntent({ id: `player-motion-${frame}`, actorId: "player-character", mode: state.grounded ? "run" : "airborne", desiredVelocity: { x: dx / Math.max(dt, 0.000001), y: state.verticalVelocity, z: dz / Math.max(dt, 0.000001) }, desiredFacing: { x: Math.sin(state.yaw), y: 0, z: Math.cos(state.yaw) }, grounded: state.grounded, sequence: frame });
-    return state;
-  }
-
-  function tick(dtInput, input = {}) {
-    return clone(tickFrame(dtInput, input));
+    const next = clone(state);
+    next.yaw += Number(input.steer ?? 0) * turnRate * dt;
+    const nearest = course.route.nearest(next.x, next.z, next.routeIndex, 120);
+    next.routeIndex = nearest.index;
+    next.routeProgress = nearest.progress;
+    next.region = course.route.classify(nearest.distance, nearest.width);
+    const targetMultiplier = multipliers[next.region] ?? multipliers.forest;
+    next.surfaceMultiplier += (targetMultiplier - next.surfaceMultiplier) * (1 - Math.exp(-4.8 * dt));
+    const desiredSpeed = (input.boost ? boostSpeed : maxSpeed) * next.surfaceMultiplier;
+    next.speed += (desiredSpeed - next.speed) * Math.min(1, dt * 2.6);
+    if (input.jump && next.grounded) { next.verticalVelocity = jumpImpulse; next.grounded = false; }
+    next.verticalVelocity -= gravity * dt;
+    next.jumpHeight = Math.max(0, next.jumpHeight + next.verticalVelocity * dt);
+    if (next.jumpHeight === 0) { next.verticalVelocity = 0; next.grounded = true; }
+    const dx = Math.sin(next.yaw) * next.speed * dt;
+    const dz = Math.cos(next.yaw) * next.speed * dt;
+    next.x += dx;
+    next.z += dz;
+    next.distance += Math.hypot(dx, dz);
+    next.y = world.sampleElevation(next.x, next.z);
+    engine.n.motion.submitIntent({ id: `player-motion-${frame}`, actorId: "player-character", mode: next.grounded ? "run" : "airborne", desiredVelocity: { x: dx / Math.max(dt, 0.000001), y: next.verticalVelocity, z: dz / Math.max(dt, 0.000001) }, desiredFacing: { x: Math.sin(next.yaw), y: 0, z: Math.cos(next.yaw) }, grounded: next.grounded, sequence: frame });
+    state = next;
+    return clone(state);
   }
 
   reset();
-  return Object.freeze({ reset, tick, tickFrame, getState: () => clone(state), snapshot: () => clone(state) });
+  return Object.freeze({ reset, tick, getState: () => clone(state), snapshot: () => clone(state) });
 }

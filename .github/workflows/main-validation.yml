@@ -100,14 +100,6 @@ jobs:
         run: |
           mkdir -p .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after
           node tests/compare-visual-evidence.mjs | tee .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade/after/observed-differences.json
-      - name: Upload Headless visual evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: prehistoric-headless-visual-evidence
-          path: .agent/evidence/2026-08-09-prehistoric-headless-visual-upgrade
-          if-no-files-found: warn
-          retention-days: 30
       - name: Persist browser evidence to main
         run: |
           git config user.name "github-actions[bot]"
@@ -131,10 +123,24 @@ jobs:
           ref: main
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+      - name: Stage validated site
+        shell: bash
+        run: |
+          rm -rf _site
+          mkdir -p _site/src _site/scenes _site/assets _site/validation _site/kits
+          cp index.html menu.html charactercreator.html game.html _site/
+          cp .nojekyll _site/.nojekyll
+          cp game-scenes.json runner-tuning.json flock-generation.json _site/
+          cp kit-composition.json kit-cutover-inventory.json _site/
+          cp -R src/* _site/src/
+          cp -R scenes/* _site/scenes/
+          cp -R assets/* _site/assets/
+          cp -R validation/* _site/validation/
+          cp -R kits/* _site/kits/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "."
+          path: _site
       - name: Deploy current main to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

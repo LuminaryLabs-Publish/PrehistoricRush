@@ -27,8 +27,12 @@ async function captureManifest(phase) {
   const captures = [];
   const image = evidenceFile(phase, "foundation-gate.png");
   const metrics = evidenceFile(phase, "foundation-gate.json");
+  const raceBefore = evidenceFile(phase, "race-before.png");
+  const raceAfter = evidenceFile(phase, "race-after.png");
   if (await exists(image)) captures.push({ id: `foundation-gate:${phase}`, kind: "screenshot", path: path.relative(evidenceRoot, image) });
   if (await exists(metrics)) captures.push({ id: `foundation-gate:${phase}:metrics`, kind: "metrics", path: path.relative(evidenceRoot, metrics) });
+  if (await exists(raceBefore)) captures.push({ id: "race-before", kind: "screenshot", path: path.relative(evidenceRoot, raceBefore) });
+  if (await exists(raceAfter)) captures.push({ id: "race-after", kind: "screenshot", path: path.relative(evidenceRoot, raceAfter) });
   return { ok: captures.length >= 1, phase, captures };
 }
 
@@ -72,6 +76,8 @@ const adapter = {
     const required = [
       evidenceFile("before", "foundation-gate.json"),
       evidenceFile("after", "foundation-gate.json"),
+      evidenceFile("after", "race-before.png"),
+      evidenceFile("after", "race-after.png"),
       evidenceFile("after", "observed-differences.json")
     ];
     const missing = [];
@@ -111,6 +117,12 @@ const adapter = {
       ["z-seam", Number(after.seamDeltas?.z) < 0.5],
       ["page-errors", (after.pageErrors ?? []).length === 0],
       ["console-errors", (after.consoleErrors ?? []).length === 0],
+      ["race-character", after.race?.after?.playerPresentation === "procedural-skinned-raptor"],
+      ["race-course", after.race?.after?.courseVisible === true],
+      ["race-movement", after.race?.movementObserved === true],
+      ["race-camera-follow", after.race?.cameraFollowObserved === true],
+      ["race-card-absent", after.race?.characterCardPresent === false],
+      ["race-screenshots", (observation.after.race?.screenshots ?? []).length === 2],
       ["observed-differences", observation.differences.status === "PASS"],
       ["pages-main", observation.pagesPass === true]
     ].map(([id, ok]) => ({ id, ok }));

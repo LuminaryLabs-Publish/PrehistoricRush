@@ -11,13 +11,13 @@ import { createPrehistoricRushRenderingImplementation } from "./domains/prehisto
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" style="position:absolute;inset:0"></div><aside style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:230px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" style="margin-top:7px;line-height:1.45;white-space:pre-line">Loading Nexus World…</div></aside></section>`;
+app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;left:18px;top:18px;z-index:4;padding:12px 14px;border-radius:12px;background:#09110bcc;min-width:230px;pointer-events:none"><strong style="color:#ffd37a">Prehistoric Rush</strong><div id="prehistoric-status" data-race-status="true" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div></aside></section>`;
 const host = document.querySelector("#prehistoric-render-host");
 const statusNode = document.querySelector("#prehistoric-status");
 const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
-  statusNode.textContent = `${detail}\n${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}`;
+  statusNode.innerHTML = `${detail}<br><small>${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}</small>`;
 };
 
 setLoading(0.04, "Loading Nexus semantic domains");
@@ -138,7 +138,7 @@ addEventListener("keyup", (event) => {
   if (["KeyD", "ArrowRight"].includes(event.code)) right = false;
   if (["KeyW", "ArrowUp"].includes(event.code)) boost = false;
 });
-addEventListener("blur", () => { left = false; right = false; boost = false; gameplay.setFrameInput?.(0, false); gameplay.setInput({ steer: 0, boost: false }); });
+addEventListener("blur", () => { left = false; right = false; boost = false; gameplay.setInput({ steer: 0, boost: false }); });
 addEventListener("resize", () => { rendering.camera.aspect = innerWidth / innerHeight; rendering.camera.updateProjectionMatrix(); rendering.renderer.setSize(innerWidth, innerHeight); });
 
 function cameraFrame(state, dt) {
@@ -150,55 +150,24 @@ function cameraFrame(state, dt) {
   });
 }
 
-const frameSubscribers = new Set();
-function onFrame(callback) {
-  if (typeof callback !== "function") throw new TypeError("PrehistoricRush frame subscriber must be a function.");
-  frameSubscribers.add(callback);
-  return () => frameSubscribers.delete(callback);
-}
-
-function publishFrame(state, dt, now, sequence) {
-  for (const callback of frameSubscribers) {
-    try {
-      callback(state, rendering.camera, dt, now, sequence);
-    } catch (error) {
-      console.error("PrehistoricRush frame subscriber failed:", error);
-    }
-  }
-}
-
-function readFrameState(target) {
-  if (typeof gameplay.readFrameState === "function") return gameplay.readFrameState(target);
-  return Object.assign(target, gameplay.getState());
-}
-
 world.focus({ x: 0, y: 0, z: 0 });
-const frameState = {};
 let last = performance.now();
-let frameSequence = 0;
-let nextStatusAt = 0;
 function loop(now) {
   const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
   last = now;
-  const steer = (left ? 1 : 0) - (right ? 1 : 0);
-  if (typeof gameplay.setFrameInput === "function") gameplay.setFrameInput(steer, boost);
-  else gameplay.setInput({ steer, boost });
-  if (typeof gameplay.tickFrame === "function") gameplay.tickFrame(dt);
-  else gameplay.tick(dt);
+  gameplay.setInput({ steer: (left ? 1 : 0) - (right ? 1 : 0), boost });
+  gameplay.tick(dt);
   engine.tick(dt);
-  const state = readFrameState(frameState);
+  const state = gameplay.getState();
+  document.body.dataset.raceStatus = state.status;
+  document.body.dataset.raceDistance = String(state.distance);
   rendering.draw(state, cameraFrame(state, dt), dt);
-  frameSequence += 1;
-  publishFrame(state, dt, now, frameSequence);
-  if (now >= nextStatusAt) {
-    nextStatusAt = now + 200;
-    const presentation = rendering.snapshot();
-    statusNode.textContent = `${worldRecipe.name}\n${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards\n${state.speed.toFixed(1)} m/s · ${state.region}\nNexus Foundation · ${world.landforms.length} landforms · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
-  }
+  const presentation = rendering.snapshot();
+  statusNode.innerHTML = `${worldRecipe.name}<br>${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards<br>${state.speed.toFixed(1)} m/s · ${state.region}<br><small>Nexus Foundation · ${world.landforms.length} landforms · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute · ${diagnosticFoundationOnly ? "diagnostic terrain only" : `${presentation.treeCount} trees · ${presentation.grassCount} grass`}</small>`;
   requestAnimationFrame(loop);
 }
 
-const initial = readFrameState(frameState);
+const initial = gameplay.getState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
 const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
@@ -244,9 +213,14 @@ const getState = () => {
     },
     vegetation: { enabled: presentation.vegetationEnabled },
     playerPresentation: presentation.playerPresentation,
+    camera: {
+      x: rendering.camera.position.x,
+      y: rendering.camera.position.y,
+      z: rendering.camera.position.z
+    },
     assetStartup: { mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "prebuilt-tree-fidelity" },
     versions: { nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
   };
 };
-globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, onFrame, getState });
+globalThis.PrehistoricRushHost = Object.freeze({ engine, course, world, player, gameplay, rendering, computeHost, worldRecipe, playerProfile, playerBody, getState });
 requestAnimationFrame(loop);

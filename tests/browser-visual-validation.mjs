@@ -11,6 +11,8 @@ const evidenceRoot = path.join(repositoryRoot, ".agent", "evidence", "2026-08-09
 const evidenceFile = path.join(evidenceRoot, "foundation-gate.json");
 const screenshotFile = path.join(evidenceRoot, "foundation-gate.png");
 const productionScreenshotFile = path.join(evidenceRoot, "production-restored.png");
+const raceBeforeScreenshotFile = path.join(evidenceRoot, "race-before.png");
+const raceAfterScreenshotFile = path.join(evidenceRoot, "race-after.png");
 const PRODUCTION_STARTUP_BUDGET_MS = 60000;
 const pageErrors = [];
 const consoleErrors = [];
@@ -147,7 +149,28 @@ try {
         && state.rendering.activeForestPatches === state.rendering.forestTargetPatchCount
         && state.streamingReadiness.backgroundForestPending === 0;
     }, null, { timeout: 60000 });
-    const production = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const raceBefore = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    assert.equal(raceBefore.playerPresentation, "procedural-skinned-raptor", "Race must render the selected character.");
+    assert.equal(raceBefore.rendering.courseVisible, true, "Race must render the procedural course.");
+    assert.equal(await page.locator('[data-race-screen="true"]').count(), 1, "Race screen must be present.");
+    assert.equal(await page.locator('[data-race-hud="true"]').count(), 1, "Race HUD must be present.");
+    assert.equal(await page.locator('[aria-label*="classification tablet"]').count(), 0, "Character selection card must not appear during the race.");
+    await page.screenshot({ path: raceBeforeScreenshotFile, fullPage: true });
+
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.body.dataset.raceStatus === "game", null, { timeout: 15000 });
+    const started = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    await page.keyboard.down("ArrowRight");
+    await page.waitForTimeout(900);
+    await page.keyboard.up("ArrowRight");
+    const raceAfter = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    assert.ok(raceAfter.game.run.distance > started.game.run.distance, "Character must move along the track after input.");
+    assert.notDeepEqual(raceAfter.camera, started.camera, "Camera must follow the moving character.");
+    assert.equal(raceAfter.playerPresentation, "procedural-skinned-raptor", "Moving race must retain the selected character.");
+    assert.equal(raceAfter.rendering.courseVisible, true, "Moving race must retain the procedural course.");
+    await page.screenshot({ path: raceAfterScreenshotFile, fullPage: true });
+
+    const production = raceAfter;
     assert.equal(production.rendering.terrainAuthority, "n:world:foundation", "Production must retain Foundation terrain authority");
     assert.equal(production.rendering.diagnosticFoundationOnly, false, "Normal production must not use terrain-only diagnostics");
     assert.equal(production.vegetation.enabled, true, "Normal production must restore vegetation");
@@ -200,6 +223,24 @@ try {
           ...finalState.performance,
           rendering: finalState.rendering.performance
         }
+      },
+      race: {
+        before: {
+          distance: raceBefore.game.run.distance,
+          playerPresentation: raceBefore.playerPresentation,
+          courseVisible: raceBefore.rendering.courseVisible,
+          camera: raceBefore.camera
+        },
+        after: {
+          distance: raceAfter.game.run.distance,
+          playerPresentation: raceAfter.playerPresentation,
+          courseVisible: raceAfter.rendering.courseVisible,
+          camera: raceAfter.camera
+        },
+        screenshots: ["race-before.png", "race-after.png"],
+        characterCardPresent: false,
+        movementObserved: raceAfter.game.run.distance > started.game.run.distance,
+        cameraFollowObserved: JSON.stringify(raceAfter.camera) !== JSON.stringify(started.camera)
       },
       pageErrors,
       consoleErrors

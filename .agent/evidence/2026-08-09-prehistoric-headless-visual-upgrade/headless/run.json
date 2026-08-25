@@ -19,8 +19,8 @@
     {
       "stage": "read",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.399Z",
-      "completedAt": "2026-08-25T05:55:41.402Z",
+      "startedAt": "2026-08-21T22:27:25.504Z",
+      "completedAt": "2026-08-21T22:27:25.507Z",
       "result": {
         "ok": true
       }
@@ -28,8 +28,8 @@
     {
       "stage": "capture-before",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.404Z",
-      "completedAt": "2026-08-25T05:55:41.405Z",
+      "startedAt": "2026-08-21T22:27:25.508Z",
+      "completedAt": "2026-08-21T22:27:25.509Z",
       "result": {
         "ok": true
       }
@@ -37,8 +37,8 @@
     {
       "stage": "plan",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.406Z",
-      "completedAt": "2026-08-25T05:55:41.408Z",
+      "startedAt": "2026-08-21T22:27:25.510Z",
+      "completedAt": "2026-08-21T22:27:25.512Z",
       "result": {
         "ok": true,
         "planId": "2026-08-09-prehistoric-headless-visual-upgrade:foundation-final-proof",
@@ -48,8 +48,8 @@
     {
       "stage": "validate",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.410Z",
-      "completedAt": "2026-08-25T05:55:41.412Z",
+      "startedAt": "2026-08-21T22:27:25.512Z",
+      "completedAt": "2026-08-21T22:27:25.515Z",
       "result": {
         "ok": true,
         "issueCount": 0
@@ -58,30 +58,30 @@
     {
       "stage": "submit",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.413Z",
-      "completedAt": "2026-08-25T05:55:41.414Z",
+      "startedAt": "2026-08-21T22:27:25.515Z",
+      "completedAt": "2026-08-21T22:27:25.516Z",
       "result": {
         "ok": true,
         "submitted": true,
-        "runId": "32814487003"
+        "runId": "32532682285"
       }
     },
     {
       "stage": "observe",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.415Z",
-      "completedAt": "2026-08-25T05:55:41.417Z",
+      "startedAt": "2026-08-21T22:27:25.517Z",
+      "completedAt": "2026-08-21T22:27:25.518Z",
       "result": {
         "ok": true,
         "status": "completed",
-        "runId": "32814487003"
+        "runId": "32532682285"
       }
     },
     {
       "stage": "verify",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.418Z",
-      "completedAt": "2026-08-25T05:55:41.419Z",
+      "startedAt": "2026-08-21T22:27:25.519Z",
+      "completedAt": "2026-08-21T22:27:25.520Z",
       "result": {
         "ok": true,
         "checkCount": 13
@@ -90,8 +90,8 @@
     {
       "stage": "capture-after",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.420Z",
-      "completedAt": "2026-08-25T05:55:41.421Z",
+      "startedAt": "2026-08-21T22:27:25.521Z",
+      "completedAt": "2026-08-21T22:27:25.521Z",
       "result": {
         "ok": true
       }
@@ -99,8 +99,8 @@
     {
       "stage": "observed-differences",
       "ok": true,
-      "startedAt": "2026-08-25T05:55:41.422Z",
-      "completedAt": "2026-08-25T05:55:41.424Z",
+      "startedAt": "2026-08-21T22:27:25.522Z",
+      "completedAt": "2026-08-21T22:27:25.524Z",
       "result": {
         "ok": true,
         "structuredChanges": 4,
@@ -108,5 +108,5 @@
       }
     }
   ],
-  "completedAt": "2026-08-25T05:55:41.424Z"
+  "completedAt": "2026-08-21T22:27:25.524Z"
 }
