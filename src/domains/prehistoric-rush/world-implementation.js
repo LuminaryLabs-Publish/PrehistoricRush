@@ -152,6 +152,8 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
   const cells = new Map();
   const resolvedCells = new Map();
   let focusUpdateCount = 0;
+  let coreWorldSyncCount = 0;
+  let coreWorldPrimed = false;
   let lastFocus = { x: 0, y: 0, z: 0 };
   let lastFocusCell = [0, 0];
   let travelDirection = [0, 1];
@@ -222,6 +224,13 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
     schedulePrewarmWork();
   }
 
+  function syncCoreWorld() {
+    coreWorld.setFocus(recipe.id, { position: clone(lastFocus) });
+    coreWorldSyncCount += 1;
+    coreWorldPrimed = true;
+    return coreWorld.updateWorld(recipe.id);
+  }
+
   function focus(position = {}) {
     lastFocus = { x: Number(position.x ?? 0), y: Number(position.y ?? 0), z: Number(position.z ?? 0) };
     const nextFocusCell = cellCoordinates(lastFocus.x, lastFocus.z);
@@ -231,18 +240,18 @@ export function createPrehistoricRushWorldImplementation({ engine, World, Founda
     lastFocusCell = nextFocusCell;
     queueNextTerrainTransition(nextFocusCell[0], nextFocusCell[1]);
     focusUpdateCount += 1;
-    coreWorld.setFocus(recipe.id, { position: clone(lastFocus) });
-    return coreWorld.updateWorld(recipe.id);
+    if (!coreWorldPrimed) return syncCoreWorld();
+    return null;
   }
 
   return Object.freeze({
     id: recipe.id, recipe: clone(recipe), cellSize: size, landforms: clone(projectedLandforms), ecology: clone(content.ecology), hydrology: clone(content.hydrology), atmosphere: clone(content.atmosphere),
     createCell,
     resolveCellAt(x, z) { const cell = createCell(x, z); return { cell: clone(cell), foundation: clone(resolveCell(cell)) }; },
-    sampleElevation, sampleChannel, focus,
+    sampleElevation, sampleChannel, focus, syncCoreWorld,
     snapshot() {
       return {
-        recipe: clone(recipe), landforms: clone(projectedLandforms), ecology: clone(content.ecology), hydrology: clone(content.hydrology), atmosphere: clone(content.atmosphere), featureIds: [...featureIds], focus: clone(lastFocus), focusUpdateCount,
+        recipe: clone(recipe), landforms: clone(projectedLandforms), ecology: clone(content.ecology), hydrology: clone(content.hydrology), atmosphere: clone(content.atmosphere), featureIds: [...featureIds], focus: clone(lastFocus), focusUpdateCount, coreWorldSyncCount,
         coreWorld: coreWorld.getWorld(recipe.id), featureCount: worldFeature.listFeatures().length, cachedCellCount: cells.size, resolvedCellCount: resolvedCells.size,
         elevationCache: elevationSampler.snapshot(),
         terrainPrewarm: terrainPrewarmer.snapshot(),
