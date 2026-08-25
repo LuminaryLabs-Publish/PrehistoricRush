@@ -1,16 +1,53 @@
 export const FOUNDATION_TERRAIN_PATCH_SIZE = 96;
-export const FOUNDATION_TERRAIN_ACTIVE_RADIUS = 1;
-export const FOUNDATION_TERRAIN_RETAIN_RADIUS = 2;
+export const FOUNDATION_TERRAIN_ACTIVE_RADIUS = 2;
+export const FOUNDATION_TERRAIN_RETAIN_RADIUS = 3;
 export const FOUNDATION_TERRAIN_PATCH_SEGMENTS = 16;
 export const FOUNDATION_FOREST_RADIUS = 2;
 export const FOUNDATION_FOREST_GENERATION_BUDGET = 4;
+
+const PLAN_CACHE_LIMIT = 128;
+const DEFAULT_LOOKAHEAD_SECONDS = 1.5;
+const MAX_LOOKAHEAD_PATCH_FRACTION = 0.75;
+const planCache = new Map();
+
+function finiteNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function streamingFocus(position = {}, size) {
+  const x = finiteNumber(position.x);
+  const z = finiteNumber(position.z);
+  const yaw = finiteNumber(position.yaw);
+  const speed = Math.max(0, finiteNumber(position.speed));
+  const requestedLookahead = Math.max(0, finiteNumber(position.streamingLookaheadSeconds, DEFAULT_LOOKAHEAD_SECONDS));
+  const lookahead = Math.min(size * MAX_LOOKAHEAD_PATCH_FRACTION, speed * requestedLookahead);
+  return {
+    x: x + Math.sin(yaw) * lookahead,
+    z: z + Math.cos(yaw) * lookahead,
+    lookahead
+  };
+}
+
+function cachePlan(key, entries) {
+  planCache.set(key, entries);
+  if (planCache.size <= PLAN_CACHE_LIMIT) return entries;
+  const oldest = planCache.keys().next().value;
+  planCache.delete(oldest);
+  return entries;
+}
 
 export function createCenteredPatchPlan(position = {}, options = {}) {
   const size = Math.max(1, Number(options.size ?? FOUNDATION_TERRAIN_PATCH_SIZE));
   const radius = Math.max(0, Math.floor(Number(options.radius ?? 0)));
   const prefix = String(options.prefix ?? "patch");
-  const centerX = Math.floor(Number(position.x ?? 0) / size);
-  const centerZ = Math.floor(Number(position.z ?? 0) / size);
+  const focus = streamingFocus(position, size);
+  const centerX = Math.floor(focus.x / size);
+  const centerZ = Math.floor(focus.z / size);
+  const cacheKey = `${prefix}:${size}:${radius}:${centerX}:${centerZ}`;
+  const cached = planCache.get(cacheKey);
+  if (cached) return cached;
+
   const entries = [];
   for (let dz = -radius; dz <= radius; dz += 1) {
     for (let dx = -radius; dx <= radius; dx += 1) {
@@ -30,11 +67,18 @@ export function createCenteredPatchPlan(position = {}, options = {}) {
     || left.manhattan - right.manhattan
     || left.z - right.z
     || left.x - right.x);
-  return Object.freeze(entries);
+  return cachePlan(cacheKey, Object.freeze(entries));
 }
 
 export function selectMissingPatchBatch(plan = [], existingIds = [], maximum = FOUNDATION_FOREST_GENERATION_BUDGET) {
   const existing = existingIds instanceof Set ? existingIds : new Set(existingIds);
   const limit = Math.max(0, Math.floor(Number(maximum ?? 0)));
-  return Object.freeze(plan.filter((entry) => !existing.has(entry.id)).slice(0, limit));
+  if (limit === 0) return Object.freeze([]);
+  const missing = [];
+  for (const entry of plan) {
+    if (existing.has(entry.id)) continue;
+    missing.push(entry);
+    if (missing.length >= limit) break;
+  }
+  return Object.freeze(missing);
 }
