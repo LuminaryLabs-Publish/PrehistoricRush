@@ -33,8 +33,8 @@
     "atmosphereFeatureCount": 2,
     "shardCount": 63,
     "performance": {
-      "browserObservedHostReadyMs": 17294.147042000004,
-      "startupMs": 3633.0999999999767,
+      "browserObservedHostReadyMs": 18990.022026,
+      "startupMs": 4638.100000000006,
       "startupBudgetMs": 60000,
       "withinStartupBudget": true,
       "gpuNative": {
@@ -45,31 +45,31 @@
         "skippedFrames": 0
       },
       "rendering": {
-        "playableRendererMs": 1424,
-        "initialTerrainMs": 662.1000000000349,
-        "treeFidelityLoadMs": 489.4000000000233
+        "playableRendererMs": 1835.8000000000175,
+        "initialTerrainMs": 848.3999999999942,
+        "treeFidelityLoadMs": 1383.6999999999825
       }
     }
   },
   "race": {
     "before": {
-      "distance": 19.63043527196253,
+      "distance": 17.852417271442064,
       "playerPresentation": "procedural-skinned-raptor",
       "courseVisible": true,
       "camera": {
         "x": 0,
-        "y": -37.5607208454298,
-        "z": 2.8933020161748364
+        "y": -37.537249464850916,
+        "z": 1.2024388958194023
       }
     },
     "after": {
-      "distance": 13.37650315856937,
+      "distance": 9.724770022607498,
       "playerPresentation": "procedural-skinned-raptor",
       "courseVisible": true,
       "camera": {
-        "x": 7.358846984954259,
-        "y": -36.20156590317719,
-        "z": 0.08098408802828616
+        "x": 6.795051350268364,
+        "y": -36.451261648372906,
+        "z": -4.617061258736973
       }
     },
     "screenshots": [
@@ -174,17 +174,17 @@
       ],
       "streamingHoleCount": 0,
       "playerWorldPosition": {
-        "x": -7.395539463776397,
-        "y": -45.25875311850757,
-        "z": 10.11456103206714,
-        "yaw": -1.1625750000000101,
-        "speed": 27.744374887202806,
+        "x": -4.193566353001887,
+        "y": -45.536936799983415,
+        "z": 8.368845945520585,
+        "yaw": -0.862649999999987,
+        "speed": 26.270688409316843,
         "verticalVelocity": 0,
         "jumpHeight": 0,
         "grounded": true,
-        "distance": 13.37650315856937,
-        "routeIndex": 13,
-        "routeProgress": 0.006277160791887977,
+        "distance": 9.724770022607498,
+        "routeIndex": 11,
+        "routeProgress": 0.005311443746982134,
         "region": "path",
         "surfaceMultiplier": 1
       }
