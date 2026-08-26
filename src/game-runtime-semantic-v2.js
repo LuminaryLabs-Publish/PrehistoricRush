@@ -110,7 +110,7 @@ const racerPresentation = Object.freeze({
 });
 
 const rendering = await createPrehistoricRushRenderingImplementation(THREE, {
-  host, world, course, gameplay, creatureApi, racerPresentation, diagnosticFoundationOnly,
+  host, world, course, gameplay, creatureApi, racerPresentation, diagnosticFoundationOnly, Nexus,
   onProgress(progress, detail) { setLoading(0.22 + progress * 0.74, detail); }
 });
 const framing = engine.n.cameraFraming.create({

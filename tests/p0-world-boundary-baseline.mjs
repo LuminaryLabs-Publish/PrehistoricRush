@@ -12,7 +12,8 @@ assert.deepEqual(route.snapshot(), {
   controlPointCount: 260,
   sampleCount: 2072,
   pathHalfWidth: 3.1,
-  vergeWidth: 3.2
+  vergeWidth: 3.2,
+  search: { monotonicZ: true, fullSearchCalls: 0, fullSearchVisits: 0 }
 });
 
 const start = route.nearest(0, -18, 0, 120);

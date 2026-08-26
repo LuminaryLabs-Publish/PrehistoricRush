@@ -1,9 +1,26 @@
-export const FOUNDATION_TERRAIN_PATCH_SIZE = 96;
-export const FOUNDATION_TERRAIN_ACTIVE_RADIUS = 2;
-export const FOUNDATION_TERRAIN_RETAIN_RADIUS = 3;
-export const FOUNDATION_TERRAIN_PATCH_SEGMENTS = 16;
-export const FOUNDATION_FOREST_RADIUS = 2;
-export const FOUNDATION_FOREST_GENERATION_BUDGET = 1;
+export const FOUNDATION_WORKER_STREAMING_POLICY = Object.freeze({
+  patchSize: 96,
+  terrainActiveRadius: 2,
+  terrainRetainRadius: 3,
+  terrainSegments: 16,
+  activeRadius: 2,
+  retainRadius: 3,
+  prefetchDistance: 5,
+  prefetchLateralRadius: 1,
+  lookaheadSeconds: 1.5,
+  workerCountMaximum: 3,
+  generationBudget: 2,
+  activationBudget: 1,
+  cacheLimit: 128,
+  workerReadyTimeoutMs: 10000
+});
+
+export const FOUNDATION_TERRAIN_PATCH_SIZE = FOUNDATION_WORKER_STREAMING_POLICY.patchSize;
+export const FOUNDATION_TERRAIN_ACTIVE_RADIUS = FOUNDATION_WORKER_STREAMING_POLICY.terrainActiveRadius;
+export const FOUNDATION_TERRAIN_RETAIN_RADIUS = FOUNDATION_WORKER_STREAMING_POLICY.terrainRetainRadius;
+export const FOUNDATION_TERRAIN_PATCH_SEGMENTS = FOUNDATION_WORKER_STREAMING_POLICY.terrainSegments;
+export const FOUNDATION_FOREST_RADIUS = FOUNDATION_WORKER_STREAMING_POLICY.activeRadius;
+export const FOUNDATION_FOREST_GENERATION_BUDGET = FOUNDATION_WORKER_STREAMING_POLICY.activationBudget;
 
 const PLAN_CACHE_LIMIT = 128;
 const DEFAULT_LOOKAHEAD_SECONDS = 1.5;

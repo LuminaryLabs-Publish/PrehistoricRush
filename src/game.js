@@ -98,7 +98,7 @@ async function prepareTreeAssetsBeforeGame() {
 }
 
 await prepareTreeAssetsBeforeGame();
-await import("./game-runtime-lod.js");
+await import("./game-runtime-shared-gpu-v3.js");
 
 function createPauseMenuHost(root, pauseMenu) {
   let overlay = null;

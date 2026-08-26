@@ -11,6 +11,8 @@ const steps = [
   ["semantic Racer syntax", "src/domains/prehistoric-rush/racer-implementation.js", "node", ["--check", "src/domains/prehistoric-rush/racer-implementation.js"]],
   ["semantic Gameplay syntax", "src/domains/prehistoric-rush/gameplay-implementation.js", "node", ["--check", "src/domains/prehistoric-rush/gameplay-implementation.js"]],
   ["semantic Rendering syntax", "src/domains/prehistoric-rush/rendering-implementation.js", "node", ["--check", "src/domains/prehistoric-rush/rendering-implementation.js"]],
+  ["worker patch streaming", "tests/worker-patch-streaming-service.mjs", "node", ["tests/worker-patch-streaming-service.mjs"]],
+  ["semantic worker integration", "tests/semantic-worker-streaming-integration.mjs", "node", ["tests/semantic-worker-streaming-integration.mjs"]],
   ["semantic runtime syntax", "src/game-runtime-semantic-v2.js", "node", ["--check", "src/game-runtime-semantic-v2.js"]],
   ["shared GPU runtime syntax", "src/game-runtime-shared-gpu-v3.js", "node", ["--check", "src/game-runtime-shared-gpu-v3.js"]],
   ["portable dense contribution syntax", "src/domains/prehistoric-rush/dense-world-visual-contributions.js", "node", ["--check", "src/domains/prehistoric-rush/dense-world-visual-contributions.js"]],

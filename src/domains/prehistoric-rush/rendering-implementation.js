@@ -5,48 +5,27 @@ import { createThreeCinematicFidelityLayer } from "../../render/three-cinematic-
 import { createThreeCinematicGroundLayer } from "../../render/three-cinematic-ground-layer.js";
 import { PREHISTORIC_TREE_ARCHETYPES, PREHISTORIC_TREE_TYPES } from "../../shared/tree-archetype-catalog.js";
 import {
+  createPrehistoricVegetationGeneratorOptions,
+  createPrehistoricVegetationRuntime
+} from "../../shared/prehistoric-vegetation-domain.js";
+import { createPrehistoricWorldPatchGenerator } from "../../world/prehistoric-world-patch-generator.js";
+import {
   createAdaptivePixelRatioController,
   resolvePrehistoricVisualQuality
 } from "../../shared/prehistoric-visual-quality.js";
 import {
   FOUNDATION_FOREST_GENERATION_BUDGET,
   FOUNDATION_FOREST_RADIUS,
+  FOUNDATION_WORKER_STREAMING_POLICY,
   FOUNDATION_TERRAIN_ACTIVE_RADIUS,
   FOUNDATION_TERRAIN_PATCH_SEGMENTS,
   FOUNDATION_TERRAIN_PATCH_SIZE,
   FOUNDATION_TERRAIN_RETAIN_RADIUS,
-  createCenteredPatchPlan,
-  selectMissingPatchBatch
+  createCenteredPatchPlan
 } from "./rendering-streaming-policy.js";
+import { createWorkerPatchStreamingService } from "./worker-patch-streaming-service.js";
 
-const FOREST_PATCH_SIZE = FOUNDATION_TERRAIN_PATCH_SIZE;
 const TREE_CAPACITY_PER_TYPE = 320;
-const GRASS_CAPACITY = 7600;
-
-function hashText(value) {
-  let hash = 2166136261;
-  for (const character of String(value)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619);
-  return hash >>> 0;
-}
-
-function unit(seed, salt = "") {
-  let value = hashText(`${seed}:${salt}`) || 1;
-  value ^= value << 13;
-  value ^= value >>> 17;
-  value ^= value << 5;
-  return (value >>> 0) / 4294967295;
-}
-
-function scaleTranslationMatrix(scaleX, scaleY, scaleZ, x, y, z, yaw = 0) {
-  const c = Math.cos(yaw);
-  const s = Math.sin(yaw);
-  return [
-    c * scaleX, 0, -s * scaleX, 0,
-    0, scaleY, 0, 0,
-    s * scaleZ, 0, c * scaleZ, 0,
-    x, y, z, 1
-  ];
-}
 
 async function loadImage(url) {
   const image = new Image();
@@ -259,100 +238,6 @@ vec4 diffuseColor = vec4(trailColor, opacity);`
   return mesh;
 }
 
-function createGrassGeometry(THREE) {
-  const source = new THREE.ConeGeometry(0.12, 1, 3, 1, true);
-  source.translate(0, 0.5, 0);
-  return source;
-}
-
-function createGrassLayer(THREE, scene) {
-  const mesh = new THREE.InstancedMesh(
-    createGrassGeometry(THREE),
-    new THREE.MeshStandardMaterial({ color: 0x4d883d, roughness: 0.95, side: THREE.DoubleSide }),
-    GRASS_CAPACITY
-  );
-  mesh.name = "prehistoric-foundation-grass";
-  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  mesh.castShadow = false;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-  return mesh;
-}
-
-function createForestPatch(world, route, patchX, patchZ, worldSeed, qualityProfile) {
-  const id = `foundation-forest:${patchX}:${patchZ}`;
-  const minX = patchX * FOREST_PATCH_SIZE - FOREST_PATCH_SIZE * 0.5;
-  const minZ = patchZ * FOREST_PATCH_SIZE - FOREST_PATCH_SIZE * 0.5;
-  const trees = PREHISTORIC_TREE_ARCHETYPES.map(() => ({ trunks: [], crowns: [] }));
-  const grass = [];
-  const treesPerPatch = Math.max(8, Math.round(22 * Number(qualityProfile?.treeDensity ?? 1)));
-  const grassPerPatch = Math.max(30, Math.round(104 * Number(qualityProfile?.groundDensity ?? 1)));
-
-  for (let index = 0; index < treesPerPatch; index += 1) {
-    const seed = `${worldSeed}:${id}:tree:${index}`;
-    const x = minX + unit(seed, "x") * FOREST_PATCH_SIZE;
-    const z = minZ + unit(seed, "z") * FOREST_PATCH_SIZE;
-    const nearest = route.nearest(x, z, 0, route.samples.length);
-    if (nearest.distance < nearest.width + 5.25) continue;
-    const typeIndex = Math.min(PREHISTORIC_TREE_ARCHETYPES.length - 1, Math.floor(unit(seed, "species") * PREHISTORIC_TREE_ARCHETYPES.length));
-    const archetype = PREHISTORIC_TREE_ARCHETYPES[typeIndex];
-    const y = world.sampleElevation(x, z);
-    const scale = 0.84 + unit(seed, "scale") * 0.34;
-    const height = archetype.averageHeight * scale * (0.9 + unit(seed, "height") * 0.2);
-    const radius = archetype.trunkRadius * scale;
-    const crownHeight = archetype.crownHeight * scale;
-    const crownRadius = archetype.crownRadius * scale * (0.9 + unit(seed, "crown") * 0.22);
-    const yawRadians = unit(seed, "yaw") * Math.PI * 2;
-    const leanXRadians = (unit(seed, "lean-x") - 0.5) * 0.08;
-    const leanZRadians = (unit(seed, "lean-z") - 0.5) * 0.08;
-    const leanMargin = Math.sin(Math.max(Math.abs(leanXRadians), Math.abs(leanZRadians))) * height;
-    const crownY = y + height * 0.78;
-    const treeId = `${id}:tree:${index}`;
-    const tintValue = 0.9 + unit(seed, "tint") * 0.2;
-    const variation = {
-      uniformScale: scale,
-      heightScale: 1,
-      crownScale: 1,
-      yawDegrees: yawRadians * 180 / Math.PI,
-      yawRadians,
-      leanXDegrees: leanXRadians * 180 / Math.PI,
-      leanZDegrees: leanZRadians * 180 / Math.PI,
-      leanXRadians,
-      leanZRadians,
-      groundSink: 0,
-      groundPosition: [x, y, z],
-      tint: [tintValue, tintValue * (0.96 + unit(seed, "tint-g") * 0.05), tintValue * 0.94]
-    };
-    const metadata = { treeId, cellId: id, typeIndex, speciesId: archetype.id, variation };
-    trees[typeIndex].trunks.push({
-      id: `${treeId}:trunk`,
-      matrix: scaleTranslationMatrix(radius, height, radius, x, y + height * 0.5, z, yawRadians),
-      bounds: { min: [x - radius - leanMargin, y, z - radius - leanMargin], max: [x + radius + leanMargin, y + height, z + radius + leanMargin] },
-      metadata
-    });
-    trees[typeIndex].crowns.push({
-      id: `${treeId}:crown`,
-      matrix: scaleTranslationMatrix(crownRadius, crownHeight, crownRadius, x, crownY, z, yawRadians),
-      bounds: { min: [x - crownRadius, crownY - crownHeight * 0.5, z - crownRadius], max: [x + crownRadius, crownY + crownHeight * 0.5, z + crownRadius] },
-      metadata
-    });
-  }
-
-  for (let index = 0; index < grassPerPatch; index += 1) {
-    const seed = `${worldSeed}:${id}:grass:${index}`;
-    const x = minX + unit(seed, "x") * FOREST_PATCH_SIZE;
-    const z = minZ + unit(seed, "z") * FOREST_PATCH_SIZE;
-    const nearest = route.nearest(x, z, 0, route.samples.length);
-    if (nearest.distance < nearest.width + 0.8) continue;
-    const y = world.sampleElevation(x, z);
-    const height = 0.35 + unit(seed, "height") * 1.15;
-    const width = 0.45 + unit(seed, "width") * 0.75;
-    grass.push({ id: `${id}:grass:${index}`, matrix: scaleTranslationMatrix(width, height, width, x, y, z, unit(seed, "yaw") * Math.PI * 2) });
-  }
-
-  return { id, x: patchX, z: patchZ, trees, grass };
-}
-
 function createShardLayer(THREE, scene, capacity = 160) {
   const mesh = new THREE.InstancedMesh(new THREE.OctahedronGeometry(0.34), new THREE.MeshStandardMaterial({ color: 0x8fe8ff, emissive: 0x43d4ff, emissiveIntensity: 1.15, roughness: 0.35 }), capacity);
   mesh.name = "prehistoric-shards";
@@ -367,6 +252,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   world,
   course,
   gameplay,
+  Nexus = null,
   creatureApi = null,
   racerPresentation = null,
   playerBody = null,
@@ -471,17 +357,20 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let treeFidelityStatus = diagnosticFoundationOnly ? "disabled" : "loading";
   let treeFidelityError = null;
   let treeFidelityLoadMs = 0;
-  let grassMesh = null;
   let cinematicGround = null;
   let playerMesh = null;
   let abilityPulse = null;
   let shardMesh = null;
   const forestPatches = new Map();
+  let workerStreaming = null;
+  let resolveInitialForestReady = null;
+  const initialForestReady = diagnosticFoundationOnly
+    ? Promise.resolve(null)
+    : new Promise((resolve) => { resolveInitialForestReady = resolve; });
   let elapsed = 0;
 
   function applyDenseWorldVisibility() {
     for (const mesh of terrainPatches.values()) mesh.visible = !denseWorldGPUActive;
-    if (grassMesh) grassMesh.visible = !denseWorldGPUActive && !cinematicGround;
     cinematicGround?.setVisible(!denseWorldGPUActive);
     cinematicFidelity?.setVisible(!denseWorldGPUActive);
     scene.traverse((object) => {
@@ -516,9 +405,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       scene.add(abilityPulse);
     }
     shardMesh = createShardLayer(THREE, scene);
-    grassMesh = createGrassLayer(THREE, scene);
     cinematicGround = createThreeCinematicGroundLayer(THREE, { scene, camera, profile: qualityProfile });
-    grassMesh.visible = false;
   }
 
   const treeLoadStartedAt = performance.now();
@@ -528,6 +415,54 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       .then((packages) => {
         treeFidelityPackages = packages;
         treeFidelity = createThreeTreeFidelityLayer(THREE, { scene, camera, renderer, treeTypes: PREHISTORIC_TREE_TYPES, packages, capacity: TREE_CAPACITY_PER_TYPE });
+        if (!Nexus) throw new Error("Worker forest fallback requires the active NexusEngine module.");
+        const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus);
+        const generatorOptions = {
+          config: {
+            seed: Number(world.recipe.seed),
+            chunk: FOUNDATION_WORKER_STREAMING_POLICY.patchSize,
+            segments: FOUNDATION_WORKER_STREAMING_POLICY.terrainSegments,
+            trees: Math.max(8, Math.round(22 * Number(qualityProfile.treeDensity ?? 1))),
+            grass: Math.max(30, Math.round(104 * Number(qualityProfile.groundDensity ?? 1))),
+            groundCover: Math.max(12, Math.round(Number(world.recipe.runtime?.groundCover ?? 36) * Number(qualityProfile.groundDensity ?? 1))),
+            shardsPerPatch: 2
+          },
+          routeSamples: course.route.samples,
+          worldRecipe: structuredClone(world.recipe)
+        };
+        const fallbackGenerator = createPrehistoricWorldPatchGenerator({
+          ...generatorOptions,
+          ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
+        });
+        const hardwareConcurrency = Math.max(2, Number(globalThis.navigator?.hardwareConcurrency ?? 2));
+        workerStreaming = createWorkerPatchStreamingService({
+          workerUrl: new URL("../../workers/prehistoric-patch-worker.js", import.meta.url),
+          generatorOptions,
+          fallbackGenerator,
+          policy: {
+            ...FOUNDATION_WORKER_STREAMING_POLICY,
+            workerCount: Math.max(1, Math.min(
+              FOUNDATION_WORKER_STREAMING_POLICY.workerCountMaximum,
+              hardwareConcurrency - 1
+            ))
+          },
+          onActivate(patch) {
+            forestPatches.set(patch.id, patch);
+            treeFidelity.activatePatch(patch);
+            cinematicGround?.activatePatch(patch);
+            denseVisualRevision += 1;
+            if (resolveInitialForestReady) {
+              resolveInitialForestReady(patch);
+              resolveInitialForestReady = null;
+            }
+          },
+          onRelease(id) {
+            if (!forestPatches.delete(id)) return;
+            treeFidelity.releasePatches([id]);
+            cinematicGround?.releasePatches([id]);
+            denseVisualRevision += 1;
+          }
+        });
         treeFidelityStatus = "ready";
         treeFidelityLoadMs = performance.now() - treeLoadStartedAt;
         denseVisualRevision += 1;
@@ -537,51 +472,12 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       })
       .catch((error) => { treeFidelityStatus = "error"; treeFidelityError = error instanceof Error ? error : new Error(String(error)); throw treeFidelityError; });
   richPresentationReady.catch(() => {});
+  const densePresentationReady = diagnosticFoundationOnly
+    ? richPresentationReady
+    : Promise.all([richPresentationReady, initialForestReady]).then(([result]) => result);
+  densePresentationReady.catch(() => {});
 
   const matrix = new THREE.Matrix4();
-  function flushGrass() {
-    if (!grassMesh) return;
-    let index = 0;
-    for (const patch of forestPatches.values()) {
-      for (const record of patch.grass) {
-        if (index >= GRASS_CAPACITY) break;
-        grassMesh.setMatrixAt(index, matrix.fromArray(record.matrix));
-        index += 1;
-      }
-    }
-    grassMesh.count = index;
-    grassMesh.instanceMatrix.needsUpdate = true;
-  }
-
-  function ensureForest(state) {
-    if (!treeFidelity || diagnosticFoundationOnly) return;
-    const plan = createCenteredPatchPlan(state, { size: FOREST_PATCH_SIZE, radius: FOUNDATION_FOREST_RADIUS, prefix: "foundation-forest" });
-    const desiredIds = new Set(plan.map((entry) => entry.id));
-    const batch = selectMissingPatchBatch(plan, new Set(forestPatches.keys()), FOUNDATION_FOREST_GENERATION_BUDGET);
-    let changed = false;
-    for (const entry of batch) {
-      const patch = createForestPatch(world, course.route, entry.x, entry.z, world.recipe.seed, qualityProfile);
-      forestPatches.set(entry.id, patch);
-      treeFidelity.activatePatch(patch);
-      cinematicGround?.activatePatch(patch);
-      changed = true;
-    }
-    const released = [];
-    for (const id of forestPatches.keys()) {
-      if (desiredIds.has(id)) continue;
-      forestPatches.delete(id);
-      released.push(id);
-      changed = true;
-    }
-    if (released.length) {
-      treeFidelity.releasePatches(released);
-      cinematicGround?.releasePatches(released);
-    }
-    if (changed) {
-      denseVisualRevision += 1;
-      flushGrass();
-    }
-  }
 
   function updateShards() {
     if (!shardMesh || !gameplay?.getPickups) return;
@@ -602,7 +498,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     ensureTerrain(state);
     if (framing) { camera.position.set(...framing.position); camera.lookAt(...framing.target); }
     if (!diagnosticFoundationOnly) {
-      ensureForest(state);
+      workerStreaming?.update(state);
       if (playerMesh) {
         playerMesh.position.set(state.x, state.y + state.jumpHeight + resolvedRacerPresentation.rootOffsetY, state.z);
         playerMesh.rotation.y = state.yaw;
@@ -629,7 +525,6 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       treeFidelity?.update(state, dt);
       cinematicGround?.update(state, dt);
       updateShards();
-      if (grassMesh) grassMesh.rotation.y = Math.sin(elapsed * 0.11) * 0.002;
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
     }
     if (denseWorldGPUActive) applyDenseWorldVisibility();
@@ -663,11 +558,12 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   }
 
   const playableRendererMs = performance.now() - renderStartedAt;
+  globalThis.addEventListener?.("pagehide", () => workerStreaming?.dispose(), { once: true });
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · rich forest streaming");
 
   return Object.freeze({
     scene, camera, renderer, qualityProfile, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
-    whenRichPresentationReady() { return richPresentationReady; },
+    whenRichPresentationReady() { return densePresentationReady; },
     snapshot: () => ({
       terrainAuthority: "n:world:foundation",
       terrainPatchCount: terrainPatches.size,
@@ -684,11 +580,12 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
       treeCount: treeFidelity?.view?.treeCount ?? 0,
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },
-      grassCount: grassMesh?.count ?? 0,
+      grassCount: cinematicGround?.view?.grass ?? 0,
       activeForestPatches: forestPatches.size,
       activeForestPatchIds: [...forestPatches.keys()].sort(),
       forestTargetPatchCount: (FOUNDATION_FOREST_RADIUS * 2 + 1) ** 2,
       forestGenerationBudget: FOUNDATION_FOREST_GENERATION_BUDGET,
+      workerStreaming: workerStreaming?.snapshot() ?? null,
       atmosphere: scene.fog ? "lush-jungle" : "none",
       visualQuality: qualityProfile.id,
       rendererPreference: qualityProfile.rendererPreference,

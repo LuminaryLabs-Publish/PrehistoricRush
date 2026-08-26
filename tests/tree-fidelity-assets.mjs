@@ -30,7 +30,7 @@ assert.ok(PREHISTORIC_TREE_ARCHETYPES.every((tree) => tree.id && tree.maxHeight 
 assert.ok(PREHISTORIC_TREE_TYPES.every((tree) => Object.isFrozen(tree) && tree.length === 7));
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.shape)).size, 12);
 assert.equal(new Set(PREHISTORIC_TREE_ARCHETYPES.map((tree) => tree.foliageColor)).size, 12);
-assert.equal(NEXUS_COMMIT, "06305727778d579ca18309221e60c3e41bd066c7");
+assert.equal(NEXUS_COMMIT, "4d550be678b721a435495b7b8b7196c294cbc561");
 
 const vegetationSource = readFileSync(new URL("../src/shared/prehistoric-vegetation-domain.js", import.meta.url), "utf8");
 const composedFidelitySource = readFileSync(new URL("../src/shared/prehistoric-tree-fidelity-runtime.js", import.meta.url), "utf8");
@@ -48,7 +48,7 @@ const generatorSource = readFileSync(new URL("../src/world/prehistoric-patch-gen
 const workerSource = readFileSync(new URL("../src/workers/prehistoric-patch-worker.js", import.meta.url), "utf8");
 const menuSource = readFileSync(new URL("../src/pages/menu.js", import.meta.url), "utf8");
 const gameSource = readFileSync(new URL("../src/game.js", import.meta.url), "utf8");
-const runtimeSource = readFileSync(new URL("../src/game-runtime-lod.js", import.meta.url), "utf8");
+const runtimeSource = readFileSync(new URL("../src/domains/prehistoric-rush/rendering-implementation.js", import.meta.url), "utf8");
 const adapterSource = readFileSync(new URL("../src/render/three-patch-stream-lod-adapter.js", import.meta.url), "utf8");
 const treeLayerSource = readFileSync(new URL("../src/render/three-tree-fidelity-layer.js", import.meta.url), "utf8");
 
@@ -133,11 +133,13 @@ assert.match(generatorSource, /grassDensity/);
 assert.doesNotMatch(generatorSource, /function chooseTreeType|function treeVariation/);
 assert.match(workerSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/);
 assert.match(workerSource, /createPrehistoricVegetationGeneratorOptions/);
-assert.match(runtimeSource, /treeFidelityGenerationDigest/);
-assert.match(runtimeSource, /lushVegetationFrameAck/);
+assert.match(runtimeSource, /loadTreeFidelityPackages/);
+assert.match(runtimeSource, /createThreeTreeFidelityLayer/);
+assert.match(runtimeSource, /createWorkerPatchStreamingService/);
 
-assert.match(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
+assert.doesNotMatch(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
 assert.match(gameSource, /trackAssetPreparation/);
+assert.match(gameSource, /bundleId: TREE_FIDELITY_BUNDLE_ID/);
 assert.match(gameSource, /hydrateTreeFidelityRuntimeImages/);
 assert.match(gameSource, /await prepareTreeAssetsBeforeGame\(\)/);
 assert.match(adapterSource, /createPrehistoricFoliageAtlas/);
