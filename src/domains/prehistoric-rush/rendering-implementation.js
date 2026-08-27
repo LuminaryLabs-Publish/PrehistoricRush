@@ -370,7 +370,12 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let prebuiltRacer = null;
   let playerModelStatus = diagnosticFoundationOnly ? "disabled" : "procedural-fallback";
   let abilityPulse = null;
+  let speedWake = null;
+  let pickupPulse = null;
+  let pickupPulseElapsed = Infinity;
+  let lastShardCount = 0;
   let shardMesh = null;
+  const cameraFeedback = { fov: camera.fov, speed01: 0, sprint01: 0, jump01: 0 };
   const forestPatches = new Map();
   let workerStreaming = null;
   let resolveInitialForestReady = null;
@@ -428,6 +433,24 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       abilityPulse.rotation.x = -Math.PI / 2;
       abilityPulse.visible = false;
       scene.add(abilityPulse);
+      speedWake = new THREE.Mesh(
+        new THREE.RingGeometry(1.15, 1.22, 48),
+        new THREE.MeshBasicMaterial({ color: resolvedRacerPresentation.accent, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })
+      );
+      speedWake.name = `${resolvedRacerPresentation.racerId}-speed-wake`;
+      speedWake.rotation.x = -Math.PI / 2;
+      speedWake.visible = false;
+      speedWake.renderOrder = 12;
+      scene.add(speedWake);
+      pickupPulse = new THREE.Mesh(
+        new THREE.RingGeometry(0.42, 0.5, 32),
+        new THREE.MeshBasicMaterial({ color: 0x8fe8ff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })
+      );
+      pickupPulse.name = `${resolvedRacerPresentation.racerId}-pickup-pulse`;
+      pickupPulse.rotation.x = -Math.PI / 2;
+      pickupPulse.visible = false;
+      pickupPulse.renderOrder = 13;
+      scene.add(pickupPulse);
     }
     shardMesh = createShardLayer(THREE, scene);
     cinematicGround = createThreeCinematicGroundLayer(THREE, { scene, camera, profile: qualityProfile });
@@ -633,10 +656,57 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     shardMesh.instanceMatrix.needsUpdate = true;
   }
 
+  function updateSpeedFeedback(state = {}, deltaTime = 1 / 60) {
+    const speed01 = Math.min(1, Math.max(0, Number(state.speed01) || 0));
+    const activeRun = state.status === "game";
+    const sprinting = state.paceMode === "sprint";
+    if (speedWake) {
+      const visible = activeRun && speed01 > 0.48;
+      speedWake.visible = visible;
+      speedWake.position.set(state.x, state.y + 0.045, state.z);
+      speedWake.scale.setScalar(0.82 + speed01 * 0.38);
+      speedWake.rotation.z = elapsed * (0.22 + speed01 * 0.42);
+      speedWake.material.opacity = visible ? 0.018 + speed01 * 0.045 + (sprinting ? 0.024 : 0) : 0;
+    }
+    const shardCount = Math.max(0, Number(state.shards) || 0);
+    if (shardCount < lastShardCount) {
+      pickupPulseElapsed = Infinity;
+      if (pickupPulse) pickupPulse.visible = false;
+    } else if (shardCount > lastShardCount) {
+      pickupPulseElapsed = 0;
+      if (pickupPulse) {
+        pickupPulse.visible = true;
+        pickupPulse.position.set(state.x, state.y + 0.06, state.z);
+      }
+    }
+    lastShardCount = shardCount;
+    if (pickupPulse?.visible) {
+      pickupPulseElapsed += Math.max(0, Number(deltaTime) || 0);
+      const progress = Math.min(1, pickupPulseElapsed / 0.36);
+      pickupPulse.position.set(state.x, state.y + 0.06, state.z);
+      pickupPulse.scale.setScalar(0.65 + progress * 2.4);
+      pickupPulse.material.opacity = Math.max(0, 0.7 * (1 - progress));
+      if (progress >= 1) pickupPulse.visible = false;
+    }
+  }
+
   function draw(state, framing, dt = 1 / 60) {
     elapsed += Math.max(0, Number(dt) || 0);
     ensureTerrain(state, 1);
-    if (framing) { camera.position.set(...framing.position); camera.lookAt(...framing.target); }
+    if (framing) {
+      camera.position.set(...framing.position);
+      if (Number.isFinite(Number(framing.near))) camera.near = Number(framing.near);
+      if (Number.isFinite(Number(framing.far))) camera.far = Number(framing.far);
+      if (Number.isFinite(Number(framing.fov)) && Math.abs(camera.fov - Number(framing.fov)) > 0.001) {
+        camera.fov = Number(framing.fov);
+        camera.updateProjectionMatrix();
+      }
+      cameraFeedback.fov = camera.fov;
+      cameraFeedback.speed01 = Math.min(1, Math.max(0, Number(framing.speed01) || 0));
+      cameraFeedback.sprint01 = Math.min(1, Math.max(0, Number(framing.sprint01) || 0));
+      cameraFeedback.jump01 = Math.min(1, Math.max(0, Number(framing.jump01) || 0));
+      camera.lookAt(...framing.target);
+    }
     if (!diagnosticFoundationOnly) {
       ensureCourseRibbon(state);
       workerStreaming?.update(state);
@@ -668,6 +738,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       syncFidelityState();
       cinematicGround?.update(state, dt);
       updateShards();
+      updateSpeedFeedback(state, dt);
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
     }
     if (denseWorldGPUActive) applyDenseWorldVisibility();
@@ -707,6 +778,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   globalThis.addEventListener?.("pagehide", () => {
     workerStreaming?.dispose();
     prebuiltRacer?.dispose();
+    for (const effect of [abilityPulse, speedWake, pickupPulse]) {
+      effect?.geometry?.dispose?.();
+      effect?.material?.dispose?.();
+    }
   }, { once: true });
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · proxy forest active · fidelity streaming");
 
@@ -726,6 +801,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       playerModelStatus,
       playerAnimationClips: prebuiltRacer?.animations ?? [],
       abilityEffectVisible: Boolean(abilityPulse?.visible),
+      speedFeedbackVisible: Boolean(speedWake?.visible),
+      pickupFeedbackVisible: Boolean(pickupPulse?.visible),
+      cameraFeedback: { ...cameraFeedback },
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,

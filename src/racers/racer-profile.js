@@ -91,6 +91,10 @@ export function defineRacerProfile(input = {}) {
   const paceCurveValues = paceCurve(pace.curve ?? DEFAULT_PACE_CURVE, "pace.curve");
   const sprintMinimumToStart = finite(pace.sprintMinimumToStart ?? 0, "pace.sprintMinimumToStart", 0, 1);
   const sprintMinimumToMaintain = finite(pace.sprintMinimumToMaintain ?? 0, "pace.sprintMinimumToMaintain", 0, sprintMinimumToStart);
+  const minimumDistance = finite(camera.minimumDistance, "camera.minimumDistance", 0.01);
+  const maximumDistance = finite(camera.maximumDistance, "camera.maximumDistance", minimumDistance);
+  const verticalFov = finite(camera.verticalFov, "camera.verticalFov", 1, 179);
+  const closeDistance = finite(camera.closeDistance ?? minimumDistance * 0.82, "camera.closeDistance", 0.01, maximumDistance);
 
   return deepFreeze({
     schemaVersion: RACER_PROFILE_SCHEMA_VERSION,
@@ -166,12 +170,23 @@ export function defineRacerProfile(input = {}) {
       height: finite(camera.height, "camera.height", 0.01),
       halfDepth: finite(camera.halfDepth, "camera.halfDepth", 0.01),
       padding: finite(camera.padding, "camera.padding", 0),
-      minimumDistance: finite(camera.minimumDistance, "camera.minimumDistance", 0.01),
-      maximumDistance: finite(camera.maximumDistance, "camera.maximumDistance", camera.minimumDistance),
+      minimumDistance,
+      maximumDistance,
+      closeDistance,
       smoothTime: finite(camera.smoothTime, "camera.smoothTime", 0),
-      verticalFov: finite(camera.verticalFov, "camera.verticalFov", 1, 179),
+      verticalFov,
+      fovExpansion: finite(camera.fovExpansion ?? 8, "camera.fovExpansion", 0, 30),
+      sprintFovBonus: finite(camera.sprintFovBonus ?? 1.5, "camera.sprintFovBonus", 0, 10),
       preferredDirection: direction(camera.preferredDirection, "camera.preferredDirection"),
-      lookAheadSeconds: finite(camera.lookAheadSeconds, "camera.lookAheadSeconds", 0)
+      lookAheadSeconds: finite(camera.lookAheadSeconds, "camera.lookAheadSeconds", 0),
+      speedLookAheadSeconds: finite(camera.speedLookAheadSeconds ?? 0.16, "camera.speedLookAheadSeconds", 0, 2),
+      targetLift: finite(camera.targetLift ?? 0.28, "camera.targetLift", 0, 10),
+      speedTargetLift: finite(camera.speedTargetLift ?? 0.22, "camera.speedTargetLift", 0, 10),
+      jumpTargetLift: finite(camera.jumpTargetLift ?? 0.36, "camera.jumpTargetLift", 0, 10),
+      turnLead: finite(camera.turnLead ?? 0.42, "camera.turnLead", 0, 10),
+      closePaddingScale: finite(camera.closePaddingScale ?? 0.82, "camera.closePaddingScale", 0.6, 1),
+      speedPaddingScale: finite(camera.speedPaddingScale ?? 0.1, "camera.speedPaddingScale", 0, 0.4),
+      fovSmoothing: finite(camera.fovSmoothing ?? 7, "camera.fovSmoothing", 0.01, 30)
     }
   });
 }

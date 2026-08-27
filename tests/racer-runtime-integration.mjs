@@ -16,10 +16,16 @@ assert.match(runtime, /installPrehistoricRushPlayerActor\(engine, \{ profile: ra
 assert.match(runtime, /createPrehistoricRushPlayerImplementation\(\{ engine, course, world, profile: racerProfile \}\)/, "controller receives the RacerProfile");
 assert.match(runtime, /racerPresentation,[\s\S]{0,180}diagnosticFoundationOnly/, "renderer receives the racer presentation descriptor");
 assert.match(runtime, /padding: racerProfile\.camera\.padding/, "camera framing receives profile tuning");
+assert.match(runtime, /resolveRacerCameraResponse/, "camera response is derived from authoritative racer state");
+assert.match(runtime, /cameraRequest\.camera\.verticalFov = cameraMotion\.fov/, "camera FOV follows the smoothed speed response");
+assert.match(runtime, /cameraRequest\.padding = racerProfile\.camera\.padding \* response\.paddingScale/, "camera distance scales through bounded framing padding");
+assert.match(runtime, /target\[1\] \+= response\.targetLift/, "camera target lifts to show the route ahead");
 assert.match(runtime, /gameplay\.setInput\(\{ ability: true \}\)/, "keyboard input publishes normalized ability intent");
 
 assert.match(rendering, /racerPresentation = null/, "renderer retains a compatibility-safe racer presentation seam");
 assert.match(rendering, /Number\(state\.steer \?\? 0\)/, "pose generation consumes live controller steering");
+assert.match(rendering, /speedWake/, "renderer provides speed-visible feedback without a HUD card");
+assert.match(rendering, /pickupPulse/, "renderer acknowledges collected shards visually");
 assert.doesNotMatch(rendering, /createPose\([^\n]+turn: 0/, "generic racer pose does not hard-code zero turning");
 assert.match(gameplay, /ability: false/, "race session owns one-frame ability input");
 assert.match(core, /actions: \{ jump: \{\}, boost: \{\}, ability: \{\}/, "Nexus input kit declares the ability action");

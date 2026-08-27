@@ -15,6 +15,7 @@ import { installPrehistoricRushStartupAssets } from "./domains/prehistoric-rush/
 import { resolvePlayableRacerProfile } from "./racers/racer-catalog.js";
 import { createRacerCharacterProfile, getRacerRosterDetails } from "./racers/racer-roster.js";
 import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selection-store.js";
+import { resolveRacerCameraResponse, smoothCameraValue } from "./domains/prehistoric-rush/camera-response.js";
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
@@ -255,12 +256,28 @@ foundationStartupProgressActive = false;
 engine.n.prehistoricRush.bindPresentation({ rendering, renderSurface, assetSession });
 const framing = engine.n.cameraFraming.create({
   id: `prehistoric-rush-${racerProfile.id}`,
-  padding: racerProfile.camera.padding,
-  minimumDistance: racerProfile.camera.minimumDistance,
+  padding: racerProfile.camera.padding * racerProfile.camera.closePaddingScale,
+  minimumDistance: racerProfile.camera.closeDistance,
   maximumDistance: racerProfile.camera.maximumDistance,
   smoothTime: racerProfile.camera.smoothTime
 });
 document.body.dataset.racerId = racerProfile.id;
+const reducedMotionQuery = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)") ?? null;
+let reducedMotion = Boolean(reducedMotionQuery?.matches);
+const cameraMotion = {
+  fov: racerProfile.camera.verticalFov,
+  runId: null
+};
+const cameraResponseOptions = {
+  movement: racerProfile.movement,
+  camera: { ...racerProfile.camera, jumpNormalization: racerProfile.presentation.jumpNormalization }
+};
+const syncReducedMotion = () => {
+  reducedMotion = Boolean(reducedMotionQuery?.matches);
+  document.documentElement.dataset.prehistoricReducedMotion = reducedMotion ? "true" : "false";
+};
+syncReducedMotion();
+reducedMotionQuery?.addEventListener?.("change", syncReducedMotion);
 
 let left = false;
 let right = false;
@@ -296,6 +313,7 @@ const subjectBounds = { min: [0, 0, 0], max: [0, 0, 0] };
 const cameraRequest = {
   subjectBounds,
   viewport: { width: innerWidth, height: innerHeight },
+  padding: racerProfile.camera.padding * racerProfile.camera.closePaddingScale,
   camera: {
     projection: "perspective",
     verticalFov: racerProfile.camera.verticalFov,
@@ -304,7 +322,17 @@ const cameraRequest = {
   deltaTime: 1 / 60
 };
 function cameraFrame(state, dt) {
-  const lookAhead = Number(state.speed ?? 0) * racerProfile.camera.lookAheadSeconds;
+  const response = resolveRacerCameraResponse({
+    state,
+    ...cameraResponseOptions,
+    reducedMotion
+  });
+  if (cameraMotion.runId !== state.runId) {
+    cameraMotion.runId = state.runId;
+    cameraMotion.fov = racerProfile.camera.verticalFov;
+  }
+  cameraMotion.fov = smoothCameraValue(cameraMotion.fov, response.targetFov, dt, racerProfile.camera.fovSmoothing);
+  const lookAhead = Number(state.speed ?? 0) * response.lookAheadSeconds;
   const centerX = state.x + Math.sin(state.yaw) * lookAhead;
   const centerZ = state.z + Math.cos(state.yaw) * lookAhead;
   subjectBounds.min[0] = centerX - racerProfile.camera.halfWidth;
@@ -315,10 +343,20 @@ function cameraFrame(state, dt) {
   subjectBounds.max[2] = centerZ + racerProfile.camera.halfDepth;
   cameraRequest.viewport.width = innerWidth;
   cameraRequest.viewport.height = innerHeight;
+  cameraRequest.padding = racerProfile.camera.padding * response.paddingScale;
+  cameraRequest.camera.verticalFov = cameraMotion.fov;
   cameraRequest.camera.preferredDirection[0] = -Math.sin(state.yaw);
+  cameraRequest.camera.preferredDirection[1] = racerProfile.camera.preferredDirection[1] + (reducedMotion ? 0 : response.speed01 * 0.08);
   cameraRequest.camera.preferredDirection[2] = -Math.cos(state.yaw);
   cameraRequest.deltaTime = dt;
-  return framing.update(cameraRequest);
+  const frame = framing.update(cameraRequest);
+  const target = frame.target && typeof frame.target.length === "number" ? Array.from(frame.target) : frame.target;
+  if (Array.isArray(target)) {
+    target[1] += response.targetLift;
+    target[0] += Math.sin(state.yaw) * response.turnLead;
+    target[2] += Math.cos(state.yaw) * response.turnLead;
+  }
+  return { ...frame, target, fov: cameraMotion.fov, speed01: response.speed01, sprint01: response.sprint01, jump01: response.jump01 };
 }
 
 measureStartup("foundationFocusCommit", () => world.focus({ x: 0, y: 0, z: 0 }));
@@ -474,5 +512,6 @@ engine.n.prehistoricRush.bindSnapshotReader(getState);
 globalThis.addEventListener?.("pagehide", () => {
   globalThis.removeEventListener?.("error", onStartupError);
   globalThis.removeEventListener?.("unhandledrejection", onStartupRejection);
+  reducedMotionQuery?.removeEventListener?.("change", syncReducedMotion);
 }, { once: true });
 requestAnimationFrame(loop);

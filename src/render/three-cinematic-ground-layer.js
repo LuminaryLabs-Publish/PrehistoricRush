@@ -75,18 +75,18 @@ function fernGeometry(THREE) {
 }
 
 function patchVegetationMaterial(material, cacheKey) {
-  const uniforms = { vegetationTime: { value: 0 } };
+  const uniforms = { vegetationTime: { value: 0 }, vegetationSpeed: { value: 0 } };
   material.userData.cinematicVegetationUniforms = uniforms;
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nuniform float vegetationTime;\nvarying float vCinematicHeight;\nvarying float vCinematicDistance;")
+      .replace("#include <common>", "#include <common>\nuniform float vegetationTime;\nuniform float vegetationSpeed;\nvarying float vCinematicHeight;\nvarying float vCinematicDistance;")
       .replace(
         "#include <begin_vertex>",
         `vec3 transformed = vec3(position);
 vCinematicHeight = clamp(position.y, 0.0, 1.0);
 float cinematicPhase = instanceMatrix[3].x * 0.071 + instanceMatrix[3].z * 0.053;
-float cinematicSway = sin(vegetationTime * 1.28 + cinematicPhase) * 0.075 * vCinematicHeight * vCinematicHeight;
+float cinematicSway = sin(vegetationTime * (1.28 + vegetationSpeed * 1.4) + cinematicPhase) * (0.075 + vegetationSpeed * 0.018) * vCinematicHeight * vCinematicHeight;
 transformed.x += cinematicSway;
 transformed.z += cinematicSway * 0.38;
 vec4 cinematicWorld = modelMatrix * instanceMatrix * vec4(transformed, 1.0);
@@ -165,7 +165,7 @@ export function createThreeCinematicGroundLayer(THREE, options = {}) {
   const scale = new THREE.Vector3();
   const color = new THREE.Color();
   let elapsed = 0;
-  const view = { activePatches: 0, grass: 0, ferns: 0, rocks: 0, litter: 0, flowers: 0, roots: 0, overflow: 0 };
+  const view = { activePatches: 0, grass: 0, ferns: 0, rocks: 0, litter: 0, flowers: 0, roots: 0, overflow: 0, speed01: 0 };
 
   function pushRecord(records, kind, seed, sourceMatrix) {
     matrix.fromArray(sourceMatrix);
@@ -217,10 +217,12 @@ export function createThreeCinematicGroundLayer(THREE, options = {}) {
     return records;
   }
 
-  function update(_state, deltaTime = 1 / 60) {
+  function update(state = {}, deltaTime = 1 / 60) {
     elapsed += Math.max(0, Number(deltaTime) || 0);
     const records = rebuild();
     view.overflow = 0;
+    const speed01 = Math.min(1, Math.max(0, Number(state.speed01) || 0));
+    view.speed01 = speed01;
     for (const [kind, mesh] of Object.entries(batches)) {
       const distanceLimit = kind === "grass" || kind === "litter" ? 112 : 138;
       const visible = records[kind].filter((record) => camera.position.distanceTo(position.set(...record.distanceCenter)) <= distanceLimit);
@@ -242,7 +244,10 @@ export function createThreeCinematicGroundLayer(THREE, options = {}) {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
       const uniforms = mesh.material.userData.cinematicVegetationUniforms;
-      if (uniforms) uniforms.vegetationTime.value = elapsed;
+      if (uniforms) {
+        uniforms.vegetationTime.value = elapsed;
+        uniforms.vegetationSpeed.value = speed01;
+      }
       view[kind] = count;
       view.overflow += Math.max(0, visible.length - count);
     }

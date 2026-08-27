@@ -26,6 +26,12 @@ for (const profile of profiles) {
   assert.ok(Object.isFrozen(profile.camera));
   assert.ok(profile.movement.baseSpeed <= profile.movement.maximumSpeed);
   assert.ok(profile.movement.maximumSpeed <= profile.movement.boostSpeed);
+  assert.ok(profile.camera.closeDistance < profile.camera.minimumDistance);
+  assert.ok(profile.camera.closeDistance < profile.camera.maximumDistance);
+  assert.ok(profile.camera.fovExpansion > 0);
+  assert.ok(profile.camera.speedLookAheadSeconds > 0);
+  assert.ok(profile.camera.targetLift > 0);
+  assert.ok(profile.camera.closePaddingScale < 1);
   assert.equal(profile.pace.curve.length, 5);
   assert.equal(profile.pace.curve.at(-1), 1);
   assert.ok(profile.pace.curve.every((value, index, values) => index === 0 || value >= values[index - 1]));

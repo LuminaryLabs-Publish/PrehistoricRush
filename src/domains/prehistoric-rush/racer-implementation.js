@@ -21,6 +21,13 @@ function staminaPhase(value) {
   return "gold";
 }
 
+function speedPhase(value, movement) {
+  const baseSpeed = Math.max(0, finite(movement.baseSpeed, 0));
+  const boostSpeed = Math.max(baseSpeed, finite(movement.boostSpeed, baseSpeed));
+  const span = boostSpeed - baseSpeed;
+  return span <= 0 ? 0 : clamp((value - baseSpeed) / span, 0, 1);
+}
+
 function normalizeModifiers(input = {}) {
   return {
     speedMultiplier: Math.max(0, finite(input.speedMultiplier, 1)),
@@ -90,6 +97,7 @@ export function createPrehistoricRushRacerImplementation({
     staminaPhase: "gold",
     pace01: 1,
     paceMode: "run",
+    speed01: 0,
     abilityId: racerProfile.abilities.active,
     abilityStatus: activeDefinition ? "ready" : "unavailable",
     abilityElapsed: 0,
@@ -126,6 +134,7 @@ export function createPrehistoricRushRacerImplementation({
     state.staminaPhase = staminaPhase(stamina01);
     state.pace01 = samplePaceCurve(pace.curve, stamina01);
     state.paceMode = sprintActive ? "sprint" : "run";
+    state.speed01 = speedPhase(state.speed, movement);
   }
 
   function syncAbilityState() {
