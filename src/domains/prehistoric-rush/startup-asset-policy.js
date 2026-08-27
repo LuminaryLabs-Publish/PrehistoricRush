@@ -13,6 +13,7 @@ export const PREHISTORIC_RUSH_REQUIRED_GROUP_COUNT = 4;
 export const PREHISTORIC_RUSH_OPTIONAL_REQUEST_CONCURRENCY = 2;
 
 const TREE_ROOT = new URL("../../../assets/tree-fidelity/", import.meta.url);
+const MODEL_ROOT = new URL("../../../assets/models/", import.meta.url);
 const packageIdFor = (speciesId) => `prehistoric-rush:tree-fidelity:${speciesId}`;
 const racerAssetIdFor = (racerId) => `prehistoric-rush:presentation:racer:${racerId}`;
 
@@ -43,6 +44,12 @@ async function hydratePackage(packageValue, speciesId) {
   return value;
 }
 
+async function fetchModelBuffer(relativePath, signal) {
+  const response = await fetch(new URL(relativePath, MODEL_ROOT), { cache: "force-cache", signal: signal ?? undefined });
+  if (!response.ok) throw new Error(`Prebuilt model ${relativePath} failed: ${response.status}`);
+  return response.arrayBuffer();
+}
+
 function createRuntimeAssetProvider() {
   return Object.freeze({
     id: PREHISTORIC_RUSH_ASSET_PROVIDER_ID,
@@ -52,6 +59,17 @@ function createRuntimeAssetProvider() {
       purpose: "Load Prehistoric Rush startup groups and optional prebuilt tree fidelity without renderer-owned queues."
     }),
     async load(asset, context) {
+      if (asset.type === "racer-presentation-model") {
+        const racerId = String(asset.metadata?.racerId ?? "");
+        context.updateProgress?.(0.12, 1, `Loading ${racerId} model`);
+        const modelBuffer = await fetchModelBuffer(`racers/${racerId}.glb`, context.signal);
+        context.updateProgress?.(1, 1, `${racerId} model ready`);
+        return {
+          runtimeValue: modelBuffer,
+          portable: modelBuffer,
+          metadata: { racerId, modelFormat: "glb", requiredBeforePlay: true, byteLength: modelBuffer.byteLength }
+        };
+      }
       if (asset.type !== "tree-fidelity-package") {
         context.updateProgress?.(1, 1, `Ready ${asset.id}`);
         return {
@@ -66,6 +84,8 @@ function createRuntimeAssetProvider() {
       if (!response.ok) throw new Error(`Tree fidelity package ${speciesId} failed: ${response.status}`);
       const portable = await response.json();
       if (portable.archetypeId !== speciesId) throw new Error(`Tree fidelity package identity mismatch for ${speciesId}.`);
+      const modelBuffer = await fetchModelBuffer(`trees/${speciesId}.glb`, context.signal);
+      portable.prebuiltModel = { format: "glb", modelBuffer };
       context.updateProgress?.(0.65, 1, `Decoding ${speciesId} atlas`);
       const runtimeValue = await hydratePackage(portable, speciesId);
       context.updateProgress?.(1, 1, `${speciesId} fidelity ready`);
@@ -82,6 +102,7 @@ function createRuntimeAssetProvider() {
       };
     },
     async restore(portable, context) {
+      if (context?.asset?.type === "racer-presentation-model") return portable;
       const speciesId = String(context?.asset?.metadata?.speciesId ?? portable?.archetypeId ?? "");
       return hydratePackage(portable, speciesId);
     }
@@ -112,7 +133,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
   const requiredAssets = [
     {
       id: racerAssetId,
-      type: "racer-presentation-reference",
+      type: "racer-presentation-model",
       metadata: { group: "selected-racer-presentation", racerId, requiredBeforePlay: true }
     },
     {
@@ -135,7 +156,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
     ...descriptor,
     version: "1",
     providerId: PREHISTORIC_RUSH_ASSET_PROVIDER_ID,
-    cache: { enabled: false },
+    cache: { enabled: descriptor.type === "racer-presentation-model", namespace: "prehistoric-rush-models" },
     fallback: { kind: "logical-reference" }
   });
 
@@ -261,6 +282,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
       });
       return Object.freeze({ receipt, groupCount: PREHISTORIC_RUSH_REQUIRED_GROUP_COUNT });
     },
+    getRacerModelBuffer() { return assets.getValue(racerAssetId) ?? null; },
     requestSpecies,
     requestAllSpecies(options = {}) {
       return requestSpecies(PREHISTORIC_TREE_ARCHETYPES.map((entry) => entry.id), { ...options, priority: options.priority ?? "idle" });
@@ -270,6 +292,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
       const readySpeciesIds = PREHISTORIC_TREE_ARCHETYPES
         .map((entry) => entry.id)
         .filter((speciesId) => assets.getStatus(packageIdFor(speciesId)) === "ready");
+      const readyModelCount = readySpeciesIds.filter((speciesId) => assets.getValue(packageIdFor(speciesId))?.prebuiltModel?.modelBuffer instanceof ArrayBuffer).length;
       return Object.freeze({
         owner: "n:asset",
         persistentCache,
@@ -279,6 +302,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
         optional: Object.freeze({
           readySpeciesIds,
           readyCount: readySpeciesIds.length,
+          readyModelCount,
           totalCount: speciesAssetIds.length,
           failures: Object.freeze(Object.fromEntries(failures)),
           requests: Object.freeze({

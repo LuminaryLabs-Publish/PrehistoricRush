@@ -1,0 +1,9 @@
+{
+  "schema": "prehistoric-rush.asset-factory/1",
+  "id": "prehistoric-rush-model-factory",
+  "entry": "./src/factory.mjs",
+  "headless": "./scripts/validate.mjs",
+  "review": "./scripts/review.mjs",
+  "outputs": ["../../assets/models/racers", "../../assets/models/trees"],
+  "contract": ["describe", "generate", "randomize", "reroll", "validate", "export"]
+}

@@ -59,11 +59,18 @@ const session = installPrehistoricRushStartupAssets({ n: { asset: coreAssets } }
   racerId: "velociraptor",
   worldId: "jurassic-valley"
 });
+const platformFetch = globalThis.fetch;
+globalThis.fetch = async (url) => {
+  if (String(url).includes("/assets/models/racers/")) return { ok: true, arrayBuffer: async () => new ArrayBuffer(16) };
+  throw new Error(`Unexpected startup fetch: ${url}`);
+};
 assert.equal(PREHISTORIC_RUSH_REQUIRED_GROUP_COUNT, 4);
 const prepared = await session.preparePlayable();
+globalThis.fetch = platformFetch;
 assert.equal(prepared.groupCount, 4);
 assert.equal(session.requiredAssetIds.length, 4);
 assert.ok(session.getSnapshot().required.every((entry) => entry.status === "ready"));
+assert.ok(session.getRacerModelBuffer() instanceof ArrayBuffer, "the selected racer GLB is the first required presentation group");
 assert.equal(session.getSnapshot().optional.readyCount, 0, "no detailed species package blocks playable preparation");
 assert.equal(session.speciesAssetIds.length, 12);
 assert.ok(session.speciesAssetIds.every((id) => coreAssets.inspect().statuses.get(id) === "unrequested"));

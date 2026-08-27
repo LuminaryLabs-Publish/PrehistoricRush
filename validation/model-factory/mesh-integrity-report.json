@@ -1,0 +1,803 @@
+{
+  "schema": "prehistoric-rush.model-validation/1",
+  "status": "PASS",
+  "expected": 24,
+  "validated": 24,
+  "rendererLoader": "@headless-three/renderer.loadGltfFromFile",
+  "performance": {
+    "totalBytes": 7411088,
+    "maximumBytes": 510784,
+    "totalLoadMs": 241.46071200000011,
+    "maximumLoadMs": 48.41110800000001,
+    "budgets": {
+      "selectedRacerMaximumBytes": 524288,
+      "fullCatalogMaximumBytes": 12582912,
+      "advisoryMaximumHeadlessLoadMs": 250
+    },
+    "selectedRacersWithinByteBudget": true,
+    "catalogWithinByteBudget": true,
+    "headlessLoadAdvisoryPassed": true
+  },
+  "results": [
+    {
+      "id": "tyrannosaurus-rex",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 240416,
+      "loadMs": 48.41110800000001,
+      "meshes": 26,
+      "vertices": 6508,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.8331696300981515,
+          -2.7755575615628914e-17,
+          -2.9960901205273243
+        ],
+        "max": [
+          0.8331659948156016,
+          2.132242568481445,
+          2.6391732662072145
+        ],
+        "size": [
+          1.666335624913753,
+          2.132242568481445,
+          5.635263386734539
+        ]
+      }
+    },
+    {
+      "id": "velociraptor",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 243040,
+      "loadMs": 5.218885999999998,
+      "meshes": 29,
+      "vertices": 6526,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -1.1079389495752556,
+          -2.7755575615628914e-17,
+          -2.406144456338602
+        ],
+        "max": [
+          1.1069381774742746,
+          1.7983545684814453,
+          1.9555121867989114
+        ],
+        "size": [
+          2.2148771270495304,
+          1.7983545684814453,
+          4.361656643137513
+        ]
+      }
+    },
+    {
+      "id": "triceratops",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 264596,
+      "loadMs": 6.008023999999978,
+      "meshes": 23,
+      "vertices": 7231,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.8046207779526922,
+          -2.7755575615628914e-17,
+          -1.937057427968553
+        ],
+        "max": [
+          0.8044801572917823,
+          2.0029286479949953,
+          2.3838119531677235
+        ],
+        "size": [
+          1.6091009352444745,
+          2.0029286479949953,
+          4.320869381136276
+        ]
+      }
+    },
+    {
+      "id": "stegosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 249072,
+      "loadMs": 6.557465999999977,
+      "meshes": 29,
+      "vertices": 6664,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.7793843762712729,
+          -2.7755575615628914e-17,
+          -3.352028659906229
+        ],
+        "max": [
+          0.7796369769964266,
+          2.0583545684814455,
+          2.218402746756553
+        ],
+        "size": [
+          1.5590213532676995,
+          2.0583545684814455,
+          5.570431406662782
+        ]
+      }
+    },
+    {
+      "id": "spinosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 242244,
+      "loadMs": 15.21618600000005,
+      "meshes": 28,
+      "vertices": 6520,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.8113257519651823,
+          -2.7755575615628914e-17,
+          -3.1615567273991827
+        ],
+        "max": [
+          0.8222317829914206,
+          3.218354568481445,
+          2.937905792689185
+        ],
+        "size": [
+          1.633557534956603,
+          3.218354568481445,
+          6.099462520088368
+        ]
+      }
+    },
+    {
+      "id": "ankylosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 380664,
+      "loadMs": 39.369497000000024,
+      "meshes": 35,
+      "vertices": 10606,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.8162455948844313,
+          5.551115123125783e-17,
+          -3.0160724791794156
+        ],
+        "max": [
+          0.816245699205158,
+          1.401221675884048,
+          2.1661543327766704
+        ],
+        "size": [
+          1.6324912940895893,
+          1.401221675884048,
+          5.182226811956086
+        ]
+      }
+    },
+    {
+      "id": "pachycephalosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 257172,
+      "loadMs": 8.791744999999992,
+      "meshes": 25,
+      "vertices": 7036,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.5888010249565748,
+          -2.7755575615628914e-17,
+          -2.0088709452216564
+        ],
+        "max": [
+          0.58864341068164,
+          2.338481979370117,
+          1.8798557692946452
+        ],
+        "size": [
+          1.1774444356382148,
+          2.338481979370117,
+          3.8887267145163014
+        ]
+      }
+    },
+    {
+      "id": "carnotaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247192,
+      "loadMs": 6.073332999999991,
+      "meshes": 27,
+      "vertices": 6652,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.6917076915997591,
+          -2.7755575615628914e-17,
+          -2.742542180929787
+        ],
+        "max": [
+          0.6920040006221003,
+          2.1962586375988904,
+          2.197693324306252
+        ],
+        "size": [
+          1.3837116922218593,
+          2.1962586375988904,
+          4.940235505236039
+        ]
+      }
+    },
+    {
+      "id": "gallimimus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 237948,
+      "loadMs": 5.46689200000003,
+      "meshes": 23,
+      "vertices": 6490,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.522818573498153,
+          -2.498001805406602e-16,
+          -2.1981526198007524
+        ],
+        "max": [
+          0.528648054496225,
+          2.0683545684814453,
+          2.0576395660572873
+        ],
+        "size": [
+          1.0514666279943778,
+          2.0683545684814457,
+          4.25579218585804
+        ]
+      }
+    },
+    {
+      "id": "therizinosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 254868,
+      "loadMs": 4.670540000000017,
+      "meshes": 25,
+      "vertices": 6832,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -1.037595433599673,
+          -2.7755575615628914e-17,
+          -2.088609707741505
+        ],
+        "max": [
+          1.0162224141427763,
+          2.014754568481445,
+          2.0643095359282397
+        ],
+        "size": [
+          2.053817847742449,
+          2.014754568481445,
+          4.152919243669745
+        ]
+      }
+    },
+    {
+      "id": "brachiosaurus",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 239580,
+      "loadMs": 13.215145000000007,
+      "meshes": 20,
+      "vertices": 6569,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -0.954151646960836,
+          2.220446049250313e-16,
+          -3.7340833609373707
+        ],
+        "max": [
+          0.9533961081761033,
+          6.808120494842529,
+          2.1808953682583487
+        ],
+        "size": [
+          1.9075477551369393,
+          6.808120494842529,
+          5.914978729195719
+        ]
+      }
+    },
+    {
+      "id": "pteranodon",
+      "kind": "racer",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 237988,
+      "loadMs": 5.365138000000002,
+      "meshes": 21,
+      "vertices": 6520,
+      "invalidNormals": 0,
+      "animationClips": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "bounds": {
+        "min": [
+          -2.529794485451408,
+          -2.7755575615628914e-17,
+          -1.3247365028929659
+        ],
+        "max": [
+          2.54568954968136,
+          2.122619442619214,
+          2.561385144093273
+        ],
+        "size": [
+          5.075484035132767,
+          2.122619442619214,
+          3.886121646986239
+        ]
+      }
+    },
+    {
+      "id": "giant-fern-tree",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247096,
+      "loadMs": 4.476326000000029,
+      "meshes": 26,
+      "vertices": 6563,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -3.0963655259026277,
+          0,
+          -2.51834046614728
+        ],
+        "max": [
+          2.7345904919168462,
+          6.092887791324816,
+          3.1327780281992954
+        ],
+        "size": [
+          5.830956017819474,
+          6.092887791324816,
+          5.6511184943465755
+        ]
+      }
+    },
+    {
+      "id": "tower-conifer",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 510764,
+      "loadMs": 7.864338999999973,
+      "meshes": 50,
+      "vertices": 13859,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.3102029528398278,
+          0,
+          -1.4408489294828977
+        ],
+        "max": [
+          1.2315980629694705,
+          6.478352442742571,
+          1.6689906855767083
+        ],
+        "size": [
+          2.5418010158092983,
+          6.478352442742571,
+          3.109839615059606
+        ]
+      }
+    },
+    {
+      "id": "understory-cycad",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247012,
+      "loadMs": 6.847135000000037,
+      "meshes": 26,
+      "vertices": 6563,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.237052962278591,
+          0,
+          -1.3037817483821263
+        ],
+        "max": [
+          1.2463138362673474,
+          4.290350458528578,
+          1.2899156715980304
+        ],
+        "size": [
+          2.4833667985459384,
+          4.290350458528578,
+          2.593697419980157
+        ]
+      }
+    },
+    {
+      "id": "broad-canopy",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 411828,
+      "loadMs": 3.697958999999969,
+      "meshes": 35,
+      "vertices": 11423,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.89009617135866,
+          0,
+          -1.8752441992072222
+        ],
+        "max": [
+          1.8369688211242186,
+          5.6775008912043194,
+          2.1024440493306504
+        ],
+        "size": [
+          3.7270649924828785,
+          5.6775008912043194,
+          3.9776882485378726
+        ]
+      }
+    },
+    {
+      "id": "moss-column",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 411872,
+      "loadMs": 4.594510000000014,
+      "meshes": 35,
+      "vertices": 11423,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.4738022584012702,
+          0,
+          -1.3456635124777252
+        ],
+        "max": [
+          1.441502739510159,
+          6.047540579403475,
+          1.4037613311073553
+        ],
+        "size": [
+          2.915304997911429,
+          6.047540579403475,
+          2.7494248435850803
+        ]
+      }
+    },
+    {
+      "id": "layered-araucaria",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 510784,
+      "loadMs": 18.272648000000004,
+      "meshes": 50,
+      "vertices": 13859,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.5051917609398826,
+          0,
+          -1.527675986238719
+        ],
+        "max": [
+          1.4689934590690656,
+          6.351720287333277,
+          1.7276649543502538
+        ],
+        "size": [
+          2.9741852200089482,
+          6.351720287333277,
+          3.255340940588973
+        ]
+      }
+    },
+    {
+      "id": "fan-cycad",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247004,
+      "loadMs": 5.302673000000027,
+      "meshes": 26,
+      "vertices": 6563,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.5961720337963254,
+          0,
+          -1.3782683777742224
+        ],
+        "max": [
+          1.6273222876356845,
+          4.54949058326741,
+          1.4588160710507658
+        ],
+        "size": [
+          3.22349432143201,
+          4.54949058326741,
+          2.8370844488249882
+        ]
+      }
+    },
+    {
+      "id": "ginkgo-crown-tree",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 411888,
+      "loadMs": 7.756235999999944,
+      "meshes": 35,
+      "vertices": 11423,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.8561423798034145,
+          0,
+          -1.7008046633145029
+        ],
+        "max": [
+          2.0578900275954553,
+          5.914426568722119,
+          1.824764250623322
+        ],
+        "size": [
+          3.91403240739887,
+          5.914426568722119,
+          3.525568913937825
+        ]
+      }
+    },
+    {
+      "id": "marsh-horsetail-tower",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 411944,
+      "loadMs": 9.938445000000002,
+      "meshes": 35,
+      "vertices": 11423,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.244083570847858,
+          0,
+          -1.2573187742885397
+        ],
+        "max": [
+          1.3072105157942142,
+          4.804139084882593,
+          1.2858286590625954
+        ],
+        "size": [
+          2.551294086642072,
+          4.804139084882593,
+          2.543147433351135
+        ]
+      }
+    },
+    {
+      "id": "forked-ghostwood",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 411884,
+      "loadMs": 3.4494829999999865,
+      "meshes": 35,
+      "vertices": 11423,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.4557739098189473,
+          0,
+          -1.7669727591628948
+        ],
+        "max": [
+          1.3571379786056688,
+          5.94638795237567,
+          1.740644171701513
+        ],
+        "size": [
+          2.8129118884246163,
+          5.94638795237567,
+          3.507616930864408
+        ]
+      }
+    },
+    {
+      "id": "tall-prehistoric-palm",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247144,
+      "loadMs": 2.4758450000000494,
+      "meshes": 26,
+      "vertices": 6563,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -2.0643598123693057,
+          0,
+          -2.233505806443665
+        ],
+        "max": [
+          1.8947464226743498,
+          5.729140558877486,
+          2.3621948787823035
+        ],
+        "size": [
+          3.9591062350436554,
+          5.729140558877486,
+          4.595700685225968
+        ]
+      }
+    },
+    {
+      "id": "short-jungle-palm",
+      "kind": "tree",
+      "status": "PASS",
+      "failures": [],
+      "bytes": 247088,
+      "loadMs": 2.421153000000004,
+      "meshes": 26,
+      "vertices": 6563,
+      "invalidNormals": 0,
+      "animationClips": [
+        "wind",
+        "gust"
+      ],
+      "bounds": {
+        "min": [
+          -1.850973762163635,
+          0,
+          -1.5979571215353539
+        ],
+        "max": [
+          1.7174714463406922,
+          4.662866097562674,
+          1.8474055189298222
+        ],
+        "size": [
+          3.5684452085043272,
+          4.662866097562674,
+          3.4453626404651763
+        ]
+      }
+    }
+  ]
+}

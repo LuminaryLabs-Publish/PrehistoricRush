@@ -1,4 +1,5 @@
 import { applyCreaturePoseDamped, createCreatureMesh } from "../../render/three-procedural-creature.js";
+import { createThreePrebuiltRacerModel } from "../../render/three-prebuilt-racer-model.js";
 import { createThreeTreeFidelityLayer } from "../../render/three-tree-fidelity-layer.js";
 import { applyLushJungleAtmosphere } from "../../render/lush-jungle-atmosphere.js";
 import { createThreeCinematicFidelityLayer } from "../../render/three-cinematic-fidelity-layer.js";
@@ -366,6 +367,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let treeFidelityLoadMs = 0;
   let cinematicGround = null;
   let playerMesh = null;
+  let prebuiltRacer = null;
+  let playerModelStatus = diagnosticFoundationOnly ? "disabled" : "procedural-fallback";
   let abilityPulse = null;
   let shardMesh = null;
   const forestPatches = new Map();
@@ -403,7 +406,18 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       scene.add(courseRibbon);
     }
     if (racerBody) {
-      playerMesh = createCreatureMesh(THREE, racerBody);
+      const modelBuffer = assetSession?.getRacerModelBuffer?.();
+      if (modelBuffer instanceof ArrayBuffer) {
+        try {
+          prebuiltRacer = await createThreePrebuiltRacerModel(THREE, modelBuffer, { name: `${resolvedRacerPresentation.racerId}-prebuilt-glb` });
+          playerMesh = prebuiltRacer.object;
+          playerModelStatus = "prebuilt-glb";
+        } catch (error) {
+          playerModelStatus = "procedural-fallback";
+          onFidelityState(Object.freeze({ status: "degraded", subject: "selected-racer-model", error: error?.message ?? String(error) }));
+        }
+      }
+      if (!playerMesh) playerMesh = createCreatureMesh(THREE, racerBody);
       playerMesh.name = resolvedRacerPresentation.meshName;
       scene.add(playerMesh);
       abilityPulse = new THREE.Mesh(
@@ -629,7 +643,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       if (playerMesh) {
         playerMesh.position.set(state.x, state.y + state.jumpHeight + resolvedRacerPresentation.rootOffsetY, state.z);
         playerMesh.rotation.y = state.yaw;
-        if (creatureApi?.createPose) {
+        if (prebuiltRacer) prebuiltRacer.update(state, dt);
+        else if (creatureApi?.createPose) {
           const turn = Math.max(-1, Math.min(1, Number(state.steer ?? 0))) * resolvedRacerPresentation.turnScale;
           const pose = creatureApi.createPose(racerBody.id, {
             speed: state.speed,
@@ -689,7 +704,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   }
 
   const playableRendererMs = performance.now() - renderStartedAt;
-  globalThis.addEventListener?.("pagehide", () => workerStreaming?.dispose(), { once: true });
+  globalThis.addEventListener?.("pagehide", () => {
+    workerStreaming?.dispose();
+    prebuiltRacer?.dispose();
+  }, { once: true });
   onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · proxy forest active · fidelity streaming");
 
   return Object.freeze({
@@ -704,7 +722,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       diagnosticFoundationOnly,
       denseWorldPresentation: denseWorldGPUActive ? "nexus-webgpu" : "three-webgl2",
       racerId: resolvedRacerPresentation?.racerId ?? null,
-      playerPresentation: playerMesh ? resolvedRacerPresentation.snapshotName : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
+      playerPresentation: playerMesh ? (prebuiltRacer ? `prebuilt-glb-${resolvedRacerPresentation.racerId}` : resolvedRacerPresentation.snapshotName) : diagnosticFoundationOnly ? "disabled-for-diagnostic" : "unavailable",
+      playerModelStatus,
+      playerAnimationClips: prebuiltRacer?.animations ?? [],
       abilityEffectVisible: Boolean(abilityPulse?.visible),
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,

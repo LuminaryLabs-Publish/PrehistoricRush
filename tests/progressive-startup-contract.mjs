@@ -51,6 +51,7 @@ assert.match(semanticRuntime, /startup\.launch\(/, "Core Startup owns launch tru
 assert.match(semanticRuntime, /startup\.presentFirstFrame\(/, "Core Startup receives the first-frame receipt");
 assert.match(semanticRuntime, /startup\.enter\(\{ inputReady: true \}\)/, "Core Startup alone enters playable state");
 assert.doesNotMatch(semanticRuntime, /localFidelityReady|fullFidelityReady/, "post-play fidelity is not shadowed in Core Startup");
+assert.match(semanticRuntime, /if \(!foundationStartupProgressActive\) return;[\s\S]*startup\.working\("foundation"/, "post-play fidelity cannot report through a completed Core Startup launch");
 assert.ok(
   semanticRuntime.indexOf("const renderSurface = measureStartup") < semanticRuntime.indexOf("const world = measureStartup"),
   "the browser canvas is created before synchronous World construction"

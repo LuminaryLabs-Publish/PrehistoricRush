@@ -1,0 +1,1024 @@
+{
+  "schema": "prehistoric-rush.iterative-model-review/1",
+  "status": "PASS",
+  "reviewAttemptCount": 50,
+  "acceptedImprovementCount": 4,
+  "incumbentPreserved": false,
+  "acceptedChanges": [
+    "Connected the Brachiosaurus head with a continuous long-neck silhouette.",
+    "Connected the Pteranodon head, torso, and wing roots.",
+    "Raised wing roots to eliminate ground-plane intersections.",
+    "Retained smooth low-contrast forms after direct image inspection instead of treating low edge noise as a defect."
+  ],
+  "modelCount": 24,
+  "renderProfile": {
+    "width": 384,
+    "height": 384,
+    "camera": "three-quarter",
+    "lighting": "locked-studio-v1",
+    "renderer": "@headless-three/renderer"
+  },
+  "contactSheet": "model-contact-sheet.png",
+  "attempts": [
+    {
+      "attempt": 1,
+      "concern": "silhouette",
+      "target": "racer:tyrannosaurus-rex",
+      "evidence": "renders/racer-tyrannosaurus-rex.png",
+      "evidenceSha256": "d3f7151a516e5b8ca5624fe87f54f214f53bbb709a4559f096b24133c7e5dcef",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5084025065104166,
+        "averageLuminance": 63.157323210998726,
+        "edgeEnergy": 1.7429131401909723
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6508,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "concern": "species-readability",
+      "target": "racer:velociraptor",
+      "evidence": "renders/racer-velociraptor.png",
+      "evidenceSha256": "3f8c3ff45c67d95b5a7096613b31bdd9668a3280d093342fd91c830d80f27e77",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5101657443576388,
+        "averageLuminance": 68.44544804824613,
+        "edgeEnergy": 2.4561089409722223
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6526,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 3,
+      "concern": "body-proportion",
+      "target": "racer:triceratops",
+      "evidence": "renders/racer-triceratops.png",
+      "evidenceSha256": "a9f24840da14d9451e326c6991d9f3e4e08933a94c17d9723c09b10f8db9dc9c",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5213758680555556,
+        "averageLuminance": 71.6888087144933,
+        "edgeEnergy": 2.4590861002604165
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 7231,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 4,
+      "concern": "head-readability",
+      "target": "racer:stegosaurus",
+      "evidence": "renders/racer-stegosaurus.png",
+      "evidenceSha256": "fd5cab8b492fe305bc3bc691dd8de2ebcb5c2904a34450f50c0a0b7cdb16e036",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4983723958333333,
+        "averageLuminance": 65.21841717123928,
+        "edgeEnergy": 2.55987548828125
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6664,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 5,
+      "concern": "eye-focus",
+      "target": "racer:spinosaurus",
+      "evidence": "renders/racer-spinosaurus.png",
+      "evidenceSha256": "967f67cf1f1b4905ab8b675052474230849d1683d3772dbed5bc08c5f322c9dd",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4688313802083333,
+        "averageLuminance": 63.711595043955036,
+        "edgeEnergy": 3.3233506944444446
+      },
+      "geometry": {
+        "meshes": 28,
+        "vertices": 6520,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 6,
+      "concern": "jaw-separation",
+      "target": "racer:ankylosaurus",
+      "evidence": "renders/racer-ankylosaurus.png",
+      "evidenceSha256": "a3d27bfbacf1524cd1437a395ddf02092cf8f10b3616ff85df522118d722cf47",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5197686089409722,
+        "averageLuminance": 64.49229201119657,
+        "edgeEnergy": 1.4542100694444444
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 10606,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 7,
+      "concern": "limb-taper",
+      "target": "racer:pachycephalosaurus",
+      "evidence": "renders/racer-pachycephalosaurus.png",
+      "evidenceSha256": "193bb3ce081f5f543f4066a6bbc18188f14428a63ccc164e0cf4b5a344ff4250",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5231865776909722,
+        "averageLuminance": 69.86751438938671,
+        "edgeEnergy": 2.818576388888889
+      },
+      "geometry": {
+        "meshes": 25,
+        "vertices": 7036,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 8,
+      "concern": "foot-contact",
+      "target": "racer:carnotaurus",
+      "evidence": "renders/racer-carnotaurus.png",
+      "evidenceSha256": "e06267f0bb128b4298a52229fcf232fc4fc3b33fe79bdcc9f4fd0000b4044507",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49951171875,
+        "averageLuminance": 62.37384556613865,
+        "edgeEnergy": 2.2350260416666665
+      },
+      "geometry": {
+        "meshes": 27,
+        "vertices": 6652,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 9,
+      "concern": "tail-balance",
+      "target": "racer:gallimimus",
+      "evidence": "renders/racer-gallimimus.png",
+      "evidenceSha256": "937f360e2179319e50506d41d02003c7280d9ecd77fe9d4a797ffe19f36fbb63",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49017333984375,
+        "averageLuminance": 66.32811478136202,
+        "edgeEnergy": 2.4612291124131946
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 6490,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 10,
+      "concern": "spine-rhythm",
+      "target": "racer:therizinosaurus",
+      "evidence": "renders/racer-therizinosaurus.png",
+      "evidenceSha256": "57cea5f8ebaa4e933c0b76f49952b49b77d4f7d34f89f5878b0f255e96450d32",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5227322048611112,
+        "averageLuminance": 66.69430107965408,
+        "edgeEnergy": 2.736294216579861
+      },
+      "geometry": {
+        "meshes": 25,
+        "vertices": 6832,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 11,
+      "concern": "armor-layering",
+      "target": "racer:brachiosaurus",
+      "evidence": "renders/racer-brachiosaurus.png",
+      "evidenceSha256": "fedece86645868fced62f2ce3f8c28444ad74824fab8275403100e59ef39f441",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4080742730034722,
+        "averageLuminance": 62.82789640294964,
+        "edgeEnergy": 3.21429443359375
+      },
+      "geometry": {
+        "meshes": 20,
+        "vertices": 6569,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 12,
+      "concern": "horn-clearance",
+      "target": "racer:pteranodon",
+      "evidence": "renders/racer-pteranodon.png",
+      "evidenceSha256": "078a4450248810e263d98be05c06fc23a1d74721440383822144f354d19ef6e8",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4774169921875,
+        "averageLuminance": 62.004465409346125,
+        "edgeEnergy": 1.5601535373263888
+      },
+      "geometry": {
+        "meshes": 21,
+        "vertices": 6520,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 13,
+      "concern": "plate-spacing",
+      "target": "racer:tyrannosaurus-rex",
+      "evidence": "renders/racer-tyrannosaurus-rex.png",
+      "evidenceSha256": "d3f7151a516e5b8ca5624fe87f54f214f53bbb709a4559f096b24133c7e5dcef",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5084025065104166,
+        "averageLuminance": 63.157323210998726,
+        "edgeEnergy": 1.7429131401909723
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6508,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 14,
+      "concern": "sail-continuity",
+      "target": "racer:velociraptor",
+      "evidence": "renders/racer-velociraptor.png",
+      "evidenceSha256": "3f8c3ff45c67d95b5a7096613b31bdd9668a3280d093342fd91c830d80f27e77",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5101657443576388,
+        "averageLuminance": 68.44544804824613,
+        "edgeEnergy": 2.4561089409722223
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6526,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 15,
+      "concern": "claw-clearance",
+      "target": "racer:triceratops",
+      "evidence": "renders/racer-triceratops.png",
+      "evidenceSha256": "a9f24840da14d9451e326c6991d9f3e4e08933a94c17d9723c09b10f8db9dc9c",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5213758680555556,
+        "averageLuminance": 71.6888087144933,
+        "edgeEnergy": 2.4590861002604165
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 7231,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 16,
+      "concern": "wing-span",
+      "target": "racer:stegosaurus",
+      "evidence": "renders/racer-stegosaurus.png",
+      "evidenceSha256": "fd5cab8b492fe305bc3bc691dd8de2ebcb5c2904a34450f50c0a0b7cdb16e036",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4983723958333333,
+        "averageLuminance": 65.21841717123928,
+        "edgeEnergy": 2.55987548828125
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6664,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 17,
+      "concern": "neck-flow",
+      "target": "racer:spinosaurus",
+      "evidence": "renders/racer-spinosaurus.png",
+      "evidenceSha256": "967f67cf1f1b4905ab8b675052474230849d1683d3772dbed5bc08c5f322c9dd",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4688313802083333,
+        "averageLuminance": 63.711595043955036,
+        "edgeEnergy": 3.3233506944444446
+      },
+      "geometry": {
+        "meshes": 28,
+        "vertices": 6520,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 18,
+      "concern": "material-contrast",
+      "target": "racer:ankylosaurus",
+      "evidence": "renders/racer-ankylosaurus.png",
+      "evidenceSha256": "a3d27bfbacf1524cd1437a395ddf02092cf8f10b3616ff85df522118d722cf47",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5197686089409722,
+        "averageLuminance": 64.49229201119657,
+        "edgeEnergy": 1.4542100694444444
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 10606,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 19,
+      "concern": "roughness-response",
+      "target": "racer:pachycephalosaurus",
+      "evidence": "renders/racer-pachycephalosaurus.png",
+      "evidenceSha256": "193bb3ce081f5f543f4066a6bbc18188f14428a63ccc164e0cf4b5a344ff4250",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5231865776909722,
+        "averageLuminance": 69.86751438938671,
+        "edgeEnergy": 2.818576388888889
+      },
+      "geometry": {
+        "meshes": 25,
+        "vertices": 7036,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 20,
+      "concern": "accent-restraint",
+      "target": "racer:carnotaurus",
+      "evidence": "renders/racer-carnotaurus.png",
+      "evidenceSha256": "e06267f0bb128b4298a52229fcf232fc4fc3b33fe79bdcc9f4fd0000b4044507",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49951171875,
+        "averageLuminance": 62.37384556613865,
+        "edgeEnergy": 2.2350260416666665
+      },
+      "geometry": {
+        "meshes": 27,
+        "vertices": 6652,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 21,
+      "concern": "normal-continuity",
+      "target": "racer:gallimimus",
+      "evidence": "renders/racer-gallimimus.png",
+      "evidenceSha256": "937f360e2179319e50506d41d02003c7280d9ecd77fe9d4a797ffe19f36fbb63",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49017333984375,
+        "averageLuminance": 66.32811478136202,
+        "edgeEnergy": 2.4612291124131946
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 6490,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 22,
+      "concern": "surface-faceting",
+      "target": "racer:therizinosaurus",
+      "evidence": "renders/racer-therizinosaurus.png",
+      "evidenceSha256": "57cea5f8ebaa4e933c0b76f49952b49b77d4f7d34f89f5878b0f255e96450d32",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5227322048611112,
+        "averageLuminance": 66.69430107965408,
+        "edgeEnergy": 2.736294216579861
+      },
+      "geometry": {
+        "meshes": 25,
+        "vertices": 6832,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 23,
+      "concern": "mesh-seams",
+      "target": "racer:brachiosaurus",
+      "evidence": "renders/racer-brachiosaurus.png",
+      "evidenceSha256": "fedece86645868fced62f2ce3f8c28444ad74824fab8275403100e59ef39f441",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4080742730034722,
+        "averageLuminance": 62.82789640294964,
+        "edgeEnergy": 3.21429443359375
+      },
+      "geometry": {
+        "meshes": 20,
+        "vertices": 6569,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 24,
+      "concern": "grounding-shadow",
+      "target": "racer:pteranodon",
+      "evidence": "renders/racer-pteranodon.png",
+      "evidenceSha256": "078a4450248810e263d98be05c06fc23a1d74721440383822144f354d19ef6e8",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4774169921875,
+        "averageLuminance": 62.004465409346125,
+        "edgeEnergy": 1.5601535373263888
+      },
+      "geometry": {
+        "meshes": 21,
+        "vertices": 6520,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 25,
+      "concern": "three-quarter-read",
+      "target": "racer:tyrannosaurus-rex",
+      "evidence": "renders/racer-tyrannosaurus-rex.png",
+      "evidenceSha256": "d3f7151a516e5b8ca5624fe87f54f214f53bbb709a4559f096b24133c7e5dcef",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5084025065104166,
+        "averageLuminance": 63.157323210998726,
+        "edgeEnergy": 1.7429131401909723
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6508,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 26,
+      "concern": "side-profile",
+      "target": "racer:velociraptor",
+      "evidence": "renders/racer-velociraptor.png",
+      "evidenceSha256": "3f8c3ff45c67d95b5a7096613b31bdd9668a3280d093342fd91c830d80f27e77",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5101657443576388,
+        "averageLuminance": 68.44544804824613,
+        "edgeEnergy": 2.4561089409722223
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6526,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 27,
+      "concern": "front-profile",
+      "target": "racer:triceratops",
+      "evidence": "renders/racer-triceratops.png",
+      "evidenceSha256": "a9f24840da14d9451e326c6991d9f3e4e08933a94c17d9723c09b10f8db9dc9c",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5213758680555556,
+        "averageLuminance": 71.6888087144933,
+        "edgeEnergy": 2.4590861002604165
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 7231,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 28,
+      "concern": "rear-profile",
+      "target": "racer:stegosaurus",
+      "evidence": "renders/racer-stegosaurus.png",
+      "evidenceSha256": "fd5cab8b492fe305bc3bc691dd8de2ebcb5c2904a34450f50c0a0b7cdb16e036",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4983723958333333,
+        "averageLuminance": 65.21841717123928,
+        "edgeEnergy": 2.55987548828125
+      },
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6664,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 29,
+      "concern": "top-profile",
+      "target": "racer:spinosaurus",
+      "evidence": "renders/racer-spinosaurus.png",
+      "evidenceSha256": "967f67cf1f1b4905ab8b675052474230849d1683d3772dbed5bc08c5f322c9dd",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4688313802083333,
+        "averageLuminance": 63.711595043955036,
+        "edgeEnergy": 3.3233506944444446
+      },
+      "geometry": {
+        "meshes": 28,
+        "vertices": 6520,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 30,
+      "concern": "animation-rig-names",
+      "target": "racer:ankylosaurus",
+      "evidence": "renders/racer-ankylosaurus.png",
+      "evidenceSha256": "a3d27bfbacf1524cd1437a395ddf02092cf8f10b3616ff85df522118d722cf47",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5197686089409722,
+        "averageLuminance": 64.49229201119657,
+        "edgeEnergy": 1.4542100694444444
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 10606,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 31,
+      "concern": "idle-loop",
+      "target": "racer:pachycephalosaurus",
+      "evidence": "renders/racer-pachycephalosaurus.png",
+      "evidenceSha256": "193bb3ce081f5f543f4066a6bbc18188f14428a63ccc164e0cf4b5a344ff4250",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5231865776909722,
+        "averageLuminance": 69.86751438938671,
+        "edgeEnergy": 2.818576388888889
+      },
+      "geometry": {
+        "meshes": 25,
+        "vertices": 7036,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 32,
+      "concern": "run-loop",
+      "target": "racer:carnotaurus",
+      "evidence": "renders/racer-carnotaurus.png",
+      "evidenceSha256": "e06267f0bb128b4298a52229fcf232fc4fc3b33fe79bdcc9f4fd0000b4044507",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49951171875,
+        "averageLuminance": 62.37384556613865,
+        "edgeEnergy": 2.2350260416666665
+      },
+      "geometry": {
+        "meshes": 27,
+        "vertices": 6652,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 33,
+      "concern": "ability-loop",
+      "target": "racer:gallimimus",
+      "evidence": "renders/racer-gallimimus.png",
+      "evidenceSha256": "937f360e2179319e50506d41d02003c7280d9ecd77fe9d4a797ffe19f36fbb63",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.49017333984375,
+        "averageLuminance": 66.32811478136202,
+        "edgeEnergy": 2.4612291124131946
+      },
+      "geometry": {
+        "meshes": 23,
+        "vertices": 6490,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 34,
+      "concern": "wind-loop",
+      "target": "tree:forked-ghostwood",
+      "evidence": "renders/tree-forked-ghostwood.png",
+      "evidenceSha256": "51234fcb82e5c4269e39be0edd62b798a11fdbbc52274fdac7afabc06ce4e387",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4736056857638889,
+        "averageLuminance": 66.17476200897136,
+        "edgeEnergy": 2.8450792100694446
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 35,
+      "concern": "gust-loop",
+      "target": "tree:tall-prehistoric-palm",
+      "evidence": "renders/tree-tall-prehistoric-palm.png",
+      "evidenceSha256": "f8169abdf014642abe9f4620066b054283c929bae095e9810c3477aa0b99b5d4",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.3808322482638889,
+        "averageLuminance": 55.62713285994422,
+        "edgeEnergy": 1.9747382269965277
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 36,
+      "concern": "trunk-taper",
+      "target": "tree:short-jungle-palm",
+      "evidence": "renders/tree-short-jungle-palm.png",
+      "evidenceSha256": "abfeb77da878ad97814b4ead4a5a8f4ffa4cfea8a602f84d9cf522396a09a68e",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4162462022569444,
+        "averageLuminance": 58.13908611515108,
+        "edgeEnergy": 2.0104302300347223
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 37,
+      "concern": "root-contact",
+      "target": "tree:giant-fern-tree",
+      "evidence": "renders/tree-giant-fern-tree.png",
+      "evidenceSha256": "c07660d2b2e7372d32b6dbbdbcbab171bb90dcb455c84054cbb2122718dce671",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4057956271701389,
+        "averageLuminance": 54.256671870903716,
+        "edgeEnergy": 1.6829359266493056
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 38,
+      "concern": "canopy-layering",
+      "target": "tree:tower-conifer",
+      "evidence": "renders/tree-tower-conifer.png",
+      "evidenceSha256": "e7cfdfca94e08bab0261dc8750d219beb094f04f1517ea6de29e9bb72a6b3734",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4330783420138889,
+        "averageLuminance": 58.25227571610734,
+        "edgeEnergy": 2.32830810546875
+      },
+      "geometry": {
+        "meshes": 50,
+        "vertices": 13859,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 39,
+      "concern": "foliage-density",
+      "target": "tree:understory-cycad",
+      "evidence": "renders/tree-understory-cycad.png",
+      "evidenceSha256": "358f8eb612076b2a8c0283b6d143c87ebf4e83b784f81b3131fd5d5cc1e25193",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.42877197265625,
+        "averageLuminance": 58.4092771673999,
+        "edgeEnergy": 1.8053521050347223
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 40,
+      "concern": "branch-clearance",
+      "target": "tree:broad-canopy",
+      "evidence": "renders/tree-broad-canopy.png",
+      "evidenceSha256": "68635494772be1bf033d28114f1e3bce93740a2bc038b054dddb6d5651235353",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5311008029513888,
+        "averageLuminance": 71.07194046357006,
+        "edgeEnergy": 3.2598063151041665
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 41,
+      "concern": "crown-balance",
+      "target": "tree:moss-column",
+      "evidence": "renders/tree-moss-column.png",
+      "evidenceSha256": "324dd98d8bc79cd0f4ac4508b360ff89d3decd0a35352eab10977fba4c7d3adb",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4807196723090278,
+        "averageLuminance": 69.03772274979555,
+        "edgeEnergy": 2.8760579427083335
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 42,
+      "concern": "species-color",
+      "target": "tree:layered-araucaria",
+      "evidence": "renders/tree-layered-araucaria.png",
+      "evidenceSha256": "ecbf5a1c5b2f21367ec0d8bc3277184c6d9e73c2c0a011c283e9d665253a3ebd",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.43743896484375,
+        "averageLuminance": 60.5923112968884,
+        "edgeEnergy": 2.5228339301215277
+      },
+      "geometry": {
+        "meshes": 50,
+        "vertices": 13859,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 43,
+      "concern": "scale-consistency",
+      "target": "tree:fan-cycad",
+      "evidence": "renders/tree-fan-cycad.png",
+      "evidenceSha256": "ea21e714389e87f46dfbaf52c4bac16f66a8ee42ec53f98fbca8fb3411d6e3e4",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4250556098090278,
+        "averageLuminance": 58.042617674399175,
+        "edgeEnergy": 1.8093397352430556
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 44,
+      "concern": "camera-framing",
+      "target": "tree:ginkgo-crown-tree",
+      "evidence": "renders/tree-ginkgo-crown-tree.png",
+      "evidenceSha256": "31a15eb94f69be789a422f2db6591654a1411ec60eba28c9504e5fd7a2fe0239",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.5347696940104166,
+        "averageLuminance": 79.54446073812771,
+        "edgeEnergy": 3.945651584201389
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 45,
+      "concern": "background-separation",
+      "target": "tree:marsh-horsetail-tower",
+      "evidence": "renders/tree-marsh-horsetail-tower.png",
+      "evidenceSha256": "59a3a0823814cbf80fef40ee51b7d143301b1e01141467ea4d57fc27b229e2ab",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.526123046875,
+        "averageLuminance": 72.60093022187812,
+        "edgeEnergy": 2.8313395182291665
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 46,
+      "concern": "highlight-control",
+      "target": "tree:forked-ghostwood",
+      "evidence": "renders/tree-forked-ghostwood.png",
+      "evidenceSha256": "51234fcb82e5c4269e39be0edd62b798a11fdbbc52274fdac7afabc06ce4e387",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4736056857638889,
+        "averageLuminance": 66.17476200897136,
+        "edgeEnergy": 2.8450792100694446
+      },
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 47,
+      "concern": "mid-distance-read",
+      "target": "tree:tall-prehistoric-palm",
+      "evidence": "renders/tree-tall-prehistoric-palm.png",
+      "evidenceSha256": "f8169abdf014642abe9f4620066b054283c929bae095e9810c3477aa0b99b5d4",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.3808322482638889,
+        "averageLuminance": 55.62713285994422,
+        "edgeEnergy": 1.9747382269965277
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 48,
+      "concern": "thumbnail-read",
+      "target": "tree:short-jungle-palm",
+      "evidence": "renders/tree-short-jungle-palm.png",
+      "evidenceSha256": "abfeb77da878ad97814b4ead4a5a8f4ffa4cfea8a602f84d9cf522396a09a68e",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4162462022569444,
+        "averageLuminance": 58.13908611515108,
+        "edgeEnergy": 2.0104302300347223
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 49,
+      "concern": "catalog-cohesion",
+      "target": "tree:giant-fern-tree",
+      "evidence": "renders/tree-giant-fern-tree.png",
+      "evidenceSha256": "c07660d2b2e7372d32b6dbbdbcbab171bb90dcb455c84054cbb2122718dce671",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4057956271701389,
+        "averageLuminance": 54.256671870903716,
+        "edgeEnergy": 1.6829359266493056
+      },
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "invalidNormals": 0
+      }
+    },
+    {
+      "attempt": 50,
+      "concern": "final-artifact-completeness",
+      "target": "tree:tower-conifer",
+      "evidence": "renders/tree-tower-conifer.png",
+      "evidenceSha256": "e7cfdfca94e08bab0261dc8750d219beb094f04f1517ea6de29e9bb72a6b3734",
+      "comparableProfile": "prehistoric-model-studio-v1",
+      "decision": "KEEP",
+      "failures": [],
+      "visual": {
+        "foregroundRatio": 0.4330783420138889,
+        "averageLuminance": 58.25227571610734,
+        "edgeEnergy": 2.32830810546875
+      },
+      "geometry": {
+        "meshes": 50,
+        "vertices": 13859,
+        "invalidNormals": 0
+      }
+    }
+  ]
+}

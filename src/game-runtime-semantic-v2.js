@@ -223,6 +223,7 @@ const racerPresentation = Object.freeze({
 
 startup.working("foundation", 0, "Committing visible Foundation terrain");
 setLoading(startup.getDescriptor().progress, "Preparing starting area");
+let foundationStartupProgressActive = true;
 const rendering = await measureStartupAsync("rendererStartup", () => createPrehistoricRushRenderingImplementation(THREE, {
   host,
   world,
@@ -236,6 +237,9 @@ const rendering = await measureStartupAsync("rendererStartup", () => createPrehi
   Nexus,
   engine,
   onProgress(progress, detail) {
+    // The renderer also reports optional fidelity changes after gameplay begins.
+    // Core Startup only accepts preparation updates while a launch is active.
+    if (!foundationStartupProgressActive) return;
     startup.working("foundation", progress, detail);
     setLoading(startup.getDescriptor().progress, detail);
   },
@@ -244,6 +248,7 @@ const rendering = await measureStartupAsync("rendererStartup", () => createPrehi
   }
 }));
 startup.ready("foundation", { terrainPatchCount: rendering.snapshot().terrainPatchCount }, "Visible Foundation terrain committed");
+foundationStartupProgressActive = false;
 engine.n.prehistoricRush.bindPresentation({ rendering, renderSurface, assetSession });
 const framing = engine.n.cameraFraming.create({
   id: `prehistoric-rush-${racerProfile.id}`,

@@ -158,7 +158,7 @@ try {
     assert.equal(worldBefore.worldRevision, raceBefore.world.recipe.revision, "World update diagnostics must identify the recipe revision.");
     assert.equal(worldBefore.terrainPatchIds.length, 9, "Race must begin with a complete active terrain ring.");
     assert.equal(worldBefore.streamingHoleCount, 0, "Race must begin without terrain streaming holes.");
-    assert.equal(raceBefore.playerPresentation, "procedural-skinned-raptor", "Race must render the selected character.");
+    assert.equal(raceBefore.playerPresentation, "prebuilt-glb-velociraptor", "Race must render the selected prebuilt racer GLB.");
     assert.equal(raceBefore.rendering.courseVisible, true, "Race must render the procedural course.");
     assert.equal(await page.locator('[data-race-screen="true"]').count(), 1, "Race screen must be present.");
     assert.equal(await page.locator('[data-race-hud="true"]').count(), 1, "Race HUD must be present.");
@@ -185,7 +185,7 @@ try {
     assert.equal(worldAfter.streamingHoleCount, 0, "Moving race must not expose terrain streaming holes.");
     assert.ok(Math.abs(worldAfter.playerWorldPosition.z - raceAfter.game.run.z) < 0.001, "World diagnostics must track the player world position.");
     assert.notDeepEqual(raceAfter.camera, started.camera, "Camera must follow the moving character.");
-    assert.equal(raceAfter.playerPresentation, "procedural-skinned-raptor", "Moving race must retain the selected character.");
+    assert.equal(raceAfter.playerPresentation, "prebuilt-glb-velociraptor", "Moving race must retain the selected prebuilt racer GLB.");
     assert.equal(raceAfter.rendering.courseVisible, true, "Moving race must retain the procedural course.");
     await page.screenshot({ path: worldAfterScreenshotFile, fullPage: true });
     await page.screenshot({ path: raceAfterScreenshotFile, fullPage: true });
@@ -201,7 +201,7 @@ try {
     assert.equal(production.streamingReadiness.backgroundForestPending, 0, "Full local forest must eventually settle");
     assert.ok(production.treeFidelity.treeCount > 0, "Normal production must render Foundation-positioned trees");
     assert.ok(production.rendering.grassCount > 0, "Normal production must restore grass");
-    assert.equal(production.playerPresentation, "procedural-skinned-raptor", "Normal production must restore the skinned procedural raptor");
+    assert.equal(production.playerPresentation, "prebuilt-glb-velociraptor", "Normal production must retain the selected prebuilt racer GLB");
     assert.ok(production.world.ecology.length >= 3, "Normal production must compose Nexus Ecology features");
     assert.ok(production.world.hydrology.length >= 1, "Normal production must compose Nexus Hydrology features");
     assert.ok(production.world.atmosphere.length >= 2, "Normal production must compose Nexus Atmosphere features");

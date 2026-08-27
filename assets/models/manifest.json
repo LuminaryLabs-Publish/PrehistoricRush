@@ -1,0 +1,886 @@
+{
+  "schema": "prehistoric-rush.model-manifest/1",
+  "generator": "tools/prehistoric-asset-factory/src/factory.mjs",
+  "deterministic": true,
+  "assetCount": 24,
+  "racerCount": 12,
+  "treeCount": 12,
+  "assets": [
+    {
+      "id": "tyrannosaurus-rex",
+      "kind": "racer",
+      "url": "./racers/tyrannosaurus-rex.glb",
+      "bytes": 240416,
+      "sha256": "ae7830fddc09272b95c8dc6964c0a1757092aba48808f0bb5f6cd5a71b1c0cdb",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6508,
+        "triangles": 2442,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.8331696300981515,
+          -2.7755575615628914e-17,
+          -2.9960901205273243
+        ],
+        "max": [
+          0.8331659948156016,
+          2.132242568481445,
+          2.6391732662072145
+        ],
+        "size": [
+          1.666335624913753,
+          2.132242568481445,
+          5.635263386734539
+        ]
+      }
+    },
+    {
+      "id": "velociraptor",
+      "kind": "racer",
+      "url": "./racers/velociraptor.glb",
+      "bytes": 243040,
+      "sha256": "ea8ef703782ee6fa975c8b20c05f7a14e3459f03463fe64e85c48396def69eda",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6526,
+        "triangles": 2448,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -1.1079389495752556,
+          -2.7755575615628914e-17,
+          -2.406144456338602
+        ],
+        "max": [
+          1.1069381774742746,
+          1.7983545684814453,
+          1.9555121867989114
+        ],
+        "size": [
+          2.2148771270495304,
+          1.7983545684814453,
+          4.361656643137513
+        ]
+      }
+    },
+    {
+      "id": "triceratops",
+      "kind": "racer",
+      "url": "./racers/triceratops.glb",
+      "bytes": 264596,
+      "sha256": "d1e7d5a31d459f238a15268da748103870b6ce316c457c355e231616825b3afa",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 23,
+        "vertices": 7231,
+        "triangles": 2788,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.8046207779526922,
+          -2.7755575615628914e-17,
+          -1.937057427968553
+        ],
+        "max": [
+          0.8044801572917823,
+          2.0029286479949953,
+          2.3838119531677235
+        ],
+        "size": [
+          1.6091009352444745,
+          2.0029286479949953,
+          4.320869381136276
+        ]
+      }
+    },
+    {
+      "id": "stegosaurus",
+      "kind": "racer",
+      "url": "./racers/stegosaurus.glb",
+      "bytes": 249072,
+      "sha256": "8615f84acc9814fea75382afae766b5794cbeb4909206535358473865a1d1e23",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 29,
+        "vertices": 6664,
+        "triangles": 2564,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.7793843762712729,
+          -2.7755575615628914e-17,
+          -3.352028659906229
+        ],
+        "max": [
+          0.7796369769964266,
+          2.0583545684814455,
+          2.218402746756553
+        ],
+        "size": [
+          1.5590213532676995,
+          2.0583545684814455,
+          5.570431406662782
+        ]
+      }
+    },
+    {
+      "id": "spinosaurus",
+      "kind": "racer",
+      "url": "./racers/spinosaurus.glb",
+      "bytes": 242244,
+      "sha256": "f9896812d353b1e3e3ca93492d6fd01a39d6694278d7fabb6f7fde0bec7e8dce",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 28,
+        "vertices": 6520,
+        "triangles": 2446,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.8113257519651823,
+          -2.7755575615628914e-17,
+          -3.1615567273991827
+        ],
+        "max": [
+          0.8222317829914206,
+          3.218354568481445,
+          2.937905792689185
+        ],
+        "size": [
+          1.633557534956603,
+          3.218354568481445,
+          6.099462520088368
+        ]
+      }
+    },
+    {
+      "id": "ankylosaurus",
+      "kind": "racer",
+      "url": "./racers/ankylosaurus.glb",
+      "bytes": 380664,
+      "sha256": "f53d1f4541cf02b4b7999f800566ae33c8943f8d5c9568b9033c262771a090e7",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 10606,
+        "triangles": 3808,
+        "invalidNormals": 0,
+        "materials": 6
+      },
+      "bounds": {
+        "min": [
+          -0.8162455948844313,
+          5.551115123125783e-17,
+          -3.0160724791794156
+        ],
+        "max": [
+          0.816245699205158,
+          1.401221675884048,
+          2.1661543327766704
+        ],
+        "size": [
+          1.6324912940895893,
+          1.401221675884048,
+          5.182226811956086
+        ]
+      }
+    },
+    {
+      "id": "pachycephalosaurus",
+      "kind": "racer",
+      "url": "./racers/pachycephalosaurus.glb",
+      "bytes": 257172,
+      "sha256": "79a9c8fab7596ea530adce0b0a76009a053a770483061d0771639f4453305f7d",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 25,
+        "vertices": 7036,
+        "triangles": 2618,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.5888010249565748,
+          -2.7755575615628914e-17,
+          -2.0088709452216564
+        ],
+        "max": [
+          0.58864341068164,
+          2.338481979370117,
+          1.8798557692946452
+        ],
+        "size": [
+          1.1774444356382148,
+          2.338481979370117,
+          3.8887267145163014
+        ]
+      }
+    },
+    {
+      "id": "carnotaurus",
+      "kind": "racer",
+      "url": "./racers/carnotaurus.glb",
+      "bytes": 247192,
+      "sha256": "62ab588bac782bd2bb04fc7e2ad4fe9642cba4ab64e4f6358dd3f4aabcfed9d6",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 27,
+        "vertices": 6652,
+        "triangles": 2560,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.6917076915997591,
+          -2.7755575615628914e-17,
+          -2.742542180929787
+        ],
+        "max": [
+          0.6920040006221003,
+          2.1962586375988904,
+          2.197693324306252
+        ],
+        "size": [
+          1.3837116922218593,
+          2.1962586375988904,
+          4.940235505236039
+        ]
+      }
+    },
+    {
+      "id": "gallimimus",
+      "kind": "racer",
+      "url": "./racers/gallimimus.glb",
+      "bytes": 237948,
+      "sha256": "1a76b301227820536da531009e9493f84ef5078dd6386e5ea4d5fda288040645",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 23,
+        "vertices": 6490,
+        "triangles": 2436,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -0.522818573498153,
+          -2.498001805406602e-16,
+          -2.1981526198007524
+        ],
+        "max": [
+          0.528648054496225,
+          2.0683545684814453,
+          2.0576395660572873
+        ],
+        "size": [
+          1.0514666279943778,
+          2.0683545684814457,
+          4.25579218585804
+        ]
+      }
+    },
+    {
+      "id": "therizinosaurus",
+      "kind": "racer",
+      "url": "./racers/therizinosaurus.glb",
+      "bytes": 254868,
+      "sha256": "0e5f6d67fcc67d4a52bfd42816a10fe7c5ff912634e7a607d0286fffd0353b7c",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 25,
+        "vertices": 6832,
+        "triangles": 2716,
+        "invalidNormals": 0,
+        "materials": 6
+      },
+      "bounds": {
+        "min": [
+          -1.037595433599673,
+          -2.7755575615628914e-17,
+          -2.088609707741505
+        ],
+        "max": [
+          1.0162224141427763,
+          2.014754568481445,
+          2.0643095359282397
+        ],
+        "size": [
+          2.053817847742449,
+          2.014754568481445,
+          4.152919243669745
+        ]
+      }
+    },
+    {
+      "id": "brachiosaurus",
+      "kind": "racer",
+      "url": "./racers/brachiosaurus.glb",
+      "bytes": 239580,
+      "sha256": "2a9305a4d779e1c07be00b86678f6532860d4b2eb95bc880278e12ed9a292798",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 20,
+        "vertices": 6569,
+        "triangles": 2512,
+        "invalidNormals": 0,
+        "materials": 6
+      },
+      "bounds": {
+        "min": [
+          -0.954151646960836,
+          2.220446049250313e-16,
+          -3.7340833609373707
+        ],
+        "max": [
+          0.9533961081761033,
+          6.808120494842529,
+          2.1808953682583487
+        ],
+        "size": [
+          1.9075477551369393,
+          6.808120494842529,
+          5.914978729195719
+        ]
+      }
+    },
+    {
+      "id": "pteranodon",
+      "kind": "racer",
+      "url": "./racers/pteranodon.glb",
+      "bytes": 237988,
+      "sha256": "01b63c5626e88f4e730315d8edf7d47691603167b0c78864a66871daf867c4b9",
+      "rigged": true,
+      "animations": [
+        "idle",
+        "run",
+        "ability"
+      ],
+      "geometry": {
+        "meshes": 21,
+        "vertices": 6520,
+        "triangles": 2468,
+        "invalidNormals": 0,
+        "materials": 7
+      },
+      "bounds": {
+        "min": [
+          -2.529794485451408,
+          -2.7755575615628914e-17,
+          -1.3247365028929659
+        ],
+        "max": [
+          2.54568954968136,
+          2.122619442619214,
+          2.561385144093273
+        ],
+        "size": [
+          5.075484035132767,
+          2.122619442619214,
+          3.886121646986239
+        ]
+      }
+    },
+    {
+      "id": "giant-fern-tree",
+      "kind": "tree",
+      "url": "./trees/giant-fern-tree.glb",
+      "bytes": 247096,
+      "sha256": "f629e02fce978a09dcf2002283ff53c522258b875eff5e966abb329926ae34c1",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "triangles": 2804,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -3.0963655259026277,
+          0,
+          -2.51834046614728
+        ],
+        "max": [
+          2.7345904919168462,
+          6.092887791324816,
+          3.1327780281992954
+        ],
+        "size": [
+          5.830956017819474,
+          6.092887791324816,
+          5.6511184943465755
+        ]
+      }
+    },
+    {
+      "id": "tower-conifer",
+      "kind": "tree",
+      "url": "./trees/tower-conifer.glb",
+      "bytes": 510764,
+      "sha256": "f6b36fe808edb6ba5a716868b7a189fbe25798541c97458b477c35700623006e",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 50,
+        "vertices": 13859,
+        "triangles": 5612,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.3102029528398278,
+          0,
+          -1.4408489294828977
+        ],
+        "max": [
+          1.2315980629694705,
+          6.478352442742571,
+          1.6689906855767083
+        ],
+        "size": [
+          2.5418010158092983,
+          6.478352442742571,
+          3.109839615059606
+        ]
+      }
+    },
+    {
+      "id": "understory-cycad",
+      "kind": "tree",
+      "url": "./trees/understory-cycad.glb",
+      "bytes": 247012,
+      "sha256": "166f5e3444c758b9bbd9541896d07217eda570e3d85eb6fdcf29f0e074864a5f",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "triangles": 2804,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.237052962278591,
+          0,
+          -1.3037817483821263
+        ],
+        "max": [
+          1.2463138362673474,
+          4.290350458528578,
+          1.2899156715980304
+        ],
+        "size": [
+          2.4833667985459384,
+          4.290350458528578,
+          2.593697419980157
+        ]
+      }
+    },
+    {
+      "id": "broad-canopy",
+      "kind": "tree",
+      "url": "./trees/broad-canopy.glb",
+      "bytes": 411828,
+      "sha256": "456955aab515170c70db1ff168a8425f9407cd9482e5206880b055c8f6f1deeb",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "triangles": 4424,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.89009617135866,
+          0,
+          -1.8752441992072222
+        ],
+        "max": [
+          1.8369688211242186,
+          5.6775008912043194,
+          2.1024440493306504
+        ],
+        "size": [
+          3.7270649924828785,
+          5.6775008912043194,
+          3.9776882485378726
+        ]
+      }
+    },
+    {
+      "id": "moss-column",
+      "kind": "tree",
+      "url": "./trees/moss-column.glb",
+      "bytes": 411872,
+      "sha256": "364bc7e8e3ca0dd50cb50d064bc9d6570decf5885a755c74ce050d2880ee775d",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "triangles": 4424,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.4738022584012702,
+          0,
+          -1.3456635124777252
+        ],
+        "max": [
+          1.441502739510159,
+          6.047540579403475,
+          1.4037613311073553
+        ],
+        "size": [
+          2.915304997911429,
+          6.047540579403475,
+          2.7494248435850803
+        ]
+      }
+    },
+    {
+      "id": "layered-araucaria",
+      "kind": "tree",
+      "url": "./trees/layered-araucaria.glb",
+      "bytes": 510784,
+      "sha256": "b3ab0ba0356a6ca5e15e541a7773c3f2b2bd6aa1432157d9014c7aaeeffd5234",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 50,
+        "vertices": 13859,
+        "triangles": 5612,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.5051917609398826,
+          0,
+          -1.527675986238719
+        ],
+        "max": [
+          1.4689934590690656,
+          6.351720287333277,
+          1.7276649543502538
+        ],
+        "size": [
+          2.9741852200089482,
+          6.351720287333277,
+          3.255340940588973
+        ]
+      }
+    },
+    {
+      "id": "fan-cycad",
+      "kind": "tree",
+      "url": "./trees/fan-cycad.glb",
+      "bytes": 247004,
+      "sha256": "337f9d609105885a233a118e12bd12b251613b88de8a375a686e516dfc82c982",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "triangles": 2804,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.5961720337963254,
+          0,
+          -1.3782683777742224
+        ],
+        "max": [
+          1.6273222876356845,
+          4.54949058326741,
+          1.4588160710507658
+        ],
+        "size": [
+          3.22349432143201,
+          4.54949058326741,
+          2.8370844488249882
+        ]
+      }
+    },
+    {
+      "id": "ginkgo-crown-tree",
+      "kind": "tree",
+      "url": "./trees/ginkgo-crown-tree.glb",
+      "bytes": 411888,
+      "sha256": "afa31c9398bd257af8cd1a4700a37b8dbb136284e7f522cef60d0fe026c61bf3",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "triangles": 4424,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.8561423798034145,
+          0,
+          -1.7008046633145029
+        ],
+        "max": [
+          2.0578900275954553,
+          5.914426568722119,
+          1.824764250623322
+        ],
+        "size": [
+          3.91403240739887,
+          5.914426568722119,
+          3.525568913937825
+        ]
+      }
+    },
+    {
+      "id": "marsh-horsetail-tower",
+      "kind": "tree",
+      "url": "./trees/marsh-horsetail-tower.glb",
+      "bytes": 411944,
+      "sha256": "fb3f348098c38ea6b556142842b9ac3df6c70e14c543aacdd5c73c0479261ff3",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "triangles": 4424,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.244083570847858,
+          0,
+          -1.2573187742885397
+        ],
+        "max": [
+          1.3072105157942142,
+          4.804139084882593,
+          1.2858286590625954
+        ],
+        "size": [
+          2.551294086642072,
+          4.804139084882593,
+          2.543147433351135
+        ]
+      }
+    },
+    {
+      "id": "forked-ghostwood",
+      "kind": "tree",
+      "url": "./trees/forked-ghostwood.glb",
+      "bytes": 411884,
+      "sha256": "c64c8cd512f5ae9412482c5602216c710f7e1b8d62f67964708ed571dd2c2dd9",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 35,
+        "vertices": 11423,
+        "triangles": 4424,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.4557739098189473,
+          0,
+          -1.7669727591628948
+        ],
+        "max": [
+          1.3571379786056688,
+          5.94638795237567,
+          1.740644171701513
+        ],
+        "size": [
+          2.8129118884246163,
+          5.94638795237567,
+          3.507616930864408
+        ]
+      }
+    },
+    {
+      "id": "tall-prehistoric-palm",
+      "kind": "tree",
+      "url": "./trees/tall-prehistoric-palm.glb",
+      "bytes": 247144,
+      "sha256": "6dbe727204c88911b688d52c730f49adb30ee91d5925b3db5e8d36490fdf24f4",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "triangles": 2804,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -2.0643598123693057,
+          0,
+          -2.233505806443665
+        ],
+        "max": [
+          1.8947464226743498,
+          5.729140558877486,
+          2.3621948787823035
+        ],
+        "size": [
+          3.9591062350436554,
+          5.729140558877486,
+          4.595700685225968
+        ]
+      }
+    },
+    {
+      "id": "short-jungle-palm",
+      "kind": "tree",
+      "url": "./trees/short-jungle-palm.glb",
+      "bytes": 247088,
+      "sha256": "a38429ac5ed83ec0c65a324590e69999d1f9664250f81209e15120b2b31d1cab",
+      "rigged": true,
+      "animations": [
+        "wind",
+        "gust"
+      ],
+      "geometry": {
+        "meshes": 26,
+        "vertices": 6563,
+        "triangles": 2804,
+        "invalidNormals": 0,
+        "materials": 3
+      },
+      "bounds": {
+        "min": [
+          -1.850973762163635,
+          0,
+          -1.5979571215353539
+        ],
+        "max": [
+          1.7174714463406922,
+          4.662866097562674,
+          1.8474055189298222
+        ],
+        "size": [
+          3.5684452085043272,
+          4.662866097562674,
+          3.4453626404651763
+        ]
+      }
+    }
+  ]
+}
