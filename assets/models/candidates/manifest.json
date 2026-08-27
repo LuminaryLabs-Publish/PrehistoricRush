@@ -1,0 +1,62 @@
+{
+  "schema": "prehistoric-rush.racer-model-candidates/v1",
+  "generatedAt": "2026-08-27T00:00:00.000Z",
+  "candidates": [
+    {
+      "id": "triceratops-guided-v1",
+      "racerId": "triceratops",
+      "status": "reviewed-candidate",
+      "default": false,
+      "userApprovalRequired": true,
+      "url": "./triceratops-guided-v1.glb",
+      "bytes": 579656,
+      "sha256": "c20fe58886cf05d5482616dbdf341a08aba44f861acb819ed6a728f0ffe146a9",
+      "factory": {
+        "repository": "LuminaryLabs-Dev/NexusFactory-Kits",
+        "path": "tools/triceratops-mesh-editor",
+        "kitId": "triceratops-guided-reviewed-candidate-v1",
+        "seed": 927239,
+        "revision": 45,
+        "geometrySha256": "30f337bb5e95f0cab2d9b9df4e6d7d7a22c16514a7b38da30d117cf3fbf17835"
+      },
+      "runtime": {
+        "rigged": false,
+        "animations": [],
+        "transform": {
+          "position": [0, 0, 0],
+          "rotation": [0, 1.5707963267948966, 0],
+          "scale": [0.5, 0.5, 0.5]
+        }
+      },
+      "geometry": {
+        "structuralShellMeshes": 1,
+        "replaceableAttachments": 27,
+        "meshes": 28,
+        "bodyTriangles": 17788,
+        "triangles": 18614,
+        "boundaryEdges": 0,
+        "nonManifoldEdges": 0,
+        "windingConflicts": 0,
+        "duplicateFaces": 0,
+        "degenerateTriangles": 0,
+        "invalidValues": 0
+      },
+      "bounds": {
+        "source": {
+          "min": [-3.8886823654174805, 0, -1.3789831399917603],
+          "max": [4.716515064239502, 4.1274919509887695, 1.3789517879486084]
+        },
+        "runtimeSize": [1.3789674639701852, 2.0637459754943848, 4.302598714828491]
+      },
+      "evidence": {
+        "validation": "./evidence/triceratops-validation.json",
+        "referenceComparison": "./evidence/triceratops-reference-comparison.png"
+      },
+      "limitations": [
+        "The candidate does not fully match the approved reference.",
+        "User art approval is required before promotion.",
+        "The GLB has no rig, skin weights, or animation clips."
+      ]
+    }
+  ]
+}

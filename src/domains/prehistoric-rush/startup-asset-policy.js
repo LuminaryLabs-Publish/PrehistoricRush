@@ -2,6 +2,10 @@ import {
   PREHISTORIC_TREE_ARCHETYPES,
   TREE_FIDELITY_PACKAGE_VERSION
 } from "../../shared/tree-fidelity-assets.js";
+import {
+  fetchRacerModelAsset,
+  resolveRacerModelRecord
+} from "../../services/racer-model-service.js";
 
 export const PREHISTORIC_RUSH_ASSET_PROVIDER_ID = "prehistoric-rush-runtime-assets";
 export const PREHISTORIC_RUSH_PLAYABLE_BUNDLE_ID = "prehistoric-rush-playable";
@@ -61,13 +65,14 @@ function createRuntimeAssetProvider() {
     async load(asset, context) {
       if (asset.type === "racer-presentation-model") {
         const racerId = String(asset.metadata?.racerId ?? "");
+        const modelVariant = String(asset.metadata?.modelVariant ?? "production");
         context.updateProgress?.(0.12, 1, `Loading ${racerId} model`);
-        const modelBuffer = await fetchModelBuffer(`racers/${racerId}.glb`, context.signal);
+        const { modelBuffer, record } = await fetchRacerModelAsset(racerId, { variant: modelVariant, signal: context.signal });
         context.updateProgress?.(1, 1, `${racerId} model ready`);
         return {
           runtimeValue: modelBuffer,
           portable: modelBuffer,
-          metadata: { racerId, modelFormat: "glb", requiredBeforePlay: true, byteLength: modelBuffer.byteLength }
+          metadata: { racerId, modelId: record.id, modelVariant: record.variant, modelStatus: record.status, modelFormat: "glb", requiredBeforePlay: true, byteLength: modelBuffer.byteLength }
         };
       }
       if (asset.type !== "tree-fidelity-package") {
@@ -113,6 +118,8 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
   const assets = engine?.n?.asset;
   if (!assets) throw new TypeError("Prehistoric Rush startup assets require Nexus Core Assets at n:asset.");
   const racerId = String(options.racerId ?? "velociraptor");
+  const racerModelVariant = String(options.racerModelVariant ?? "production");
+  const racerModelRecord = resolveRacerModelRecord(racerId, { variant: racerModelVariant });
   const worldId = String(options.worldId ?? "jurassic-valley");
   const racerAssetId = racerAssetIdFor(racerId);
   let persistentCache = "unavailable";
@@ -134,7 +141,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
     {
       id: racerAssetId,
       type: "racer-presentation-model",
-      metadata: { group: "selected-racer-presentation", racerId, requiredBeforePlay: true }
+      metadata: { group: "selected-racer-presentation", racerId, modelVariant: racerModelRecord.variant, modelId: racerModelRecord.id, modelStatus: racerModelRecord.status, requiredBeforePlay: true }
     },
     {
       id: PREHISTORIC_RUSH_TERRAIN_ROUTE_ID,
@@ -283,6 +290,7 @@ export function installPrehistoricRushStartupAssets(engine, options = {}) {
       return Object.freeze({ receipt, groupCount: PREHISTORIC_RUSH_REQUIRED_GROUP_COUNT });
     },
     getRacerModelBuffer() { return assets.getValue(racerAssetId) ?? null; },
+    getRacerModelRecord() { return racerModelRecord; },
     requestSpecies,
     requestAllSpecies(options = {}) {
       return requestSpecies(PREHISTORIC_TREE_ARCHETYPES.map((entry) => entry.id), { ...options, priority: options.priority ?? "idle" });

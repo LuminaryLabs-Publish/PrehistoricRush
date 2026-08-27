@@ -75,6 +75,23 @@ assert.equal(session.getSnapshot().optional.readyCount, 0, "no detailed species 
 assert.equal(session.speciesAssetIds.length, 12);
 assert.ok(session.speciesAssetIds.every((id) => coreAssets.inspect().statuses.get(id) === "unrequested"));
 assert.equal(session.getSnapshot().persistentCache, "unavailable", "missing IndexedDB degrades to in-memory Core Assets without blocking play");
+assert.equal(session.getRacerModelRecord().variant, "production");
+
+const candidateCoreAssets = createFakeCoreAssets();
+const candidateSession = installPrehistoricRushStartupAssets({ n: { asset: candidateCoreAssets } }, {
+  racerId: "triceratops",
+  racerModelVariant: "reviewed-candidate",
+  worldId: "jurassic-valley"
+});
+globalThis.fetch = async (url) => {
+  if (String(url).includes("/assets/models/candidates/triceratops-guided-v1.glb")) return { ok: true, arrayBuffer: async () => new ArrayBuffer(32) };
+  throw new Error(`Unexpected candidate startup fetch: ${url}`);
+};
+await candidateSession.preparePlayable();
+globalThis.fetch = platformFetch;
+assert.equal(candidateSession.getRacerModelRecord().id, "triceratops-guided-v1");
+assert.equal(candidateSession.getRacerModelRecord().status, "reviewed-candidate");
+assert.equal(candidateSession.getRacerModelBuffer().byteLength, 32);
 
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async () => ({ ok: false, status: 503 });

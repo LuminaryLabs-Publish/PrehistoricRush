@@ -95,6 +95,24 @@ PrehistoricRushHost.getState()
 - `kit-cutover-inventory.json` — cutover decisions for current product-side behavior.
 - `RUNNER_RESEARCH.md` — algorithm and animation notes.
 
+## Reviewed Triceratops candidate
+
+The guided procedural Triceratops is available as an explicit review variant:
+
+```txt
+assets/models/candidates/
+├── manifest.json
+├── triceratops-guided-v1.glb
+└── evidence/
+    ├── triceratops-reference-comparison.png
+    └── triceratops-validation.json
+
+src/services/
+└── racer-model-service.js
+```
+
+Open `game.html?racer=triceratops&model=reviewed-candidate` to load it through the normal race asset path. It remains labeled `reviewed-candidate`; the existing rigged model stays the production default because the candidate still needs user art approval and has no rig or animation clips. Its procedural AST and generator are maintained in `LuminaryLabs-Dev/NexusFactory-Kits`, not this game repository.
+
 ## Core kits targeted
 
 - `createCoreSkyboxKit`

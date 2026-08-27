@@ -17,14 +17,23 @@ export async function createThreePrebuiltRacerModel(THREE, modelBuffer, options 
   if (!(modelBuffer instanceof ArrayBuffer)) throw new TypeError("A racer GLB ArrayBuffer is required.");
   const { GLTFLoader } = await import(options.loaderModuleUrl ?? RUNTIME_URLS.threeGltfLoader);
   const gltf = await parseGltf(new GLTFLoader(), modelBuffer.slice(0));
-  const object = gltf.scene;
+  const sourceObject = gltf.scene;
+  const transform = options.transform ?? null;
+  let object = sourceObject;
+  if (transform) {
+    object = new THREE.Group();
+    object.add(sourceObject);
+    sourceObject.position.fromArray(transform.position ?? [0, 0, 0]);
+    sourceObject.rotation.fromArray(transform.rotation ?? [0, 0, 0]);
+    sourceObject.scale.fromArray(transform.scale ?? [1, 1, 1]);
+  }
   object.name = options.name ?? object.name ?? "prehistoric-rush-prebuilt-racer";
-  object.traverse((node) => {
+  sourceObject.traverse((node) => {
     if (!node.isMesh) return;
     node.castShadow = true;
     node.receiveShadow = true;
   });
-  const mixer = new THREE.AnimationMixer(object);
+  const mixer = new THREE.AnimationMixer(sourceObject);
   const actions = new Map(gltf.animations.map((clip) => [clip.name, mixer.clipAction(clip)]));
   const idle = actions.get("idle") ?? actions.values().next().value ?? null;
   const run = actions.get("run") ?? idle;

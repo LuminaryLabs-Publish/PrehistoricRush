@@ -412,9 +412,13 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     }
     if (racerBody) {
       const modelBuffer = assetSession?.getRacerModelBuffer?.();
+      const modelRecord = assetSession?.getRacerModelRecord?.();
       if (modelBuffer instanceof ArrayBuffer) {
         try {
-          prebuiltRacer = await createThreePrebuiltRacerModel(THREE, modelBuffer, { name: `${resolvedRacerPresentation.racerId}-prebuilt-glb` });
+          prebuiltRacer = await createThreePrebuiltRacerModel(THREE, modelBuffer, {
+            name: `${resolvedRacerPresentation.racerId}-${modelRecord?.variant ?? "production"}-glb`,
+            transform: modelRecord?.runtimeTransform
+          });
           playerMesh = prebuiltRacer.object;
           playerModelStatus = "prebuilt-glb";
         } catch (error) {

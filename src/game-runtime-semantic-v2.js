@@ -27,7 +27,8 @@ const staminaBar = document.querySelector("#prehistoric-stamina");
 const staminaFill = document.querySelector("#prehistoric-stamina-fill");
 const staminaMarker = document.querySelector("#prehistoric-stamina-marker");
 const staminaOrb = document.querySelector("#prehistoric-stamina-orb");
-const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
+const runtimeSearch = new URLSearchParams(globalThis.location?.search ?? "");
+const diagnosticFoundationOnly = runtimeSearch.get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
   statusNode.textContent = `${detail} · ${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}`;
@@ -113,6 +114,9 @@ const modules = { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
 const requestedRacerId = loadSelectedRacerId(globalThis.location);
 const racerProfile = resolvePlayableRacerProfile(requestedRacerId);
+const racerModelVariant = racerProfile.id === "triceratops" && runtimeSearch.get("model") === "reviewed-candidate"
+  ? "reviewed-candidate"
+  : "production";
 saveSelectedRacerId(racerProfile.id);
 const rosterDetails = getRacerRosterDetails(racerProfile.id);
 const playerProfile = createRacerCharacterProfile(racerProfile, loadPlayerCharacterProfile());
@@ -171,7 +175,7 @@ await yieldStartupFrame();
 
 startup.working("playable-assets", 0, "Loading playable assets: 0/4");
 setLoading(startup.getDescriptor().progress, "Loading playable assets: 0/4");
-const assetSession = installPrehistoricRushStartupAssets(engine, { Nexus, racerId: racerProfile.id, worldId: worldRecipe.id });
+const assetSession = installPrehistoricRushStartupAssets(engine, { Nexus, racerId: racerProfile.id, racerModelVariant, worldId: worldRecipe.id });
 await measureStartupAsync("playableAssetGroups", () => assetSession.preparePlayable((progress) => {
   const completed = Math.min(4, Math.floor(progress * 4));
   startup.working("playable-assets", progress, `Loading playable assets: ${completed}/4`);
