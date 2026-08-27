@@ -8,6 +8,8 @@ const semanticRuntime = await readFile(new URL("../src/game-runtime-semantic-v2.
 const renderer = await readFile(new URL("../src/domains/prehistoric-rush/rendering-implementation.js", import.meta.url), "utf8");
 const workerService = await readFile(new URL("../src/domains/prehistoric-rush/worker-patch-streaming-service.js", import.meta.url), "utf8");
 const patchWorker = await readFile(new URL("../src/workers/prehistoric-patch-worker.js", import.meta.url), "utf8");
+const runtimeVersions = await readFile(new URL("../src/shared/runtime-versions.js", import.meta.url), "utf8");
+const vegetationDomain = await readFile(new URL("../src/shared/prehistoric-vegetation-domain.js", import.meta.url), "utf8");
 
 assert.match(gamePage, /src="\.\/src\/pages\/game\.js/, "game.html uses the canonical page loader");
 assert.match(pageLoader, /game-runtime-shared-gpu-v3\.js/, "the page loader enters the shared-GPU semantic runtime");
@@ -19,6 +21,10 @@ assert.match(semanticRuntime, /globalThis\.PrehistoricRushEngine = engine/, "the
 assert.doesNotMatch(semanticRuntime, /PrehistoricRushHost/, "the active semantic runtime has no host facade");
 assert.match(semanticRuntime, /createPrehistoricRushRenderSurface/, "the renderer surface is created before semantic world construction");
 assert.match(semanticRuntime, /installPrehistoricRushStartupAssets/, "startup installs one Core Assets session on the semantic engine");
+assert.match(runtimeVersions, /nexusObject:.*core-domains\/object\/index\.js/, "the browser imports the canonical Nexus Object domain module");
+assert.match(semanticRuntime, /Object: ObjectDomain/, "Object Vegetation is composed into the actual product engine");
+assert.match(renderer, /createPrehistoricVegetationRuntime\(Nexus, \{ engine \}\)/, "the renderer reuses the actual product engine for vegetation semantics");
+assert.doesNotMatch(vegetationDomain, /createCoreObjectDomain/, "vegetation no longer calls the removed root-level Nexus helper");
 assert.match(semanticRuntime, /createPrehistoricRushRenderingImplementation/, "the semantic runtime owns renderer composition");
 assert.match(renderer, /createWorkerPatchStreamingService/, "the semantic renderer creates the worker streaming service");
 assert.match(renderer, /workerStreaming\?\.update\(state\)/, "the frame loop pumps bounded streaming");
@@ -34,6 +40,9 @@ assert.match(workerService, /staleRejected/, "the worker service rejects stale r
 assert.match(workerService, /activationBudget/, "the worker service bounds main-thread activation");
 assert.match(workerService, /deferred-main-thread-fallback/, "the worker service has a bounded fallback");
 assert.match(patchWorker, /collectPatchTransferables\(patch\)/, "worker results transfer terrain buffers without copying");
+assert.match(patchWorker, /createPrehistoricVegetationRuntime\(NexusEngine, \{ objectDomain: NexusObject \}\)/, "workers compose their isolated Object Vegetation domain from the canonical module");
+assert.doesNotMatch(renderer, /vPrehistoricWorldPosition = worldPosition\.xyz/, "terrain shading does not read Three.js's conditionally declared worldPosition temporary");
+assert.match(renderer, /vPrehistoricWorldPosition = \(modelMatrix \* vec4\(transformed, 1\.0\)\)\.xyz/, "terrain shading derives a stable vec3 world position");
 assert.doesNotMatch(pageLoader, /prepareTreeAssetsBeforeGame|hydrateTreeFidelityRuntimeImages/, "page loader does not block on complete vegetation fidelity");
 
 console.log("PrehistoricRush semantic worker streaming integration passed.");

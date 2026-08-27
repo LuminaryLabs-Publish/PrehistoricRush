@@ -65,7 +65,7 @@ function yieldStartupFrame() {
 }
 
 setLoading(0.04, "Loading Nexus semantic domains");
-const [Nexus, Runtime, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, Asset, World, FoundationSampling, Presentation, Graphics, Animation, Render, Compute, CreatureModule, THREE] = await measureStartupAsync("domainImports", () => Promise.all([
+const [Nexus, Runtime, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, Asset, ObjectDomain, World, FoundationSampling, Presentation, Graphics, Animation, Render, Compute, CreatureModule, THREE] = await measureStartupAsync("domainImports", () => Promise.all([
   import(RUNTIME_URLS.nexus),
   import(RUNTIME_URLS.nexusRuntime),
   import(RUNTIME_URLS.nexusActor),
@@ -75,6 +75,7 @@ const [Nexus, Runtime, Actor, Spatial, Interaction, SimulationRuntime, Motion, P
   import(RUNTIME_URLS.nexusMotion),
   import(RUNTIME_URLS.nexusPhysics),
   import(RUNTIME_URLS.nexusAsset),
+  import(RUNTIME_URLS.nexusObject),
   import(RUNTIME_URLS.nexusWorld),
   import(RUNTIME_URLS.nexusFoundationSampling),
   import(RUNTIME_URLS.nexusPresentation),
@@ -104,7 +105,7 @@ const computeSelection = computeHost.selectProvider({ preferredBackends: ["webgp
 
 setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
-const modules = { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset, World, Presentation, Graphics, Animation, Render };
+const modules = { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset, Object: ObjectDomain, World, Presentation, Graphics, Animation, Render };
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
 const requestedRacerId = loadSelectedRacerId(globalThis.location);
 const racerProfile = resolvePlayableRacerProfile(requestedRacerId);
@@ -233,6 +234,7 @@ const rendering = await measureStartupAsync("rendererStartup", () => createPrehi
   assetSession,
   diagnosticFoundationOnly,
   Nexus,
+  engine,
   onProgress(progress, detail) {
     startup.working("foundation", progress, detail);
     setLoading(startup.getDescriptor().progress, detail);

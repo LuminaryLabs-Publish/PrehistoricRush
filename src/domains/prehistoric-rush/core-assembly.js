@@ -1,5 +1,5 @@
 export function createPrehistoricRushCoreKits(modules) {
-  const { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset, World, Presentation, Graphics, Animation, Render } = modules;
+  const { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset, Object: ObjectDomain, World, Presentation, Graphics, Animation, Render } = modules;
   const root = Nexus.defineDomainServiceKit({
     id: "prehistoric-rush-root-domain-kit",
     domain: "prehistoric-rush",
@@ -117,6 +117,7 @@ export function createPrehistoricRushCoreKits(modules) {
       apiName: "asset",
       metadata: { product: "prehistoric-rush", singleOwner: true }
     }),
+    ...ObjectDomain.createObjectDomain({ shape: false, fidelity: false }),
     World.createWorldDomain(),
     World.createSceneKit({ allowDirectTransitions: true, initialSceneId: "game", scenes: [{ id: "game", kind: "web-three-scene" }] }),
     ...(Presentation.createPresentationDomain?.() ?? []),

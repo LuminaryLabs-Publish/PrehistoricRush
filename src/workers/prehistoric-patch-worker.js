@@ -14,14 +14,15 @@ let computeHost = null;
 let initialization = null;
 
 async function initialize(payload = {}) {
-  const [NexusEngine, NexusCompute] = await Promise.all([
+  const [NexusEngine, NexusObject, NexusCompute] = await Promise.all([
     import(RUNTIME_URLS.nexus),
+    import(RUNTIME_URLS.nexusObject),
     import(RUNTIME_URLS.nexusCompute)
   ]);
   if (typeof NexusCompute.createComputeHost !== "function") {
     throw new Error("Nexus Compute Host is unavailable from NexusEngine/main.");
   }
-  const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine);
+  const vegetationRuntime = createPrehistoricVegetationRuntime(NexusEngine, { objectDomain: NexusObject });
   const generatePatch = createPrehistoricWorldPatchGenerator({
     ...payload,
     ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)

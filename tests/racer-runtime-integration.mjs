@@ -60,6 +60,7 @@ createPrehistoricRushCoreKits({
       return Object.freeze({ id: options.id });
     }
   },
+  Object: { createObjectDomain: () => [Object.freeze({ id: "object-vegetation" })] },
   World: {
     createWorldDomain: staticKit("world"),
     createSceneKit: staticKit("scene")

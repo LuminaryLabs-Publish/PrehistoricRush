@@ -47,7 +47,7 @@ function createTerrainMaterial(THREE) {
       )
       .replace(
         "#include <worldpos_vertex>",
-        "#include <worldpos_vertex>\nvPrehistoricWorldPosition = worldPosition.xyz;\nvPrehistoricWorldNormal = normalize(mat3(modelMatrix) * objectNormal);"
+        "#include <worldpos_vertex>\nvPrehistoricWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvPrehistoricWorldNormal = normalize(mat3(modelMatrix) * objectNormal);"
       );
     shader.fragmentShader = shader.fragmentShader
       .replace(
@@ -104,7 +104,7 @@ vec3 prehistoricDetailGradient = vec3(dFdx(detailNoise), dFdy(detailNoise), 0.0)
 normal = normalize(normal + prehistoricDetailGradient * mix(0.1, 0.28, slope));`
       );
   };
-  material.customProgramCacheKey = () => "prehistoric-triplanar-height-blended-terrain-v1";
+  material.customProgramCacheKey = () => "prehistoric-triplanar-height-blended-terrain-v2";
   return material;
 }
 
@@ -255,6 +255,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   course,
   gameplay,
   Nexus = null,
+  engine = null,
   creatureApi = null,
   racerPresentation = null,
   playerBody = null,
@@ -520,8 +521,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       packages: [],
       capacity: TREE_CAPACITY_PER_TYPE
     });
-    if (!Nexus) throw new Error("Worker forest fallback requires the active NexusEngine module.");
-    const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus);
+    if (!Nexus || !engine) throw new Error("Worker forest fallback requires the active Nexus Engine and Object Vegetation domain.");
+    const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus, { engine });
     const generatorOptions = {
       config: {
         seed: Number(world.recipe.seed),

@@ -33,6 +33,7 @@ const kits = createPrehistoricRushCoreKits({
     createPhysicsKit: staticKit("physics")
   },
   Asset: { createAssetRegistryKit: staticKit("asset-registry-kit") },
+  Object: { createObjectDomain: () => [Object.freeze({ id: "object-vegetation" })] },
   World: { createWorldDomain: staticKit("world"), createSceneKit: staticKit("scene") },
   Presentation: { createPresentationDomain() { return []; } },
   Graphics: { createGraphicsKit: staticKit("graphics") },
@@ -42,6 +43,7 @@ const kits = createPrehistoricRushCoreKits({
 
 assert.ok(kits.some((kit) => kit.id === "runtime-lifecycle-kit"), "Nexus Runtime Lifecycle is composed");
 assert.ok(kits.some((kit) => kit.id === "runtime-startup-kit"), "Nexus Core Startup is composed");
+assert.ok(kits.some((kit) => kit.id === "object-vegetation"), "Nexus Object Vegetation is composed into the product engine");
 assert.match(runtimeVersions, /nexusRuntime:.*core-domains\/runtime\/index\.js/, "the browser imports canonical Nexus Runtime APIs");
 assert.match(semanticRuntime, /globalThis\.PrehistoricRushEngine = engine/, "the browser publishes the actual Nexus Engine");
 assert.doesNotMatch(semanticRuntime, /PrehistoricRushHost/, "the active semantic runtime contains no Host facade");

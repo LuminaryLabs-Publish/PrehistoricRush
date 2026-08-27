@@ -460,12 +460,14 @@ export function registerPrehistoricVegetationCatalog(NexusEngine, engine) {
   });
 }
 
-export function createPrehistoricVegetationRuntime(NexusEngine) {
-  if (typeof NexusEngine.createCoreObjectDomain !== "function") {
-    throw new TypeError("Pinned NexusEngine is missing createCoreObjectDomain().");
+export function createPrehistoricVegetationRuntime(NexusEngine, options = {}) {
+  const providedEngine = options.engine ?? null;
+  const objectDomain = options.objectDomain ?? null;
+  if (!providedEngine && typeof objectDomain?.createObjectDomain !== "function") {
+    throw new TypeError("Prehistoric vegetation requires the Nexus Object domain module.");
   }
-  const engine = NexusEngine.createEngine({
-    kits: NexusEngine.createCoreObjectDomain({ shape: false, fidelity: false })
+  const engine = providedEngine ?? NexusEngine.createEngine({
+    kits: objectDomain.createObjectDomain({ shape: false, fidelity: false })
   });
   const catalog = registerPrehistoricVegetationCatalog(NexusEngine, engine);
   const vegetation = engine.n.vegetation;
