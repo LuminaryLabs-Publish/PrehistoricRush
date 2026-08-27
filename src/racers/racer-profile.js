@@ -2,6 +2,7 @@ export const RACER_PROFILE_SCHEMA_VERSION = "prehistoric-rush.racer.v1";
 
 const RATINGS = new Set(["low", "normal", "high"]);
 const AVAILABILITY = new Set(["playable", "controller-proof", "locked"]);
+const DEFAULT_PACE_CURVE = Object.freeze([1, 1, 1, 1, 1]);
 
 function deepFreeze(value) {
   if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
@@ -63,6 +64,15 @@ function range(value, name, minimum = 0) {
   return [start, end];
 }
 
+function paceCurve(value, name) {
+  if (!Array.isArray(value) || value.length !== 5) throw new TypeError(`${name} must contain exactly five numbers.`);
+  const result = value.map((entry, index) => finite(entry, `${name}[${index}]`, 0, 1));
+  for (let index = 1; index < result.length; index += 1) {
+    if (result[index] < result[index - 1]) throw new RangeError(`${name} must be non-decreasing.`);
+  }
+  return result;
+}
+
 export function defineRacerProfile(input = {}) {
   const source = object(input, "Racer profile");
   const ratings = object(source.ratings, "ratings");
@@ -73,10 +83,14 @@ export function defineRacerProfile(input = {}) {
   const actor = object(source.actor, "actor");
   const presentation = object(source.presentation, "presentation");
   const camera = object(source.camera, "camera");
+  const pace = source.pace == null ? {} : object(source.pace, "pace");
 
   const baseSpeed = finite(movement.baseSpeed, "movement.baseSpeed", 0);
   const maximumSpeed = finite(movement.maximumSpeed, "movement.maximumSpeed", baseSpeed);
   const boostSpeed = finite(movement.boostSpeed, "movement.boostSpeed", maximumSpeed);
+  const paceCurveValues = paceCurve(pace.curve ?? DEFAULT_PACE_CURVE, "pace.curve");
+  const sprintMinimumToStart = finite(pace.sprintMinimumToStart ?? 0, "pace.sprintMinimumToStart", 0, 1);
+  const sprintMinimumToMaintain = finite(pace.sprintMinimumToMaintain ?? 0, "pace.sprintMinimumToMaintain", 0, sprintMinimumToStart);
 
   return deepFreeze({
     schemaVersion: RACER_PROFILE_SCHEMA_VERSION,
@@ -111,6 +125,12 @@ export function defineRacerProfile(input = {}) {
       capacity: finite(stamina.capacity, "stamina.capacity", 0),
       recoveryRate: finite(stamina.recoveryRate, "stamina.recoveryRate", 0),
       behavior: text(stamina.behavior, "stamina.behavior")
+    },
+    pace: {
+      curve: paceCurveValues,
+      sprintDrainRate: finite(pace.sprintDrainRate ?? 0, "pace.sprintDrainRate", 0),
+      sprintMinimumToStart,
+      sprintMinimumToMaintain
     },
     abilities: {
       active: optionalText(abilities.active),

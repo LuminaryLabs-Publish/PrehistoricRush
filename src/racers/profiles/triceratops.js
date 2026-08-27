@@ -17,6 +17,7 @@ export const TRICERATOPS_RACER_PROFILE = defineRacerProfile({
   },
   surfaces: { path: 1, edge: 0.94, verge: 0.82, forest: 0.62, response: 3.6 },
   stamina: { capacity: 125, recoveryRate: 14, behavior: "Large reserve with slower recovery after committed charges." },
+  pace: { curve: [0.32, 0.50, 0.70, 0.88, 1], sprintDrainRate: 22, sprintMinimumToStart: 0.18, sprintMinimumToMaintain: 0.08 },
   abilities: { active: "charge-ram", passive: "line-holder" },
   actor: {
     archetype: "ceratopsian",

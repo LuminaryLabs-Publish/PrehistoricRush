@@ -17,6 +17,7 @@ export const VELOCIRAPTOR_RACER_PROFILE = defineRacerProfile({
   },
   surfaces: { path: 1, edge: 0.88, verge: 0.68, forest: 0.42, response: 4.8 },
   stamina: { capacity: 100, recoveryRate: 18, behavior: "Quick recovery after short traversal bursts." },
+  pace: { curve: [0.38, 0.62, 0.82, 0.94, 1], sprintDrainRate: 27, sprintMinimumToStart: 0.18, sprintMinimumToMaintain: 0.08 },
   abilities: { active: "vine-swing", passive: "agile-landing" },
   actor: {
     archetype: "raptor",

@@ -29,10 +29,10 @@ const racer = createPrehistoricRushPlayerImplementation({ engine, course, world 
 const expected = new Map([
   [1, { x: 0.022712158896634825, z: 0.5558501816445274, yaw: 0.040837500000000006, speed: 16.858, jumpHeight: 0, region: "path" }],
   [6, { x: 0.1774873907325992, z: 2.0455271162145934, yaw: 0.14396250000000002, speed: 18.674379322620418, jumpHeight: 0.21555555555555556, region: "path" }],
-  [24, { x: 1.7153904633291905, z: 9.450460615866348, yaw: 0.11756250000000007, speed: 25.73881108708325, jumpHeight: 2.524122000000001, region: "path" }],
-  [30, { x: 2.456558364119256, z: 12.448802945547994, yaw: 0.32696250000000004, speed: 27.110161562960936, jumpHeight: 2.4406995555555575, region: "edge" }],
-  [36, { x: 3.5765579289130374, z: 14.880339573544708, yaw: 0.5069625000000002, speed: 26.541454320163453, jumpHeight: 2.009099555555558, region: "verge" }],
-  [48, { x: 6.3818278456240325, z: 19.931443502841795, yaw: 0.5069625000000002, speed: 22.945353016013506, jumpHeight: 0, region: "forest" }]
+  [24, { x: 1.7147245640651736, z: 9.446680699414967, yaw: 0.11756250000000007, speed: 25.706857737912017, jumpHeight: 2.524122000000001, region: "path" }],
+  [30, { x: 2.454580112558356, z: 12.439898876046472, yaw: 0.32696250000000004, speed: 27.05474470226868, jumpHeight: 2.4406995555555575, region: "edge" }],
+  [36, { x: 3.572606503689451, z: 14.867111306814884, yaw: 0.5069625000000002, speed: 26.49897224021687, jumpHeight: 2.009099555555558, region: "verge" }],
+  [48, { x: 6.374407325186981, z: 19.911968863754204, yaw: 0.5069625000000002, speed: 22.922555127478425, jumpHeight: 0, region: "forest" }]
 ]);
 
 function close(actual, target, label) {
@@ -58,14 +58,14 @@ for (let index = 0; index < 48; index += 1) {
 
 const state = racer.snapshot();
 const intent = intents.at(-1);
-close(state.distance, 21.179738814073772, "final distance");
+close(state.distance, 21.1586933920178, "final distance");
 close(state.surfaceMultiplier, 0.6045134885226128, "final surface multiplier");
 assert.equal(state.grounded, true);
 assert.equal(state.abilityStatus, "ready", "unavailable vine anchors do not alter legacy movement");
 assert.equal(intent.id, "player-motion-48");
 assert.equal(intent.actorId, "player-character");
 assert.equal(intent.sequence, 48);
-close(intent.desiredVelocity.x, 11.140520437241708, "final intent velocity x");
-close(intent.desiredVelocity.z, 20.059362637354155, "final intent velocity z");
+close(intent.desiredVelocity.x, 11.12945151435463, "final intent velocity x");
+close(intent.desiredVelocity.z, 20.039432191604554, "final intent velocity z");
 
 console.log("racer controller Velociraptor parity ok");

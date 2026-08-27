@@ -26,6 +26,11 @@ for (const profile of profiles) {
   assert.ok(Object.isFrozen(profile.camera));
   assert.ok(profile.movement.baseSpeed <= profile.movement.maximumSpeed);
   assert.ok(profile.movement.maximumSpeed <= profile.movement.boostSpeed);
+  assert.equal(profile.pace.curve.length, 5);
+  assert.equal(profile.pace.curve.at(-1), 1);
+  assert.ok(profile.pace.curve.every((value, index, values) => index === 0 || value >= values[index - 1]));
+  assert.ok(profile.pace.sprintDrainRate > 0);
+  assert.ok(profile.pace.sprintMinimumToMaintain <= profile.pace.sprintMinimumToStart);
   assert.ok(profile.actor.capabilities.includes("locomotion"));
   assert.equal("creature" in profile, false, "gameplay RacerProfile does not own cosmetic creature data");
 }
@@ -53,6 +58,14 @@ assert.deepEqual(
 assert.throws(
   () => defineRacerProfile({ ...getRacerProfile("velociraptor"), movement: { ...getRacerProfile("velociraptor").movement, maximumSpeed: 1 } }),
   /movement.maximumSpeed/
+);
+assert.throws(
+  () => defineRacerProfile({ ...getRacerProfile("velociraptor"), pace: { ...getRacerProfile("velociraptor").pace, curve: [0, 0.5] } }),
+  /pace.curve must contain exactly five numbers/
+);
+assert.throws(
+  () => defineRacerProfile({ ...getRacerProfile("velociraptor"), pace: { ...getRacerProfile("velociraptor").pace, curve: [0, 0.5, 0.4, 0.9, 1] } }),
+  /pace.curve must be non-decreasing/
 );
 
 function createActorEngine() {

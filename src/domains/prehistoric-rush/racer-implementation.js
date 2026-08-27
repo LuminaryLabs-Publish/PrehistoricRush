@@ -6,6 +6,21 @@ const clone = (value) => value === undefined ? undefined : structuredClone(value
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, Number(value) || 0));
 const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 
+function samplePaceCurve(curve, value) {
+  const normalized = clamp(value, 0, 1);
+  const scaled = normalized * (curve.length - 1);
+  const index = Math.min(curve.length - 2, Math.floor(scaled));
+  const remainder = scaled - index;
+  return curve[index] + (curve[index + 1] - curve[index]) * remainder;
+}
+
+function staminaPhase(value) {
+  if (value <= 0.3) return "red";
+  if (value <= 0.6) return "yellow";
+  if (value < 0.92) return "green";
+  return "gold";
+}
+
 function normalizeModifiers(input = {}) {
   return {
     speedMultiplier: Math.max(0, finite(input.speedMultiplier, 1)),
@@ -48,6 +63,8 @@ export function createPrehistoricRushRacerImplementation({
   const racerProfile = defineRacerProfile(profile);
   const movement = racerProfile.movement;
   const surfaces = racerProfile.surfaces;
+  const pace = racerProfile.pace;
+  const staminaCapacity = Math.max(1, racerProfile.stamina.capacity);
   const resolvedActorId = String(actorId ?? racerProfile.actor.motionActorId);
   const resolvedIntentPrefix = String(motionIntentPrefix ?? racerProfile.actor.motionIntentPrefix);
   const activeDefinition = behaviorRegistry.getAbility(racerProfile.abilities.active);
@@ -69,6 +86,10 @@ export function createPrehistoricRushRacerImplementation({
     region: "path", surfaceMultiplier: 1,
     steer: 0,
     stamina: racerProfile.stamina.capacity,
+    stamina01: 1,
+    staminaPhase: "gold",
+    pace01: 1,
+    paceMode: "run",
     abilityId: racerProfile.abilities.active,
     abilityStatus: activeDefinition ? "ready" : "unavailable",
     abilityElapsed: 0,
@@ -96,6 +117,16 @@ export function createPrehistoricRushRacerImplementation({
   let lastIntent = normalizeRacerIntent();
   let activeAbility = null;
   let abilityCooldown = 0;
+  let sprintActive = false;
+  let sprintLocked = false;
+
+  function syncPaceState() {
+    const stamina01 = clamp(state.stamina / staminaCapacity, 0, 1);
+    state.stamina01 = stamina01;
+    state.staminaPhase = staminaPhase(stamina01);
+    state.pace01 = samplePaceCurve(pace.curve, stamina01);
+    state.paceMode = sprintActive ? "sprint" : "run";
+  }
 
   function syncAbilityState() {
     state.abilityElapsed = activeAbility?.elapsed ?? 0;
@@ -125,6 +156,8 @@ export function createPrehistoricRushRacerImplementation({
     frame = 0;
     activeAbility = null;
     abilityCooldown = 0;
+    sprintActive = false;
+    sprintLocked = false;
     lastIntent = normalizeRacerIntent();
     state.x = spawn.x;
     state.y = world.sampleElevation(spawn.x, spawn.z);
@@ -144,6 +177,7 @@ export function createPrehistoricRushRacerImplementation({
     state.lastLandingImpact = 0;
     state.landingRecoveryMultiplier = 1;
     syncAbilityState();
+    syncPaceState();
     return clone(state);
   }
 
@@ -191,6 +225,25 @@ export function createPrehistoricRushRacerImplementation({
     if (!activeAbility && abilityCooldown > 0) abilityCooldown = Math.max(0, abilityCooldown - dt);
     tryActivateAbility(dt, intent, environment);
 
+    const requestedSprint = intent.boost && !activeAbility;
+    if (!requestedSprint) {
+      sprintActive = false;
+      sprintLocked = false;
+    } else if (sprintLocked) {
+      sprintActive = false;
+    } else {
+      const minimum = (sprintActive ? pace.sprintMinimumToMaintain : pace.sprintMinimumToStart) * staminaCapacity;
+      sprintActive = pace.sprintDrainRate === 0 || state.stamina >= minimum;
+    }
+    if (sprintActive && pace.sprintDrainRate > 0) {
+      state.stamina = Math.max(0, state.stamina - pace.sprintDrainRate * dt);
+      if (state.stamina < pace.sprintMinimumToMaintain * staminaCapacity) {
+        sprintActive = false;
+        sprintLocked = true;
+      }
+    }
+    const sprintResponse = sprintActive ? samplePaceCurve(pace.curve, state.stamina / staminaCapacity) : 0;
+
     const passiveModifiers = passiveDefinition?.modifyMovement?.(behaviorContext(dt, intent, environment)) ?? {};
     const activeModifiers = activeAbility
       ? activeDefinition.getModifiers?.(behaviorContext(dt, intent, environment)) ?? {}
@@ -212,7 +265,8 @@ export function createPrehistoricRushRacerImplementation({
       targetMultiplier = clamp(finite(modifiedSurfaceMultiplier, targetMultiplier), 0, 2);
     }
     state.surfaceMultiplier += (targetMultiplier - state.surfaceMultiplier) * (1 - Math.exp(-surfaces.response * dt));
-    const desiredSpeed = (intent.boost ? movement.boostSpeed : movement.maximumSpeed)
+    const sprintTarget = movement.maximumSpeed + (movement.boostSpeed - movement.maximumSpeed) * sprintResponse;
+    const desiredSpeed = (sprintActive ? sprintTarget : movement.maximumSpeed)
       * state.surfaceMultiplier
       * modifiers.speedMultiplier;
     state.speed += (desiredSpeed - state.speed) * Math.min(1, dt * movement.accelerationResponse * modifiers.accelerationMultiplier);
@@ -263,9 +317,10 @@ export function createPrehistoricRushRacerImplementation({
       activeAbility.elapsed += dt;
       finishAbility(dt, intent, environment);
     }
-    if (!activeAbility && state.stamina < racerProfile.stamina.capacity) {
+    if (!activeAbility && !sprintActive && state.stamina < racerProfile.stamina.capacity) {
       state.stamina = Math.min(racerProfile.stamina.capacity, state.stamina + racerProfile.stamina.recoveryRate * dt);
     }
+    syncPaceState();
     lastIntent = intent;
     syncAbilityState();
     return state;

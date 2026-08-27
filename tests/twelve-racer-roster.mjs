@@ -32,6 +32,26 @@ for (const racer of racers) {
   assert.equal(after.abilityStatus, "active", `${racer.id} signature move activates through shared E intent`);
   assert.ok(after.stamina < before.stamina, `${racer.id} signature move consumes stamina`);
   assert.equal(intents.length, 1, `${racer.id} submits one Nexus motion intent`);
+
+  const sprintController = createPrehistoricRushRacerImplementation({
+    engine: { n: { motion: { submitIntent() {} } } },
+    course: { route: { nearest: () => ({ index: 0, progress: 0, distance: 0, width: 3.1 }), classify: () => "path" } },
+    world: { sampleElevation: () => 0 },
+    profile: racer
+  });
+  sprintController.tick(1 / 60, { boost: true });
+  assert.equal(sprintController.readState().paceMode, "sprint", `${racer.id} enters sprint mode`);
+  assert.ok(sprintController.readState().stamina < racer.stamina.capacity, `${racer.id} sprint drains stamina`);
+  let frame = 0;
+  while (sprintController.readState().paceMode === "sprint" && frame < 1200) {
+    sprintController.tick(1 / 60, { boost: true });
+    frame += 1;
+  }
+  const depleted = sprintController.snapshot();
+  assert.ok(depleted.stamina >= 0, `${racer.id} stamina never becomes negative`);
+  assert.equal(depleted.paceMode, "run", `${racer.id} falls back to normal running when depleted`);
+  for (let frame = 0; frame < 60; frame += 1) sprintController.tick(1 / 60, { boost: false });
+  assert.ok(sprintController.readState().stamina > depleted.stamina, `${racer.id} recovers stamina after sprint`);
 }
 
 for (const speedBand of ["low", "normal", "high"]) assert.ok(racers.some((racer) => racer.ratings.speed === speedBand));

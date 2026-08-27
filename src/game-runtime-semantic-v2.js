@@ -18,12 +18,14 @@ import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selecti
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;inset:0;z-index:4;pointer-events:none"><span id="prehistoric-racer-badge" style="position:absolute;left:24px;top:20px;color:#f3e7ba;font-size:16px;font-weight:900;letter-spacing:.08em;text-transform:uppercase"></span><div id="prehistoric-status" data-race-status="true" style="position:absolute;left:24px;top:48px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-stamina" aria-label="Stamina" style="position:absolute;left:50%;bottom:24px;display:flex;gap:5px;transform:translateX(-50%);width:132px;height:7px"><span data-stamina-segment="0" style="flex:1;border-radius:999px;background:#ffffff35"></span><span data-stamina-segment="1" style="flex:1;border-radius:999px;background:#ffffff35"></span><span data-stamina-segment="2" style="flex:1;border-radius:999px;background:#ffffff35"></span></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump · E ability</div></section>`;
+app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;inset:0;z-index:4;pointer-events:none"><span id="prehistoric-racer-badge" style="position:absolute;left:24px;top:20px;color:#f3e7ba;font-size:16px;font-weight:900;letter-spacing:.08em;text-transform:uppercase"></span><div id="prehistoric-status" data-race-status="true" style="position:absolute;left:24px;top:48px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-stamina" role="meter" aria-label="Stamina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-stamina-phase="gold" style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:80vw;height:10px;border-radius:999px;overflow:visible;background:linear-gradient(90deg,#c85b55 0%,#c85b55 30%,#d5ad55 30%,#d5ad55 60%,#72b87b 60%,#72b87b 92%,#e2bd55 92%,#e2bd55 100%);box-shadow:0 2px 12px #0008"><span id="prehistoric-stamina-fill" style="position:absolute;inset:0;transform-origin:left center;transform:scaleX(1);border-radius:999px;background:#fff;opacity:.2"></span><span id="prehistoric-stamina-marker" style="position:absolute;left:100%;top:50%;width:3px;height:18px;border-radius:999px;background:#fff;box-shadow:0 0 8px #fff;transform:translate(-50%,-50%)"></span><span id="prehistoric-stamina-orb" aria-hidden="true" style="position:absolute;left:100%;top:50%;width:11px;height:11px;border-radius:50%;background:#fff3ae;box-shadow:0 0 9px 3px #ffd85c,0 0 20px 7px #f4b83f88;transform:translate(-50%,-50%);animation:prehistoric-rush-stamina-burst 1s ease-in-out infinite"><i style="position:absolute;left:50%;top:-10px;width:2px;height:31px;border-radius:2px;background:#ffe18a;transform:translateX(-50%)"></i><i style="position:absolute;left:-10px;top:50%;width:31px;height:2px;border-radius:2px;background:#ffe18a;transform:translateY(-50%)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(45deg)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(-45deg)"></i></span></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump</div><style>@keyframes prehistoric-rush-stamina-burst{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(.85)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}</style></section>`;
 const host = document.querySelector("#prehistoric-render-host");
-document.querySelector('[data-race-screen="true"] > div:last-child').textContent = "A/D steer · W boost · Space jump";
 const statusNode = document.querySelector("#prehistoric-status");
 const racerBadge = document.querySelector("#prehistoric-racer-badge");
-const staminaSegments = [...document.querySelectorAll("[data-stamina-segment]")];
+const staminaBar = document.querySelector("#prehistoric-stamina");
+const staminaFill = document.querySelector("#prehistoric-stamina-fill");
+const staminaMarker = document.querySelector("#prehistoric-stamina-marker");
+const staminaOrb = document.querySelector("#prehistoric-stamina-orb");
 const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
@@ -333,13 +335,17 @@ function updateStaminaHud(now, state) {
   const capacity = Math.max(1, Number(racerProfile.stamina?.capacity ?? 100));
   const stamina = Math.max(0, Math.min(capacity, Number(state.stamina ?? 0)));
   const ratio = stamina / capacity;
-  const phaseColor = ratio <= 0.01 ? "#e56b5d" : ratio < 0.99 ? "#e6b45c" : "#8fd694";
-  staminaSegments.forEach((segment, index) => {
-    const threshold = index / staminaSegments.length;
-    const filled = ratio > threshold;
-    segment.style.background = filled ? phaseColor : "#ffffff35";
-    segment.style.opacity = filled ? "1" : "0.5";
-  });
+  const phase = ratio <= 0.3 ? "red" : ratio <= 0.6 ? "yellow" : ratio < 0.92 ? "green" : "gold";
+  const phaseColor = phase === "red" ? "#e56b5d" : phase === "yellow" ? "#e6b45c" : phase === "gold" ? "#e2bd55" : "#8fd694";
+  staminaBar.dataset.staminaPhase = phase;
+  staminaBar.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+  staminaFill.style.transform = `scaleX(${ratio})`;
+  staminaFill.style.background = phaseColor;
+  staminaMarker.style.left = `${ratio * 100}%`;
+  staminaMarker.style.background = phase === "gold" ? "#fff3ae" : phaseColor;
+  staminaMarker.style.boxShadow = `0 0 8px ${phaseColor}`;
+  staminaOrb.hidden = phase !== "gold";
+  staminaOrb.setAttribute("aria-hidden", String(phase !== "gold"));
 }
 
 function updateAutomationDataset(state) {
