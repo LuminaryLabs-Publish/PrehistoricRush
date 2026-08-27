@@ -329,8 +329,7 @@ const HUD_INTERVAL_MS = 200;
 function updateHud(now, state) {
   if (now - lastHudAt < HUD_INTERVAL_MS) return;
   lastHudAt = now;
-  const presentation = rendering.snapshot();
-  statusNode.textContent = `${racerProfile.displayName} · ${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s · ${state.region} · Nexus Foundation · ${presentation.terrainPatchCount} terrain cells · ${computeSelection?.backend ?? "cpu"} compute${diagnosticFoundationOnly ? " · diagnostic terrain only" : ` · ${presentation.treeCount} trees · ${presentation.grassCount} grass`}`;
+  statusNode.textContent = `${racerProfile.displayName} · ${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s`;
   const stamina = Math.max(0, Math.round(Number(state.stamina ?? 0)));
   const abilityState = state.abilityStatus === "cooldown" ? `${Number(state.abilityCooldown ?? 0).toFixed(1)}s cooldown` : state.abilityStatus;
   abilityNode.textContent = `E · ${rosterDetails.activeName} · ${abilityState} · stamina ${stamina} · passive ${rosterDetails.passiveName}`;
