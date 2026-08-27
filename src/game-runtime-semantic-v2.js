@@ -326,10 +326,9 @@ let lastDatasetStatus = "";
 let lastDatasetDistanceBucket = -1;
 const HUD_INTERVAL_MS = 200;
 
-function updateHud(now, state) {
+function updateAbilityHud(now, state) {
   if (now - lastHudAt < HUD_INTERVAL_MS) return;
   lastHudAt = now;
-  statusNode.textContent = `${racerProfile.displayName} · ${worldRecipe.name} · ${state.status} · ${Math.floor(state.distance)}m / ${worldRecipe.runtime.goalDistance}m · ${state.shards} shards · ${state.speed.toFixed(1)} m/s`;
   const stamina = Math.max(0, Math.round(Number(state.stamina ?? 0)));
   const abilityState = state.abilityStatus === "cooldown" ? `${Number(state.abilityCooldown ?? 0).toFixed(1)}s cooldown` : state.abilityStatus;
   abilityNode.textContent = `E · ${rosterDetails.activeName} · ${abilityState} · stamina ${stamina} · passive ${rosterDetails.passiveName}`;
@@ -366,17 +365,17 @@ function loop(now) {
     worldFocusCell = nextWorldFocusCell;
   }
   updateAutomationDataset(state);
+  updateAbilityHud(now, state);
   rendering.draw(state, cameraFrame(state, dt), dt);
   try { engine.n.prehistoricRush.dispatchFrame({ now, dt, state, camera: rendering.camera }); }
   catch (error) { console.warn("PrehistoricRush frame hook failed:", error); }
-  updateHud(now, state);
   requestAnimationFrame(loop);
 }
 
 const initial = gameplay.readState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
 updateAutomationDataset(initial);
-updateHud(performance.now(), initial);
+updateAbilityHud(performance.now(), initial);
 startup.presentFirstFrame({
   frameId: "prehistoric-rush:first-foundation-frame",
   presentationId: "prehistoric-rush:webgl2",
@@ -385,6 +384,7 @@ startup.presentFirstFrame({
 });
 startup.enter({ inputReady: true });
 setLoading(1, "Ready to race");
+statusNode.remove();
 const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
   const presentation = rendering.snapshot();
