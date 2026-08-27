@@ -25,10 +25,10 @@ const browser = await chromium.launch({
   args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist", "--enable-unsafe-swiftshader"]
 });
 
-async function waitForSemanticHost(page, attempts = 360) {
+async function waitForSemanticEngine(page, attempts = 360) {
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const state = await page.evaluate(() => ({
-      ready: Boolean(globalThis.PrehistoricRushHost) && Boolean(document.querySelector("canvas")),
+      ready: Boolean(globalThis.PrehistoricRushEngine?.n?.prehistoricRush) && Boolean(document.querySelector("canvas")),
       body: document.body?.innerText?.slice(0, 1200) ?? ""
     }));
     if (state.ready) return;
@@ -43,7 +43,7 @@ async function waitForSemanticHost(page, attempts = 360) {
     await page.waitForTimeout(250);
   }
   const body = await page.evaluate(() => document.body?.innerText?.slice(0, 1200) ?? "");
-  throw new Error(`Semantic PrehistoricRush host did not become ready.\npageErrors=${pageErrors.join(" | ")}\nconsoleErrors=${consoleErrors.join(" | ")}\nbody=${body}`);
+  throw new Error(`Semantic PrehistoricRush engine did not become ready.\npageErrors=${pageErrors.join(" | ")}\nconsoleErrors=${consoleErrors.join(" | ")}\nbody=${body}`);
 }
 
 try {
@@ -69,9 +69,9 @@ try {
     await writeFile(evidenceFile, `${JSON.stringify(evidence, null, 2)}\n`);
     console.log(JSON.stringify(evidence, null, 2));
   } else {
-    await waitForSemanticHost(page);
+    await waitForSemanticEngine(page);
 
-    const initial = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const initial = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     assert.equal(initial.rendering.terrainAuthority, "n:world:foundation", "Rendering must consume Nexus World Foundation");
     assert.equal(initial.rendering.diagnosticFoundationOnly, true, "Gate 1 must use explicit Foundation diagnostic mode");
     assert.equal(initial.rendering.vegetationEnabled, false, "Foundation diagnostic keeps renderer vegetation off");
@@ -81,12 +81,12 @@ try {
     assert.equal(initial.versions.nexus, "main", "browser runtime must consume Nexus main");
 
     const samplePoints = [[0, 0], [64, 160], [96, 300], [192, 420], [-160, 500], [240, 640]];
-    const beforeSamples = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
-    const repeatedSamples = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
+    const beforeSamples = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("world").sampleElevation(x, z)), samplePoints);
+    const repeatedSamples = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("world").sampleElevation(x, z)), samplePoints);
     assert.deepEqual(repeatedSamples, beforeSamples, "Foundation sampling must be deterministic within a run");
 
     const seamSamples = await page.evaluate(() => {
-      const sample = globalThis.PrehistoricRushHost.world.sampleElevation;
+      const sample = globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("world").sampleElevation;
       return {
         xLeft: sample(95.999, 300),
         xRight: sample(96.001, 300),
@@ -97,34 +97,35 @@ try {
     assert.ok(Math.abs(seamSamples.xLeft - seamSamples.xRight) < 0.5, "X cell boundary must be continuous");
     assert.ok(Math.abs(seamSamples.zNear - seamSamples.zFar) < 0.5, "Z cell boundary must be continuous");
 
-    const yawBefore = await page.evaluate(() => globalThis.PrehistoricRushHost.gameplay.getState().yaw);
+    const yawBefore = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("gameplay").getState().yaw);
     await page.keyboard.down("ArrowLeft");
-    await page.waitForFunction((yaw) => Math.abs(globalThis.PrehistoricRushHost.gameplay.getState().yaw - yaw) > 0.01, yawBefore, { timeout: 15000 });
+    await page.waitForFunction((yaw) => Math.abs(globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("gameplay").getState().yaw - yaw) > 0.01, yawBefore, { timeout: 15000 });
     await page.keyboard.up("ArrowLeft");
 
     await page.keyboard.press("Space");
-    await page.waitForFunction(() => globalThis.PrehistoricRushHost.gameplay.getState().jumpHeight > 0, null, { timeout: 15000 });
+    await page.waitForFunction(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("gameplay").getState().jumpHeight > 0, null, { timeout: 15000 });
 
     const traversal = await page.evaluate(() => {
-      const host = globalThis.PrehistoricRushHost;
-      host.gameplay.start();
-      host.gameplay.setInput({ boost: true, steer: 0 });
-      for (let index = 0; index < 1200 && host.gameplay.getState().distance < 500; index += 1) {
-        host.gameplay.tick(0.05);
-        host.engine.tick(0.05);
+      const engine = globalThis.PrehistoricRushEngine;
+      const gameplay = engine.n.prehistoricRush.getComponent("gameplay");
+      gameplay.start();
+      gameplay.setInput({ boost: true, steer: 0 });
+      for (let index = 0; index < 1200 && gameplay.getState().distance < 500; index += 1) {
+        gameplay.tick(0.05);
+        engine.tick(0.05);
       }
-      host.gameplay.setInput({ boost: false });
-      return host.gameplay.getState();
+      gameplay.setInput({ boost: false });
+      return gameplay.getState();
     });
     assert.ok(traversal.distance >= 500, `Foundation playthrough must reach 500m, got ${traversal.distance}`);
     assert.ok(Number.isFinite(traversal.y), "Player ground elevation must remain finite through 500m");
 
     await page.waitForTimeout(250);
     await page.screenshot({ path: screenshotFile, fullPage: true });
-    const beforeReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
+    const beforeReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("world").sampleElevation(x, z)), samplePoints);
     await page.reload({ waitUntil: "domcontentloaded", timeout: 120000 });
-    await waitForSemanticHost(page);
-    const afterReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushHost.world.sampleElevation(x, z)), samplePoints);
+    await waitForSemanticEngine(page);
+    const afterReload = await page.evaluate((points) => points.map(([x, z]) => globalThis.PrehistoricRushEngine.n.prehistoricRush.getComponent("world").sampleElevation(x, z)), samplePoints);
     assert.deepEqual(afterReload, beforeReload, "same recipe/seed reload must reproduce identical Foundation elevations");
 
     assert.deepEqual(pageErrors, [], `Foundation diagnostic page errors: ${pageErrors.join(" | ")}`);
@@ -134,24 +135,24 @@ try {
     consoleErrors.length = 0;
     const productionNavigationStartedAt = performance.now();
     await page.goto(`${baseUrl}/game.html?production-validation=1`, { waitUntil: "domcontentloaded", timeout: 120000 });
-    await waitForSemanticHost(page, 480);
-    const productionHostObservedMs = performance.now() - productionNavigationStartedAt;
-    const playable = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    await waitForSemanticEngine(page, 480);
+    const productionEngineObservedMs = performance.now() - productionNavigationStartedAt;
+    const playable = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     assert.ok(playable.performance.startupMs < PRODUCTION_STARTUP_BUDGET_MS, `Production playable startup took ${playable.performance.startupMs}ms`);
     assert.equal(playable.performance.withinStartupBudget, true, "Production playable startup must remain under 60 seconds");
-    assert.ok(productionHostObservedMs < PRODUCTION_STARTUP_BUDGET_MS, `Browser observed production host after ${productionHostObservedMs}ms`);
-    assert.equal(playable.streamingReadiness.rendererReady, true, "Playable host requires the 3x3 terrain ring");
+    assert.ok(productionEngineObservedMs < PRODUCTION_STARTUP_BUDGET_MS, `Browser observed production engine after ${productionEngineObservedMs}ms`);
+    assert.equal(playable.streamingReadiness.rendererReady, true, "Playable engine requires the 3x3 terrain ring");
     assert.equal(playable.versions.nexus, "main", "Production must follow mutable Nexus main");
     assert.equal(playable.versions.nexusValidatedCommit.length, 40, "Production must record the exact validated Nexus SHA");
 
     await page.waitForFunction(() => {
-      const state = globalThis.PrehistoricRushHost.getState();
+      const state = globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot();
       return state.rendering.treeFidelityStatus === "ready"
         && state.treeFidelity.packageCount === 12
         && state.rendering.activeForestPatches === state.rendering.forestTargetPatchCount
         && state.streamingReadiness.backgroundForestPending === 0;
     }, null, { timeout: 60000 });
-    const raceBefore = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const raceBefore = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     const worldBefore = raceBefore.worldUpdate;
     assert.equal(worldBefore.worldId, raceBefore.world.recipe.id, "World update diagnostics must identify the selected world.");
     assert.equal(worldBefore.worldRevision, raceBefore.world.recipe.revision, "World update diagnostics must identify the recipe revision.");
@@ -167,13 +168,13 @@ try {
 
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.body.dataset.raceStatus === "game", null, { timeout: 15000 });
-    const started = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const started = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     await page.keyboard.down("ArrowUp");
     await page.keyboard.down("ArrowRight");
     await page.waitForTimeout(5000);
     await page.keyboard.up("ArrowUp");
     await page.keyboard.up("ArrowRight");
-    const raceAfter = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const raceAfter = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     const worldAfter = raceAfter.worldUpdate;
     assert.ok(raceAfter.game.run.distance > started.game.run.distance, "Character must move along the track after input.");
     assert.ok(worldAfter.focusUpdateCount > worldBefore.focusUpdateCount, "World focus must update after the character crosses a streaming cell.");
@@ -209,7 +210,7 @@ try {
     assert.deepEqual(consoleErrors, [], `Production console errors: ${consoleErrors.join(" | ")}`);
     await page.screenshot({ path: productionScreenshotFile, fullPage: true });
 
-    const finalState = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+    const finalState = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
     const evidence = {
       status: "PASS",
       phase: "after",
@@ -238,7 +239,7 @@ try {
         atmosphereFeatureCount: finalState.world.atmosphere.length,
         shardCount: finalState.game.pickups.total,
         performance: {
-          browserObservedHostReadyMs: productionHostObservedMs,
+          browserObservedHostReadyMs: productionEngineObservedMs,
           ...finalState.performance,
           rendering: finalState.rendering.performance
         }

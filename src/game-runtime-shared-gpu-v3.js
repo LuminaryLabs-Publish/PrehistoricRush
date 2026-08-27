@@ -5,25 +5,32 @@ import { setFoundationTerrainStreamingOwner } from "./domains/prehistoric-rush/r
 
 await import("./game-runtime-semantic-v2.js");
 
-const baseHost = globalThis.PrehistoricRushHost;
-if (!baseHost) throw new Error("PrehistoricRush semantic runtime did not publish its host before the unified GPU upgrade.");
-globalThis.PrehistoricRushHost = null;
+const engine = globalThis.PrehistoricRushEngine;
+if (!engine?.n?.prehistoricRush) throw new Error("PrehistoricRush semantic runtime did not publish its Nexus Engine before the unified GPU upgrade.");
+const product = engine.n.prehistoricRush;
+const rendering = product.getComponent("rendering");
+const gameplay = product.getComponent("gameplay");
+const world = product.getComponent("world");
+const worldRecipe = product.getComponent("worldRecipe");
+const baseComputeHost = product.getComponent("computeHost");
+const baseComputeSelection = product.getComponent("selection");
+if (!rendering || !gameplay || !world || !worldRecipe) throw new Error("PrehistoricRush product composition is incomplete before the unified GPU upgrade.");
 
 let gpuHost = null;
-let computeHost = baseHost.computeHost;
-let computeSelection = baseHost.getState().compute.selected;
+let computeHost = baseComputeHost;
+let computeSelection = baseComputeSelection;
 let frameExecutor = null;
 let gpuScene = null;
 let gpuUpgradeError = null;
 let gpuFrame = 0;
 let removeGPUFrameHook = null;
-const rendererPreference = baseHost.rendering?.qualityProfile?.rendererPreference ?? "webgl2";
+const rendererPreference = rendering.qualityProfile?.rendererPreference ?? "webgl2";
 
 function disableGPUScene() {
   removeGPUFrameHook?.();
   removeGPUFrameHook = null;
   setFoundationTerrainStreamingOwner("webgl2");
-  baseHost.rendering.setDenseWorldGPUActive?.(false);
+  rendering.setDenseWorldGPUActive?.(false);
   gpuScene?.dispose?.();
   frameExecutor?.dispose?.();
   gpuHost?.dispose?.();
@@ -32,7 +39,7 @@ function disableGPUScene() {
   gpuHost = null;
 }
 
-if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.rendering?.getDenseWorldPresentation) {
+if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && rendering.getDenseWorldPresentation) {
   try {
     const [Host, Compute, Graphics, Render] = await Promise.all([
       import(VALIDATED_RUNTIME_URLS.nexusHost),
@@ -58,23 +65,22 @@ if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.ren
     computeSelection = computeHost.selectProvider({ preferredBackends: ["webgpu", "javascript"], allowFallback: true });
     frameExecutor = Render.createWebGPUFrameExecutor({ id: "prehistoric-rush:webgpu-world-frame", gpuHost, gpu: globalThis.navigator.gpu, awaitCompletion: true });
 
-    await baseHost.rendering.whenRichPresentationReady?.();
-    const denseState = baseHost.rendering.getDenseWorldPresentation();
+    await rendering.whenRichPresentationReady?.();
+    const denseState = rendering.getDenseWorldPresentation();
     if (denseState.treePackageCount !== 12) throw new Error(`Unified GPU handoff requires all 12 Tree Fidelity packages; received ${denseState.treePackageCount}.`);
-    const contributions = createPrehistoricRushDenseVisualContributions({ defineVisualContribution: Graphics.defineVisualContribution, composeVisualContributions: Graphics.composeVisualContributions, recipe: baseHost.worldRecipe, denseState });
+    const contributions = createPrehistoricRushDenseVisualContributions({ defineVisualContribution: Graphics.defineVisualContribution, composeVisualContributions: Graphics.composeVisualContributions, recipe: worldRecipe, denseState });
     const renderHost = document.querySelector("#prehistoric-render-host");
     if (!renderHost) throw new Error("PrehistoricRush render host is unavailable for unified GPU presentation.");
 
-    gpuScene = await createPrehistoricRushGPUWorldScene({ hostElement: renderHost, world: baseHost.world, recipe: baseHost.worldRecipe, gpuHost, computeHost, frameExecutor, rendering: baseHost.rendering, qualityProfile: baseHost.rendering.qualityProfile, contributions });
+    gpuScene = await createPrehistoricRushGPUWorldScene({ hostElement: renderHost, world, recipe: worldRecipe, gpuHost, computeHost, frameExecutor, rendering, qualityProfile: rendering.qualityProfile, contributions });
     const gpuReady = gpuScene.snapshot();
     if (gpuHost.getDeviceDescriptor()?.id !== deviceDescriptor.id) throw new Error("Compute/Render GPU Host device identity changed during unified world startup.");
     if (gpuReady.treeSpeciesCount !== 12 || gpuReady.treeCount < 1 || gpuReady.passCount < 26) throw new Error("Unified GPU scene did not reach full Tree Fidelity readiness before presentation handoff.");
-    baseHost.computeHost?.dispose?.();
-    const terrainAnchor = baseHost.gameplay.readState?.() ?? baseHost.gameplay.getState?.() ?? { x: 0, z: 0 };
+    const terrainAnchor = gameplay.readState?.() ?? gameplay.getState?.() ?? { x: 0, z: 0 };
     setFoundationTerrainStreamingOwner("webgpu", terrainAnchor);
-    baseHost.rendering.setDenseWorldGPUActive(true);
+    rendering.setDenseWorldGPUActive(true);
 
-    removeGPUFrameHook = baseHost.addFrameHook(({ state, camera }) => {
+    removeGPUFrameHook = product.registerFrameHook(({ state, camera }) => {
       if (!gpuScene) return;
       const snapshot = gpuScene.snapshot();
       if (!snapshot.active) {
@@ -88,35 +94,38 @@ if (rendererPreference === "webgpu" && globalThis.navigator?.gpu && baseHost.ren
   } catch (error) {
     gpuUpgradeError = error instanceof Error ? error : new Error(String(error));
     disableGPUScene();
-    computeHost = baseHost.computeHost;
-    computeSelection = baseHost.getState().compute.selected;
+    computeHost = baseComputeHost;
+    computeSelection = baseComputeSelection;
     console.warn(`PrehistoricRush unified Nexus WebGPU world unavailable; retaining validated WebGL fallback: ${gpuUpgradeError.message}`);
   }
 }
 
 function gpuSnapshot() {
   if (gpuScene) return gpuScene.snapshot();
-  const presentation = baseHost.rendering.snapshot();
+  const presentation = rendering.snapshot();
   return Object.freeze({ active: false, backend: "webgl2-fallback", mode: "three-webgl2", sharedDeviceId: null, contributionIds: [], terrainAuthority: "n:world:foundation", terrainPatchCount: presentation.terrainPatchCount, treeCount: presentation.treeCount, treeSpeciesCount: presentation.treeFidelityPackageCount, grassLogicalCount: presentation.grassCount, sharedDepth: false, singleCanvas: false, singleFrameSubmission: false, gpuCulling: false, gpuLod: false, indirectDraw: false, zeroCopy: false, passCount: 0, computeDispatches: 0, renderSubmissions: 0, frameSequence: gpuFrame, skippedFrames: 0, uploadedBytes: 0, gpuReadbackBytes: 0, resourceCount: 0, error: gpuUpgradeError?.message ?? null });
 }
 
-const upgradedHost = Object.freeze({
-  ...baseHost,
-  computeHost,
-  gpuHost,
-  gpuScene,
-  getState() {
-    const state = baseHost.getState();
+const gpuPresentation = Object.freeze({
+  id: "prehistoric-rush:gpu-native-presentation",
+  get computeHost() { return computeHost; },
+  get gpuHost() { return gpuHost; },
+  get scene() { return gpuScene; },
+  snapshot() {
     const gpu = gpuSnapshot();
-    return {
-      ...state,
-      rendering: { ...state.rendering, gpuNative: gpu },
-      compute: { selected: computeSelection, providers: computeHost?.listProviders?.() ?? state.compute.providers, webgpuAdapterReady: Boolean(gpu.active), sharedGPUHost: Boolean(gpu.active), sharedDeviceId: gpu.sharedDeviceId, zeroCopyRender: gpu.zeroCopy },
-      gpuNative: gpu,
-      performance: { ...state.performance, gpuNative: { uploadedBytes: gpu.uploadedBytes, readbackBytes: gpu.gpuReadbackBytes, computeDispatches: gpu.computeDispatches, renderSubmissions: gpu.renderSubmissions, skippedFrames: gpu.skippedFrames } },
-      versions: { ...state.versions, nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
-    };
+    return Object.freeze({
+      ...gpu,
+      compute: Object.freeze({
+        selected: computeSelection,
+        providers: computeHost?.listProviders?.() ?? [],
+        webgpuAdapterReady: Boolean(gpu.active),
+        sharedGPUHost: Boolean(gpu.active),
+        sharedDeviceId: gpu.sharedDeviceId,
+        zeroCopyRender: gpu.zeroCopy
+      }),
+      nexusValidatedCommit: NEXUS_COMMIT
+    });
   }
 });
 
-globalThis.PrehistoricRushHost = upgradedHost;
+product.bindOptionalPresentation("gpuNative", gpuPresentation);

@@ -7,7 +7,11 @@ import { createPrehistoricRushWorldImplementation } from "./domains/prehistoric-
 import { installPrehistoricRushPlayerActor } from "./domains/prehistoric-rush/player-actor-binding.js";
 import { createPrehistoricRushPlayerImplementation } from "./domains/prehistoric-rush/player-implementation.js";
 import { createPrehistoricRushGameplayImplementation } from "./domains/prehistoric-rush/gameplay-implementation.js";
-import { createPrehistoricRushRenderingImplementation } from "./domains/prehistoric-rush/rendering-implementation.js";
+import {
+  createPrehistoricRushRenderSurface,
+  createPrehistoricRushRenderingImplementation
+} from "./domains/prehistoric-rush/rendering-implementation.js";
+import { installPrehistoricRushStartupAssets } from "./domains/prehistoric-rush/startup-asset-policy.js";
 import { resolvePlayableRacerProfile } from "./racers/racer-catalog.js";
 import { createRacerCharacterProfile, getRacerRosterDetails } from "./racers/racer-roster.js";
 import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selection-store.js";
@@ -25,15 +29,52 @@ const setLoading = (progress, detail) => {
   statusNode.textContent = `${detail} · ${percent}% · ${diagnosticFoundationOnly ? "Foundation diagnostic" : "production world"}`;
 };
 
+function markStartup(id, phase) {
+  globalThis.performance?.mark?.(`prehistoric-rush:${id}:${phase}`);
+}
+
+function measureStartup(id, work) {
+  markStartup(id, "start");
+  try { return work(); }
+  finally {
+    markStartup(id, "end");
+    globalThis.performance?.measure?.(`prehistoric-rush:${id}`, `prehistoric-rush:${id}:start`, `prehistoric-rush:${id}:end`);
+  }
+}
+
+async function measureStartupAsync(id, work) {
+  markStartup(id, "start");
+  try { return await work(); }
+  finally {
+    markStartup(id, "end");
+    globalThis.performance?.measure?.(`prehistoric-rush:${id}`, `prehistoric-rush:${id}:start`, `prehistoric-rush:${id}:end`);
+  }
+}
+
+function yieldStartupFrame() {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    globalThis.requestAnimationFrame?.(finish);
+    globalThis.setTimeout?.(finish, 16);
+  });
+}
+
 setLoading(0.04, "Loading Nexus semantic domains");
-const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, World, FoundationSampling, Presentation, Graphics, Animation, Render, Compute, CreatureModule, THREE] = await Promise.all([
+const [Nexus, Runtime, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, Asset, World, FoundationSampling, Presentation, Graphics, Animation, Render, Compute, CreatureModule, THREE] = await measureStartupAsync("domainImports", () => Promise.all([
   import(RUNTIME_URLS.nexus),
+  import(RUNTIME_URLS.nexusRuntime),
   import(RUNTIME_URLS.nexusActor),
   import(RUNTIME_URLS.nexusSpatial),
   import(RUNTIME_URLS.nexusInteraction),
   import(RUNTIME_URLS.nexusSimulationRuntime),
   import(RUNTIME_URLS.nexusMotion),
   import(RUNTIME_URLS.nexusPhysics),
+  import(RUNTIME_URLS.nexusAsset),
   import(RUNTIME_URLS.nexusWorld),
   import(RUNTIME_URLS.nexusFoundationSampling),
   import(RUNTIME_URLS.nexusPresentation),
@@ -43,7 +84,7 @@ const [Nexus, Actor, Spatial, Interaction, SimulationRuntime, Motion, Physics, W
   import(RUNTIME_URLS.nexusCompute),
   import(RUNTIME_URLS.creatureKit),
   import(RUNTIME_URLS.three)
-]);
+]));
 if (typeof Compute.createComputeHost !== "function" || typeof Compute.createJavaScriptComputeProvider !== "function") {
   throw new Error("Nexus Compute Host is unavailable from NexusEngine/main.");
 }
@@ -63,7 +104,7 @@ const computeSelection = computeHost.selectProvider({ preferredBackends: ["webgp
 
 setLoading(0.12, "Composing Prehistoric Rush");
 const Simulation = Object.freeze({ ...SimulationRuntime, ...Motion, ...Physics });
-const modules = { Nexus, Actor, Spatial, Interaction, Simulation, World, Presentation, Graphics, Animation, Render };
+const modules = { Nexus, Runtime, Actor, Spatial, Interaction, Simulation, Asset, World, Presentation, Graphics, Animation, Render };
 const worldRecipe = getPrehistoricRushWorldRecipe(resolvePrehistoricRushWorldId());
 const requestedRacerId = loadSelectedRacerId(globalThis.location);
 const racerProfile = resolvePlayableRacerProfile(requestedRacerId);
@@ -80,28 +121,98 @@ const kits = [
   ...(typeof World.createRouteFieldKit === "function" ? [World.createRouteFieldKit()] : []),
   rootKit
 ];
-const engine = Nexus.createEngine({ kits });
+const engine = measureStartup("engineConstruction", () => Nexus.createEngine({ kits }));
+globalThis.PrehistoricRushEngine = engine;
+const startup = engine.n.startup;
+if (!startup?.launch || !engine.n.runtime?.recordInstallation) throw new Error("Nexus Runtime Lifecycle and Core Startup did not install.");
+startup.launch({
+  launchId: `prehistoric-rush:${worldRecipe.id}:${racerProfile.id}`,
+  projectId: "prehistoric-rush",
+  continuation: { mode: "new" },
+  preparations: [
+    { id: "engine", label: "Nexus domains", required: true, weight: 1 },
+    { id: "renderer", label: "Renderer and canvas", required: true, weight: 1 },
+    { id: "playable-assets", label: "Four playable asset groups", required: true, weight: 1 },
+    { id: "course", label: "Race route", required: true, weight: 0.5 },
+    { id: "world", label: "World semantics", required: true, weight: 1 },
+    { id: "player", label: "Player and gameplay", required: true, weight: 1 },
+    { id: "foundation", label: "Visible Foundation presentation", required: true, weight: 2 }
+  ],
+  metadata: { nexusCommit: NEXUS_COMMIT, worldId: worldRecipe.id, racerId: racerProfile.id }
+});
+const domainImportMeasure = performance.getEntriesByName("prehistoric-rush:domainImports", "measure").at(-1);
+engine.n.runtime.recordInstallation({
+  id: "prehistoric-rush-domain-imports",
+  status: "ready",
+  durationMs: domainImportMeasure?.duration ?? null
+});
+startup.working("engine", 1, "Registering Nexus domains");
+startup.ready("engine", { runtimeStatus: engine.n.runtime.getStatus() }, "Nexus domains registered");
 
-if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerWorld({
-  id: worldRecipe.id,
-  seed: String(worldRecipe.seed),
-  focus: { position: { x: 0, y: 0, z: 0 } },
-  partition: World.createUniformGridPartition({ id: `${worldRecipe.id}:foundation-grid`, cellSize: 96, radius: 4 }),
-  surface: World.createFlatWorldSurface({ id: `${worldRecipe.id}:surface` }),
-  providers: [],
-  settings: { recipeId: worldRecipe.id, recipeRevision: worldRecipe.revision }
+const failActiveStartup = (error, source) => {
+  if (startup.getDescriptor().status !== "starting") return;
+  startup.fail({ code: "prehistoric-rush.startup.failed", message: error?.message ?? String(error), source, retryable: true });
+};
+const onStartupError = (event) => failActiveStartup(event?.error ?? new Error(String(event?.message ?? "Unknown startup error")), "window.error");
+const onStartupRejection = (event) => failActiveStartup(event?.reason ?? new Error("Unhandled startup rejection"), "unhandledrejection");
+globalThis.addEventListener?.("error", onStartupError);
+globalThis.addEventListener?.("unhandledrejection", onStartupRejection);
+
+startup.working("renderer", 0, "Creating the WebGL canvas");
+setLoading(startup.getDescriptor().progress, "Preparing renderer");
+const renderSurface = measureStartup("rendererSurfaceCreation", () => createPrehistoricRushRenderSurface(THREE, { host }));
+startup.ready("renderer", { canvas: true, backend: "webgl2" }, "Renderer and canvas ready");
+await yieldStartupFrame();
+
+startup.working("playable-assets", 0, "Loading playable assets: 0/4");
+setLoading(startup.getDescriptor().progress, "Loading playable assets: 0/4");
+const assetSession = installPrehistoricRushStartupAssets(engine, { Nexus, racerId: racerProfile.id, worldId: worldRecipe.id });
+await measureStartupAsync("playableAssetGroups", () => assetSession.preparePlayable((progress) => {
+  const completed = Math.min(4, Math.floor(progress * 4));
+  startup.working("playable-assets", progress, `Loading playable assets: ${completed}/4`);
+  setLoading(startup.getDescriptor().progress, `Loading playable assets: ${completed}/4`);
+}));
+startup.ready("playable-assets", { groupCount: 4, owner: "n:asset" }, "Loading playable assets: 4/4");
+await yieldStartupFrame();
+
+measureStartup("worldDefinitionRegistration", () => {
+  if (!engine.n.world.getWorldDefinition(worldRecipe.id)) engine.n.world.registerWorld({
+    id: worldRecipe.id,
+    seed: String(worldRecipe.seed),
+    focus: { position: { x: 0, y: 0, z: 0 } },
+    partition: World.createUniformGridPartition({ id: `${worldRecipe.id}:foundation-grid`, cellSize: 96, radius: 4 }),
+    surface: World.createFlatWorldSurface({ id: `${worldRecipe.id}:surface` }),
+    providers: [],
+    settings: { recipeId: worldRecipe.id, recipeRevision: worldRecipe.revision }
+  });
 });
 
-setLoading(0.2, "Projecting Jurassic world features");
-const course = createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } });
-const world = createPrehistoricRushWorldImplementation({ engine, World, FoundationSampling, recipe: worldRecipe, cellSize: 96 });
-installPrehistoricRushPlayerActor(engine, { profile: racerProfile });
-const player = createPrehistoricRushPlayerImplementation({ engine, course, world, profile: racerProfile });
-const gameplay = createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance: worldRecipe.runtime.goalDistance });
+startup.working("course", 0, "Preparing route");
+setLoading(startup.getDescriptor().progress, "Preparing route");
+const course = measureStartup("courseConstruction", () => createPrehistoricRushCourseImplementation({ engine, config: { seed: worldRecipe.seed, ...worldRecipe.route } }));
+startup.ready("course", { sampleCount: course.snapshot?.().samples?.length ?? null }, "Route ready");
+await yieldStartupFrame();
+
+startup.working("world", 0, "Projecting Jurassic world features");
+setLoading(startup.getDescriptor().progress, "Projecting Jurassic world features");
+const world = measureStartup("worldConstruction", () => createPrehistoricRushWorldImplementation({ engine, World, FoundationSampling, recipe: worldRecipe, cellSize: 96 }));
+startup.ready("world", { worldId: worldRecipe.id, revision: worldRecipe.revision }, "World semantics ready");
+await yieldStartupFrame();
+
+startup.working("player", 0, "Installing selected racer");
+setLoading(startup.getDescriptor().progress, "Installing selected racer");
+measureStartup("playerActorInstallation", () => installPrehistoricRushPlayerActor(engine, { profile: racerProfile }));
+const player = measureStartup("playerConstruction", () => createPrehistoricRushPlayerImplementation({ engine, course, world, profile: racerProfile }));
+startup.working("player", 0.7, "Preparing race rules");
+const gameplay = measureStartup("gameplayConstruction", () => createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance: worldRecipe.runtime.goalDistance }));
+startup.ready("player", { racerId: racerProfile.id }, "Player and gameplay ready");
+engine.n.prehistoricRush.bindCompute({ computeHost, selection: computeSelection });
+await yieldStartupFrame();
 const creatureApi = engine.n.proceduralCreatureBody;
 if (!creatureApi?.get || !creatureApi?.createPose) throw new Error("Procedural racer body service did not install.");
 const playerBody = creatureApi.get(playerProfile.creature.id);
 if (!playerBody) throw new Error(`Procedural racer body is unavailable: ${playerProfile.creature.id}.`);
+engine.n.prehistoricRush.bindSimulation({ course, world, player, gameplay, worldRecipe, racerProfile, playerProfile, playerBody });
 const racerPresentation = Object.freeze({
   racerId: racerProfile.id,
   bodyDescriptor: playerBody,
@@ -109,10 +220,29 @@ const racerPresentation = Object.freeze({
   ...racerProfile.presentation
 });
 
-const rendering = await createPrehistoricRushRenderingImplementation(THREE, {
-  host, world, course, gameplay, creatureApi, racerPresentation, diagnosticFoundationOnly, Nexus,
-  onProgress(progress, detail) { setLoading(0.22 + progress * 0.74, detail); }
-});
+startup.working("foundation", 0, "Committing visible Foundation terrain");
+setLoading(startup.getDescriptor().progress, "Preparing starting area");
+const rendering = await measureStartupAsync("rendererStartup", () => createPrehistoricRushRenderingImplementation(THREE, {
+  host,
+  world,
+  course,
+  gameplay,
+  creatureApi,
+  racerPresentation,
+  renderSurface,
+  assetSession,
+  diagnosticFoundationOnly,
+  Nexus,
+  onProgress(progress, detail) {
+    startup.working("foundation", progress, detail);
+    setLoading(startup.getDescriptor().progress, detail);
+  },
+  onFidelityState(state) {
+    if (state.error) console.warn(`Optional tree fidelity retained proxy presentation: ${state.error}`);
+  }
+}));
+startup.ready("foundation", { terrainPatchCount: rendering.snapshot().terrainPatchCount }, "Visible Foundation terrain committed");
+engine.n.prehistoricRush.bindPresentation({ rendering, renderSurface, assetSession });
 const framing = engine.n.cameraFraming.create({
   id: `prehistoric-rush-${racerProfile.id}`,
   padding: racerProfile.camera.padding,
@@ -127,13 +257,6 @@ let right = false;
 let boost = false;
 let lastSteer = 0;
 let lastBoost = false;
-const frameHooks = new Set();
-const addFrameHook = (hook) => {
-  if (typeof hook !== "function") throw new TypeError("Frame hook must be a function.");
-  frameHooks.add(hook);
-  return () => frameHooks.delete(hook);
-};
-
 addEventListener("keydown", (event) => {
   if (["ArrowLeft", "ArrowRight", "ArrowUp", "Space", "KeyE"].includes(event.code)) event.preventDefault();
   if (["KeyA", "ArrowLeft"].includes(event.code)) left = true;
@@ -188,7 +311,7 @@ function cameraFrame(state, dt) {
   return framing.update(cameraRequest);
 }
 
-world.focus({ x: 0, y: 0, z: 0 });
+measureStartup("foundationFocusCommit", () => world.focus({ x: 0, y: 0, z: 0 }));
 let worldFocusCell = "0:0";
 let last = performance.now();
 let lastHudAt = -Infinity;
@@ -238,10 +361,8 @@ function loop(now) {
   }
   updateAutomationDataset(state);
   rendering.draw(state, cameraFrame(state, dt), dt);
-  for (const hook of frameHooks) {
-    try { hook({ now, dt, state, camera: rendering.camera }); }
-    catch (error) { console.warn("PrehistoricRush frame hook failed:", error); }
-  }
+  try { engine.n.prehistoricRush.dispatchFrame({ now, dt, state, camera: rendering.camera }); }
+  catch (error) { console.warn("PrehistoricRush frame hook failed:", error); }
   updateHud(now, state);
   requestAnimationFrame(loop);
 }
@@ -250,12 +371,24 @@ const initial = gameplay.readState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
 updateAutomationDataset(initial);
 updateHud(performance.now(), initial);
+startup.presentFirstFrame({
+  frameId: "prehistoric-rush:first-foundation-frame",
+  presentationId: "prehistoric-rush:webgl2",
+  backend: "webgl2",
+  receipt: { terrainPatchCount: rendering.snapshot().terrainPatchCount }
+});
+startup.enter({ inputReady: true });
+setLoading(1, "Ready to race");
 const startupMs = performance.now() - startupStartedAt;
 const getState = () => {
   const presentation = rendering.snapshot();
   const worldState = world.snapshot();
   const coreWorld = worldState.coreWorld ?? {};
   const playerSnapshot = player.snapshot();
+  const startupState = startup.getDescriptor();
+  const assetState = assetSession.getSnapshot();
+  const gpuPresentation = engine.n.prehistoricRush.getComponent("gpuNative");
+  const gpuNative = gpuPresentation?.snapshot?.() ?? null;
   return {
     racer: {
       id: racerProfile.id,
@@ -273,6 +406,15 @@ const getState = () => {
     rendering: presentation,
     compute: { selected: computeSelection, providers: computeHost.listProviders(), webgpuAdapterReady: Boolean(webgpuAdapter) },
     performance: { startupMs, startupBudgetMs: 60000, withinStartupBudget: startupMs < 60000 },
+    startup: startupState,
+    readiness: {
+      engineReady: startup.getPreparation("engine"),
+      rendererReady: startup.getPreparation("renderer"),
+      playableAssetsReady: startup.getPreparation("playable-assets"),
+      playerReady: startup.getPreparation("player"),
+      foundationVisible: startup.getPreparation("foundation"),
+      playable: startupState.playable
+    },
     streamingReadiness: {
       foundationReady: true,
       rendererReady: presentation.terrainPatchCount >= 9,
@@ -296,24 +438,22 @@ const getState = () => {
     lushFoliage: { disabled: diagnosticFoundationOnly, grassCount: presentation.grassCount, activeForestPatches: presentation.activeForestPatches },
     vegetation: { enabled: presentation.vegetationEnabled },
     playerPresentation: presentation.playerPresentation,
+    gpuNative,
     camera: { x: rendering.camera.position.x, y: rendering.camera.position.y, z: rendering.camera.position.z },
-    assetStartup: { mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "prebuilt-tree-fidelity" },
+    assetStartup: {
+      mode: diagnosticFoundationOnly ? "foundation-diagnostic" : "progressive-four-group",
+      owner: assetState.owner,
+      persistentCache: assetState.persistentCache,
+      requiredGroupCount: assetState.requiredGroupCount,
+      required: assetState.required,
+      optional: assetState.optional
+    },
     versions: { nexus: "main", nexusValidatedCommit: NEXUS_COMMIT }
   };
 };
-globalThis.PrehistoricRushHost = Object.freeze({
-  engine,
-  course,
-  world,
-  player,
-  gameplay,
-  rendering,
-  computeHost,
-  worldRecipe,
-  racerProfile,
-  playerProfile,
-  playerBody,
-  addFrameHook,
-  getState
-});
+engine.n.prehistoricRush.bindSnapshotReader(getState);
+globalThis.addEventListener?.("pagehide", () => {
+  globalThis.removeEventListener?.("error", onStartupError);
+  globalThis.removeEventListener?.("unhandledrejection", onStartupRejection);
+}, { once: true });
 requestAnimationFrame(loop);

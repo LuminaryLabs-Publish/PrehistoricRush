@@ -19,12 +19,12 @@ const startedAt = Date.now();
 try {
   await page.goto(`${baseUrl}/game.html?validation=startup`, { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForFunction(
-    () => Boolean(globalThis.PrehistoricRushHost?.getState?.().streamingReadiness?.rendererReady),
+    () => Boolean(globalThis.PrehistoricRushEngine?.n?.prehistoricRush?.getSnapshot?.().streamingReadiness?.rendererReady),
     undefined,
     { timeout: 60000 }
   );
   const wallClockStartupMs = Date.now() - startedAt;
-  const state = await page.evaluate(() => globalThis.PrehistoricRushHost.getState());
+  const state = await page.evaluate(() => globalThis.PrehistoricRushEngine.n.prehistoricRush.getSnapshot());
   const startupMs = Number(state.performance?.startupMs ?? wallClockStartupMs);
 
   assert.ok(startupMs < 60000, `production startup must complete under 60 seconds, observed ${startupMs}ms`);

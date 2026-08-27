@@ -3,6 +3,9 @@ import { spawnSync } from "node:child_process";
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const steps = [
   ["legacy syntax baseline", "package.json", npm, ["run", "test:syntax"]],
+  ["progressive startup readiness", "tests/progressive-startup-contract.mjs", "node", ["tests/progressive-startup-contract.mjs"]],
+  ["four-group startup assets", "tests/startup-asset-policy.mjs", "node", ["tests/startup-asset-policy.mjs"]],
+  ["progressive gameplay elevation", "tests/gameplay-progressive-elevation.mjs", "node", ["tests/gameplay-progressive-elevation.mjs"]],
   ["semantic core assembly syntax", "src/domains/prehistoric-rush/core-assembly.js", "node", ["--check", "src/domains/prehistoric-rush/core-assembly.js"]],
   ["semantic landform projection syntax", "src/domains/prehistoric-rush/world-landform-projection.js", "node", ["--check", "src/domains/prehistoric-rush/world-landform-projection.js"]],
   ["semantic World syntax", "src/domains/prehistoric-rush/world-implementation.js", "node", ["--check", "src/domains/prehistoric-rush/world-implementation.js"]],

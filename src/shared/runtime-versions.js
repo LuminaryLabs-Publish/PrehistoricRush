@@ -12,6 +12,7 @@ const NEXUS_COMPUTE_BOOTSTRAP_URL = new URL("./nexus-compute-bootstrap.js", impo
 
 export const RUNTIME_URLS = Object.freeze({
   nexus: `${NEXUS_SOURCE_BASE}/index.js`,
+  nexusRuntime: `${NEXUS_SOURCE_BASE}/core-domains/runtime/index.js`,
   nexusHost: `${NEXUS_SOURCE_BASE}/core-domains/host/index.js`,
   nexusCompute: NEXUS_COMPUTE_BOOTSTRAP_URL,
   nexusActor: `${NEXUS_SOURCE_BASE}/core-domains/actor/index.js`,
@@ -21,6 +22,7 @@ export const RUNTIME_URLS = Object.freeze({
   nexusSimulationRuntime: `${NEXUS_SOURCE_BASE}/core-domains/simulation/kits/simulation-kit/index.js`,
   nexusMotion: `${NEXUS_SOURCE_BASE}/core-domains/simulation/motion/kits/motion-kit/index.js`,
   nexusPhysics: `${NEXUS_SOURCE_BASE}/core-domains/simulation/physics/kits/physics-kit/index.js`,
+  nexusAsset: `${NEXUS_SOURCE_BASE}/core-domains/asset/index.js`,
   nexusWorld: `${NEXUS_SOURCE_BASE}/core-domains/world/index.js`,
   nexusFoundationSampling: `${NEXUS_SOURCE_BASE}/core-domains/world/world-foundation-domain/kits/foundation-sampling-kit/index.js`,
   nexusPresentation: `${NEXUS_SOURCE_BASE}/core-domains/presentation/index.js`,

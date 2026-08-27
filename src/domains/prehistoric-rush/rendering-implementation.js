@@ -3,7 +3,7 @@ import { createThreeTreeFidelityLayer } from "../../render/three-tree-fidelity-l
 import { applyLushJungleAtmosphere } from "../../render/lush-jungle-atmosphere.js";
 import { createThreeCinematicFidelityLayer } from "../../render/three-cinematic-fidelity-layer.js";
 import { createThreeCinematicGroundLayer } from "../../render/three-cinematic-ground-layer.js";
-import { PREHISTORIC_TREE_ARCHETYPES, PREHISTORIC_TREE_TYPES } from "../../shared/tree-archetype-catalog.js";
+import { PREHISTORIC_TREE_TYPES } from "../../shared/tree-archetype-catalog.js";
 import {
   createPrehistoricVegetationGeneratorOptions,
   createPrehistoricVegetationRuntime
@@ -24,48 +24,9 @@ import {
   createCenteredPatchPlan
 } from "./rendering-streaming-policy.js";
 import { createWorkerPatchStreamingService } from "./worker-patch-streaming-service.js";
+import { speciesIdsForPatch } from "./startup-asset-policy.js";
 
 const TREE_CAPACITY_PER_TYPE = 320;
-
-async function loadImage(url) {
-  const image = new Image();
-  image.decoding = "async";
-  image.src = url.href;
-  await image.decode();
-  return image;
-}
-
-async function loadTreeFidelityPackages(onProgress = () => {}) {
-  const root = new URL("../../../assets/tree-fidelity/", import.meta.url);
-  onProgress(0.03, "Loading prehistoric tree manifest");
-  const manifestResponse = await fetch(new URL("manifest.json", root));
-  if (!manifestResponse.ok) throw new Error(`Tree Fidelity manifest failed: ${manifestResponse.status}`);
-  const manifest = await manifestResponse.json();
-  const entries = new Map(manifest.packages.map((entry) => [entry.archetypeId, entry]));
-  const imagePromises = new Map();
-  let completed = 0;
-
-  const packages = await Promise.all(PREHISTORIC_TREE_ARCHETYPES.map(async (archetype) => {
-    const entry = entries.get(archetype.id);
-    if (!entry) throw new Error(`Tree Fidelity manifest is missing ${archetype.id}.`);
-    const packageUrl = new URL(entry.file, root);
-    const atlasUrl = new URL(entry.atlas, root);
-    if (!imagePromises.has(atlasUrl.href)) imagePromises.set(atlasUrl.href, loadImage(atlasUrl));
-    const [response, image] = await Promise.all([
-      fetch(packageUrl),
-      imagePromises.get(atlasUrl.href)
-    ]);
-    if (!response.ok) throw new Error(`Tree Fidelity package ${entry.file} failed: ${response.status}`);
-    const packageValue = await response.json();
-    if (packageValue.forms?.far?.atlas) packageValue.forms.far.atlas.runtimeImage = image;
-    if (packageValue.forms?.horizon?.atlas) packageValue.forms.horizon.atlas.runtimeImage = image;
-    completed += 1;
-    onProgress(completed / PREHISTORIC_TREE_ARCHETYPES.length, `Loading forest · ${completed}/${PREHISTORIC_TREE_ARCHETYPES.length} species`);
-    return packageValue;
-  }));
-
-  return packages;
-}
 
 function createTerrainMaterial(THREE) {
   const material = new THREE.MeshPhysicalMaterial({
@@ -181,8 +142,10 @@ function createTerrainPatch(THREE, world, patchX, patchZ, material) {
   return mesh;
 }
 
-function createCourseRibbon(THREE, world, route) {
-  const samples = route.samples.filter((_, index) => index % 4 === 0);
+function createCourseRibbon(THREE, world, route, range = {}) {
+  const startIndex = Math.max(0, Math.floor(Number(range.startIndex) || 0));
+  const endIndex = Math.min(route.samples.length, Math.max(startIndex + 2, Math.floor(Number(range.endIndex) || route.samples.length)));
+  const samples = route.samples.slice(startIndex, endIndex).filter((_, index) => index % 4 === 0);
   const positions = [];
   const uvs = [];
   const indices = [];
@@ -247,6 +210,45 @@ function createShardLayer(THREE, scene, capacity = 160) {
   return mesh;
 }
 
+export function createPrehistoricRushRenderSurface(THREE, { host } = {}) {
+  if (!host) throw new TypeError("Prehistoric Rush render surface requires a host element.");
+  const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x08130d);
+  const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 1400);
+  camera.position.set(0, 7, -14);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearAlpha(1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  host.append(renderer.domElement);
+  renderer.render(scene, camera);
+  return Object.freeze({
+    scene,
+    camera,
+    renderer,
+    qualityProfile,
+    renderLoadingFrame() { renderer.render(scene, camera); }
+  });
+}
+
+function yieldRenderingStartupFrame() {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    globalThis.requestAnimationFrame?.(finish);
+    globalThis.setTimeout?.(finish, 32);
+    if (typeof globalThis.requestAnimationFrame !== "function" && typeof globalThis.setTimeout !== "function") finish();
+  });
+}
+
 export async function createPrehistoricRushRenderingImplementation(THREE, {
   host,
   world,
@@ -256,8 +258,11 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   creatureApi = null,
   racerPresentation = null,
   playerBody = null,
+  renderSurface = null,
+  assetSession = null,
   diagnosticFoundationOnly = false,
-  onProgress = () => {}
+  onProgress = () => {},
+  onFidelityState = () => {}
 } = {}) {
   if (!host || !world) throw new TypeError("Rendering requires host and World implementation.");
   const resolvedRacerPresentation = racerPresentation
@@ -286,33 +291,27 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       : null;
   const racerBody = resolvedRacerPresentation?.bodyDescriptor ?? null;
   const renderStartedAt = performance.now();
-  const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis);
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 1400);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
-  renderer.setSize(innerWidth, innerHeight);
+  const surface = renderSurface ?? createPrehistoricRushRenderSurface(THREE, { host });
+  const { qualityProfile, scene, camera, renderer } = surface;
   const adaptivePixelRatio = createAdaptivePixelRatioController(renderer, qualityProfile, globalThis);
-  renderer.setClearAlpha(1);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  host.append(renderer.domElement);
 
   let denseWorldGPUActive = false;
   let denseVisualRevision = 0;
-  let treeFidelityPackages = null;
+  const treeFidelityPackages = new Map();
   const terrainMaterial = createTerrainMaterial(THREE);
   const terrainPatches = new Map();
-  function ensureTerrain(state = {}) {
+  function ensureTerrain(state = {}, maximumNewPatches = Infinity) {
     const activePlan = createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_ACTIVE_RADIUS, prefix: "foundation-terrain" });
     const retainedIds = new Set(createCenteredPatchPlan(state, { size: FOUNDATION_TERRAIN_PATCH_SIZE, radius: FOUNDATION_TERRAIN_RETAIN_RADIUS, prefix: "foundation-terrain" }).map((entry) => entry.id));
+    let created = 0;
     for (const entry of activePlan) {
       if (terrainPatches.has(entry.id)) continue;
+      if (created >= maximumNewPatches) break;
       const mesh = createTerrainPatch(THREE, world, entry.x, entry.z, terrainMaterial);
       mesh.visible = !denseWorldGPUActive;
       terrainPatches.set(entry.id, mesh);
       scene.add(mesh);
+      created += 1;
     }
     for (const [id, mesh] of terrainPatches) {
       if (retainedIds.has(id)) continue;
@@ -324,7 +323,13 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   onProgress(0.08, "Resolving local Nexus Foundation terrain");
   const terrainStartedAt = performance.now();
-  ensureTerrain({ x: 0, z: 0 });
+  const initialFoundationPatchCount = 9;
+  for (let patchIndex = 0; patchIndex < initialFoundationPatchCount; patchIndex += 1) {
+    ensureTerrain({ x: 0, z: 0 }, 1);
+    onProgress(0.08 + ((patchIndex + 1) / initialFoundationPatchCount) * 0.06, `Preparing starting terrain ${patchIndex + 1}/${initialFoundationPatchCount}`);
+    surface.renderLoadingFrame?.();
+    if (patchIndex + 1 < initialFoundationPatchCount) await yieldRenderingStartupFrame();
+  }
   const initialTerrainMs = performance.now() - terrainStartedAt;
 
   const hemisphere = new THREE.HemisphereLight(0xe1f2cf, 0x2c3d25, 1.5);
@@ -353,8 +358,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   const cinematicFidelity = diagnosticFoundationOnly ? null : createThreeCinematicFidelityLayer(THREE, { scene, camera, renderer, profile: qualityProfile, sun });
 
   let courseRibbon = null;
+  let courseRibbonRange = null;
   let treeFidelity = null;
-  let treeFidelityStatus = diagnosticFoundationOnly ? "disabled" : "loading";
+  let treeFidelityStatus = diagnosticFoundationOnly ? "disabled" : "proxy";
   let treeFidelityError = null;
   let treeFidelityLoadMs = 0;
   let cinematicGround = null;
@@ -390,7 +396,11 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   if (!diagnosticFoundationOnly) {
     onProgress(0.16, "Restoring course and player presentation");
-    if (course?.route) { courseRibbon = createCourseRibbon(THREE, world, course.route); scene.add(courseRibbon); }
+    if (course?.route) {
+      courseRibbonRange = { startIndex: 0, endIndex: Math.min(course.route.samples.length, 384) };
+      courseRibbon = createCourseRibbon(THREE, world, course.route, courseRibbonRange);
+      scene.add(courseRibbon);
+    }
     if (racerBody) {
       playerMesh = createCreatureMesh(THREE, racerBody);
       playerMesh.name = resolvedRacerPresentation.meshName;
@@ -409,75 +419,188 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   }
 
   const treeLoadStartedAt = performance.now();
+  let resolveRichPresentationReady = null;
   const richPresentationReady = diagnosticFoundationOnly
     ? Promise.resolve(null)
-    : loadTreeFidelityPackages((progress, detail) => onProgress(0.22 + progress * 0.66, detail))
-      .then((packages) => {
-        treeFidelityPackages = packages;
-        treeFidelity = createThreeTreeFidelityLayer(THREE, { scene, camera, renderer, treeTypes: PREHISTORIC_TREE_TYPES, packages, capacity: TREE_CAPACITY_PER_TYPE });
-        if (!Nexus) throw new Error("Worker forest fallback requires the active NexusEngine module.");
-        const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus);
-        const generatorOptions = {
-          config: {
-            seed: Number(world.recipe.seed),
-            chunk: FOUNDATION_WORKER_STREAMING_POLICY.patchSize,
-            segments: FOUNDATION_WORKER_STREAMING_POLICY.terrainSegments,
-            trees: Math.max(8, Math.round(22 * Number(qualityProfile.treeDensity ?? 1))),
-            grass: Math.max(30, Math.round(104 * Number(qualityProfile.groundDensity ?? 1))),
-            groundCover: Math.max(12, Math.round(Number(world.recipe.runtime?.groundCover ?? 36) * Number(qualityProfile.groundDensity ?? 1))),
-            shardsPerPatch: 2
-          },
-          routeSamples: course.route.samples,
-          worldRecipe: structuredClone(world.recipe)
-        };
-        const fallbackGenerator = createPrehistoricWorldPatchGenerator({
-          ...generatorOptions,
-          ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
-        });
-        const hardwareConcurrency = Math.max(2, Number(globalThis.navigator?.hardwareConcurrency ?? 2));
-        workerStreaming = createWorkerPatchStreamingService({
-          workerUrl: new URL("../../workers/prehistoric-patch-worker.js", import.meta.url),
-          generatorOptions,
-          fallbackGenerator,
-          policy: {
-            ...FOUNDATION_WORKER_STREAMING_POLICY,
-            workerCount: Math.max(1, Math.min(
-              FOUNDATION_WORKER_STREAMING_POLICY.workerCountMaximum,
-              hardwareConcurrency - 1
-            ))
-          },
-          onActivate(patch) {
-            forestPatches.set(patch.id, patch);
-            treeFidelity.activatePatch(patch);
-            cinematicGround?.activatePatch(patch);
-            denseVisualRevision += 1;
-            if (resolveInitialForestReady) {
-              resolveInitialForestReady(patch);
-              resolveInitialForestReady = null;
-            }
-          },
-          onRelease(id) {
-            if (!forestPatches.delete(id)) return;
-            treeFidelity.releasePatches([id]);
-            cinematicGround?.releasePatches([id]);
-            denseVisualRevision += 1;
-          }
-        });
-        treeFidelityStatus = "ready";
-        treeFidelityLoadMs = performance.now() - treeLoadStartedAt;
+    : new Promise((resolve) => { resolveRichPresentationReady = resolve; });
+  let fullFidelityScheduled = false;
+  let fullFidelityAttemptComplete = diagnosticFoundationOnly;
+  let lastFidelityStateSignature = "";
+
+  function syncFidelityState() {
+    const packageCount = treeFidelity?.view?.packageCount ?? 0;
+    treeFidelityStatus = packageCount >= PREHISTORIC_TREE_TYPES.length
+      ? "ready"
+      : treeFidelityError
+        ? "degraded"
+        : packageCount > 0
+          ? "loading"
+          : "proxy";
+    treeFidelityLoadMs = performance.now() - treeLoadStartedAt;
+    const fidelityState = Object.freeze({
+      status: treeFidelityStatus,
+      packageCount,
+      packageTotal: PREHISTORIC_TREE_TYPES.length,
+      proxyPackageCount: treeFidelity?.view?.proxyPackageCount ?? PREHISTORIC_TREE_TYPES.length,
+      fullAttemptComplete: fullFidelityAttemptComplete,
+      error: treeFidelityError?.message ?? null
+    });
+    const signature = `${fidelityState.status}:${fidelityState.packageCount}:${fidelityState.proxyPackageCount}:${fidelityState.error ?? ""}`;
+    if (signature !== lastFidelityStateSignature) {
+      lastFidelityStateSignature = signature;
+      onFidelityState(fidelityState);
+    }
+    const pendingPackageUpgrades = treeFidelity?.view?.pendingPackageUpgrades ?? 0;
+    if (fullFidelityAttemptComplete && pendingPackageUpgrades === 0 && resolveRichPresentationReady) {
+      resolveRichPresentationReady(treeFidelity);
+      resolveRichPresentationReady = null;
+      onProgress(1, packageCount >= PREHISTORIC_TREE_TYPES.length
+        ? "Full forest fidelity ready"
+        : `Forest fidelity settled with ${packageCount}/${PREHISTORIC_TREE_TYPES.length} detailed species; proxies remain active`);
+    }
+  }
+
+  function queueFidelityPackages(packages) {
+    for (const packageValue of packages) {
+      if (!packageValue?.archetypeId || treeFidelityPackages.has(packageValue.archetypeId)) continue;
+      treeFidelityPackages.set(packageValue.archetypeId, packageValue);
+      treeFidelity?.queuePackage(packageValue);
+    }
+    syncFidelityState();
+  }
+
+  function requestSpecies(speciesIds, priority = "background") {
+    if (!assetSession || speciesIds.length === 0) return;
+    treeFidelityStatus = treeFidelityPackages.size > 0 ? "loading" : "proxy";
+    assetSession.requestSpecies(speciesIds, {
+      priority,
+      onFailure(speciesId, error) {
+        treeFidelityError = error instanceof Error ? error : new Error(String(error));
+        onFidelityState(Object.freeze({ status: "degraded", speciesId, error: treeFidelityError.message }));
+      }
+    }).then(queueFidelityPackages).catch((error) => {
+      treeFidelityError = error instanceof Error ? error : new Error(String(error));
+      syncFidelityState();
+    });
+  }
+
+  function scheduleFullFidelity() {
+    if (fullFidelityScheduled) return;
+    fullFidelityScheduled = true;
+    if (!assetSession) {
+      fullFidelityAttemptComplete = true;
+      syncFidelityState();
+      return;
+    }
+    const request = () => assetSession.requestAllSpecies({
+      priority: "idle",
+      onFailure(_speciesId, error) {
+        treeFidelityError = error instanceof Error ? error : new Error(String(error));
+        syncFidelityState();
+      }
+    }).then((packages) => {
+      queueFidelityPackages(packages);
+      fullFidelityAttemptComplete = true;
+      syncFidelityState();
+    }).catch((error) => {
+      treeFidelityError = error instanceof Error ? error : new Error(String(error));
+      fullFidelityAttemptComplete = true;
+      syncFidelityState();
+    });
+    if (typeof globalThis.requestIdleCallback === "function") globalThis.requestIdleCallback(request, { timeout: 2500 });
+    else globalThis.setTimeout?.(request, 250);
+  }
+
+  if (!diagnosticFoundationOnly) {
+    treeFidelity = createThreeTreeFidelityLayer(THREE, {
+      scene,
+      camera,
+      renderer,
+      treeTypes: PREHISTORIC_TREE_TYPES,
+      packages: [],
+      capacity: TREE_CAPACITY_PER_TYPE
+    });
+    if (!Nexus) throw new Error("Worker forest fallback requires the active NexusEngine module.");
+    const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus);
+    const generatorOptions = {
+      config: {
+        seed: Number(world.recipe.seed),
+        chunk: FOUNDATION_WORKER_STREAMING_POLICY.patchSize,
+        segments: FOUNDATION_WORKER_STREAMING_POLICY.terrainSegments,
+        trees: Math.max(8, Math.round(22 * Number(qualityProfile.treeDensity ?? 1))),
+        grass: Math.max(30, Math.round(104 * Number(qualityProfile.groundDensity ?? 1))),
+        groundCover: Math.max(12, Math.round(Number(world.recipe.runtime?.groundCover ?? 36) * Number(qualityProfile.groundDensity ?? 1))),
+        shardsPerPatch: 2
+      },
+      routeSamples: course.route.samples,
+      worldRecipe: structuredClone(world.recipe)
+    };
+    const fallbackGenerator = createPrehistoricWorldPatchGenerator({
+      ...generatorOptions,
+      ...createPrehistoricVegetationGeneratorOptions(vegetationRuntime)
+    });
+    const hardwareConcurrency = Math.max(2, Number(globalThis.navigator?.hardwareConcurrency ?? 2));
+    workerStreaming = createWorkerPatchStreamingService({
+      workerUrl: new URL("../../workers/prehistoric-patch-worker.js", import.meta.url),
+      generatorOptions,
+      fallbackGenerator,
+      policy: {
+        ...FOUNDATION_WORKER_STREAMING_POLICY,
+        workerCount: Math.max(1, Math.min(
+          FOUNDATION_WORKER_STREAMING_POLICY.workerCountMaximum,
+          hardwareConcurrency - 1
+        ))
+      },
+      onActivate(patch) {
+        forestPatches.set(patch.id, patch);
+        treeFidelity.activatePatch(patch);
+        cinematicGround?.activatePatch(patch);
+        requestSpecies(speciesIdsForPatch(patch), "visible");
+        scheduleFullFidelity();
         denseVisualRevision += 1;
-        applyDenseWorldVisibility();
-        onProgress(1, "Rich prehistoric forest ready");
-        return treeFidelity;
-      })
-      .catch((error) => { treeFidelityStatus = "error"; treeFidelityError = error instanceof Error ? error : new Error(String(error)); throw treeFidelityError; });
-  richPresentationReady.catch(() => {});
+        if (resolveInitialForestReady) {
+          resolveInitialForestReady(patch);
+          resolveInitialForestReady = null;
+        }
+      },
+      onRelease(id) {
+        if (!forestPatches.delete(id)) return;
+        treeFidelity.releasePatches([id]);
+        cinematicGround?.releasePatches([id]);
+        denseVisualRevision += 1;
+      }
+    });
+    syncFidelityState();
+    applyDenseWorldVisibility();
+  }
   const densePresentationReady = diagnosticFoundationOnly
     ? richPresentationReady
     : Promise.all([richPresentationReady, initialForestReady]).then(([result]) => result);
   densePresentationReady.catch(() => {});
 
   const matrix = new THREE.Matrix4();
+  const shardPosition = new THREE.Vector3();
+  const shardQuaternion = new THREE.Quaternion();
+  const shardEuler = new THREE.Euler();
+  const shardScale = new THREE.Vector3(1, 1, 1);
+
+  function ensureCourseRibbon(state = {}) {
+    if (!course?.route || !courseRibbonRange) return;
+    const routeIndex = Math.max(0, Math.floor(Number(state.routeIndex) || 0));
+    if (routeIndex >= courseRibbonRange.startIndex + 64 && routeIndex < courseRibbonRange.endIndex - 64) return;
+    const startIndex = Math.max(0, Math.floor(routeIndex / 256) * 256 - 64);
+    const endIndex = Math.min(course.route.samples.length, startIndex + 384);
+    if (startIndex === courseRibbonRange.startIndex && endIndex === courseRibbonRange.endIndex) return;
+    const previous = courseRibbon;
+    courseRibbonRange = { startIndex, endIndex };
+    courseRibbon = createCourseRibbon(THREE, world, course.route, courseRibbonRange);
+    scene.add(courseRibbon);
+    if (previous) {
+      scene.remove(previous);
+      previous.geometry?.dispose?.();
+      previous.material?.dispose?.();
+    }
+  }
 
   function updateShards() {
     if (!shardMesh || !gameplay?.getPickups) return;
@@ -485,7 +608,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     const count = Math.min(shardMesh.instanceMatrix.count || 160, pickups.length);
     for (let index = 0; index < count; index += 1) {
       const pickup = pickups[index];
-      matrix.compose(new THREE.Vector3(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, elapsed * 0.8 + index * 0.11, 0)), new THREE.Vector3(1, 1, 1));
+      shardPosition.set(pickup.x, pickup.y + Math.sin(elapsed * 2 + index) * 0.12, pickup.z);
+      shardEuler.set(0, elapsed * 0.8 + index * 0.11, 0);
+      shardQuaternion.setFromEuler(shardEuler);
+      matrix.compose(shardPosition, shardQuaternion, shardScale);
       shardMesh.setMatrixAt(index, matrix);
     }
     shardMesh.count = count;
@@ -493,11 +619,11 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   }
 
   function draw(state, framing, dt = 1 / 60) {
-    if (treeFidelityError) throw treeFidelityError;
     elapsed += Math.max(0, Number(dt) || 0);
-    ensureTerrain(state);
+    ensureTerrain(state, 1);
     if (framing) { camera.position.set(...framing.position); camera.lookAt(...framing.target); }
     if (!diagnosticFoundationOnly) {
+      ensureCourseRibbon(state);
       workerStreaming?.update(state);
       if (playerMesh) {
         playerMesh.position.set(state.x, state.y + state.jumpHeight + resolvedRacerPresentation.rootOffsetY, state.z);
@@ -523,6 +649,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
         abilityPulse.material.opacity = active ? Math.max(0.12, 0.82 * (1 - progress)) : 0;
       }
       treeFidelity?.update(state, dt);
+      syncFidelityState();
       cinematicGround?.update(state, dt);
       updateShards();
       if (shardMesh) shardMesh.rotation.y = elapsed * 0.18;
@@ -539,14 +666,17 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   function getDenseWorldPresentation() {
     let treeCount = 0;
     for (const patch of forestPatches.values()) for (const treeSet of patch.trees) treeCount += Math.min(treeSet.trunks.length, treeSet.crowns.length);
+    const orderedTreePackages = PREHISTORIC_TREE_TYPES
+      .map((treeType) => treeFidelityPackages.get(treeType?.[6]?.id))
+      .filter(Boolean);
     return Object.freeze({
       revision: denseVisualRevision,
       terrainPatchCount: terrainPatches.size,
       terrainPatchIds: [...terrainPatches.keys()].sort(),
       forestPatchCount: forestPatches.size,
-      treePackageCount: treeFidelityPackages?.length ?? 0,
+      treePackageCount: orderedTreePackages.length,
       treeCount,
-      treePackages: treeFidelityPackages ?? [],
+      treePackages: orderedTreePackages,
       forestPatches: [...forestPatches.values()]
     });
   }
@@ -559,7 +689,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   const playableRendererMs = performance.now() - renderStartedAt;
   globalThis.addEventListener?.("pagehide", () => workerStreaming?.dispose(), { once: true });
-  onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · rich forest streaming");
+  onProgress(1, diagnosticFoundationOnly ? "Foundation diagnostic ready" : "Playable world ready · proxy forest active · fidelity streaming");
 
   return Object.freeze({
     scene, camera, renderer, qualityProfile, draw, getDenseWorldPresentation, setDenseWorldGPUActive,
@@ -578,6 +708,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
+      treeFidelityProxyPackageCount: treeFidelity?.view?.proxyPackageCount ?? 0,
+      treeFidelityPendingUpgrades: treeFidelity?.view?.pendingPackageUpgrades ?? 0,
       treeCount: treeFidelity?.view?.treeCount ?? 0,
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },
       grassCount: cinematicGround?.view?.grass ?? 0,
@@ -593,6 +725,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       cinematicFidelity: cinematicFidelity?.view ?? null,
       cinematicGround: cinematicGround ? { ...cinematicGround.view } : null,
       courseVisible: Boolean(courseRibbon),
+      courseRibbonRange: courseRibbonRange ? { ...courseRibbonRange } : null,
       performance: { playableRendererMs, initialTerrainMs, treeFidelityLoadMs }
     })
   });

@@ -357,6 +357,7 @@ function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
   const form = packageValue?.forms?.[formId];
   const geometry = createGeometryFromPortable(THREE, form?.geometry, capacity);
   const material = patchMeshMaterial(new THREE.MeshPhysicalMaterial({
+    color: packageValue?.material?.foliageColor ?? 0x4f7138,
     vertexColors: Boolean(geometry.getAttribute("color")),
     roughness: packageValue?.material?.roughness ?? (formId === "near" ? 0.82 : 0.88),
     metalness: 0,
@@ -404,6 +405,63 @@ function createTypeLayer(THREE, scene, packageValue, typeIndex, capacity) {
     far: createBillboardBatch(THREE, scene, packageValue, "far", atlasTexture, billboardCapacity),
     horizon: createBillboardBatch(THREE, scene, packageValue, "horizon", atlasTexture, billboardCapacity),
     capacities: { near: capacity, medium: capacity, far: billboardCapacity, horizon: billboardCapacity },
+    counts: { near: 0, medium: 0, far: 0, horizon: 0 }
+  };
+}
+
+function createProxyPackage(treeType, typeIndex) {
+  const archetypeId = String(treeType?.id ?? treeType?.[6]?.id ?? `tree-${typeIndex}`);
+  const positions = [
+    -0.18, 0, -0.18, 0.18, 0, -0.18, 0.18, 5.2, -0.18, -0.18, 5.2, -0.18,
+    -0.18, 0, 0.18, 0.18, 0, 0.18, 0.18, 5.2, 0.18, -0.18, 5.2, 0.18,
+    0, 4.1, 0, -1.45, 5.3, -1.45, 1.45, 5.3, -1.45,
+    0, 4.1, 0, 1.45, 5.3, -1.45, 1.45, 5.3, 1.45,
+    0, 4.1, 0, 1.45, 5.3, 1.45, -1.45, 5.3, 1.45,
+    0, 4.1, 0, -1.45, 5.3, 1.45, -1.45, 5.3, -1.45,
+    0, 7.8, 0, -1.45, 5.3, -1.45, 1.45, 5.3, -1.45,
+    0, 7.8, 0, 1.45, 5.3, -1.45, 1.45, 5.3, 1.45,
+    0, 7.8, 0, 1.45, 5.3, 1.45, -1.45, 5.3, 1.45,
+    0, 7.8, 0, -1.45, 5.3, 1.45, -1.45, 5.3, -1.45
+  ];
+  const indices = Array.from({ length: positions.length / 3 }, (_, index) => index);
+  const geometry = { positions, indices, attributes: {} };
+  return Object.freeze({
+    schema: "prehistoric-rush.generic-tree-proxy/1",
+    archetypeId,
+    proxy: true,
+    generation: { id: `generic-tree-proxy:${archetypeId}` },
+    growth: { digest: "generic-tree-proxy-v1" },
+    source: { bounds: { min: [-1.45, 0, -1.45], max: [1.45, 7.8, 1.45], size: [2.9, 7.8, 2.9], center: [0, 3.9, 0], width: 2.9, height: 7.8, depth: 2.9 } },
+    forms: {
+      near: { kind: "mesh", minimumProjectedSize: 0, geometry },
+      medium: { kind: "mesh", minimumProjectedSize: -1, geometry },
+      far: { kind: "mesh", minimumProjectedSize: -2, geometry, frames: [] },
+      horizon: { kind: "mesh", minimumProjectedSize: -3, geometry, frames: [] }
+    },
+    change: { duration: 0, hysteresis: 0, stableSelectionFrames: 1 },
+    material: { foliageColor: treeType?.foliageColor ?? treeType?.[5] ?? "#4f7138", roughness: 0.9 }
+  });
+}
+
+function createProxyTypeLayer(THREE, scene, treeType, typeIndex, capacity) {
+  const packageValue = createProxyPackage(treeType, typeIndex);
+  const near = createMeshBatch(THREE, scene, packageValue, "near", capacity);
+  const medium = createMeshBatch(THREE, scene, packageValue, "medium", capacity);
+  const far = createMeshBatch(THREE, scene, packageValue, "far", capacity);
+  const horizon = createMeshBatch(THREE, scene, packageValue, "horizon", capacity);
+  medium.visible = false;
+  far.visible = false;
+  horizon.visible = false;
+  return {
+    typeIndex,
+    packageValue,
+    proxy: true,
+    atlasTexture: null,
+    near,
+    medium,
+    far,
+    horizon,
+    capacities: { near: capacity, medium: capacity, far: capacity, horizon: capacity },
     counts: { near: 0, medium: 0, far: 0, horizon: 0 }
   };
 }
@@ -484,7 +542,6 @@ function fallbackFrameRect(form, frame) {
 export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const { scene, camera, renderer, treeTypes = [], packages = [], capacity = 256 } = options;
   if (!scene || !camera || !renderer) throw new TypeError("Tree fidelity layer requires scene, camera, and renderer.");
-  if (packages.length !== treeTypes.length) throw new Error(`Tree fidelity package count ${packages.length} does not match archetype count ${treeTypes.length}.`);
   const patches = new Map();
   const selections = new Map();
   const matrix = new THREE.Matrix4();
@@ -492,12 +549,18 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const scale = new THREE.Vector3();
   const quaternion = new THREE.Quaternion();
   const euler = new THREE.Euler(0, 0, 0, "YXZ");
-  const layers = treeTypes.map((_, typeIndex) => createTypeLayer(THREE, scene, packages[typeIndex], typeIndex, capacity));
+  const packageByArchetype = new Map(packages.filter(Boolean).map((entry) => [entry.archetypeId, entry]));
+  const layers = treeTypes.map((treeType, typeIndex) => {
+    const archetypeId = String(treeType?.id ?? treeType?.[6]?.id ?? "");
+    const packageValue = packages[typeIndex] ?? packageByArchetype.get(archetypeId) ?? null;
+    return packageValue
+      ? createTypeLayer(THREE, scene, packageValue, typeIndex, capacity)
+      : createProxyTypeLayer(THREE, scene, treeType, typeIndex, capacity);
+  });
+  const upgradeQueue = new Map();
   const suppressedLegacyMeshes = suppressLegacyTreeMeshes(scene, treeTypes.length);
-  const generationIds = packages.map((entry) => entry.generation?.id).filter(Boolean);
-  const generationDigest = generationIds.join("|");
-  const growthDigests = packages.map((entry) => entry.growth?.digest).filter(Boolean);
-  const growthDigest = growthDigests.join("|");
+  let generationDigest = "";
+  let growthDigest = "";
   let elapsed = 0;
   let presentationRecords = [];
   const view = {
@@ -507,12 +570,14 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     suppressedLegacyMeshes,
     counts: { near: 0, medium: 0, far: 0, horizon: 0 },
     transitioning: 0,
-    packageCount: packages.length,
-    textureCount: layers.length,
-    generationIds,
-    generationDigest,
-    growthDigests,
-    growthDigest,
+    packageCount: 0,
+    proxyPackageCount: layers.length,
+    pendingPackageUpgrades: 0,
+    textureCount: 0,
+    generationIds: [],
+    generationDigest: "",
+    growthDigests: [],
+    growthDigest: "",
     presentationAuthority: "object-fidelity-natural-growth",
     presentationCount: 0,
     frameSelectionRevision: 0,
@@ -521,6 +586,48 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     exactFrameAck: null,
     frameBindingSample: []
   };
+
+  function refreshPackageView() {
+    const detailed = layers.filter((layer) => !layer.proxy);
+    view.packageCount = detailed.length;
+    view.proxyPackageCount = layers.length - detailed.length;
+    view.pendingPackageUpgrades = upgradeQueue.size;
+    view.textureCount = detailed.filter((layer) => layer.atlasTexture).length;
+    view.generationIds = detailed.map((layer) => layer.packageValue.generation?.id).filter(Boolean);
+    generationDigest = view.generationIds.join("|");
+    view.generationDigest = generationDigest;
+    view.growthDigests = detailed.map((layer) => layer.packageValue.growth?.digest).filter(Boolean);
+    growthDigest = view.growthDigests.join("|");
+    view.growthDigest = growthDigest;
+  }
+
+  refreshPackageView();
+
+  function queuePackage(packageValue) {
+    const typeIndex = treeTypes.findIndex((treeType) => String(treeType?.id ?? treeType?.[6]?.id ?? "") === String(packageValue?.archetypeId ?? ""));
+    if (typeIndex < 0) throw new RangeError(`Unknown tree fidelity archetype: ${packageValue?.archetypeId}.`);
+    if (!layers[typeIndex].proxy && layers[typeIndex].packageValue?.generation?.id === packageValue?.generation?.id) return false;
+    upgradeQueue.set(typeIndex, packageValue);
+    view.pendingPackageUpgrades = upgradeQueue.size;
+    return true;
+  }
+
+  function applyOnePackageUpgrade() {
+    const next = upgradeQueue.entries().next();
+    if (next.done) return null;
+    const [typeIndex, packageValue] = next.value;
+    upgradeQueue.delete(typeIndex);
+    const previous = layers[typeIndex];
+    const replacement = createTypeLayer(THREE, scene, packageValue, typeIndex, capacity);
+    layers[typeIndex] = replacement;
+    disposeMesh(scene, previous.near);
+    disposeMesh(scene, previous.medium);
+    disposeMesh(scene, previous.far);
+    disposeMesh(scene, previous.horizon);
+    previous.atlasTexture?.dispose?.();
+    refreshPackageView();
+    return packageValue.archetypeId;
+  }
 
   function activatePatch(patch) {
     patches.set(patch.id, patch);
@@ -573,6 +680,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   }
 
   function update(_state, deltaTime = 1 / 60) {
+    applyOnePackageUpgrade();
     elapsed += Math.max(0, Number(deltaTime) || 0);
     const perType = layers.map(() => ({ near: [], medium: [], far: [], horizon: [] }));
     const seen = new Set();
@@ -662,6 +770,11 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
 
       for (const formId of ["far", "horizon"]) {
         const mesh = layer[formId];
+        if (layer.proxy) {
+          mesh.count = 0;
+          layer.counts[formId] = 0;
+          continue;
+        }
         const form = layer.packageValue.forms[formId];
         const rendered = [];
         for (const entry of selection[formId]) {
@@ -730,11 +843,11 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
       disposeMesh(scene, layer.medium);
       disposeMesh(scene, layer.far);
       disposeMesh(scene, layer.horizon);
-      layer.atlasTexture.dispose();
+      layer.atlasTexture?.dispose?.();
     }
   }
 
-  return Object.freeze({ view, activatePatch, releasePatches, update, getPresentationRecords, dispose });
+  return Object.freeze({ view, activatePatch, releasePatches, queuePackage, update, getPresentationRecords, dispose });
 }
 
 export default createThreeTreeFidelityLayer;

@@ -49,6 +49,7 @@ const workerSource = readFileSync(new URL("../src/workers/prehistoric-patch-work
 const menuSource = readFileSync(new URL("../src/pages/menu.js", import.meta.url), "utf8");
 const gameSource = readFileSync(new URL("../src/game.js", import.meta.url), "utf8");
 const runtimeSource = readFileSync(new URL("../src/domains/prehistoric-rush/rendering-implementation.js", import.meta.url), "utf8");
+const startupAssetPolicySource = readFileSync(new URL("../src/domains/prehistoric-rush/startup-asset-policy.js", import.meta.url), "utf8");
 const adapterSource = readFileSync(new URL("../src/render/three-patch-stream-lod-adapter.js", import.meta.url), "utf8");
 const treeLayerSource = readFileSync(new URL("../src/render/three-tree-fidelity-layer.js", import.meta.url), "utf8");
 
@@ -133,15 +134,17 @@ assert.match(generatorSource, /grassDensity/);
 assert.doesNotMatch(generatorSource, /function chooseTreeType|function treeVariation/);
 assert.match(workerSource, /createPrehistoricVegetationRuntime\(NexusEngine\)/);
 assert.match(workerSource, /createPrehistoricVegetationGeneratorOptions/);
-assert.match(runtimeSource, /loadTreeFidelityPackages/);
+assert.doesNotMatch(runtimeSource, /loadTreeFidelityPackages/, "renderer no longer owns a duplicate all-species fetch path");
+assert.match(runtimeSource, /assetSession\.requestSpecies/, "renderer requests optional fidelity through the shared Core Assets session");
+assert.match(runtimeSource, /speciesIdsForPatch\(patch\)/, "visible World patches drive optional species requests");
 assert.match(runtimeSource, /createThreeTreeFidelityLayer/);
 assert.match(runtimeSource, /createWorkerPatchStreamingService/);
 
 assert.doesNotMatch(menuSource, /requestBundle\(TREE_FIDELITY_BUNDLE_ID/);
-assert.match(gameSource, /trackAssetPreparation/);
-assert.match(gameSource, /bundleId: TREE_FIDELITY_BUNDLE_ID/);
-assert.match(gameSource, /hydrateTreeFidelityRuntimeImages/);
-assert.match(gameSource, /await prepareTreeAssetsBeforeGame\(\)/);
+assert.doesNotMatch(gameSource, /trackAssetPreparation|hydrateTreeFidelityRuntimeImages|prepareTreeAssetsBeforeGame/, "page loader must not block on full Tree Fidelity preparation");
+assert.match(startupAssetPolicySource, /PREHISTORIC_RUSH_REQUIRED_GROUP_COUNT = 4/);
+assert.match(startupAssetPolicySource, /PREHISTORIC_RUSH_PLAYABLE_BUNDLE_ID = "prehistoric-rush-playable"/);
+assert.match(startupAssetPolicySource, /requiredBeforePlay: false/, "species fidelity remains optional");
 assert.match(adapterSource, /createPrehistoricFoliageAtlas/);
 assert.match(adapterSource, /createThreeLushFoliageLayer/);
 assert.match(adapterSource, /createThreeGroundCoverLayer/);
@@ -155,5 +158,7 @@ assert.match(treeLayerSource, /presentationAuthority: "object-fidelity-natural-g
 assert.match(treeLayerSource, /growthDigest/);
 assert.match(treeLayerSource, /resolveTreeImpostorBlend/);
 assert.match(treeLayerSource, /exactFrameAck/);
+assert.match(treeLayerSource, /queuePackage/);
+assert.match(treeLayerSource, /applyOnePackageUpgrade/);
 
 console.log("instance-efficient crossed tree fidelity, prebuilt-first startup, bounded transients, direct compute foliage, lit ground cover, and renderer contracts passed");

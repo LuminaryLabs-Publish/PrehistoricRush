@@ -1,6 +1,11 @@
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
 
-function createRoutePickups(course, world) {
+const PICKUP_ELEVATION_BUDGET_PER_TICK = 2;
+
+function createRoutePickups(course) {
+  // Keep semantic pickup placement deterministic, but defer Foundation height sampling.
+  // The previous eager path sampled all 62 current-route pickups before the renderer existed,
+  // which made gameplay construction the widest synchronous fan-out inside the old 20% phase.
   const samples = course?.route?.samples ?? [];
   const pickups = [];
   const stride = Math.max(24, Math.floor(samples.length / 64));
@@ -17,22 +22,23 @@ function createRoutePickups(course, world) {
     const offset = Math.min(Number(point.width ?? 3.1) * 0.48, 1.65) * side;
     const x = point.x + nx * offset;
     const z = point.z + nz * offset;
-    pickups.push(Object.freeze({
+    pickups.push({
       id: `prehistoric-shard:${String(pickups.length).padStart(3, "0")}`,
       x,
-      y: world.sampleElevation(x, z) + 1.15,
+      y: 1.15,
       z,
       radius: 1.05,
-      routeIndex: sampleIndex
-    }));
+      routeIndex: sampleIndex,
+      elevationResolved: false
+    });
   }
-  return Object.freeze(pickups);
+  return pickups;
 }
 
 export function createPrehistoricRushGameplayImplementation({ player, course, world, goalDistance = 3600 } = {}) {
   if (!player?.tick) throw new TypeError("Gameplay requires the PrehistoricRush Player implementation.");
   if (!course?.route || !world?.sampleElevation) throw new TypeError("Gameplay pickups require Course and World implementations.");
-  const pickups = createRoutePickups(course, world);
+  const pickups = createRoutePickups(course);
   const collected = new Set();
   const activePickups = pickups.slice();
   const input = { steer: 0, boost: false, jump: false, ability: false };
@@ -44,6 +50,21 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     collectedShardIds: []
   };
   let pickupRevision = 0;
+  let elevationCursor = 0;
+
+  function hydratePickupElevations(maximum = PICKUP_ELEVATION_BUDGET_PER_TICK) {
+    let resolved = 0;
+    while (elevationCursor < pickups.length && resolved < maximum) {
+      const pickup = pickups[elevationCursor];
+      elevationCursor += 1;
+      if (pickup.elevationResolved) continue;
+      pickup.y = world.sampleElevation(pickup.x, pickup.z) + 1.15;
+      pickup.elevationResolved = true;
+      resolved += 1;
+    }
+    if (resolved > 0) pickupRevision += 1;
+    return resolved;
+  }
 
   function copyPlayerState(playerState) {
     run.x = playerState.x;
@@ -117,6 +138,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
   function tick(dt) {
     if (run.status !== "game") return run;
     const nextPlayer = player.tick(dt, input);
+    hydratePickupElevations();
     input.jump = false;
     input.ability = false;
     collectNearby(nextPlayer);
@@ -135,6 +157,7 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
     readInput: () => input,
     readPickups: () => activePickups,
     getPickupRevision: () => pickupRevision,
+    hydratePickupElevations,
     getState: () => clone(run),
     getPickups: () => activePickups,
     snapshotPickups: () => activePickups.map(clone),
@@ -142,7 +165,15 @@ export function createPrehistoricRushGameplayImplementation({ player, course, wo
       run: clone(run),
       input: clone(input),
       goalDistance: Number(goalDistance),
-      pickups: { total: pickups.length, remaining: activePickups.length, collected: collected.size, revision: pickupRevision }
+      pickups: {
+        total: pickups.length,
+        remaining: activePickups.length,
+        collected: collected.size,
+        revision: pickupRevision,
+        elevationResolved: pickups.filter((pickup) => pickup.elevationResolved).length,
+        elevationPending: pickups.filter((pickup) => !pickup.elevationResolved).length,
+        elevationBudgetPerTick: PICKUP_ELEVATION_BUDGET_PER_TICK
+      }
     })
   });
 }

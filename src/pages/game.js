@@ -2,12 +2,14 @@ import { RUNTIME_URLS } from "../shared/runtime-versions.js";
 
 const requiredModules = [
   ["NexusEngine", RUNTIME_URLS.nexus],
+  ["NexusEngine Runtime", RUNTIME_URLS.nexusRuntime],
   ["NexusEngine Actor", RUNTIME_URLS.nexusActor],
   ["NexusEngine Spatial", RUNTIME_URLS.nexusSpatial],
   ["NexusEngine Interaction", RUNTIME_URLS.nexusInteraction],
   ["NexusEngine Simulation", RUNTIME_URLS.nexusSimulationRuntime],
   ["NexusEngine Motion", RUNTIME_URLS.nexusMotion],
   ["NexusEngine Physics", RUNTIME_URLS.nexusPhysics],
+  ["NexusEngine Assets", RUNTIME_URLS.nexusAsset],
   ["NexusEngine World", RUNTIME_URLS.nexusWorld],
   ["NexusEngine Presentation", RUNTIME_URLS.nexusPresentation],
   ["NexusEngine Render", RUNTIME_URLS.nexusRender],

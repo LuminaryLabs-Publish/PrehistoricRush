@@ -27,7 +27,7 @@ try {
 
   try {
     await page.waitForFunction(() => {
-      const state = globalThis.PrehistoricRushHost?.getState?.();
+      const state = globalThis.PrehistoricRushEngine?.n?.prehistoricRush?.getSnapshot?.();
       const gpu = state?.gpuNative;
       return Boolean(
         gpu?.active
@@ -47,11 +47,11 @@ try {
     }, undefined, { timeout: 120_000, polling: 250 });
   } catch (error) {
     const diagnostic = await page.evaluate(() => {
-      const host = globalThis.PrehistoricRushHost;
-      if (!host?.getState) return { hostReady: false };
-      const state = host.getState();
+      const product = globalThis.PrehistoricRushEngine?.n?.prehistoricRush;
+      if (!product?.getSnapshot) return { engineReady: false };
+      const state = product.getSnapshot();
       return {
-        hostReady: true,
+        engineReady: true,
         gpuNative: state.gpuNative ?? null,
         compute: state.compute ?? null,
         rendering: state.rendering ?? null,
@@ -64,13 +64,15 @@ try {
   }
 
   const result = await page.evaluate(() => {
-    const host = globalThis.PrehistoricRushHost;
-    const state = host.getState();
+    const product = globalThis.PrehistoricRushEngine.n.prehistoricRush;
+    const state = product.getSnapshot();
     const gpu = state.gpuNative;
-    const adapter = host.gpuHost?.providerAccess?.().getAdapter?.() ?? null;
+    const gpuPresentation = product.getComponent("gpuNative");
+    const adapter = gpuPresentation?.gpuHost?.providerAccess?.().getAdapter?.() ?? null;
+    const rendering = product.getComponent("rendering");
     let hiddenDenseFallbacks = 0;
     let visibleDenseFallbacks = 0;
-    host.rendering.scene.traverse((object) => {
+    rendering.scene.traverse((object) => {
       const name = String(object?.name ?? "");
       if (name.startsWith("prehistoric-foundation-terrain") || name.startsWith("prehistoric-tree-fidelity-") || name === "prehistoric-foundation-grass") {
         if (object.visible === false) hiddenDenseFallbacks += 1;
@@ -79,7 +81,7 @@ try {
     });
     return {
       gpu,
-      compute: state.compute,
+      compute: gpu.compute,
       versions: state.versions,
       adapterInfo: adapter?.info ? {
         architecture: adapter.info.architecture ?? "",

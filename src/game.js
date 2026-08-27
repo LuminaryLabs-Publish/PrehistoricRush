@@ -1,11 +1,3 @@
-import { RUNTIME_URLS } from "./shared/runtime-versions.js";
-import {
-  TREE_FIDELITY_BUNDLE_ID,
-  TREE_FIDELITY_PROVIDER_ID,
-  createPrehistoricTreeFidelityAssetRuntime
-} from "./shared/prehistoric-tree-fidelity-runtime.js";
-import { hydrateTreeFidelityRuntimeImages } from "./shared/tree-fidelity-runtime-images.js";
-
 const appRoot = document.querySelector("#app") ?? document.body;
 
 function removeLegacyHud(node) {
@@ -22,82 +14,6 @@ const hudObserver = new MutationObserver((records) => {
 });
 hudObserver.observe(appRoot, { childList: true, subtree: true });
 
-async function prepareTreeAssetsBeforeGame() {
-  appRoot.innerHTML = `
-    <main style="position:fixed;inset:0;display:grid;place-items:center;background:#08130d;color:#fff3c8;font:700 16px system-ui,sans-serif">
-      <section style="width:min(420px,calc(100vw - 40px));text-align:center">
-        <strong style="display:block;font-size:24px;margin-bottom:12px">Preparing world assets</strong>
-        <div style="height:8px;border-radius:999px;background:#ffffff1f;overflow:hidden"><div id="tree-load-fill" style="height:100%;width:0;background:#69a94d"></div></div>
-        <p id="tree-load-label" style="color:#c1cfbc">Checking vegetation fidelity cache…</p>
-      </section>
-    </main>
-  `;
-  const fill = document.querySelector("#tree-load-fill");
-  const label = document.querySelector("#tree-load-label");
-  const [NexusEngine, THREE] = await Promise.all([
-    import(RUNTIME_URLS.nexus),
-    import(RUNTIME_URLS.three)
-  ]);
-  const runtime = await createPrehistoricTreeFidelityAssetRuntime(NexusEngine, THREE, { startup: true });
-  runtime.startup.launch({
-    launchId: `prehistoric-rush:game:${Date.now()}`,
-    projectId: "prehistoric-rush",
-    preparations: []
-  });
-  const receipt = await NexusEngine.trackAssetPreparation({
-    startup: runtime.startup,
-    assets: runtime.assets,
-    preparationId: "tree-fidelity",
-    bundleId: TREE_FIDELITY_BUNDLE_ID,
-    label: "Tree LOD and impostor assets",
-    required: true,
-    weight: 4,
-    requestOptions: {
-      priority: "required",
-      onProgress(progress, detail) {
-        if (fill) fill.style.width = `${Math.round(progress * 8000) / 100}%`;
-        if (label) label.textContent = detail ?? `Preparing vegetation assets · ${Math.round(progress * 100)}%`;
-      }
-    }
-  });
-
-  const imagePreparationId = "tree-fidelity-runtime-images";
-  runtime.startup.addPreparation({
-    id: imagePreparationId,
-    label: "Tree impostor images",
-    required: true,
-    weight: 1
-  });
-  runtime.startup.working(imagePreparationId, 0, "Decoding tree impostor images");
-  try {
-    const hydration = await hydrateTreeFidelityRuntimeImages(runtime, {
-      onProgress(progress, detail) {
-        runtime.startup.working(imagePreparationId, progress, detail);
-        if (fill) fill.style.width = `${80 + Math.round(progress * 2000) / 100}%`;
-        if (label) label.textContent = detail ?? `Decoding tree images · ${Math.round(progress * 100)}%`;
-      }
-    });
-    runtime.startup.ready(imagePreparationId, hydration, "Tree impostor images ready");
-  } catch (error) {
-    runtime.startup.reportPreparation(imagePreparationId, {
-      status: "failed",
-      progress: 0,
-      failure: {
-        code: "tree-fidelity.image-decode.failed",
-        message: error.message,
-        source: imagePreparationId,
-        retryable: true
-      }
-    });
-    throw error;
-  }
-
-  runtime.assets.unregisterProvider(TREE_FIDELITY_PROVIDER_ID);
-  globalThis.PrehistoricRushTreeAssetRuntime = Object.freeze({ ...runtime, receipt });
-  return receipt;
-}
-
-await prepareTreeAssetsBeforeGame();
 await import("./game-runtime-shared-gpu-v3.js");
 
 function createPauseMenuHost(root, pauseMenu) {
@@ -198,8 +114,8 @@ function createPauseMenuHost(root, pauseMenu) {
 }
 
 function attachPauseMenuHost() {
-  const runtime = globalThis.PrehistoricRushHost;
-  const pauseMenu = runtime?.engine?.n?.prehistoricRushPauseMenu;
+  const engine = globalThis.PrehistoricRushEngine;
+  const pauseMenu = engine?.n?.prehistoricRushPauseMenu;
   if (!pauseMenu) {
     requestAnimationFrame(attachPauseMenuHost);
     return;
@@ -215,7 +131,6 @@ function attachPauseMenuHost() {
     host.sync();
   });
   host.sync();
-  globalThis.PrehistoricRushPauseMenuHost = Object.freeze({ pauseMenu, host });
 }
 
 attachPauseMenuHost();

@@ -12,15 +12,28 @@ const patchWorker = await readFile(new URL("../src/workers/prehistoric-patch-wor
 assert.match(gamePage, /src="\.\/src\/pages\/game\.js/, "game.html uses the canonical page loader");
 assert.match(pageLoader, /game-runtime-shared-gpu-v3\.js/, "the page loader enters the shared-GPU semantic runtime");
 assert.match(sharedGpuRuntime, /game-runtime-semantic-v2\.js/, "the shared-GPU layer composes the semantic runtime");
+assert.match(sharedGpuRuntime, /const engine = globalThis\.PrehistoricRushEngine/, "the optional GPU layer resolves the actual Nexus Engine");
+assert.match(sharedGpuRuntime, /product\.bindOptionalPresentation\("gpuNative", gpuPresentation\)/, "the GPU upgrade binds Presentation state without replacing the engine");
+assert.doesNotMatch(sharedGpuRuntime, /globalThis\.PrehistoricRushEngine\s*=/, "the optional GPU layer never replaces the Nexus Engine");
+assert.match(semanticRuntime, /globalThis\.PrehistoricRushEngine = engine/, "the active semantic runtime publishes the actual Nexus Engine");
+assert.doesNotMatch(semanticRuntime, /PrehistoricRushHost/, "the active semantic runtime has no host facade");
+assert.match(semanticRuntime, /createPrehistoricRushRenderSurface/, "the renderer surface is created before semantic world construction");
+assert.match(semanticRuntime, /installPrehistoricRushStartupAssets/, "startup installs one Core Assets session on the semantic engine");
 assert.match(semanticRuntime, /createPrehistoricRushRenderingImplementation/, "the semantic runtime owns renderer composition");
 assert.match(renderer, /createWorkerPatchStreamingService/, "the semantic renderer creates the worker streaming service");
 assert.match(renderer, /workerStreaming\?\.update\(state\)/, "the frame loop pumps bounded streaming");
 assert.match(renderer, /onActivate\(patch\)/, "completed worker patches enter presentation through one activation boundary");
 assert.match(renderer, /onRelease\(id\)/, "released patches leave presentation through one release boundary");
+assert.match(renderer, /ensureTerrain\(\{ x: 0, z: 0 \}, 1\)/, "initial Foundation terrain commits at most one patch per startup frame");
+assert.match(renderer, /surface\.renderLoadingFrame\?\.\(\)[\s\S]*await yieldRenderingStartupFrame\(\)/, "initial Foundation terrain renders progress and yields between bounded commits");
+assert.doesNotMatch(renderer, /ensureTerrain\(\{ x: 0, z: 0 \}, 9\)/, "no synchronous nine-patch startup loop remains");
+assert.match(renderer, /fullFidelityAttemptComplete && pendingPackageUpgrades === 0/, "rich-presentation readiness settles after the optional attempt and all successful in-place upgrades");
+assert.match(renderer, /Forest fidelity settled with/, "degraded optional fidelity explicitly retains proxy presentation instead of hanging readiness");
 assert.doesNotMatch(renderer, /function createForestPatch|function ensureForest/, "main-thread forest generation is removed");
 assert.match(workerService, /staleRejected/, "the worker service rejects stale results");
 assert.match(workerService, /activationBudget/, "the worker service bounds main-thread activation");
 assert.match(workerService, /deferred-main-thread-fallback/, "the worker service has a bounded fallback");
 assert.match(patchWorker, /collectPatchTransferables\(patch\)/, "worker results transfer terrain buffers without copying");
+assert.doesNotMatch(pageLoader, /prepareTreeAssetsBeforeGame|hydrateTreeFidelityRuntimeImages/, "page loader does not block on complete vegetation fidelity");
 
 console.log("PrehistoricRush semantic worker streaming integration passed.");
