@@ -18,11 +18,11 @@ import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selecti
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;left:18px;top:18px;z-index:4;padding:13px 15px;border:1px solid #f4dfaa32;border-radius:16px;background:#07100bd9;box-shadow:0 18px 45px #0008;min-width:min(360px,calc(100vw - 36px));pointer-events:none;backdrop-filter:blur(12px)"><div style="display:flex;align-items:center;justify-content:space-between;gap:16px"><strong style="color:#ffd37a;letter-spacing:.08em;text-transform:uppercase">Prehistoric Rush</strong><span id="prehistoric-racer-badge" style="font-size:10px;font-weight:900;text-transform:uppercase"></span></div><div id="prehistoric-status" data-race-status="true" style="margin-top:7px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-ability" style="margin-top:9px;padding-top:8px;border-top:1px solid #ffffff18;font-size:10px;font-weight:850;letter-spacing:.04em;text-transform:uppercase"></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump · E ability</div></section>`;
+app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;inset:0;z-index:4;pointer-events:none"><span id="prehistoric-racer-badge" style="position:absolute;left:24px;top:20px;color:#f3e7ba;font-size:16px;font-weight:900;letter-spacing:.08em;text-transform:uppercase"></span><div id="prehistoric-status" data-race-status="true" style="position:absolute;left:24px;top:48px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-stamina" aria-label="Stamina" style="position:absolute;left:50%;bottom:24px;display:flex;gap:5px;transform:translateX(-50%);width:132px;height:7px"><span data-stamina-segment="0" style="flex:1;border-radius:999px;background:#ffffff35"></span><span data-stamina-segment="1" style="flex:1;border-radius:999px;background:#ffffff35"></span><span data-stamina-segment="2" style="flex:1;border-radius:999px;background:#ffffff35"></span></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump · E ability</div></section>`;
 const host = document.querySelector("#prehistoric-render-host");
 const statusNode = document.querySelector("#prehistoric-status");
 const racerBadge = document.querySelector("#prehistoric-racer-badge");
-const abilityNode = document.querySelector("#prehistoric-ability");
+const staminaSegments = [...document.querySelectorAll("[data-stamina-segment]")];
 const diagnosticFoundationOnly = new URLSearchParams(globalThis.location?.search ?? "").get("diagnostic") === "foundation";
 const setLoading = (progress, detail) => {
   const percent = Math.max(0, Math.min(100, Math.round(Number(progress || 0) * 100)));
@@ -326,13 +326,19 @@ let lastDatasetStatus = "";
 let lastDatasetDistanceBucket = -1;
 const HUD_INTERVAL_MS = 200;
 
-function updateAbilityHud(now, state) {
+function updateStaminaHud(now, state) {
   if (now - lastHudAt < HUD_INTERVAL_MS) return;
   lastHudAt = now;
-  const stamina = Math.max(0, Math.round(Number(state.stamina ?? 0)));
-  const abilityState = state.abilityStatus === "cooldown" ? `${Number(state.abilityCooldown ?? 0).toFixed(1)}s cooldown` : state.abilityStatus;
-  abilityNode.textContent = `E · ${rosterDetails.activeName} · ${abilityState} · stamina ${stamina} · passive ${rosterDetails.passiveName}`;
-  abilityNode.style.color = state.abilityStatus === "ready" ? rosterDetails.accent : "#c8c3a9";
+  const capacity = Math.max(1, Number(racerProfile.stamina?.capacity ?? 100));
+  const stamina = Math.max(0, Math.min(capacity, Number(state.stamina ?? 0)));
+  const ratio = stamina / capacity;
+  const phaseColor = ratio <= 0.01 ? "#e56b5d" : ratio < 0.99 ? "#e6b45c" : "#8fd694";
+  staminaSegments.forEach((segment, index) => {
+    const threshold = index / staminaSegments.length;
+    const filled = ratio > threshold;
+    segment.style.background = filled ? phaseColor : "#ffffff35";
+    segment.style.opacity = filled ? "1" : "0.5";
+  });
 }
 
 function updateAutomationDataset(state) {
@@ -365,7 +371,7 @@ function loop(now) {
     worldFocusCell = nextWorldFocusCell;
   }
   updateAutomationDataset(state);
-  updateAbilityHud(now, state);
+  updateStaminaHud(now, state);
   rendering.draw(state, cameraFrame(state, dt), dt);
   try { engine.n.prehistoricRush.dispatchFrame({ now, dt, state, camera: rendering.camera }); }
   catch (error) { console.warn("PrehistoricRush frame hook failed:", error); }
@@ -375,7 +381,7 @@ function loop(now) {
 const initial = gameplay.readState();
 rendering.draw(initial, cameraFrame(initial, 1 / 60), 1 / 60);
 updateAutomationDataset(initial);
-updateAbilityHud(performance.now(), initial);
+updateStaminaHud(performance.now(), initial);
 startup.presentFirstFrame({
   frameId: "prehistoric-rush:first-foundation-frame",
   presentationId: "prehistoric-rush:webgl2",
