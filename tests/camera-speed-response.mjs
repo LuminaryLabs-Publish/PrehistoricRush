@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { resolveCameraTerrainClearance, resolveCloseChasePosition, resolveRacerCameraResponse, smoothCameraValue } from "../src/domains/prehistoric-rush/camera-response.js";
 import { listRacerProfiles } from "../src/racers/racer-catalog.js";
+
+const runtimeSource = await readFile(new URL("../src/game-runtime-semantic-v2.js", import.meta.url), "utf8");
+const renderingSource = await readFile(new URL("../src/domains/prehistoric-rush/rendering-implementation.js", import.meta.url), "utf8");
+assert.match(runtimeSource, /const \{ near: _subjectNear, far: _subjectFar, \.\.\.worldFrame \} = frame;/, "gameplay camera frames must discard subject-fit clipping planes");
+assert.doesNotMatch(renderingSource, /camera\.near\s*=\s*Number\(framing\.near\)/, "gameplay rendering must preserve its world near plane");
+assert.doesNotMatch(renderingSource, /camera\.far\s*=\s*Number\(framing\.far\)/, "gameplay rendering must preserve its 1400m world far plane");
 
 for (const profile of listRacerProfiles()) {
   const { camera, movement, presentation } = profile;

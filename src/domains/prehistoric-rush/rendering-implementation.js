@@ -835,20 +835,10 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     ensureTerrain(state, 1);
     if (framing) {
       camera.position.set(...framing.position);
-      let projectionChanged = false;
-      if (Number.isFinite(Number(framing.near)) && Math.abs(camera.near - Number(framing.near)) > 0.0001) {
-        camera.near = Number(framing.near);
-        projectionChanged = true;
-      }
-      if (Number.isFinite(Number(framing.far)) && Math.abs(camera.far - Number(framing.far)) > 0.001) {
-        camera.far = Number(framing.far);
-        projectionChanged = true;
-      }
       if (Number.isFinite(Number(framing.fov)) && Math.abs(camera.fov - Number(framing.fov)) > 0.001) {
         camera.fov = Number(framing.fov);
-        projectionChanged = true;
+        camera.updateProjectionMatrix();
       }
-      if (projectionChanged) camera.updateProjectionMatrix();
       cameraFeedback.fov = camera.fov;
       cameraFeedback.speed01 = Math.min(1, Math.max(0, Number(framing.speed01) || 0));
       cameraFeedback.sprint01 = Math.min(1, Math.max(0, Number(framing.sprint01) || 0));

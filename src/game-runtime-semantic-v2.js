@@ -377,7 +377,8 @@ function cameraFrame(state, dt) {
     target[0] += Math.cos(state.yaw) * response.turnLead;
     target[2] -= Math.sin(state.yaw) * response.turnLead;
   }
-  return { ...frame, position, target, near: 0.1, fov: cameraMotion.fov, speed01: response.speed01, sprint01: response.sprint01, jump01: response.jump01 };
+  const { near: _subjectNear, far: _subjectFar, ...worldFrame } = frame;
+  return { ...worldFrame, position, target, fov: cameraMotion.fov, speed01: response.speed01, sprint01: response.sprint01, jump01: response.jump01 };
 }
 
 measureStartup("foundationFocusCommit", () => world.focus({ x: 0, y: 0, z: 0 }));
