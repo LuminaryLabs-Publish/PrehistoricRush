@@ -62,32 +62,6 @@ function createSkyDome(THREE, scene, profile) {
   return { mesh, material, uniforms };
 }
 
-function createLightShafts(THREE, scene, count) {
-  if (count < 1) return [];
-  const geometry = new THREE.CylinderGeometry(0.45, 6.8, 54, 12, 1, true);
-  geometry.translate(0, -10, 0);
-  return Array.from({ length: count }, (_, index) => {
-    const material = new THREE.MeshBasicMaterial({
-      name: `prehistoric-light-shaft:${index}`,
-      color: index % 2 ? 0xffe1a6 : 0xe9f1ba,
-      transparent: true,
-      opacity: 0.027 + (index % 3) * 0.008,
-      depthWrite: false,
-      depthTest: true,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      fog: true,
-      toneMapped: false
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.name = `prehistoric-canopy-light-shaft-${index}`;
-    mesh.rotation.z = -0.16 - index * 0.012;
-    mesh.renderOrder = 40;
-    scene.add(mesh);
-    return mesh;
-  });
-}
-
 function createPostProcess(THREE, renderer, camera, profile) {
   if (!profile.postProcessing) return null;
   const size = renderer.getDrawingBufferSize(new THREE.Vector2());
@@ -227,7 +201,6 @@ export function createThreeCinematicFidelityLayer(THREE, options = {}) {
   const { scene, camera, renderer, profile, sun } = options;
   if (!scene || !camera || !renderer || !profile) throw new TypeError("Cinematic fidelity layer requires scene, camera, renderer, and quality profile.");
   const sky = createSkyDome(THREE, scene, profile);
-  const shafts = createLightShafts(THREE, scene, profile.lightShafts);
   const post = createPostProcess(THREE, renderer, camera, profile);
   let elapsed = 0;
   let visible = true;
@@ -237,15 +210,6 @@ export function createThreeCinematicFidelityLayer(THREE, options = {}) {
     if (!visible) return;
     sky.uniforms.time.value = elapsed;
     sky.mesh.position.copy(camera.position);
-    shafts.forEach((shaft, index) => {
-      const phase = index * 2.399 + Math.floor(Number(state.z ?? 0) / 48) * 0.31;
-      shaft.position.set(
-        Number(state.x ?? 0) + Math.sin(phase) * (12 + index * 3.1),
-        Number(state.y ?? 0) + 28,
-        Number(state.z ?? 0) + 22 + Math.cos(phase * 1.17) * 36
-      );
-      shaft.material.opacity = (0.025 + (index % 3) * 0.008) * (0.82 + Math.sin(elapsed * 0.17 + phase) * 0.18);
-    });
     if (sun) sky.uniforms.sunDirection.value.copy(sun.position).normalize();
   }
 
@@ -255,7 +219,6 @@ export function createThreeCinematicFidelityLayer(THREE, options = {}) {
       contactAO: Boolean(profile.contactAO && post),
       bloom: Boolean(profile.bloom && post),
       cloudLayers: profile.cloudLayers,
-      lightShafts: shafts.length,
       colorGrade: "filmic-jungle",
       sharpening: Boolean(post)
     }),
@@ -263,7 +226,6 @@ export function createThreeCinematicFidelityLayer(THREE, options = {}) {
     setVisible(nextVisible) {
       visible = Boolean(nextVisible);
       sky.mesh.visible = visible;
-      for (const shaft of shafts) shaft.visible = visible;
       return visible;
     },
     render(worldScene = scene) {
@@ -275,11 +237,6 @@ export function createThreeCinematicFidelityLayer(THREE, options = {}) {
       scene.remove(sky.mesh);
       sky.mesh.geometry.dispose();
       sky.material.dispose();
-      for (const shaft of shafts) {
-        scene.remove(shaft);
-        shaft.material.dispose();
-      }
-      shafts[0]?.geometry?.dispose?.();
       post?.dispose();
     }
   });

@@ -190,4 +190,36 @@ async function flush() {
   service.dispose();
 }
 
+{
+  const service = createWorkerPatchStreamingService({
+    workerUrl: "unused",
+    WorkerClass: undefined,
+    fallbackGenerator(request) { return { id: request.patchId, trees: [], grass: [] }; },
+    policy: {
+      patchSize: 10,
+      activeRadius: 1,
+      retainRadius: 2,
+      prefetchDistance: 0,
+      generationBudget: 4,
+      activationBudget: 1,
+      workerCount: 1,
+      cacheLimit: 40
+    },
+    logger: { warn() {} }
+  });
+  for (let frame = 0; frame < 16; frame += 1) {
+    service.update({ x: 0, z: 0, speed: 0 });
+    await flush();
+  }
+  assert.equal(service.snapshot().activePatchIds.length, 9, "initial rendered forest must settle at the 3x3 desired target");
+  for (let frame = 0; frame < 12; frame += 1) {
+    service.update({ x: 10, z: 0, speed: 0 });
+    await flush();
+    assert.ok(service.snapshot().activePatchIds.length <= 9, "retention caching must never increase the rendered forest above its desired target");
+  }
+  assert.equal(service.snapshot().activePatchIds.length, 9);
+  assert.ok(service.snapshot().cachedPatchIds.length > service.snapshot().activePatchIds.length, "retained patch data may remain cached after its visual patch is released");
+  service.dispose();
+}
+
 console.log("PrehistoricRush worker patch streaming service passed.");

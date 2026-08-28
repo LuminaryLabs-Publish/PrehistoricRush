@@ -184,8 +184,8 @@ export function defineRacerProfile(input = {}) {
       speedTargetLift: finite(camera.speedTargetLift ?? 0.22, "camera.speedTargetLift", 0, 10),
       jumpTargetLift: finite(camera.jumpTargetLift ?? 0.36, "camera.jumpTargetLift", 0, 10),
       turnLead: finite(camera.turnLead ?? 0.42, "camera.turnLead", 0, 10),
-      closePaddingScale: finite(camera.closePaddingScale ?? 0.82, "camera.closePaddingScale", 0.6, 1),
-      speedPaddingScale: finite(camera.speedPaddingScale ?? 0.1, "camera.speedPaddingScale", 0, 0.4),
+      closePaddingScale: finite(camera.closePaddingScale ?? 0.7, "camera.closePaddingScale", 0.6, 1),
+      speedPaddingScale: finite(camera.speedPaddingScale ?? 0.04, "camera.speedPaddingScale", 0, 0.4),
       fovSmoothing: finite(camera.fovSmoothing ?? 7, "camera.fovSmoothing", 0.01, 30)
     }
   });

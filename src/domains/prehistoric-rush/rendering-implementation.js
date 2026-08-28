@@ -13,6 +13,7 @@ import {
 import { createPrehistoricWorldPatchGenerator } from "../../world/prehistoric-world-patch-generator.js";
 import {
   createAdaptivePixelRatioController,
+  readWebGLRendererIdentity,
   resolvePrehistoricVisualQuality
 } from "../../shared/prehistoric-visual-quality.js";
 import {
@@ -29,6 +30,83 @@ import { createWorkerPatchStreamingService } from "./worker-patch-streaming-serv
 import { speciesIdsForPatch } from "./startup-asset-policy.js";
 
 const TREE_CAPACITY_PER_TYPE = 320;
+
+export function sampleFoundationTerrainNormal(world, x, z, step = FOUNDATION_TERRAIN_PATCH_SIZE / FOUNDATION_TERRAIN_PATCH_SEGMENTS) {
+  if (typeof world?.sampleElevation !== "function") throw new TypeError("Terrain normal sampling requires World sampleElevation().");
+  const spacing = Math.max(0.001, Number(step) || 1);
+  const nx = world.sampleElevation(x - spacing, z) - world.sampleElevation(x + spacing, z);
+  const ny = spacing * 2;
+  const nz = world.sampleElevation(x, z - spacing) - world.sampleElevation(x, z + spacing);
+  const length = Math.hypot(nx, ny, nz) || 1;
+  return Object.freeze([nx / length, ny / length, nz / length]);
+}
+
+function shiftEntryElevation(entry, delta) {
+  if (Array.isArray(entry?.matrix) && entry.matrix.length >= 16) entry.matrix[13] += delta;
+  if (entry?.bounds?.min && entry?.bounds?.max) {
+    entry.bounds.min[1] += delta;
+    entry.bounds.max[1] += delta;
+  }
+}
+
+/**
+ * Worker patches carry deterministic local relief, but Foundation owns the
+ * authoritative world elevation. Rebase presentation records once at the
+ * activation boundary so trees and ground cover share the playable surface.
+ */
+export function projectVegetationPatchToFoundation(world, patch) {
+  if (typeof world?.sampleElevation !== "function") throw new TypeError("Vegetation projection requires World sampleElevation().");
+  if (!patch || patch.foundationElevationProjection === true) return patch;
+
+  for (const family of patch.trees ?? []) {
+    const byTree = new Map();
+    for (const entry of [...(family?.trunks ?? []), ...(family?.crowns ?? [])]) {
+      const treeId = String(entry?.metadata?.treeId ?? entry?.id ?? "");
+      if (!byTree.has(treeId)) byTree.set(treeId, []);
+      byTree.get(treeId).push(entry);
+    }
+    for (const entries of byTree.values()) {
+      const first = entries[0];
+      const variation = first?.metadata?.variation;
+      const ground = variation?.groundPosition;
+      if (!Array.isArray(ground) || ground.length < 3) continue;
+      const sink = Number(variation?.groundSink ?? 0);
+      const targetGroundY = world.sampleElevation(Number(ground[0]), Number(ground[2])) - sink;
+      const delta = targetGroundY - Number(ground[1]);
+      const shiftedVariations = new Set();
+      for (const entry of entries) {
+        shiftEntryElevation(entry, delta);
+        const entryVariation = entry?.metadata?.variation;
+        if (entryVariation && !shiftedVariations.has(entryVariation)) {
+          entryVariation.groundPosition[1] = targetGroundY;
+          shiftedVariations.add(entryVariation);
+        }
+      }
+    }
+  }
+
+  for (const entry of patch.groundCover ?? []) {
+    if (!Array.isArray(entry?.matrix) || entry.matrix.length < 16) continue;
+    const x = Number(entry.matrix[12]);
+    const z = Number(entry.matrix[14]);
+    const sink = Number(entry?.metadata?.visualGroundSink ?? 0);
+    shiftEntryElevation(entry, world.sampleElevation(x, z) - sink - Number(entry.matrix[13]));
+  }
+  for (const entry of patch.grass ?? []) {
+    if (!Array.isArray(entry?.matrix) || entry.matrix.length < 16) continue;
+    const x = Number(entry.matrix[12]);
+    const z = Number(entry.matrix[14]);
+    entry.matrix[13] = world.sampleElevation(x, z);
+  }
+  for (const collider of patch.colliders ?? []) {
+    collider.y = world.sampleElevation(Number(collider.x), Number(collider.z));
+  }
+  for (const pickup of patch.pickups ?? []) {
+    pickup.y = world.sampleElevation(Number(pickup.x), Number(pickup.z)) + 1.15;
+  }
+  patch.foundationElevationProjection = true;
+  return patch;
+}
 
 function createTerrainMaterial(THREE) {
   const material = new THREE.MeshPhysicalMaterial({
@@ -137,6 +215,18 @@ function createTerrainPatch(THREE, world, patchX, patchZ, material) {
   }
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   geometry.computeVertexNormals();
+  const normals = geometry.attributes.normal;
+  const side = FOUNDATION_TERRAIN_PATCH_SEGMENTS + 1;
+  const step = size / FOUNDATION_TERRAIN_PATCH_SEGMENTS;
+  for (let zIndex = 0; zIndex < side; zIndex += 1) {
+    for (let xIndex = 0; xIndex < side; xIndex += 1) {
+      if (xIndex !== 0 && zIndex !== 0 && xIndex !== side - 1 && zIndex !== side - 1) continue;
+      const index = zIndex * side + xIndex;
+      const normal = sampleFoundationTerrainNormal(world, position.getX(index), position.getZ(index), step);
+      normals.setXYZ(index, normal[0], normal[1], normal[2]);
+    }
+  }
+  normals.needsUpdate = true;
   geometry.computeBoundingSphere();
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = `prehistoric-foundation-terrain:${patchX}:${patchZ}`;
@@ -147,7 +237,7 @@ function createTerrainPatch(THREE, world, patchX, patchZ, material) {
 function createCourseRibbon(THREE, world, route, range = {}) {
   const startIndex = Math.max(0, Math.floor(Number(range.startIndex) || 0));
   const endIndex = Math.min(route.samples.length, Math.max(startIndex + 2, Math.floor(Number(range.endIndex) || route.samples.length)));
-  const samples = route.samples.slice(startIndex, endIndex).filter((_, index) => index % 4 === 0);
+  const samples = route.samples.slice(startIndex, endIndex).filter((_, index) => index % 2 === 0);
   const positions = [];
   const uvs = [];
   const indices = [];
@@ -214,12 +304,13 @@ function createShardLayer(THREE, scene, capacity = 160) {
 
 export function createPrehistoricRushRenderSurface(THREE, { host } = {}) {
   if (!host) throw new TypeError("Prehistoric Rush render surface requires a host element.");
-  const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x08130d);
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 1400);
   camera.position.set(0, 7, -14);
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance", alpha: true });
+  const rendererIdentity = readWebGLRendererIdentity(renderer);
+  const qualityProfile = resolvePrehistoricVisualQuality(globalThis.location, globalThis, { rendererIdentity });
   renderer.setSize(innerWidth, innerHeight);
   renderer.setClearAlpha(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -386,6 +477,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let lastShardCount = 0;
   let shardMesh = null;
   const cameraFeedback = { fov: camera.fov, speed01: 0, sprint01: 0, jump01: 0 };
+  let groundAlignmentError = 0;
   const forestPatches = new Map();
   let workerStreaming = null;
   let resolveInitialForestReady = null;
@@ -597,7 +689,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       renderer,
       treeTypes: PREHISTORIC_TREE_TYPES,
       packages: [],
-      capacity: TREE_CAPACITY_PER_TYPE
+      capacity: TREE_CAPACITY_PER_TYPE,
+      projectedThresholdScale: qualityProfile.treeLodThresholdScale
     });
     if (!Nexus || !engine) throw new Error("Worker forest fallback requires the active Nexus Engine and Object Vegetation domain.");
     const vegetationRuntime = createPrehistoricVegetationRuntime(Nexus, { engine });
@@ -607,7 +700,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
         chunk: FOUNDATION_WORKER_STREAMING_POLICY.patchSize,
         segments: FOUNDATION_WORKER_STREAMING_POLICY.terrainSegments,
         trees: Math.max(8, Math.round(22 * Number(qualityProfile.treeDensity ?? 1))),
-        grass: Math.max(30, Math.round(104 * Number(qualityProfile.groundDensity ?? 1))),
+        grass: Math.max(96, Math.round(104 * Number(qualityProfile.groundDensity ?? 1))),
         groundCover: Math.max(12, Math.round(Number(world.recipe.runtime?.groundCover ?? 36) * Number(qualityProfile.groundDensity ?? 1))),
         shardsPerPatch: 2
       },
@@ -631,6 +724,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
         ))
       },
       onActivate(patch) {
+        projectVegetationPatchToFoundation(world, patch);
         forestPatches.set(patch.id, patch);
         treeFidelity.activatePatch(patch);
         cinematicGround?.activatePatch(patch);
@@ -733,15 +827,28 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
 
   function draw(state, framing, dt = 1 / 60) {
     elapsed += Math.max(0, Number(dt) || 0);
+    const stateGroundY = Number(state.y);
+    const sampledGroundY = Number(world.sampleElevation(state.x, state.z));
+    groundAlignmentError = Number.isFinite(stateGroundY) && Number.isFinite(sampledGroundY)
+      ? Math.abs(stateGroundY - sampledGroundY)
+      : null;
     ensureTerrain(state, 1);
     if (framing) {
       camera.position.set(...framing.position);
-      if (Number.isFinite(Number(framing.near))) camera.near = Number(framing.near);
-      if (Number.isFinite(Number(framing.far))) camera.far = Number(framing.far);
+      let projectionChanged = false;
+      if (Number.isFinite(Number(framing.near)) && Math.abs(camera.near - Number(framing.near)) > 0.0001) {
+        camera.near = Number(framing.near);
+        projectionChanged = true;
+      }
+      if (Number.isFinite(Number(framing.far)) && Math.abs(camera.far - Number(framing.far)) > 0.001) {
+        camera.far = Number(framing.far);
+        projectionChanged = true;
+      }
       if (Number.isFinite(Number(framing.fov)) && Math.abs(camera.fov - Number(framing.fov)) > 0.001) {
         camera.fov = Number(framing.fov);
-        camera.updateProjectionMatrix();
+        projectionChanged = true;
       }
+      if (projectionChanged) camera.updateProjectionMatrix();
       cameraFeedback.fov = camera.fov;
       cameraFeedback.speed01 = Math.min(1, Math.max(0, Number(framing.speed01) || 0));
       cameraFeedback.sprint01 = Math.min(1, Math.max(0, Number(framing.sprint01) || 0));
@@ -845,6 +952,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       speedFeedbackVisible: Boolean(speedWake?.visible),
       pickupFeedbackVisible: Boolean(pickupPulse?.visible),
       cameraFeedback: { ...cameraFeedback },
+      groundAlignmentError,
       treeFidelityStatus,
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,

@@ -15,11 +15,11 @@ import { installPrehistoricRushStartupAssets } from "./domains/prehistoric-rush/
 import { resolvePlayableRacerProfile } from "./racers/racer-catalog.js";
 import { createRacerCharacterProfile, getRacerRosterDetails } from "./racers/racer-roster.js";
 import { loadSelectedRacerId, saveSelectedRacerId } from "./racers/racer-selection-store.js";
-import { resolveRacerCameraResponse, smoothCameraValue } from "./domains/prehistoric-rush/camera-response.js";
+import { resolveCameraTerrainClearance, resolveCloseChasePosition, resolveRacerCameraResponse, smoothCameraValue } from "./domains/prehistoric-rush/camera-response.js";
 
 const startupStartedAt = performance.now();
 const app = document.querySelector("#app") ?? document.body;
-app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;inset:0;z-index:4;pointer-events:none"><span id="prehistoric-racer-badge" style="position:absolute;left:24px;top:20px;color:#f3e7ba;font-size:16px;font-weight:900;letter-spacing:.08em;text-transform:uppercase"></span><div id="prehistoric-status" data-race-status="true" style="position:absolute;left:24px;top:48px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-stamina" role="meter" aria-label="Stamina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-stamina-phase="gold" style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:80vw;height:10px;border-radius:999px;overflow:visible;background:linear-gradient(90deg,#c85b55 0%,#c85b55 30%,#d5ad55 30%,#d5ad55 60%,#72b87b 60%,#72b87b 92%,#e2bd55 92%,#e2bd55 100%);box-shadow:0 2px 12px #0008"><span id="prehistoric-stamina-fill" style="position:absolute;inset:0;transform-origin:left center;transform:scaleX(1);border-radius:999px;background:#fff;opacity:.2"></span><span id="prehistoric-stamina-marker" style="position:absolute;left:100%;top:50%;width:3px;height:18px;border-radius:999px;background:#fff;box-shadow:0 0 8px #fff;transform:translate(-50%,-50%)"></span><span id="prehistoric-stamina-orb" aria-hidden="true" style="position:absolute;left:100%;top:50%;width:11px;height:11px;border-radius:50%;background:#fff3ae;box-shadow:0 0 9px 3px #ffd85c,0 0 20px 7px #f4b83f88;transform:translate(-50%,-50%);animation:prehistoric-rush-stamina-burst 1s ease-in-out infinite"><i style="position:absolute;left:50%;top:-10px;width:2px;height:31px;border-radius:2px;background:#ffe18a;transform:translateX(-50%)"></i><i style="position:absolute;left:-10px;top:50%;width:31px;height:2px;border-radius:2px;background:#ffe18a;transform:translateY(-50%)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(45deg)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(-45deg)"></i></span></div></aside><div style="position:absolute;right:18px;bottom:18px;z-index:4;padding:8px 11px;border-radius:999px;background:#07100bc4;color:#e8dfc0;font:800 10px system-ui;letter-spacing:.05em;text-transform:uppercase;pointer-events:none">A/D steer · W boost · Space jump</div><style>@keyframes prehistoric-rush-stamina-burst{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(.85)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}</style></section>`;
+app.innerHTML = `<section data-race-screen="true" style="position:fixed;inset:0;background:#101b13;color:#f3e7ba;font:14px system-ui,sans-serif;overflow:hidden"><div id="prehistoric-render-host" data-race-renderer="true" style="position:absolute;inset:0"></div><aside data-race-hud="true" style="position:absolute;inset:0;z-index:4;pointer-events:none"><span id="prehistoric-racer-badge" style="position:absolute;left:24px;top:20px;color:#f3e7ba;font-size:16px;font-weight:900;letter-spacing:.08em;text-transform:uppercase"></span><div id="prehistoric-status" data-race-status="true" style="position:absolute;left:24px;top:48px;line-height:1.45">Loading Nexus World…</div><div id="prehistoric-stamina" role="meter" aria-label="Stamina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" data-stamina-phase="gold" style="position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:80vw;height:10px;border-radius:999px;overflow:visible;background:linear-gradient(90deg,#c85b55 0%,#c85b55 30%,#d5ad55 30%,#d5ad55 60%,#72b87b 60%,#72b87b 92%,#e2bd55 92%,#e2bd55 100%);box-shadow:0 2px 12px #0008"><span id="prehistoric-stamina-fill" style="position:absolute;inset:0;transform-origin:left center;transform:scaleX(1);border-radius:999px;background:#fff;opacity:.2"></span><span id="prehistoric-stamina-marker" style="position:absolute;left:100%;top:50%;width:3px;height:18px;border-radius:999px;background:#fff;box-shadow:0 0 8px #fff;transform:translate(-50%,-50%)"></span><span id="prehistoric-stamina-orb" aria-hidden="true" style="position:absolute;left:100%;top:50%;width:11px;height:11px;border-radius:50%;background:#fff3ae;box-shadow:0 0 9px 3px #ffd85c,0 0 20px 7px #f4b83f88;transform:translate(-50%,-50%);animation:prehistoric-rush-stamina-burst 1s ease-in-out infinite"><i style="position:absolute;left:50%;top:-10px;width:2px;height:31px;border-radius:2px;background:#ffe18a;transform:translateX(-50%)"></i><i style="position:absolute;left:-10px;top:50%;width:31px;height:2px;border-radius:2px;background:#ffe18a;transform:translateY(-50%)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(45deg)"></i><i style="position:absolute;left:50%;top:50%;width:2px;height:31px;border-radius:2px;background:#fff;transform:translate(-50%,-50%) rotate(-45deg)"></i></span></div></aside><style>@keyframes prehistoric-rush-stamina-burst{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(.85)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}</style></section>`;
 const host = document.querySelector("#prehistoric-render-host");
 const statusNode = document.querySelector("#prehistoric-status");
 const racerBadge = document.querySelector("#prehistoric-racer-badge");
@@ -336,31 +336,48 @@ function cameraFrame(state, dt) {
     cameraMotion.fov = racerProfile.camera.verticalFov;
   }
   cameraMotion.fov = smoothCameraValue(cameraMotion.fov, response.targetFov, dt, racerProfile.camera.fovSmoothing);
-  const lookAhead = Number(state.speed ?? 0) * response.lookAheadSeconds;
-  const centerX = state.x + Math.sin(state.yaw) * lookAhead;
-  const centerZ = state.z + Math.cos(state.yaw) * lookAhead;
-  subjectBounds.min[0] = centerX - racerProfile.camera.halfWidth;
+  const lookAhead = Math.max(6, Number(state.speed ?? 0) * response.lookAheadSeconds);
+  subjectBounds.min[0] = state.x - racerProfile.camera.halfWidth;
   subjectBounds.min[1] = state.y;
-  subjectBounds.min[2] = centerZ - racerProfile.camera.halfDepth;
-  subjectBounds.max[0] = centerX + racerProfile.camera.halfWidth;
+  subjectBounds.min[2] = state.z - racerProfile.camera.halfDepth;
+  subjectBounds.max[0] = state.x + racerProfile.camera.halfWidth;
   subjectBounds.max[1] = state.y + racerProfile.camera.height;
-  subjectBounds.max[2] = centerZ + racerProfile.camera.halfDepth;
+  subjectBounds.max[2] = state.z + racerProfile.camera.halfDepth;
   cameraRequest.viewport.width = innerWidth;
   cameraRequest.viewport.height = innerHeight;
   cameraRequest.padding = racerProfile.camera.padding * response.paddingScale;
   cameraRequest.camera.verticalFov = cameraMotion.fov;
   cameraRequest.camera.preferredDirection[0] = -Math.sin(state.yaw);
-  cameraRequest.camera.preferredDirection[1] = racerProfile.camera.preferredDirection[1] + (reducedMotion ? 0 : response.speed01 * 0.08);
+  cameraRequest.camera.preferredDirection[1] = racerProfile.camera.preferredDirection[1];
   cameraRequest.camera.preferredDirection[2] = -Math.cos(state.yaw);
   cameraRequest.deltaTime = dt;
   const frame = framing.update(cameraRequest);
+  const subjectCenter = [state.x, state.y + racerProfile.camera.height * 0.55, state.z];
+  const distanceRange = Math.max(0, racerProfile.camera.minimumDistance - racerProfile.camera.closeDistance);
+  const chaseDistance = racerProfile.camera.closeDistance + (reducedMotion ? 0 : response.speed01 * distanceRange * 0.4);
+  const chasePosition = resolveCloseChasePosition(frame.position, subjectCenter, chaseDistance);
+  const position = resolveCameraTerrainClearance(chasePosition, world.sampleElevation, 2.2);
   const target = frame.target && typeof frame.target.length === "number" ? Array.from(frame.target) : frame.target;
   if (Array.isArray(target)) {
+    const routeSamples = course?.route?.samples ?? [];
+    const routeSampleOffset = Math.max(1, Math.round(lookAhead / 2.5));
+    const routePoint = routeSamples[Math.min(routeSamples.length - 1, Math.max(0, Number(state.routeIndex ?? 0) + routeSampleOffset))];
+    const headingX = state.x + Math.sin(state.yaw) * lookAhead;
+    const headingZ = state.z + Math.cos(state.yaw) * lookAhead;
+    const routeWeight = state.region === "path" ? 0.5 : 0.78;
+    const focusX = routePoint ? headingX + (routePoint.x - headingX) * routeWeight : headingX;
+    const focusZ = routePoint ? headingZ + (routePoint.z - headingZ) * routeWeight : headingZ;
+    const focusDx = focusX - state.x;
+    const focusDz = focusZ - state.z;
+    const focusLength = Math.hypot(focusDx, focusDz) || 1;
+    const targetLead = Math.min(4, Math.max(1.5, lookAhead * 0.34));
+    target[0] += focusDx / focusLength * targetLead;
+    target[2] += focusDz / focusLength * targetLead;
     target[1] += response.targetLift;
-    target[0] += Math.sin(state.yaw) * response.turnLead;
-    target[2] += Math.cos(state.yaw) * response.turnLead;
+    target[0] += Math.cos(state.yaw) * response.turnLead;
+    target[2] -= Math.sin(state.yaw) * response.turnLead;
   }
-  return { ...frame, target, fov: cameraMotion.fov, speed01: response.speed01, sprint01: response.sprint01, jump01: response.jump01 };
+  return { ...frame, position, target, near: 0.1, fov: cameraMotion.fov, speed01: response.speed01, sprint01: response.sprint01, jump01: response.jump01 };
 }
 
 measureStartup("foundationFocusCommit", () => world.focus({ x: 0, y: 0, z: 0 }));

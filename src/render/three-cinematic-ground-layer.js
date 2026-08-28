@@ -165,7 +165,10 @@ export function createThreeCinematicGroundLayer(THREE, options = {}) {
   const scale = new THREE.Vector3();
   const color = new THREE.Color();
   let elapsed = 0;
-  const view = { activePatches: 0, grass: 0, ferns: 0, rocks: 0, litter: 0, flowers: 0, roots: 0, overflow: 0, speed01: 0 };
+  let recordsDirty = true;
+  let combinedRecords = { grass: [], ferns: [], rocks: [], litter: [], flowers: [], roots: [] };
+  let visibilityCell = "";
+  const view = { activePatches: 0, grass: 0, ferns: 0, rocks: 0, litter: 0, flowers: 0, roots: 0, overflow: 0, speed01: 0, instanceRebuilds: 0 };
 
   function pushRecord(records, kind, seed, sourceMatrix) {
     matrix.fromArray(sourceMatrix);
@@ -202,54 +205,68 @@ export function createThreeCinematicGroundLayer(THREE, options = {}) {
   function activatePatch(patch) {
     patches.set(patch.id, buildPatchRecords(patch));
     view.activePatches = patches.size;
+    recordsDirty = true;
   }
 
   function releasePatches(ids = []) {
     for (const id of ids) patches.delete(id);
     view.activePatches = patches.size;
+    recordsDirty = true;
   }
 
   function rebuild() {
+    if (!recordsDirty) return combinedRecords;
     const records = { grass: [], ferns: [], rocks: [], litter: [], flowers: [], roots: [] };
     for (const patchRecords of patches.values()) {
       for (const kind of Object.keys(records)) records[kind].push(...patchRecords[kind]);
     }
-    return records;
+    combinedRecords = records;
+    recordsDirty = false;
+    return combinedRecords;
   }
 
   function update(state = {}, deltaTime = 1 / 60) {
     elapsed += Math.max(0, Number(deltaTime) || 0);
+    const patchRecordsChanged = recordsDirty;
     const records = rebuild();
-    view.overflow = 0;
     const speed01 = Math.min(1, Math.max(0, Number(state.speed01) || 0));
     view.speed01 = speed01;
+    const nextVisibilityCell = `${Math.floor(camera.position.x / 24)}:${Math.floor(camera.position.z / 24)}`;
+    const rebuildInstances = nextVisibilityCell !== visibilityCell || patchRecordsChanged || view.instanceRebuilds === 0;
+    if (rebuildInstances) {
+      visibilityCell = nextVisibilityCell;
+      view.overflow = 0;
+      view.instanceRebuilds += 1;
+    }
     for (const [kind, mesh] of Object.entries(batches)) {
-      const distanceLimit = kind === "grass" || kind === "litter" ? 112 : 138;
-      const visible = records[kind].filter((record) => camera.position.distanceTo(position.set(...record.distanceCenter)) <= distanceLimit);
-      const capacity = mesh.instanceMatrix.count;
-      const count = Math.min(capacity, visible.length);
-      for (let index = 0; index < count; index += 1) {
-        const record = visible[index];
-        mesh.setMatrixAt(index, matrix.fromArray(record.matrix));
-        const hue = unit(record.seed, "hue");
-        if (kind === "grass") color.setHSL(0.25 + hue * 0.07, 0.42, 0.32 + hue * 0.14);
-        else if (kind === "ferns") color.setHSL(0.29 + hue * 0.05, 0.46, 0.29 + hue * 0.12);
-        else if (kind === "flowers") color.setHSL(0.08 + hue * 0.12, 0.72, 0.7);
-        else if (kind === "rocks") color.setHSL(0.25 + hue * 0.05, 0.1, 0.28 + hue * 0.16);
-        else if (kind === "roots") color.setHSL(0.08, 0.35, 0.2 + hue * 0.08);
-        else color.setHSL(0.1 + hue * 0.06, 0.34, 0.2 + hue * 0.12);
-        mesh.setColorAt(index, color);
+      if (rebuildInstances) {
+        const distanceLimit = kind === "grass" || kind === "litter" ? 112 : 138;
+        const visible = records[kind].filter((record) => camera.position.distanceToSquared(position.set(...record.distanceCenter)) <= distanceLimit * distanceLimit);
+        const capacity = mesh.instanceMatrix.count;
+        const count = Math.min(capacity, visible.length);
+        for (let index = 0; index < count; index += 1) {
+          const record = visible[index];
+          mesh.setMatrixAt(index, matrix.fromArray(record.matrix));
+          const hue = unit(record.seed, "hue");
+          if (kind === "grass") color.setHSL(0.25 + hue * 0.07, 0.42, 0.32 + hue * 0.14);
+          else if (kind === "ferns") color.setHSL(0.29 + hue * 0.05, 0.46, 0.29 + hue * 0.12);
+          else if (kind === "flowers") color.setHSL(0.08 + hue * 0.12, 0.72, 0.7);
+          else if (kind === "rocks") color.setHSL(0.25 + hue * 0.05, 0.1, 0.28 + hue * 0.16);
+          else if (kind === "roots") color.setHSL(0.08, 0.35, 0.2 + hue * 0.08);
+          else color.setHSL(0.1 + hue * 0.06, 0.34, 0.2 + hue * 0.12);
+          mesh.setColorAt(index, color);
+        }
+        mesh.count = count;
+        mesh.instanceMatrix.needsUpdate = true;
+        if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+        view[kind] = count;
+        view.overflow += Math.max(0, visible.length - count);
       }
-      mesh.count = count;
-      mesh.instanceMatrix.needsUpdate = true;
-      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
       const uniforms = mesh.material.userData.cinematicVegetationUniforms;
       if (uniforms) {
         uniforms.vegetationTime.value = elapsed;
         uniforms.vegetationSpeed.value = speed01;
       }
-      view[kind] = count;
-      view.overflow += Math.max(0, visible.length - count);
     }
     return view;
   }

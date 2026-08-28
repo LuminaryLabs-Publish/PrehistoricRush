@@ -408,6 +408,8 @@ export function createWorkerPatchStreamingService(options = {}) {
       timing.activated += 1;
       active.set(id, patch);
       cache.get(id).touched = ++touchSequence;
+      const obsoleteId = [...active.keys()].find((activeId) => !desiredActive.has(activeId));
+      if (obsoleteId && active.size > desiredActive.size) release(obsoleteId, "replaced-outside-active-ring");
       remaining -= 1;
     }
   }

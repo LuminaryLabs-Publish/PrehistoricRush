@@ -34,9 +34,9 @@ export function resolveRacerCameraResponse({ state = {}, movement = {}, camera =
   const targetLift = Math.max(0, Number(camera.targetLift ?? 0.28) || 0)
     + motionScale * speed01 * Math.max(0, Number(camera.speedTargetLift ?? 0.22) || 0)
     + motionScale * jump01 * Math.max(0, Number(camera.jumpTargetLift ?? 0.36) || 0);
-  const turnLead = Math.max(0, Number(camera.turnLead ?? 0.42) || 0) * Math.abs(steer) * (0.65 + speed01 * 0.35) * motionScale;
-  const closePaddingScale = clamp(Number(camera.closePaddingScale ?? 0.82) || 0.82, 0.6, 1);
-  const speedPaddingScale = Math.max(0, Number(camera.speedPaddingScale ?? 0.1) || 0);
+  const turnLead = Math.max(0, Number(camera.turnLead ?? 0.42) || 0) * steer * (0.65 + speed01 * 0.35) * motionScale;
+  const closePaddingScale = clamp(Number(camera.closePaddingScale ?? 0.7) || 0.7, 0.6, 1);
+  const speedPaddingScale = Math.max(0, Number(camera.speedPaddingScale ?? 0.04) || 0);
   const paddingScale = clamp(closePaddingScale + motionScale * speed01 * speedPaddingScale, 0.6, 1.2);
 
   return {
@@ -59,4 +59,36 @@ export function smoothCameraValue(current, target, deltaTime, response = 7) {
   if (dt <= 0) return Number(current) || 0;
   if (sharpness <= 0) return Number(target) || 0;
   return (Number(current) || 0) + ((Number(target) || 0) - (Number(current) || 0)) * (1 - Math.exp(-sharpness * dt));
+}
+
+/**
+ * Keep the borrowed Camera transform above authoritative World terrain.
+ * A new position is returned so framing state is never mutated in place.
+ */
+export function resolveCameraTerrainClearance(position, sampleElevation, clearance = 2.2) {
+  const resolved = Array.from(position ?? [0, 0, 0], (value) => Number(value) || 0);
+  if (resolved.length < 3 || typeof sampleElevation !== "function") return resolved;
+  const terrainY = Number(sampleElevation(resolved[0], resolved[2]));
+  if (!Number.isFinite(terrainY)) return resolved;
+  resolved[1] = Math.max(resolved[1], terrainY + Math.max(0, Number(clearance) || 0));
+  return resolved;
+}
+
+/**
+ * Move a framing-kit result onto the racer profile's close chase radius while
+ * retaining the framing kit's authored direction.
+ */
+export function resolveCloseChasePosition(position, subject, distance) {
+  const resolved = Array.from(position ?? [0, 0, 0], (value) => Number(value) || 0);
+  const center = Array.from(subject ?? [0, 0, 0], (value) => Number(value) || 0);
+  const dx = resolved[0] - center[0];
+  const dy = resolved[1] - center[1];
+  const dz = resolved[2] - center[2];
+  const length = Math.hypot(dx, dy, dz) || 1;
+  const chaseDistance = Math.max(0.01, Number(distance) || 0.01);
+  return [
+    center[0] + dx / length * chaseDistance,
+    center[1] + dy / length * chaseDistance,
+    center[2] + dz / length * chaseDistance
+  ];
 }

@@ -8,12 +8,12 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     shadowMapSize: 1024,
     shadowRadius: 48,
     treeDensity: 0.58,
+    treeLodThresholdScale: 3,
     groundDensity: 0.48,
     postProcessing: false,
     contactAO: false,
     bloom: false,
     cloudLayers: 1,
-    lightShafts: 0,
     preferUnifiedWebGPU: true,
     targetFrameMs: 19.5
   }),
@@ -24,12 +24,12 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     shadowMapSize: 2048,
     shadowRadius: 60,
     treeDensity: 0.78,
+    treeLodThresholdScale: 1.6,
     groundDensity: 0.72,
     postProcessing: true,
     contactAO: true,
     bloom: true,
     cloudLayers: 2,
-    lightShafts: 2,
     preferUnifiedWebGPU: true,
     targetFrameMs: 18
   }),
@@ -40,12 +40,12 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     shadowMapSize: 3072,
     shadowRadius: 74,
     treeDensity: 1,
+    treeLodThresholdScale: 1,
     groundDensity: 1,
     postProcessing: true,
     contactAO: true,
     bloom: true,
     cloudLayers: 3,
-    lightShafts: 4,
     preferUnifiedWebGPU: false,
     targetFrameMs: 17.2
   }),
@@ -56,12 +56,12 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     shadowMapSize: 4096,
     shadowRadius: 86,
     treeDensity: 1.18,
+    treeLodThresholdScale: 0.85,
     groundDensity: 1.24,
     postProcessing: true,
     contactAO: true,
     bloom: true,
     cloudLayers: 4,
-    lightShafts: 6,
     preferUnifiedWebGPU: false,
     targetFrameMs: 16.9
   })
@@ -76,18 +76,40 @@ function requestedProfile(locationLike) {
   return null;
 }
 
-function automaticProfile(environment = globalThis) {
+const SOFTWARE_RENDERER_PATTERN = /swiftshader|llvmpipe|softpipe|software rasterizer|mesa offscreen|lavapipe/i;
+
+export function isSoftwareRenderer(rendererIdentity = "") {
+  return SOFTWARE_RENDERER_PATTERN.test(String(rendererIdentity));
+}
+
+export function readWebGLRendererIdentity(renderer) {
+  try {
+    const context = renderer?.getContext?.();
+    if (!context) return "unknown";
+    const extension = context.getExtension?.("WEBGL_debug_renderer_info");
+    return String(extension
+      ? context.getParameter(extension.UNMASKED_RENDERER_WEBGL)
+      : context.getParameter(context.RENDERER) ?? "unknown");
+  } catch {
+    return "unknown";
+  }
+}
+
+function automaticProfile(environment = globalThis, rendererIdentity = "") {
   const memory = Number(environment.navigator?.deviceMemory ?? 8);
   const cores = Number(environment.navigator?.hardwareConcurrency ?? 8);
   const narrow = Number(environment.innerWidth ?? 1280) < 760;
   const reducedMotion = Boolean(environment.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+  if (isSoftwareRenderer(rendererIdentity)) return "performance";
   if (reducedMotion || memory <= 2 || cores <= 2) return "performance";
   if (narrow || memory <= 4 || cores <= 4) return "balanced";
   return "high";
 }
 
-export function resolvePrehistoricVisualQuality(locationLike = globalThis.location, environment = globalThis) {
-  const id = requestedProfile(locationLike) ?? automaticProfile(environment);
+export function resolvePrehistoricVisualQuality(locationLike = globalThis.location, environment = globalThis, capabilities = {}) {
+  const rendererIdentity = String(capabilities.rendererIdentity ?? "unknown");
+  const explicitProfile = requestedProfile(locationLike);
+  const id = explicitProfile ?? automaticProfile(environment, rendererIdentity);
   const profile = PREHISTORIC_VISUAL_QUALITY_PROFILES[id];
   let rendererPreference = profile.preferUnifiedWebGPU ? "webgpu" : "webgl2";
   try {
@@ -95,7 +117,13 @@ export function resolvePrehistoricVisualQuality(locationLike = globalThis.locati
     const explicitRenderer = String(url.searchParams.get("renderer") ?? "").toLowerCase();
     if (explicitRenderer === "webgpu" || explicitRenderer === "webgl2") rendererPreference = explicitRenderer;
   } catch {}
-  return freeze({ ...profile, rendererPreference });
+  return freeze({
+    ...profile,
+    rendererPreference,
+    rendererIdentity,
+    softwareRenderer: isSoftwareRenderer(rendererIdentity),
+    selection: explicitProfile ? "explicit" : "automatic"
+  });
 }
 
 export function createAdaptivePixelRatioController(renderer, profile, environment = globalThis) {

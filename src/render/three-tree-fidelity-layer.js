@@ -22,7 +22,8 @@ function combineBounds(trunk, crown) {
     center: [(min[0] + max[0]) * 0.5, (min[1] + max[1]) * 0.5, (min[2] + max[2]) * 0.5],
     size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
     width: Math.max(max[0] - min[0], max[2] - min[2]),
-    height: max[1] - min[1]
+    height: max[1] - min[1],
+    depth: max[2] - min[2]
   };
 }
 
@@ -137,6 +138,7 @@ function suppressLegacyTreeMeshes(scene, typeCount) {
   const candidates = [];
   scene.traverse((object) => {
     if (!object?.isInstancedMesh) return;
+    if (String(object.name ?? "").startsWith("prehistoric-tree-fidelity-") || object.userData?.treeRenderSource === "factory-glb") return;
     const type = object.geometry?.type;
     if (type === "CylinderGeometry" || type === "IcosahedronGeometry") candidates.push(object);
   });
@@ -499,31 +501,32 @@ function disposeMesh(scene, mesh) {
   mesh.material?.dispose?.();
 }
 
-function thresholdSet(packageValue) {
+export function resolveTreeFidelityThresholds(packageValue, thresholdScale = 1) {
+  const scale = Math.max(0.1, Number(thresholdScale) || 1);
   return {
-    near: Number(packageValue?.forms?.near?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.near),
-    medium: Number(packageValue?.forms?.medium?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.medium),
-    far: Number(packageValue?.forms?.far?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.far)
+    near: Number(packageValue?.forms?.near?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.near) * scale,
+    medium: Number(packageValue?.forms?.medium?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.medium) * scale,
+    far: Number(packageValue?.forms?.far?.minimumProjectedSize ?? DEFAULT_THRESHOLDS.far) * scale
   };
 }
 
-function rawForm(packageValue, pixels) {
-  const thresholds = thresholdSet(packageValue);
+function rawForm(packageValue, pixels, thresholdScale) {
+  const thresholds = resolveTreeFidelityThresholds(packageValue, thresholdScale);
   if (pixels >= thresholds.near) return "near";
   if (pixels >= thresholds.medium) return "medium";
   if (pixels >= thresholds.far) return "far";
   return "horizon";
 }
 
-function retainWithHysteresis(packageValue, pixels, previous) {
-  if (!previous || !FORM_ORDER.includes(previous)) return rawForm(packageValue, pixels);
-  const thresholds = thresholdSet(packageValue);
+function retainWithHysteresis(packageValue, pixels, previous, thresholdScale) {
+  if (!previous || !FORM_ORDER.includes(previous)) return rawForm(packageValue, pixels, thresholdScale);
+  const thresholds = resolveTreeFidelityThresholds(packageValue, thresholdScale);
   const hysteresis = clamp(Number(packageValue?.change?.hysteresis ?? 0.14), 0, 0.45);
   if (previous === "near" && pixels >= thresholds.near * (1 - hysteresis)) return previous;
   if (previous === "medium" && pixels >= thresholds.medium * (1 - hysteresis) && pixels < thresholds.near * (1 + hysteresis)) return previous;
   if (previous === "far" && pixels >= thresholds.far * (1 - hysteresis) && pixels < thresholds.medium * (1 + hysteresis)) return previous;
   if (previous === "horizon" && pixels < thresholds.far * (1 + hysteresis)) return previous;
-  return rawForm(packageValue, pixels);
+  return rawForm(packageValue, pixels, thresholdScale);
 }
 
 function sourceBounds(packageValue) {
@@ -535,6 +538,13 @@ function sourceBounds(packageValue) {
 
 function variationFor(record) {
   return record.trunk.metadata?.variation ?? record.crown.metadata?.variation ?? {};
+}
+
+function presentationBounds(packageValue, record, fallbackBounds) {
+  // Factory GLBs are authored in a compact modelling scale. World owns the
+  // actual species dimensions, so culling and LOD must use the semantic bounds
+  // that the patch generator already produced for this exact instance.
+  return fallbackBounds;
 }
 
 function tintFor(record) {
@@ -577,6 +587,7 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   const quaternion = new THREE.Quaternion();
   const euler = new THREE.Euler(0, 0, 0, "YXZ");
   const packageByArchetype = new Map(packages.filter(Boolean).map((entry) => [entry.archetypeId, entry]));
+  const projectedThresholdScale = Math.max(0.1, Number(options.projectedThresholdScale) || 1);
   const layers = treeTypes.map((treeType, typeIndex) => {
     const archetypeId = String(treeType?.id ?? treeType?.[6]?.id ?? "");
     const packageValue = packages[typeIndex] ?? packageByArchetype.get(archetypeId) ?? null;
@@ -673,12 +684,18 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
   }
 
   function writeCombinedMatrix(mesh, index, bounds, packageValue, record) {
-    const source = sourceBounds(packageValue);
     const variation = variationFor(record);
     const ground = variation.groundPosition ?? [bounds.center[0], bounds.min[1], bounds.center[2]];
-    const sx = bounds.size[0] / Math.max(0.001, source.size[0]);
-    const sy = bounds.size[1] / Math.max(0.001, source.size[1]);
-    const sz = bounds.size[2] / Math.max(0.001, source.size[2]);
+    const source = sourceBounds(packageValue);
+    const sx = packageValue?.prebuiltTree?.geometry
+      ? Math.max(0.01, Number(bounds.width) / Math.max(0.001, Number(source.size[0]) || 1))
+      : Math.max(0.01, Number(variation.uniformScale ?? 1) || 1) * Math.max(0.01, Number(variation.crownScale ?? 1) || 1);
+    const sy = packageValue?.prebuiltTree?.geometry
+      ? Math.max(0.01, Number(bounds.height) / Math.max(0.001, Number(source.size[1]) || 1))
+      : Math.max(0.01, Number(variation.uniformScale ?? 1) || 1) * Math.max(0.01, Number(variation.heightScale ?? 1) || 1);
+    const sz = packageValue?.prebuiltTree?.geometry
+      ? Math.max(0.01, Number(bounds.depth) / Math.max(0.001, Number(source.size[2]) || 1))
+      : sx;
     position.set(ground[0], ground[1], ground[2]);
     euler.set(
       Number(variation.leanXRadians ?? 0),
@@ -729,11 +746,12 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
           const crown = treeSet.crowns[index];
           const treeId = trunk.metadata?.treeId ?? crown.metadata?.treeId ?? trunk.id;
           seen.add(treeId);
-          const bounds = combineBounds(trunk, crown);
+          const semanticBounds = combineBounds(trunk, crown);
+          const bounds = presentationBounds(layer.packageValue, { trunk, crown }, semanticBounds);
           const distance = Math.max(0.001, camera.position.distanceTo(position.set(...bounds.center)));
           const pixels = projectedPixels(camera, renderer, bounds.height, distance);
-          const prior = selections.get(treeId) ?? { form: rawForm(layer.packageValue, pixels), transition: null, candidate: null, candidateFrames: 0 };
-          const desired = retainWithHysteresis(layer.packageValue, pixels, prior.transition?.to ?? prior.form);
+          const prior = selections.get(treeId) ?? { form: rawForm(layer.packageValue, pixels, projectedThresholdScale), transition: null, candidate: null, candidateFrames: 0 };
+          const desired = retainWithHysteresis(layer.packageValue, pixels, prior.transition?.to ?? prior.form, projectedThresholdScale);
           const stableFrames = Math.max(1, Number(layer.packageValue?.change?.stableSelectionFrames ?? 3));
 
           if (!prior.transition && desired !== prior.form) {
