@@ -16,6 +16,9 @@ assert.equal(isSoftwareRenderer("Mesa/X.org llvmpipe"), true);
 assert.equal(isSoftwareRenderer("Apple M3"), false);
 assert.equal(PREHISTORIC_VISUAL_QUALITY_PROFILES.high.preferUnifiedWebGPU, false, "the high-fidelity renderer must not be replaced by the simpler GPU path");
 for (const profile of Object.values(PREHISTORIC_VISUAL_QUALITY_PROFILES)) assert.equal("lightShafts" in profile, false, "gameplay quality profiles must not restore cone meshes");
+for (const profile of Object.values(PREHISTORIC_VISUAL_QUALITY_PROFILES)) {
+  for (const key of ["postProcessing", "contactAO", "bloom"]) assert.equal(key in profile, false, `gameplay quality profiles must not own ${key}`);
+}
 
 const renderingSource = readFileSync(new URL("../src/domains/prehistoric-rush/rendering-implementation.js", import.meta.url), "utf8");
 const treeSource = readFileSync(new URL("../src/render/three-tree-fidelity-layer.js", import.meta.url), "utf8");
@@ -30,9 +33,11 @@ for (const token of ["prehistoric-triplanar-height-blended-terrain", "prehistori
 for (const token of ["treeTriplanar", "barkRidges", "leafTransmission", "treeWindStrength", "vTreeBaseAO"]) {
   assert.match(treeSource, new RegExp(token));
 }
-for (const token of ["sceneDepth", "aoStrength", "bloomStrength", "sharpenStrength", "filmic-jungle", "cloudLayers"]) {
-  assert.match(cinematicSource, new RegExp(token));
+assert.match(cinematicSource, /cloudLayers/);
+for (const token of ["createPostProcess", "WebGLRenderTarget", "DepthTexture", "sceneDepth", "aoStrength", "bloomStrength", "sharpenStrength", "OrthographicCamera", "PlaneGeometry\(2, 2\)", "setRenderTarget"]) {
+  assert.doesNotMatch(cinematicSource, new RegExp(token));
 }
+assert.match(renderingSource, /renderer\.render\(scene, camera\)/);
 assert.doesNotMatch(cinematicSource, /lightShaft|canopy-light-shaft|CylinderGeometry/);
 for (const token of ["cinematic-grass", "cinematic-ferns", "const rocks =", "const litter =", "const flowers =", "const roots ="]) {
   assert.match(groundSource, new RegExp(token));

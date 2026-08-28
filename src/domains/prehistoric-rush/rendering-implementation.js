@@ -458,7 +458,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     exposure: qualityProfile.id === "cinematic" ? 1.04 : 1.08
   });
   const fallbackBackground = atmosphere.background;
-  const cinematicFidelity = diagnosticFoundationOnly ? null : createThreeCinematicFidelityLayer(THREE, { scene, camera, renderer, profile: qualityProfile, sun });
+  const cinematicFidelity = diagnosticFoundationOnly ? null : createThreeCinematicFidelityLayer(THREE, { scene, camera, profile: qualityProfile, sun });
 
   let courseRibbon = null;
   let courseRibbonRange = null;
@@ -894,8 +894,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     sun.target.position.set(state.x, state.y, state.z);
     adaptivePixelRatio.update(dt);
     cinematicFidelity?.update(state, dt);
-    if (cinematicFidelity) cinematicFidelity.render(scene);
-    else renderer.render(scene, camera);
+    renderer.render(scene, camera);
   }
 
   function getDenseWorldPresentation() {

@@ -10,9 +10,6 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     treeDensity: 0.58,
     treeLodThresholdScale: 3,
     groundDensity: 0.48,
-    postProcessing: false,
-    contactAO: false,
-    bloom: false,
     cloudLayers: 1,
     preferUnifiedWebGPU: true,
     targetFrameMs: 19.5
@@ -26,9 +23,6 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     treeDensity: 0.78,
     treeLodThresholdScale: 1.6,
     groundDensity: 0.72,
-    postProcessing: true,
-    contactAO: true,
-    bloom: true,
     cloudLayers: 2,
     preferUnifiedWebGPU: true,
     targetFrameMs: 18
@@ -42,9 +36,6 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     treeDensity: 1,
     treeLodThresholdScale: 1,
     groundDensity: 1,
-    postProcessing: true,
-    contactAO: true,
-    bloom: true,
     cloudLayers: 3,
     preferUnifiedWebGPU: false,
     targetFrameMs: 17.2
@@ -58,9 +49,6 @@ export const PREHISTORIC_VISUAL_QUALITY_PROFILES = freeze({
     treeDensity: 1.18,
     treeLodThresholdScale: 0.85,
     groundDensity: 1.24,
-    postProcessing: true,
-    contactAO: true,
-    bloom: true,
     cloudLayers: 4,
     preferUnifiedWebGPU: false,
     targetFrameMs: 16.9
