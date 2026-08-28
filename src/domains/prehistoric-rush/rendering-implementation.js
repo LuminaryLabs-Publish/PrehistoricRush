@@ -1,5 +1,6 @@
 import { applyCreaturePoseDamped, createCreatureMesh } from "../../render/three-procedural-creature.js";
 import { createThreePrebuiltRacerModel } from "../../render/three-prebuilt-racer-model.js";
+import { createThreePrebuiltTreeModel } from "../../render/three-prebuilt-tree-model.js";
 import { createThreeTreeFidelityLayer } from "../../render/three-tree-fidelity-layer.js";
 import { applyLushJungleAtmosphere } from "../../render/lush-jungle-atmosphere.js";
 import { createThreeCinematicFidelityLayer } from "../../render/three-cinematic-fidelity-layer.js";
@@ -250,6 +251,14 @@ function yieldRenderingStartupFrame() {
   });
 }
 
+function yieldTreePreparationFrame() {
+  return new Promise((resolve) => {
+    if (typeof globalThis.requestAnimationFrame === "function") globalThis.requestAnimationFrame(resolve);
+    else if (typeof globalThis.setTimeout === "function") globalThis.setTimeout(resolve, 0);
+    else resolve();
+  });
+}
+
 export async function createPrehistoricRushRenderingImplementation(THREE, {
   host,
   world,
@@ -300,6 +309,7 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
   let denseWorldGPUActive = false;
   let denseVisualRevision = 0;
   const treeFidelityPackages = new Map();
+  const prebuiltTreePreparations = new Map();
   const terrainMaterial = createTerrainMaterial(THREE);
   const terrainPatches = new Map();
   function ensureTerrain(state = {}, maximumNewPatches = Infinity) {
@@ -484,10 +494,13 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       packageCount,
       packageTotal: PREHISTORIC_TREE_TYPES.length,
       proxyPackageCount: treeFidelity?.view?.proxyPackageCount ?? PREHISTORIC_TREE_TYPES.length,
+      prebuiltPackageCount: treeFidelity?.view?.prebuiltPackageCount ?? 0,
+      factoryBatchCount: treeFidelity?.view?.factoryBatchCount ?? 0,
+      factorySourceMeshCount: treeFidelity?.view?.factorySourceMeshCount ?? 0,
       fullAttemptComplete: fullFidelityAttemptComplete,
       error: treeFidelityError?.message ?? null
     });
-    const signature = `${fidelityState.status}:${fidelityState.packageCount}:${fidelityState.proxyPackageCount}:${fidelityState.error ?? ""}`;
+    const signature = `${fidelityState.status}:${fidelityState.packageCount}:${fidelityState.proxyPackageCount}:${fidelityState.prebuiltPackageCount}:${fidelityState.factorySourceMeshCount}:${fidelityState.error ?? ""}`;
     if (signature !== lastFidelityStateSignature) {
       lastFidelityStateSignature = signature;
       onFidelityState(fidelityState);
@@ -502,11 +515,35 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
     }
   }
 
-  function queueFidelityPackages(packages) {
+  function prepareTreePackage(packageValue) {
+    const modelBuffer = packageValue?.prebuiltModel?.modelBuffer;
+    if (!(modelBuffer instanceof ArrayBuffer)) return Promise.resolve(packageValue);
+    const archetypeId = String(packageValue.archetypeId ?? "");
+    const existing = prebuiltTreePreparations.get(archetypeId);
+    if (existing) return existing;
+    const preparation = createThreePrebuiltTreeModel(THREE, modelBuffer)
+      .then((prebuiltTree) => {
+        const { prebuiltModel: _prebuiltModel, ...packageWithoutBinary } = packageValue;
+        return Object.freeze({ ...packageWithoutBinary, prebuiltTree });
+      })
+      .catch((error) => {
+        treeFidelityError = error instanceof Error ? error : new Error(String(error));
+        return packageValue;
+      });
+    prebuiltTreePreparations.set(archetypeId, preparation);
+    return preparation;
+  }
+
+  async function queueFidelityPackages(packages) {
+    let preparedCount = 0;
     for (const packageValue of packages) {
       if (!packageValue?.archetypeId || treeFidelityPackages.has(packageValue.archetypeId)) continue;
-      treeFidelityPackages.set(packageValue.archetypeId, packageValue);
-      treeFidelity?.queuePackage(packageValue);
+      if (preparedCount > 0) await yieldTreePreparationFrame();
+      const preparedPackage = await prepareTreePackage(packageValue);
+      if (treeFidelityPackages.has(packageValue.archetypeId)) continue;
+      treeFidelityPackages.set(packageValue.archetypeId, preparedPackage);
+      treeFidelity?.queuePackage(preparedPackage);
+      preparedCount += 1;
     }
     syncFidelityState();
   }
@@ -540,8 +577,8 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
         treeFidelityError = error instanceof Error ? error : new Error(String(error));
         syncFidelityState();
       }
-    }).then((packages) => {
-      queueFidelityPackages(packages);
+    }).then(async (packages) => {
+      await queueFidelityPackages(packages);
       fullFidelityAttemptComplete = true;
       syncFidelityState();
     }).catch((error) => {
@@ -812,6 +849,9 @@ export async function createPrehistoricRushRenderingImplementation(THREE, {
       treeFidelityError: treeFidelityError?.message ?? null,
       treeFidelityPackageCount: treeFidelity?.view?.packageCount ?? 0,
       treeFidelityProxyPackageCount: treeFidelity?.view?.proxyPackageCount ?? 0,
+      treeFidelityPrebuiltPackageCount: treeFidelity?.view?.prebuiltPackageCount ?? 0,
+      treeFidelityFactoryBatchCount: treeFidelity?.view?.factoryBatchCount ?? 0,
+      treeFidelityFactorySourceMeshCount: treeFidelity?.view?.factorySourceMeshCount ?? 0,
       treeFidelityPendingUpgrades: treeFidelity?.view?.pendingPackageUpgrades ?? 0,
       treeCount: treeFidelity?.view?.treeCount ?? 0,
       treeFidelityCounts: treeFidelity ? { ...treeFidelity.view.counts } : { near: 0, medium: 0, far: 0, horizon: 0 },

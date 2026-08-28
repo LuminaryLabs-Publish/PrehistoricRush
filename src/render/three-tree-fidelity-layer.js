@@ -374,6 +374,31 @@ function createMeshBatch(THREE, scene, packageValue, formId, capacity) {
   return mesh;
 }
 
+function createPrebuiltMeshBatch(THREE, scene, packageValue, formId, capacity) {
+  const sourceGeometry = packageValue?.prebuiltTree?.geometry;
+  if (!sourceGeometry) return createMeshBatch(THREE, scene, packageValue, formId, capacity);
+  const geometry = sourceGeometry.clone();
+  addInstanceAttributes(THREE, geometry, capacity, false);
+  const material = patchMeshMaterial(new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    vertexColors: true,
+    roughness: formId === "near" ? 0.84 : 0.9,
+    metalness: 0,
+    clearcoat: 0.025,
+    clearcoatRoughness: 0.9
+  }), formId);
+  const mesh = new THREE.InstancedMesh(geometry, material, capacity);
+  mesh.name = `prehistoric-tree-factory-glb-${packageValue.archetypeId}-${formId}`;
+  mesh.userData.treeRenderSource = "factory-glb";
+  mesh.userData.batchedSourceMeshCount = Number(packageValue.prebuiltTree.sourceMeshCount ?? 0);
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  mesh.castShadow = formId === "near";
+  mesh.receiveShadow = true;
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  return mesh;
+}
+
 function createBillboardBatch(THREE, scene, packageValue, formId, atlasTexture, capacity) {
   const geometry = createBillboardGeometry(THREE, capacity);
   const material = createBillboardMaterial(THREE, scene, atlasTexture, { formId });
@@ -396,12 +421,14 @@ function createTypeLayer(THREE, scene, packageValue, typeIndex, capacity) {
   if (String(farAtlas.assetId) !== String(horizonAtlas.assetId)) throw new Error(`Tree fidelity package ${packageValue.archetypeId} must share one atlas across far and horizon forms.`);
   const billboardCapacity = capacity * 4;
   const atlasTexture = createAtlasTexture(THREE, farAtlas);
+  const prebuilt = Boolean(packageValue?.prebuiltTree?.geometry);
   return {
     typeIndex,
     packageValue,
+    prebuilt,
     atlasTexture,
-    near: createMeshBatch(THREE, scene, packageValue, "near", capacity),
-    medium: createMeshBatch(THREE, scene, packageValue, "medium", capacity),
+    near: prebuilt ? createPrebuiltMeshBatch(THREE, scene, packageValue, "near", capacity) : createMeshBatch(THREE, scene, packageValue, "near", capacity),
+    medium: prebuilt ? createPrebuiltMeshBatch(THREE, scene, packageValue, "medium", capacity) : createMeshBatch(THREE, scene, packageValue, "medium", capacity),
     far: createBillboardBatch(THREE, scene, packageValue, "far", atlasTexture, billboardCapacity),
     horizon: createBillboardBatch(THREE, scene, packageValue, "horizon", atlasTexture, billboardCapacity),
     capacities: { near: capacity, medium: capacity, far: billboardCapacity, horizon: billboardCapacity },
@@ -500,7 +527,7 @@ function retainWithHysteresis(packageValue, pixels, previous) {
 }
 
 function sourceBounds(packageValue) {
-  const bounds = packageValue?.source?.bounds ?? {};
+  const bounds = packageValue?.prebuiltTree?.bounds ?? packageValue?.source?.bounds ?? {};
   const min = bounds.min ?? [-(bounds.width ?? 1) * 0.5, 0, -(bounds.depth ?? bounds.width ?? 1) * 0.5];
   const size = bounds.size ?? [bounds.width ?? 1, bounds.height ?? 1, bounds.depth ?? bounds.width ?? 1];
   return { min, size };
@@ -572,6 +599,9 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     transitioning: 0,
     packageCount: 0,
     proxyPackageCount: layers.length,
+    prebuiltPackageCount: 0,
+    factoryBatchCount: 0,
+    factorySourceMeshCount: 0,
     pendingPackageUpgrades: 0,
     textureCount: 0,
     generationIds: [],
@@ -591,6 +621,9 @@ export function createThreeTreeFidelityLayer(THREE, options = {}) {
     const detailed = layers.filter((layer) => !layer.proxy);
     view.packageCount = detailed.length;
     view.proxyPackageCount = layers.length - detailed.length;
+    view.prebuiltPackageCount = detailed.filter((layer) => layer.prebuilt).length;
+    view.factoryBatchCount = detailed.reduce((count, layer) => count + (layer.prebuilt ? 2 : 0), 0);
+    view.factorySourceMeshCount = detailed.reduce((count, layer) => count + (layer.prebuilt ? Number(layer.packageValue.prebuiltTree?.sourceMeshCount ?? 0) : 0), 0);
     view.pendingPackageUpgrades = upgradeQueue.size;
     view.textureCount = detailed.filter((layer) => layer.atlasTexture).length;
     view.generationIds = detailed.map((layer) => layer.packageValue.generation?.id).filter(Boolean);
